@@ -18,11 +18,22 @@ describe('quest strategy route UI wiring', () => {
     expect(questGuide).toContain(':equipment-type-counts="strategyEquipmentTypeCounts"')
     expect(strategyRoute).toContain('buildQuestStrategyLocalSnapshot({')
     expect(strategyRoute).toContain('buildQuestStrategyRoutePlan({')
+    expect(questGuide).toContain('v-if="showStrategyRoute"')
+    expect(questGuide).toContain('StrategyRouteVisibleStorageKey')
   })
 
   it('uses localization for app-owned UI and opens only reviewed evidence externally', () => {
     expect(strategyRoute).toContain("translateApp('quest.strategy.title')")
     expect(strategyRoute).toContain('window.api.openExternalUrl(url)')
     expect(strategyRoute).not.toMatch(/fetch\(|XMLHttpRequest|axios|ipcRenderer/)
+  })
+
+  it('shows auditable scores, confirmation items, alternatives, and local recipe overrides', () => {
+    expect(strategyRoute).toContain("translateApp('quest.strategy.score.title')")
+    expect(strategyRoute).toContain("translateApp('quest.strategy.confirmations')")
+    expect(strategyRoute).toContain('plan.alternatives')
+    expect(strategyRoute).toContain('plan.executionSummary')
+    expect(strategyRoute).toContain('HiddenRecipeStorageKey')
+    expect(strategyRoute).toContain('@click="hideRecipe(step.recipeId)"')
   })
 })

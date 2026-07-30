@@ -3694,6 +3694,27 @@ $eship-col-height: math.div(60px, math.div(240px, $eship-col-width)) + 12px;
     }
   }
 
+  .quest-strategy-entry {
+    display: grid;
+    gap: 6px;
+    margin: 0 10px 8px;
+  }
+
+  .quest-strategy-visibility-toggle {
+    justify-self: start;
+    min-height: 26px;
+    padding: 3px 9px;
+    border: 1px solid rgba(#75e8ff, 0.4);
+    border-radius: 0;
+    color: #dff8ff;
+    background: rgba(#75e8ff, 0.08);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(#75e8ff, 0.16);
+    }
+  }
+
   .quest-goal-selector {
     flex: 0 1 500px;
     display: grid;

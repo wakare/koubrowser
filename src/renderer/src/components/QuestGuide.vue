@@ -60,6 +60,7 @@ const WikiSourceStorageKey = 'questGuideWikiSource:v1'
 const GoalQuestStorageKey = 'questGuideGoalQuest:v1'
 const ViewFilterStorageKey = 'questGuideViewFilter:v1'
 const GoalViewModeStorageKey = 'questGuideGoalViewMode:v1'
+const StrategyRouteVisibleStorageKey = 'questStrategyRouteVisible:v1'
 const RecommendationsPerPage = 6
 const GoalStepsCollapsedLimit = 6
 const currentPage = ref(1)
@@ -76,6 +77,7 @@ const viewFilter = ref<QuestGuideViewFilter>(
   normalizeQuestGuideViewFilter(localStorage.getItem(ViewFilterStorageKey))
 )
 const searchQuery = ref('')
+const showStrategyRoute = ref(localStorage.getItem(StrategyRouteVisibleStorageKey) === 'true')
 const wikiSource = ref<QuestGuideWikiSource>(
   normalizeQuestGuideWikiSource(localStorage.getItem(WikiSourceStorageKey))
 )
@@ -98,6 +100,9 @@ watch(viewFilter, (filter) => {
 watch(goalViewMode, (mode) => {
   showAllGoalSteps.value = false
   localStorage.setItem(GoalViewModeStorageKey, mode)
+})
+watch(showStrategyRoute, (visible) => {
+  localStorage.setItem(StrategyRouteVisibleStorageKey, String(visible))
 })
 
 let cadenceTimer: ReturnType<typeof setInterval> | undefined
@@ -951,16 +956,31 @@ function equipmentKindText(
       </div>
     </section>
 
-    <QuestStrategyRoute
-      :recommendations="recommendations"
-      :available-map-keys="availableMapKeys"
-      :map-data-available="strategyMapDataAvailable"
-      :ship-type-counts="strategyShipTypeCounts"
-      :equipment-type-counts="strategyEquipmentTypeCounts"
-      :active-quest-count="activeCount"
-      :quest-capacity="svdata.parallelQuestCount"
-      :now="now"
-    />
+    <section class="quest-strategy-entry">
+      <button
+        type="button"
+        class="quest-strategy-visibility-toggle"
+        :aria-expanded="showStrategyRoute"
+        @click="showStrategyRoute = !showStrategyRoute"
+      >
+        {{
+          translateApp(
+            showStrategyRoute ? 'quest.strategy.visibility.hide' : 'quest.strategy.visibility.show'
+          )
+        }}
+      </button>
+      <QuestStrategyRoute
+        v-if="showStrategyRoute"
+        :recommendations="recommendations"
+        :available-map-keys="availableMapKeys"
+        :map-data-available="strategyMapDataAvailable"
+        :ship-type-counts="strategyShipTypeCounts"
+        :equipment-type-counts="strategyEquipmentTypeCounts"
+        :active-quest-count="activeCount"
+        :quest-capacity="svdata.parallelQuestCount"
+        :now="now"
+      />
+    </section>
 
     <div v-if="recommendations.length === 0" class="quest-guide-empty">
       {{ translateApp('quest.guide.empty.cache') }}

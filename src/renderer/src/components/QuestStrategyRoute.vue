@@ -17,6 +17,7 @@ import { translateApp } from '@renderer/store/global_setting'
 
 const SelectionStorageKey = 'questStrategyRouteSelection:v1'
 const PresetStorageKey = 'questStrategyRoutePreset:v1'
+const HiddenRecipeStorageKey = 'questStrategyHiddenRecipes:v1'
 
 const props = defineProps<{
   recommendations: readonly QuestGuideRecommendation[]
@@ -38,6 +39,19 @@ function storedSelection(): unknown {
   }
 }
 
+function storedHiddenRecipes(): string[] {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(HiddenRecipeStorageKey) ?? '[]')
+    return Array.isArray(value)
+      ? value.filter(
+          (item, index): item is string => typeof item === 'string' && value.indexOf(item) === index
+        )
+      : []
+  } catch {
+    return []
+  }
+}
+
 function normalizePreset(value: unknown): StrategyPreferencePreset {
   switch (value) {
     case 'deadline':
@@ -49,8 +63,14 @@ function normalizePreset(value: unknown): StrategyPreferencePreset {
   }
 }
 
+const hiddenRecipeIds = ref<string[]>(storedHiddenRecipes())
+const activeRecipes = computed(() =>
+  BundledQuestStrategyKnowledge.recipes.filter(
+    (recipe) => !hiddenRecipeIds.value.includes(recipe.id)
+  )
+)
 const candidates = computed(() =>
-  listQuestStrategyCandidates(BundledQuestStrategyKnowledge.recipes, props.recommendations)
+  listQuestStrategyCandidates(activeRecipes.value, props.recommendations)
 )
 const candidateQuestIds = computed(
   () => new Set(candidates.value.map((candidate) => candidate.questId))
@@ -92,6 +112,13 @@ watch(
 watch(preset, (value) => {
   localStorage.setItem(PresetStorageKey, value)
 })
+watch(
+  hiddenRecipeIds,
+  (value) => {
+    localStorage.setItem(HiddenRecipeStorageKey, JSON.stringify(value))
+  },
+  { deep: true }
+)
 
 const candidateById = computed(
   () => new Map(candidates.value.map((candidate) => [candidate.questId, candidate]))
@@ -105,7 +132,7 @@ const plan = computed(() => {
     capturedAt: generatedAt,
     selectedQuestIds: selectedQuestIds.value,
     recommendations: props.recommendations,
-    recipes: BundledQuestStrategyKnowledge.recipes,
+    recipes: activeRecipes.value,
     availableMapKeys: props.availableMapKeys,
     mapDataAvailable: props.mapDataAvailable,
     shipTypeCounts: props.shipTypeCounts,
@@ -116,7 +143,7 @@ const plan = computed(() => {
   return buildQuestStrategyRoutePlan({
     knowledgeVersion: BundledQuestStrategyKnowledge.version,
     generatedAt,
-    recipes: BundledQuestStrategyKnowledge.recipes,
+    recipes: activeRecipes.value,
     snapshot,
     preferences: {
       preset: preset.value,
@@ -133,6 +160,16 @@ function toggleQuest(questId: number): void {
   if (selectedQuestIds.value.length < QuestStrategyMaximumSelection) {
     selectedQuestIds.value = [...selectedQuestIds.value, questId]
   }
+}
+
+function hideRecipe(recipeId: string): void {
+  if (!hiddenRecipeIds.value.includes(recipeId)) {
+    hiddenRecipeIds.value = [...hiddenRecipeIds.value, recipeId]
+  }
+}
+
+function restoreRecipe(recipeId: string): void {
+  hiddenRecipeIds.value = hiddenRecipeIds.value.filter((value) => value !== recipeId)
 }
 
 function objectiveText(objective: StrategyQuestObjective): string {
@@ -249,6 +286,33 @@ function openEvidence(url: string): void {
             })
           }}
         </span>
+        <span>
+          {{
+            translateApp('quest.strategy.executionSummary', {
+              params: {
+                covered: plan.executionSummary.coveredQuestCount,
+                routes: plan.executionSummary.routeCount,
+                consolidated: plan.executionSummary.consolidatedRouteSetups
+              }
+            })
+          }}
+        </span>
+        <span>
+          {{
+            plan.executionSummary.availableQuestSlots === undefined
+              ? translateApp('quest.strategy.slotSummaryUnknown', {
+                  params: {
+                    required: plan.executionSummary.additionalQuestSlots
+                  }
+                })
+              : translateApp('quest.strategy.slotSummary', {
+                  params: {
+                    required: plan.executionSummary.additionalQuestSlots,
+                    available: plan.executionSummary.availableQuestSlots
+                  }
+                })
+          }}
+        </span>
       </div>
 
       <div v-if="plan.steps.length > 0" class="quest-strategy-steps">
@@ -353,6 +417,55 @@ function openEvidence(url: string): void {
             </ol>
           </section>
 
+          <details class="quest-strategy-score">
+            <summary>{{ translateApp('quest.strategy.score.title') }}</summary>
+            <dl>
+              <div>
+                <dt>{{ translateApp('quest.strategy.score.coCompletion') }}</dt>
+                <dd>{{ step.score.coCompletion }}</dd>
+              </div>
+              <div>
+                <dt>{{ translateApp('quest.strategy.score.deadline') }}</dt>
+                <dd>{{ step.score.deadlineUrgency }}</dd>
+              </div>
+              <div>
+                <dt>{{ translateApp('quest.strategy.score.prerequisite') }}</dt>
+                <dd>{{ step.score.prerequisiteProgress }}</dd>
+              </div>
+              <div>
+                <dt>{{ translateApp('quest.strategy.score.readiness') }}</dt>
+                <dd>{{ step.score.readiness }}</dd>
+              </div>
+              <div>
+                <dt>{{ translateApp('quest.strategy.score.preference') }}</dt>
+                <dd>{{ step.score.preferenceAdjustment }}</dd>
+              </div>
+              <div>
+                <dt>{{ translateApp('quest.strategy.score.unknownPenalty') }}</dt>
+                <dd>{{ step.score.unknownInputPenalty }}</dd>
+              </div>
+              <div>
+                <dt>{{ translateApp('quest.strategy.score.stalePenalty') }}</dt>
+                <dd>{{ step.score.staleEvidencePenalty }}</dd>
+              </div>
+            </dl>
+          </details>
+
+          <section
+            v-if="step.checks.some((check) => check.state === 'unknown')"
+            class="quest-strategy-confirmations"
+          >
+            <h4>{{ translateApp('quest.strategy.confirmations') }}</h4>
+            <ul>
+              <li
+                v-for="check in step.checks.filter((item) => item.state === 'unknown')"
+                :key="check.code"
+              >
+                {{ check.message }}
+              </li>
+            </ul>
+          </section>
+
           <ul v-if="step.warnings.length > 0" class="quest-strategy-warnings">
             <li v-for="warning in step.warnings" :key="warning">{{ warning }}</li>
           </ul>
@@ -367,6 +480,9 @@ function openEvidence(url: string): void {
               @click="openEvidence(evidence.url)"
             >
               {{ evidence.sourceLabel }}
+            </button>
+            <button type="button" @click="hideRecipe(step.recipeId)">
+              {{ translateApp('quest.strategy.recipe.hide') }}
             </button>
           </footer>
         </article>
@@ -390,10 +506,57 @@ function openEvidence(url: string): void {
           </ul>
         </div>
       </details>
+
+      <details v-if="plan.alternatives.length > 0" class="quest-strategy-alternatives">
+        <summary>
+          {{
+            translateApp('quest.strategy.alternatives', {
+              params: { count: plan.alternatives.length }
+            })
+          }}
+        </summary>
+        <article v-for="alternative in plan.alternatives" :key="alternative.recipeId">
+          <div>
+            <strong>{{ alternative.title }}</strong>
+            <small>
+              {{
+                translateApp('quest.strategy.alternativeMeta', {
+                  params: {
+                    map: alternative.mapKey,
+                    score: alternative.score.total,
+                    quests: alternative.coveredQuestIds.join(', ')
+                  }
+                })
+              }}
+            </small>
+          </div>
+          <button type="button" @click="hideRecipe(alternative.recipeId)">
+            {{ translateApp('quest.strategy.recipe.hide') }}
+          </button>
+        </article>
+      </details>
     </template>
     <p v-else-if="candidates.length > 0" class="quest-strategy-empty">
       {{ translateApp('quest.strategy.noSelection') }}
     </p>
+
+    <details v-if="hiddenRecipeIds.length > 0" class="quest-strategy-hidden">
+      <summary>
+        {{
+          translateApp('quest.strategy.hidden', {
+            params: { count: hiddenRecipeIds.length }
+          })
+        }}
+      </summary>
+      <button
+        v-for="recipeId in hiddenRecipeIds"
+        :key="recipeId"
+        type="button"
+        @click="restoreRecipe(recipeId)"
+      >
+        {{ translateApp('quest.strategy.recipe.restore', { params: { recipe: recipeId } }) }}
+      </button>
+    </details>
   </section>
 </template>
 
@@ -505,6 +668,37 @@ function openEvidence(url: string): void {
 .quest-strategy-step ol,
 .quest-strategy-step ul {
   margin: 0;
+}
+
+.quest-strategy-score dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.35rem 0.75rem;
+  margin: 0.5rem 0 0;
+}
+
+.quest-strategy-score dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.quest-strategy-alternatives > article {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.quest-strategy-alternatives > article > div {
+  display: grid;
+}
+
+.quest-strategy-hidden {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
 }
 
 .quest-strategy-step > footer {

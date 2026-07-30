@@ -9,6 +9,7 @@ export type StrategyCostLevel = 'low' | 'medium' | 'high'
 export type StrategyRiskLevel = 'low' | 'medium' | 'high'
 export type StrategyAirState = 'denial' | 'parity' | 'superiority' | 'supremacy'
 export type StrategyPreferencePreset = 'balanced' | 'deadline' | 'resource-saving' | 'risk-averse'
+export const StrategyMaximumSelectedQuests = 5
 
 export interface StrategyEvidence {
   sourceId: string
@@ -187,6 +188,13 @@ export interface StrategyRoutePlan {
   alternatives: StrategyRouteStep[]
   blocked: StrategyBlockedCandidate[]
   warnings: string[]
+  executionSummary: {
+    routeCount: number
+    coveredQuestCount: number
+    consolidatedRouteSetups: number
+    additionalQuestSlots: number
+    availableQuestSlots?: number
+  }
 }
 
 export interface BuildQuestStrategyRoutePlanInput {
@@ -617,6 +625,13 @@ export function normalizeStrategyLocalSnapshot(value: unknown): StrategyLocalSna
   if (record.schemaVersion !== 1) {
     throw new QuestStrategyValidationError('snapshot.schemaVersion', 'version 1 expected')
   }
+  const selectedQuestIds = uniqueIntegersAt(record.selectedQuestIds, 'snapshot.selectedQuestIds', 1)
+  if (selectedQuestIds.length > StrategyMaximumSelectedQuests) {
+    throw new QuestStrategyValidationError(
+      'snapshot.selectedQuestIds',
+      `at most ${StrategyMaximumSelectedQuests} items expected`
+    )
+  }
   const quests = arrayAt(record.quests, 'snapshot.quests', readQuestSnapshot)
   if (new Set(quests.map((quest) => quest.questId)).size !== quests.length) {
     throw new QuestStrategyValidationError('snapshot.quests', 'duplicate questId values')
@@ -647,7 +662,7 @@ export function normalizeStrategyLocalSnapshot(value: unknown): StrategyLocalSna
   return {
     schemaVersion: 1,
     capturedAt: timestampAt(record.capturedAt, 'snapshot.capturedAt'),
-    selectedQuestIds: uniqueIntegersAt(record.selectedQuestIds, 'snapshot.selectedQuestIds', 1),
+    selectedQuestIds,
     quests,
     mapAvailability,
     ...(record.shipTypeCounts === undefined
@@ -1029,6 +1044,16 @@ function compareSteps(a: StrategyRouteStep, b: StrategyRouteStep): number {
   )
 }
 
+function compareMarginalSteps(
+  a: StrategyRouteStep,
+  b: StrategyRouteStep,
+  coveredQuestIds: ReadonlySet<number>
+): number {
+  const aCoverage = a.coveredQuestIds.filter((questId) => !coveredQuestIds.has(questId)).length
+  const bCoverage = b.coveredQuestIds.filter((questId) => !coveredQuestIds.has(questId)).length
+  return bCoverage - aCoverage || compareSteps(a, b)
+}
+
 function validateBuildInput(input: BuildQuestStrategyRoutePlanInput): void {
   timestampAt(input.generatedAt, 'input.generatedAt')
   stringAt(input.knowledgeVersion, 'input.knowledgeVersion')
@@ -1071,32 +1096,46 @@ export function buildQuestStrategyRoutePlan(
   const coveredQuestIds = new Set<number>()
   const selectedAlternatives = new Map<string, string>()
   const steps: StrategyRouteStep[] = []
-  const alternatives: StrategyRouteStep[] = []
+  const remaining = [...eligible]
 
-  for (const candidate of eligible) {
-    const alternative = candidate.prerequisiteAlternative
-    if (
-      alternative &&
-      selectedAlternatives.has(alternative.groupId) &&
-      selectedAlternatives.get(alternative.groupId) !== alternative.optionId
-    ) {
-      alternatives.push(candidate)
-      continue
-    }
-    const addsCoverage = candidate.coveredQuestIds.some((questId) => !coveredQuestIds.has(questId))
-    if (!addsCoverage || steps.length >= input.preferences.maximumRoutes) {
-      alternatives.push(candidate)
-      continue
+  while (steps.length < input.preferences.maximumRoutes) {
+    const candidate = remaining
+      .filter((step) => {
+        const alternative = step.prerequisiteAlternative
+        return (
+          step.coveredQuestIds.some((questId) => !coveredQuestIds.has(questId)) &&
+          (!alternative ||
+            !selectedAlternatives.has(alternative.groupId) ||
+            selectedAlternatives.get(alternative.groupId) === alternative.optionId)
+        )
+      })
+      .sort((a, b) => compareMarginalSteps(a, b, coveredQuestIds))[0]
+    if (!candidate) {
+      break
     }
     steps.push(candidate)
     candidate.coveredQuestIds.forEach((questId) => coveredQuestIds.add(questId))
+    const alternative = candidate.prerequisiteAlternative
     if (alternative) {
       selectedAlternatives.set(alternative.groupId, alternative.optionId)
     }
+    remaining.splice(remaining.indexOf(candidate), 1)
   }
 
+  const selectedRecipeIds = new Set(steps.map((step) => step.recipeId))
+  const alternatives = eligible
+    .filter((step) => !selectedRecipeIds.has(step.recipeId))
+    .sort(compareSteps)
   const selectedQuestIds = [...snapshot.selectedQuestIds].sort((a, b) => a - b)
+  const sortedCoveredQuestIds = [...coveredQuestIds].sort((a, b) => a - b)
   const uncoveredQuestIds = selectedQuestIds.filter((questId) => !coveredQuestIds.has(questId))
+  const questById = new Map(snapshot.quests.map((quest) => [quest.questId, quest]))
+  const additionalQuestSlots = sortedCoveredQuestIds.filter(
+    (questId) => questById.get(questId)?.state !== 'active'
+  ).length
+  const availableQuestSlots = snapshot.questCapacity
+    ? snapshot.questCapacity.maximum - snapshot.questCapacity.active
+    : undefined
   const warnings = [
     ...(uncoveredQuestIds.length > 0
       ? [`${uncoveredQuestIds.length} 件の選択任務に利用可能な攻略手順がありません`]
@@ -1117,11 +1156,18 @@ export function buildQuestStrategyRoutePlan(
     knowledgeVersion: input.knowledgeVersion,
     inputFingerprint: `fnv1a32:${fnv1a32(JSON.stringify(stableValue(fingerprintInput)))}`,
     selectedQuestIds,
-    coveredQuestIds: [...coveredQuestIds].sort((a, b) => a - b),
+    coveredQuestIds: sortedCoveredQuestIds,
     uncoveredQuestIds,
     steps,
     alternatives,
     blocked,
-    warnings
+    warnings,
+    executionSummary: {
+      routeCount: steps.length,
+      coveredQuestCount: sortedCoveredQuestIds.length,
+      consolidatedRouteSetups: Math.max(0, sortedCoveredQuestIds.length - steps.length),
+      additionalQuestSlots,
+      ...(availableQuestSlots === undefined ? {} : { availableQuestSlots })
+    }
   }
 }

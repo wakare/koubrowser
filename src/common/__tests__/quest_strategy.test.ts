@@ -201,6 +201,12 @@ describe('quest strategy validation', () => {
       new QuestStrategyValidationError('snapshot.admiralName', 'unknown field')
     )
   })
+
+  it('bounds route planning to five selected quests', () => {
+    expect(() => normalizeStrategyLocalSnapshot(snapshot([101, 102, 103, 104, 105, 106]))).toThrow(
+      new QuestStrategyValidationError('snapshot.selectedQuestIds', 'at most 5 items expected')
+    )
+  })
 })
 
 describe('buildQuestStrategyRoutePlan', () => {
@@ -217,6 +223,37 @@ describe('buildQuestStrategyRoutePlan', () => {
     expect(first.uncoveredQuestIds).toEqual([])
     expect(first.inputFingerprint).toBe(second.inputFingerprint)
     expect(first.steps).toEqual(second.steps)
+    expect(first.executionSummary).toEqual({
+      routeCount: 1,
+      coveredQuestCount: 2,
+      consolidatedRouteSetups: 1,
+      additionalQuestSlots: 0,
+      availableQuestSlots: 3
+    })
+  })
+
+  it('prefers new quest coverage over a higher-scoring overlapping route', () => {
+    const first = recipe('a-first', [101, 102])
+    const widerRemainder = recipe('b-wide-remainder', [103, 104])
+    const urgentOverlap = recipe('c-urgent-overlap', [101, 103])
+    const localSnapshot = snapshot([101, 102, 103, 104], {
+      quests: [quest(101, { deadlineUrgency: 'urgent' }), quest(102), quest(103), quest(104)]
+    })
+
+    const plan = buildQuestStrategyRoutePlan({
+      knowledgeVersion: 'fixture-1',
+      generatedAt: GeneratedAt,
+      recipes: [urgentOverlap, widerRemainder, first],
+      snapshot: localSnapshot,
+      preferences: {
+        preset: 'balanced',
+        maximumRoutes: 2
+      }
+    })
+
+    expect(plan.steps.map((step) => step.recipeId)).toEqual(['a-first', 'b-wide-remainder'])
+    expect(plan.coveredQuestIds).toEqual([101, 102, 103, 104])
+    expect(plan.executionSummary.consolidatedRouteSetups).toBe(2)
   })
 
   it('checks quest slot capacity only for selected quests covered by a shared recipe', () => {
@@ -237,6 +274,10 @@ describe('buildQuestStrategyRoutePlan', () => {
     ).toMatchObject({
       state: 'pass',
       message: '必要な任務枠 1 件を確保できます'
+    })
+    expect(plan.executionSummary).toMatchObject({
+      additionalQuestSlots: 1,
+      availableQuestSlots: 1
     })
   })
 

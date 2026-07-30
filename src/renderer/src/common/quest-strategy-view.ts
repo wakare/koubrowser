@@ -1,6 +1,7 @@
 import type { QuestGuideRecommendation } from '@common/quest_guide'
 import {
   normalizeStrategyLocalSnapshot,
+  StrategyMaximumSelectedQuests,
   type QuestStrategyRecipe,
   type StrategyDeadlineUrgency,
   type StrategyLocalSnapshot,
@@ -8,7 +9,7 @@ import {
   type StrategyQuestSnapshot
 } from '@common/quest_strategy'
 
-export const QuestStrategyMaximumSelection = 5
+export const QuestStrategyMaximumSelection = StrategyMaximumSelectedQuests
 
 export interface QuestStrategyCandidate {
   questId: number
