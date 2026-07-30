@@ -45,7 +45,7 @@ const level = (() => {
   <span class="slot-item" :title="slotTitle">
     <img class="slot-img" src="../assets/img/slot/slot.png" />
     <span class="slot-border"></span>
-    <img loading="lazy" class="slot-type-img" v-if="hasSlot" :src="typeImg" />
+    <img loading="eager" class="slot-type-img" v-if="hasSlot" :src="typeImg" />
     <span class="slot-onslot" v-if="hasOnSlot" :class="{ 'has-alv': hasAlv }">{{ onslot }}</span>
     <img class="slot-alv-img" v-if="hasAlv" :src="alvImg" />
     <span class="slot-level" v-if="hasLevel" :class="{ max: isLevelMax }">{{ level }}</span>

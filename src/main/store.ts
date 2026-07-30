@@ -7,6 +7,7 @@ import { AppSetting, defaultAppSetting, InheritScoreList } from '@common/store'
 import { GlobalSetting } from '@common/global_setting'
 import { ApiMapInfoList, ApiMissionList, ApiQuestList } from '@common/kcs'
 import { type OptionSetting } from '@common/option'
+import { writeCoordinatedAccountFile } from '@main/account-file-writes'
 
 /**
  *
@@ -44,7 +45,7 @@ class AirbaseSpotStore {
   }
 
   private save_(): void {
-    fs.writeFile(
+    writeCoordinatedAccountFile(
       this.storePath,
       JSON.stringify(this.spots, undefined, ' '),
       'utf8',
@@ -184,7 +185,7 @@ class JsonStoreLoader<T extends Object> {
 
   save(data: T): void {
 
-    fs.writeFile(
+    writeCoordinatedAccountFile(
       this.storePath,
       JSON.stringify(data, undefined, ' '), 'utf8',
       (err: Error | null) => {
@@ -256,7 +257,7 @@ class JsonStore<T extends Object> {
       return
     }
     Object.assign(this.data, data)
-    fs.writeFile(
+    writeCoordinatedAccountFile(
       this.storePath,
       JSON.stringify(this.data, undefined, ' '), 'utf8',
       (err: Error | null) => {

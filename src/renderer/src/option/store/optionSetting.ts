@@ -1,8 +1,19 @@
 import { reactive, toRaw, watch, ref } from 'vue'
 import { type OptionData, type OptionSetting, type OptionViewInfo, defaultOptionSetting } from '@common/option'
+import {
+  createAppTranslator,
+  normalizeAppLocale,
+  type AppLocale
+} from '@common/localization'
 export const optionSetting: OptionSetting = reactive(
   defaultOptionSetting()
 )
+export const optionLocale = ref<AppLocale>('ja-JP')
+export const translateOption = createAppTranslator(() => optionLocale.value)
+
+export function setOptionLocale(locale: unknown): void {
+  optionLocale.value = normalizeAppLocale(locale)
+}
 
 // 画面から値が更新されないことから、OptionViewInfoはreactiveにしない
 export const optionViewInfo: OptionViewInfo = {
@@ -65,6 +76,7 @@ export function setOptionSettingWithPreventSave(data: OptionData) {
   syncHandle.resume()
 
   // set view info
+  setOptionLocale(data.locale)
   Object.assign(optionViewInfo, data.viewInfo)
 
   debug('set prevent save << preventSave:', preventSave, data)

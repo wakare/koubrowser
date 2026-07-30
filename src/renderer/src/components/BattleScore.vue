@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRaw } from 'vue'
+import { computed, ref, toRaw, watch } from 'vue'
 import { onMounted, onUnmounted } from 'vue'
 import Highcharts, { AxisLabelsFormatterContextObject, SeriesFlagsOptions, SeriesOptionsType, Tooltip, XAxisOptions, YAxisOptions } from 'highcharts/highstock'
 import noDataToDisplay from 'highcharts/modules/no-data-to-display'
@@ -25,6 +25,11 @@ import * as bs from '@renderer/common/battle-score'
 import ForecastChartImage from '@assets/img/forecast-chart.svg'
 import CheckImage from '@assets/img/check-only.svg'
 import { SessionStorageKeyName } from '@renderer/store/storage_key'
+import { useHighchartsResize } from './chart/use-highcharts-resize'
+import { withPanelLoadTimeout } from '@renderer/common/panel-load'
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
+import { getBattleScoreWeekdayText } from '@renderer/common/battle-equipment-view'
+import { escapeHtmlText } from '@renderer/common/localized-html'
 
 noDataToDisplay(Highcharts)
 
@@ -50,9 +55,12 @@ const debug = (...args: any[]) => {
 // 
 const abortController = new AbortController();
 const chartEl = ref<HTMLElement | null>(null);
-const isLoading = ref(true);
+const loadState = ref<'loading' | 'ready' | 'error'>('loading');
+const isLoading = computed(() => loadState.value === 'loading');
 let cbPort = 0
 let cbClearItemGet = 0
+let initialLoadVersion = 0;
+let dataLoadVersion = 0;
 const inheritScoreList: InheritScoreList = { inheritScores: [] };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -219,7 +227,9 @@ function updateQuestClearState(clears: QuestClears, states: { quarterly: Quest[]
     if (rec) {
       q.isCleared = true;
       q.clearDate = rec.date;
-      q.clearDateDisplay = rec.date.slice(0,10).replace(/-/g,'/')+' 済'
+      q.clearDateDisplay = translateApp('battleEquipment.score.completed', {
+        params: { date: rec.date.slice(0,10).replace(/-/g,'/') }
+      })
       q.progressDetail = undefined;
       if (rec.questName) {
         q.name = rec.questName;
@@ -227,7 +237,7 @@ function updateQuestClearState(clears: QuestClears, states: { quarterly: Quest[]
     } else {
       q.isCleared = false;
       q.clearDate = undefined;
-      q.clearDateDisplay = '未達成'
+      q.clearDateDisplay = translateApp('battleEquipment.score.notCompleted')
       q.progressDetail = undefined;
       const quest = quests.find((e) => e.no === q.no);
       if (quest) {
@@ -293,16 +303,20 @@ function updateEoClearState(clears: EoClearRecord[]) {
     if (rec) {
       q.isCleared = true;
       q.clearDate = rec.date;
-      q.clearDateDisplay = rec.date.slice(0,10).replace(/-/g,'/')+' 済'
+      q.clearDateDisplay = translateApp('battleEquipment.score.completed', {
+        params: { date: rec.date.slice(0,10).replace(/-/g,'/') }
+      })
     } else {
       q.isCleared = false;
       q.clearDate = undefined;
       const gi = getGuageInfo(q.mapId);
       debug('eo guage info mapId:', q.mapId, gi);
       if (gi) {
-        q.clearDateDisplay = `ゲージ ${gi.count}/${gi.countMax}`
+        q.clearDateDisplay = translateApp('battleEquipment.score.gauge', {
+          params: { count: gi.count, countMax: gi.countMax }
+        })
       } else {
-        q.clearDateDisplay = '未攻略'
+        q.clearDateDisplay = translateApp('battleEquipment.score.notCleared')
       }
     }
   });
@@ -324,6 +338,7 @@ const SeriesTypes = {
 type SeriesTypes = (typeof SeriesTypes)[keyof typeof SeriesTypes]
 
 let chart: Highcharts.Chart | undefined
+useHighchartsResize(chartEl, () => chart)
 
 interface ExpRecord {
   date: string;
@@ -550,11 +565,11 @@ function toChartInfo(
     if (isEoClear || isQuestClear) {
       let title = '';
       if (isEoClear && isQuestClear) {
-        title = 'EO/任務';
+        title = translateApp('battleEquipment.score.flag.eoQuest');
       } else if (isEoClear) {
-        title = 'EO';
+        title = translateApp('battleEquipment.score.flag.eo');
       } else if (isQuestClear) {
-        title = '任務';
+        title = translateApp('battleEquipment.score.flag.quest');
       }
       acc.push({
         x: ec-1,
@@ -684,9 +699,8 @@ function hexToRgba(hex: string, alpha = 1) {
 }
 
 const getWeekDayText = (year: number, month: number, date: number): string => {
-  const dowNames = ['日','月','火','水','木','金','土'];
   const dt = new Date(year, month - 1, date);
-  return dowNames[dt.getDay()];
+  return getBattleScoreWeekdayText(dt.getDay(), translateApp);
 }
 
 function shareTooltipFormatter(
@@ -726,7 +740,7 @@ function shareTooltipFormatter(
   // header
   const dow = getWeekDayText(info.year, info.month, date);
   let header = `<table><tr style="color:#ffffff;font-size:12.5px"><td style="margin-bottom:0px;>">`+
-    `${info.year}/${info.month}/${date} ${dow}</td>`;
+    `${info.year}/${info.month}/${date} ${escapeHtmlText(dow)}</td>`;
   header += `<td style="text-align:right;padding-left:8px;color:${headerValColor};vertical-align:middle;">`;
   if (diffStr) {
     header += diffStr;
@@ -767,7 +781,7 @@ function shareTooltipFormatter(
     const valColor = isForecast ? 'color:'+colorFromSeriesType(SeriesTypes.forecastTotal, true)+';' : '';
 
     return `<tr>
-      <td style="color:${color};padding-right:6px;padding-top:6px;">● ${p.series.name}</td>
+      <td style="color:${color};padding-right:6px;padding-top:6px;">● ${escapeHtmlText(p.series.name)}</td>
       <td style="text-align:right;padding-top:6px;${valColor}">${val}</td>
     </tr>`;
   }).join('');
@@ -806,16 +820,16 @@ function flagTooltipFormatter(
   // header
   const dow = getWeekDayText(info.year, info.month, date);
   tags.push(`<table><tr style="font-size:12.5px"><td colspan="2" style="padding-bottom:4px;>">`+
-    `${info.year}/${info.month}/${date} ${dow}</td></tr>`)
+    `${info.year}/${info.month}/${date} ${escapeHtmlText(dow)}</td></tr>`)
 
   // EO records
   if (eoRecords.length > 0) {
-    tags.push('<tr><td colspan="2" style="color:#fae54b;font-size:12.5px;padding-bottom:4px;">EO攻略報酬</td></tr>');
+    tags.push(`<tr><td colspan="2" style="color:#fae54b;font-size:12.5px;padding-bottom:4px;">${escapeHtmlText(translateApp('battleEquipment.score.reward.eo'))}</td></tr>`);
     eoRecords.sort((a, b) => a.mapId - b.mapId);
     eoRecords.forEach((rec) => {
       const name = bs.eoRates.find((er) => er.mapId === rec.mapId)?.name ?? `EO Map.${rec.mapId}`;
       tags.push(`<tr>
-        <td style="padding-right:6px;">・${name}</td>
+      <td style="padding-right:6px;">・${escapeHtmlText(name)}</td>
         <td style="text-align:right;">+${rec.rate}</td>
       </tr>`);
     });
@@ -825,9 +839,11 @@ function flagTooltipFormatter(
   if (questRecords.length > 0) {
 
     function formatQuestTags(records: QuestClearRecord[], isQuarterly: boolean) {
-      const prefix = isQuarterly ? 'クオータリー' : 'イヤーリー'
+      const rewardKey = isQuarterly
+        ? 'battleEquipment.score.reward.quarterly'
+        : 'battleEquipment.score.reward.yearly'
       tags.push(`<tr><td colspan="2" style="color:#e54bfa;font-size:12.5px;padding-top:8px;padding-bottom:4px;">`+
-      `${prefix}任務達成報酬</td></tr>`);
+      `${escapeHtmlText(translateApp(rewardKey))}</td></tr>`);
       records.forEach((rec) => {
         if (bs.isQuarterlyQuest(rec.no) !== isQuarterly) {
           return;
@@ -837,9 +853,13 @@ function flagTooltipFormatter(
         }
 
         const questInfo = bs.quarterlyQuests.find((q) => q.no === rec.no);
-        const questName = questInfo ? questInfo.name : `任務No.${rec.no}`;
+        const questName = questInfo
+          ? questInfo.name
+          : translateApp('battleEquipment.score.questNumber', {
+              params: { number: rec.no }
+            });
         tags.push(`<tr>
-          <td style="padding-right:6px;">・${questName}</td>
+          <td style="padding-right:6px;">・${escapeHtmlText(questName)}</td>
           <td style="text-align:right;">+${rec.rate}</td>
         </tr>`);
       });
@@ -847,11 +867,15 @@ function flagTooltipFormatter(
     function formatEtcQuestTags(records: QuestClearRecord[]) {
       const color = '#60fa4b';
       tags.push(`<tr><td colspan="2" style="color:${color};font-size:12.5px;padding-top:8px;padding-bottom:4px;">`+
-      `戦果任務達成報酬</td></tr>`);
+      `${escapeHtmlText(translateApp('battleEquipment.score.reward.quest'))}</td></tr>`);
       records.forEach((rec) => {
-        const questName = rec.questName ? rec.questName : `任務No.${rec.no}`;
+        const questName = rec.questName
+          ? rec.questName
+          : translateApp('battleEquipment.score.questNumber', {
+              params: { number: rec.no }
+            });
         tags.push(`<tr>
-          <td style="padding-right:6px;">・${questName}</td>
+          <td style="padding-right:6px;">・${escapeHtmlText(questName)}</td>
           <td style="text-align:right;">+${rec.rate}</td>
         </tr>`);
       });
@@ -912,7 +936,7 @@ function drawChart(info: ChartInfo, isNew: boolean) {
       backgroundColor: 'transparent',
     },
     lang: {
-      noData: '表示するデータがありません。',
+      noData: translateApp('common.noData'),
     },
     noData: {
       style: {
@@ -1056,7 +1080,8 @@ function drawChart(info: ChartInfo, isNew: boolean) {
             ((now.getDate() === date) && (now.getHours() >= 2)) || ((now.getHours() <= 2) && (now.getDate() == date+1)))
         const label = `${info.month}/${date}`;
         if (isToday) {
-          return label + '<br>本日'
+          return label + '<br>' +
+            escapeHtmlText(translateApp('battleEquipment.score.today'))
         }
         return label;
       },
@@ -1078,7 +1103,9 @@ function drawChart(info: ChartInfo, isNew: boolean) {
           // 最大値ラベルにタイトル追加
           // chartにタイトルがはみ出ないよう領域確保用ダミー文字を改行で表示
           if (this.value === this.axis.max) {
-            return '<span class="title-top-space">a</span><br>累計<br>'+this.value;
+            return '<span class="title-top-space">a</span><br>' +
+              escapeHtmlText(translateApp('battleEquipment.score.axis.total')) +
+              '<br>'+this.value;
           }
           // 下チャートとのタイトル被り解消
           if (this.value === this.axis.min) {
@@ -1110,7 +1137,9 @@ function drawChart(info: ChartInfo, isNew: boolean) {
           // title指定だと位置調整が難しいことから
           // 最大値ラベルにタイトル追加
           if (this.value === this.axis.max) {
-            return '当日<br>'+this.value;
+            return escapeHtmlText(
+              translateApp('battleEquipment.score.axis.daily')
+            ) + '<br>'+this.value;
           }
           return String(this.value);
         },
@@ -1140,7 +1169,7 @@ function drawChart(info: ChartInfo, isNew: boolean) {
     {
       type: 'spline',
       id: SeriesTypes.total,
-      name: '累計戦果',
+      name: translateApp('battleEquipment.score.series.total'),
       //data: info.cumulativeSumScoreLine,
       data: spliceScore,
       marker: {
@@ -1154,7 +1183,7 @@ function drawChart(info: ChartInfo, isNew: boolean) {
     {
       type: 'spline',
       id: SeriesTypes.forecastTotal,
-      name: '累計戦果(予測)',
+      name: translateApp('battleEquipment.score.series.totalForecast'),
       data: info.isForecastScore ? info.forecastScoreLine : [],
       dashStyle: 'Dash',
       marker: { 
@@ -1168,7 +1197,7 @@ function drawChart(info: ChartInfo, isNew: boolean) {
     { 
       type: 'column', 
       id: SeriesTypes.daily,
-      name: '当日戦果', 
+      name: translateApp('battleEquipment.score.series.daily'),
       data: info.scorePerDateColumn,
       color: seriasColors[1],
       yAxis: 1,
@@ -1176,7 +1205,7 @@ function drawChart(info: ChartInfo, isNew: boolean) {
     { 
       type: 'column', 
       id: SeriesTypes.forecastDaily,
-      name: '当日戦果(予測)', 
+      name: translateApp('battleEquipment.score.series.dailyForecast'),
       data: info.isForecastScore ? info.forecastScorePerDateColumn : [],
       color: hexToRgba(seriasColors[1], 0.50),
       //borderColor: hexToRgba(seriasColors[1], 0.9),
@@ -1189,7 +1218,7 @@ function drawChart(info: ChartInfo, isNew: boolean) {
     { 
       type: 'column', 
       id: SeriesTypes.eo,
-      name: 'EO戦果', 
+      name: translateApp('battleEquipment.score.series.eo'),
       data: info.eoClearRatesColumn,
       color: seriasColors[2],
       yAxis: 0,
@@ -1197,7 +1226,7 @@ function drawChart(info: ChartInfo, isNew: boolean) {
     { 
       type: 'column', 
       id: SeriesTypes.forecastEo,
-      name: 'EO戦果(予測)', 
+      name: translateApp('battleEquipment.score.series.eoForecast'),
       data: info.isForecastScore ? info.forecastEoClearRatesColumn : [],
       //color: seriasColors[2],
       color: hexToRgba(seriasColors[2], 0.50),
@@ -1210,7 +1239,7 @@ function drawChart(info: ChartInfo, isNew: boolean) {
     { 
       type: 'column', 
       id: SeriesTypes.quest,
-      name: '戦果任務', 
+      name: translateApp('battleEquipment.score.series.quest'),
       data: info.questClearRatesColumn,
       color: seriasColors[3],
       yAxis: 0,
@@ -1218,7 +1247,7 @@ function drawChart(info: ChartInfo, isNew: boolean) {
     { 
       type: 'column', 
       id: SeriesTypes.forecastQuest,
-      name: '戦果任務(予測)', 
+      name: translateApp('battleEquipment.score.series.questForecast'),
       data: info.isForecastScore ? info.forecastQuestClearRatesColumn : [],
       //color: seriasColors[3],
       color: hexToRgba(seriasColors[3], 0.50),
@@ -1804,7 +1833,8 @@ async function fetchFirstExpRecord(): Promise<PortRecord | null> {
   })
 }
 
-function dataFor(year: number, month: number, isNew: boolean) {
+async function dataFor(year: number, month: number, isNew: boolean): Promise<void> {
+  const requestVersion = ++dataLoadVersion;
   const expTask = fetchExpRecord(year, month);
   const eoClearTask = fetchEoClearRecord(year, month);
   const questClearTask = fetchQuestClearRecord(year, month);
@@ -1814,18 +1844,23 @@ function dataFor(year: number, month: number, isNew: boolean) {
   if (isNew) {
     taskContentsOk.value = false;
     taskContentsVisible.value = false;
+    loadState.value = 'loading';
   }
 
-  Promise.all([
-    expTask, 
-    eoClearTask, 
-    questClearTask, 
-    quarterQuestStateTask, 
-    yearlyQuestStateTask,
-    inheritScoreLoadTask
-  ]).then((results) => {
+  try {
+    const results = await withPanelLoadTimeout(
+      Promise.all([
+        expTask,
+        eoClearTask,
+        questClearTask,
+        quarterQuestStateTask,
+        yearlyQuestStateTask,
+        inheritScoreLoadTask
+      ]),
+      'Battle score request timed out'
+    );
     debug('all fetches completed. is aborted:', abortController.signal.aborted);
-    if (abortController.signal.aborted) {
+    if (abortController.signal.aborted || requestVersion !== dataLoadVersion) {
       debug('aborted, skipping processing');
       return;
     }
@@ -1856,7 +1891,7 @@ function dataFor(year: number, month: number, isNew: boolean) {
     if (isNew) {
       taskContentsOk.value = true;
     }
-    isLoading.value = false;
+    loadState.value = 'ready';
 
     // レンダリングが完了してから表示を戻す（ちらつき防止）
     // requestAnimationFrame(() => {
@@ -1867,11 +1902,30 @@ function dataFor(year: number, month: number, isNew: boolean) {
     // });
     if (isNew) {
       setTimeout(() => {
-        taskContentsVisible.value = true;
+        if (!abortController.signal.aborted && requestVersion === dataLoadVersion) {
+          taskContentsVisible.value = true;
+        }
       }, 50);
     }
-  });
+  } catch (error) {
+    if (abortController.signal.aborted || requestVersion !== dataLoadVersion) {
+      return;
+    }
+    console.error('Battle score load failed:', error);
+    loadState.value = 'error';
+  }
 }
+
+watch(
+  () => globalSetting.locale,
+  () => {
+    if (loadState.value === 'ready') {
+      void applyPeriod(false)
+      return
+    }
+    chart?.update({ lang: { noData: translateApp('common.noData') } })
+  }
+)
 
 
 function updateContent() {
@@ -1889,27 +1943,56 @@ function updateContent() {
   }
 }
 
-onMounted(() => {
+function registerUpdateCallbacks(): void {
+  if (!cbPort) {
+    cbPort = ApiCallback.set([Api.PORT_PORT, ()=> updateContent() ]);
+  }
+  if (!cbClearItemGet) {
+    cbClearItemGet = ApiCallback.set([Api.REQ_QUEST_CLEARITEMGET, () => updateContent() ]);
+  }
+}
+
+async function initializeBattleScore(): Promise<void> {
+  const requestVersion = ++initialLoadVersion;
+  dataLoadVersion += 1;
+  loadState.value = 'loading';
   debug('mounting, starting fetches');
 
-  // 期間アイテム構築
-  const firstExpTask = fetchFirstExpRecord();
-  firstExpTask.then((firstExpRecord) => {
-    if (abortController.signal.aborted) {
+  try {
+    const firstExpRecord = await withPanelLoadTimeout(
+      fetchFirstExpRecord(),
+      'Battle score initial request timed out'
+    );
+    if (abortController.signal.aborted || requestVersion !== initialLoadVersion) {
       debug('aborted, skipping building yearMonthList');
       return;
     }
     buildYearMonthList(firstExpRecord);
 
     // 最新月表示
-    applyPeriod(true);
+    await applyPeriod(true);
 
     // 以下のAPIで表示更新
     // ・ポートに戻った際
     // ・クエスト報酬入手
-    cbPort = ApiCallback.set([Api.PORT_PORT, ()=> updateContent() ]);
-    cbClearItemGet = ApiCallback.set([Api.REQ_QUEST_CLEARITEMGET, () => updateContent() ]);    
-  });
+    if (!abortController.signal.aborted && requestVersion === initialLoadVersion) {
+      registerUpdateCallbacks();
+    }
+  } catch (error) {
+    if (abortController.signal.aborted || requestVersion !== initialLoadVersion) {
+      return;
+    }
+    console.error('Battle score initialization failed:', error);
+    loadState.value = 'error';
+  }
+}
+
+function retryLoad(): void {
+  void initializeBattleScore();
+}
+
+onMounted(() => {
+  void initializeBattleScore();
 })
 
 onUnmounted(() => {
@@ -1996,14 +2079,14 @@ const selectedPeriod = computed(() => {
   return yearMonthList.value[indexYearMonth.value];
 });
 
-function applyPeriod(isNewChart: boolean) {
+function applyPeriod(isNewChart: boolean): Promise<void> {
   debug('applyPeriod:', indexYearMonth.value)
 
   const period = yearMonthList.value[indexYearMonth.value]
   const [yStr, mStr] = period.split('/')
   const y = Number(yStr)
   const m = Number(mStr)
-  dataFor(y, m, isNewChart);
+  return dataFor(y, m, isNewChart);
 }
 
 const selectableMonths = computed((): Array<Date> => {  
@@ -2234,11 +2317,17 @@ function unsetAllTempCleared() {
 </style>
 
 <template>
-  <div v-if="isLoading" class="battlescore-root is-loading">
-    <img class="blur-img" src="../assets/img/app/battlescore.png"/>
-    <div class="overlay-help"><span>戦果情報を読み込み中...</span></div>
-  </div>
-  <section else class="battlescore-root">
+  <section class="battlescore-root">
+    <div v-if="loadState !== 'ready'" class="battlescore-load-state">
+      <img class="blur-img" src="../assets/img/app/battlescore.png"/>
+      <div v-if="isLoading" class="overlay-help">
+        <span>{{ translateApp('status.battleScore.loading') }}</span>
+      </div>
+      <div v-else class="overlay-help is-error">
+        <span>{{ translateApp('status.battleScore.error') }}</span>
+        <button type="button" @click="retryLoad">{{ translateApp('common.retry') }}</button>
+      </div>
+    </div>
 
     <!-- 
       オーバーレイ:
@@ -2294,7 +2383,7 @@ function unsetAllTempCleared() {
                 custom
                 paddingless
               >
-                <span class="dropdown-title">表示年月の選択</span>
+                <span class="dropdown-title">{{ translateApp('battleEquipment.score.period.select') }}</span>
                 <b-datepicker
                     type="month"
                     size="is-small"
@@ -2311,7 +2400,7 @@ function unsetAllTempCleared() {
                     @change-year="changeYear"
                 >
                 <div class="container">
-                  <b-button label="今月" @click="monthSelectSetToday"/>
+                  <b-button :label="translateApp('battleEquipment.score.period.currentMonth')" @click="monthSelectSetToday"/>
                 </div>
                 </b-datepicker>
               </b-dropdown-item>
@@ -2331,13 +2420,13 @@ function unsetAllTempCleared() {
     <div class="tasks-content" v-if="taskContentsOk" :class="{ 'is-visible': taskContentsVisible }">
       <div v-if="isPeriodCurrentMonth" class="task-content is-progress">
         <div class="task-header"><span 
-          class="header-title">未達成 EO: {{ eoProgress.length }} 戦果任務: {{ questsProgress.length }}
+          class="header-title">{{ translateApp('battleEquipment.score.tasks.incomplete', { params: { eoCount: eoProgress.length, questCount: questsProgress.length } }) }}
           <transition name="fade-effect" appear>
             <span 
               class="temp-compted-ctl-buttons" 
               v-if="isForecastScore"><b-button 
-                @click="setAllTempCleared">すべて仮達成</b-button><b-button 
-                @click="unsetAllTempCleared">仮達成クリア</b-button></span>
+                @click="setAllTempCleared">{{ translateApp('battleEquipment.score.tasks.markAllTemporary') }}</b-button><b-button
+                @click="unsetAllTempCleared">{{ translateApp('battleEquipment.score.tasks.clearTemporary') }}</b-button></span>
           </transition></span></div>
 
         <div class="task-grid">
@@ -2356,7 +2445,7 @@ function unsetAllTempCleared() {
                     size="is-small" 
                     v-model="e.setTempCleared"
                     @update:modelValue="tempClearChanged"
-                  ><span class="button-text">仮達成</span></b-checkbox>
+                  ><span class="button-text">{{ translateApp('battleEquipment.score.tasks.temporary') }}</span></b-checkbox>
                 </div>
               </transition>
             </div>
@@ -2379,7 +2468,7 @@ function unsetAllTempCleared() {
                     size="is-small" 
                     v-model="e.setTempCleared"
                     @update:modelValue="tempClearChanged"
-                  ><span class="button-text">仮達成</span></b-checkbox>
+                  ><span class="button-text">{{ translateApp('battleEquipment.score.tasks.temporary') }}</span></b-checkbox>
                 </div>
               </transition>
             </div>
@@ -2388,7 +2477,7 @@ function unsetAllTempCleared() {
       </div>
 
       <div class="task-content is-cleared">
-        <div class="task-header">達成済 EO: {{ eoCleared.length }} 戦果任務: {{ questsCleared.length }}</div>
+        <div class="task-header">{{ translateApp('battleEquipment.score.tasks.completed', { params: { eoCount: eoCleared.length, questCount: questsCleared.length } }) }}</div>
 
         <div class="task-grid">
           <template v-for="e in eoCleared" :key="`eo-c-${e.mapId}`">
@@ -2422,12 +2511,14 @@ function unsetAllTempCleared() {
         <b-button 
           size="is-small" 
           outlined 
+          :title="translateApp('battleEquipment.score.inherited')"
+          :aria-label="translateApp('battleEquipment.score.inherited')"
           @click="showInheritScoreInput"
           :class="{ 'is-pressed': isInheritButtonPressed }"
           @mousedown="inheritButtonPressStart"
           @mouseup="inheritButtonPressEnd"
           @mouseleave="inheritButtonPressEnd">
-          <b-icon pack="fa" icon="plus"/><span>引継ぎ戦果</span></b-button>
+          <b-icon pack="fa" icon="plus"/><span class="button-text">{{ translateApp('battleEquipment.score.inherited') }}</span></b-button>
       </div>
     </transition>
 
@@ -2439,10 +2530,12 @@ function unsetAllTempCleared() {
         <b-button 
           size="is-small" 
           outlined 
+          :title="translateApp('battleEquipment.score.forecast')"
+          :aria-label="translateApp('battleEquipment.score.forecast')"
           @click="toggleForecastScore" 
           :disabled="!isCurrentMonthDataAvailable"
           :class="{ 'is-active': isForecastScore }">
-          <ForecastChartImage /><span class="button-text">戦果予測</span></b-button>
+          <ForecastChartImage /><span class="button-text">{{ translateApp('battleEquipment.score.forecast') }}</span></b-button>
       </div>
     </transition>
 
@@ -2452,21 +2545,21 @@ function unsetAllTempCleared() {
     <transition name="fade-effect" appear>
       <div class="input-inherit-score-content" v-if="isShowInheritScoreInput">
         <b-message
-          :title="'引継ぎ戦果'"
+          :title="translateApp('battleEquipment.score.inherited')"
           :type="'is-info'"
           :size="'is-small'"
           @close="isShowInheritScoreInput = false"
-          ><span class="help-text">入力した引継ぎ戦果値を該当月の累計戦果に加算します。<br>
-            ゲーム上戦果値と一致させたいなどで入力してください。<br>
-            入力例：<br>
-            当月が4月、
-            ゲーム上戦果値：350、累積戦果が320、当日戦果が0の場合、4月引継ぎ戦果に30を入力</span>
+          ><span class="help-text">{{ translateApp('battleEquipment.score.inherited.help.line1') }}<br>
+            {{ translateApp('battleEquipment.score.inherited.help.line2') }}<br>
+            {{ translateApp('battleEquipment.score.inherited.help.example') }}<br>
+            {{ translateApp('battleEquipment.score.inherited.help.exampleMonth') }}
+            {{ translateApp('battleEquipment.score.inherited.help.exampleValues') }}</span>
           <!-- 年 1〜12 月入力 -->
           <div class="inherit-input-wrap">
             <div class="inherit-grid">
               <template v-for="i in 12" :key="i">
                 <div class="inherit-item">
-                  <label class="month-label">{{ i }}月</label>
+                  <label class="month-label">{{ translateApp('battleEquipment.score.inherited.month', { params: { month: i } }) }}</label>
                   <input 
                     type="number" 
                     min="0" 
@@ -2479,10 +2572,10 @@ function unsetAllTempCleared() {
               </template>
             </div>
             <div class="inherit-actions">
-              <b-button size="is-small" type="is-primary" @click="applyInheritScores">保存</b-button>
-              <b-button size="is-small" @click="restoreInheritScores">復元</b-button>
-              <b-button size="is-small" @click="() => inheritScores = [0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0]">クリア</b-button>
-              <div class="inherit-year-label">年度: {{ inheritYear }}</div>
+              <b-button size="is-small" type="is-primary" @click="applyInheritScores">{{ translateApp('battleEquipment.score.inherited.save') }}</b-button>
+              <b-button size="is-small" @click="restoreInheritScores">{{ translateApp('battleEquipment.score.inherited.restore') }}</b-button>
+              <b-button size="is-small" @click="() => inheritScores = [0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0]">{{ translateApp('battleEquipment.score.inherited.clear') }}</b-button>
+              <div class="inherit-year-label">{{ translateApp('battleEquipment.score.inherited.year', { params: { year: inheritYear } }) }}</div>
             </div>
           </div>
         </b-message>

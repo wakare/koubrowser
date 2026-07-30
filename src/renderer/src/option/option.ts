@@ -3,10 +3,16 @@ import 'bulma/css/bulma.min.css'
 import '@assets/option.scss'
 
 import OptionApp from '@option/components/OptionApp.vue'
-import { setOptionSettingWithPreventSave } from '@option/store/optionSetting'
+import {
+  setOptionLocale,
+  setOptionSettingWithPreventSave
+} from '@option/store/optionSetting'
 import { type OptionData, defaultOptionSetting } from '@common/option'
 
 async function main(): Promise<void> {
+  const stopLocaleSync = window.optionApi.onLocaleChanged(setOptionLocale)
+  window.addEventListener('beforeunload', stopLocaleSync, { once: true })
+
   let data: OptionData
   let isError = false
   try {
@@ -14,6 +20,7 @@ async function main(): Promise<void> {
   } catch (error) {
     console.error('Failed to get current setting:', error)
     data = {
+      locale: 'ja-JP',
       setting: defaultOptionSetting(),
       viewInfo: {
         defaultCaptureSavePath: ''

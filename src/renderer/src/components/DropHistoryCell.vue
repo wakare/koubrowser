@@ -13,7 +13,6 @@ import {
   RecordCalculator, 
   AggregatedShipDrop, 
   AggregatedShipTypeDrop } from '@common/calc_record';
-import { getShipRareText, ShipTypeText } from '@common/locale';
 import { 
   ApiShipBacks, 
   MstShip, 
@@ -23,6 +22,12 @@ import {
  } from '@common/kcs';
 import { ShipDropRareType } from '@common/store';
 import { appSetting } from '@renderer/store/app_setting';
+import { withPanelLoadTimeout } from '@renderer/common/panel-load';
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
+import {
+  getDropShipRarityText,
+  getDropShipTypeText
+} from '@renderer/common/drop-view'
 
 /////////////////////////////////////////////////////////////////////////////////////
 // デバッグログ
@@ -143,6 +148,8 @@ const props = withDefaults(
 
 let currentFetchMapId = 0
 const recordFetching = ref(false);
+const hasRecordError = ref(false)
+let recordRequestId = 0
 
 const sumCounts = (data: AggregatedShipDrop): number => {
   return data.counts.reduce((acc, cur) => acc + cur, 0);
@@ -204,7 +211,7 @@ function updateShipTypePieData() {
   const filterRank = getRankGroup();
   calcedShipTypeDrop.forEach((el) => {
     const y = sumRankDropCounts(el.counts, filterRank);
-    datas.push({ name: ShipTypeText[el.type], y, type: el.type});
+    datas.push({ name: getDropShipTypeText(el.type, translateApp), y, type: el.type});
   });
   shipTypePieDatas.value = datas;
 }
@@ -219,7 +226,9 @@ function updateTableDatas() {
   calcedShipDrop.forEach((el) => {
     //debug('shipId:', el.shipId, 'data:', el.counts);
     const mst = el.shipId > 0 ? svdata.mstShip(el.shipId) : null;
-    const shipName = el.shipId > 0 ? (mst ? mst.api_name : '????') : 'ドロップ無し';
+    const shipName = el.shipId > 0
+      ? (mst ? mst.api_name : '????')
+      : translateApp('drop.common.noDrop');
     let aggType
     if (el.shipId >= 0) {
       aggType = mst ? RecordCalculator.getAggregateShipType(mst) : undefined;
@@ -285,7 +294,7 @@ const resetTableScrollPos = (): void => {
   }
 }
 
-function fetchRecord(spot: Spot) {
+async function fetchRecord(spot: Spot): Promise<void> {
   currentFetchMapId = toRecordMapId(props.area_id, props.area_no);
   const query: DropRecordQuery = {
     dbName: DbName.drop,
@@ -306,14 +315,22 @@ function fetchRecord(spot: Spot) {
 
   // save fetch map id,no
   const fetchingMapId = currentFetchMapId;
+  const requestId = ++recordRequestId
   recordFetching.value = true;
-  window.api.queryDb(query).then((queryReturn) => {
+  hasRecordError.value = false
+  try {
+    const queryReturn = await withPanelLoadTimeout(
+      window.api.queryDb(query),
+      'Drop history cell query timed out'
+    )
     const records = queryReturn as DropRecord[]
-    if (fetchingMapId !== currentFetchMapId) {
+    if (
+      requestId !== recordRequestId ||
+      fetchingMapId !== currentFetchMapId
+    ) {
       debug('drop record fetched but mapId changed. ignore the result for mapId:', fetchingMapId);
       return;
     }
-    recordFetching.value = false;
     debug('drop record queried. record count:', records.length, 'for mapId:', currentFetchMapId);
 
     // calc total drop count
@@ -329,10 +346,29 @@ function fetchRecord(spot: Spot) {
     pieKey.value++;
     updateTableDatas();
     resetTableScrollPos();
-  }).catch((error) => {
-    recordFetching.value = false;
+  } catch (error) {
+    if (
+      requestId !== recordRequestId ||
+      fetchingMapId !== currentFetchMapId
+    ) {
+      return
+    }
+    hasRecordError.value = true
     console.error('drop record query failed for mapId:', currentFetchMapId, 'error:', error);
-  });
+  } finally {
+    if (
+      requestId === recordRequestId &&
+      fetchingMapId === currentFetchMapId
+    ) {
+      recordFetching.value = false;
+    }
+  }
+}
+
+function retryFetchRecord(): void {
+  if (props.selected_spot) {
+    void fetchRecord(props.selected_spot)
+  }
 }
 
 watch(
@@ -345,8 +381,11 @@ watch(
       selected_spot
     )
     if (props.selected_spot) {
-      fetchRecord(props.selected_spot);
+      void fetchRecord(props.selected_spot);
     } else {
+      recordRequestId += 1
+      recordFetching.value = false
+      hasRecordError.value = false
       // clear data
       calcedShipDrop = [];
       calcedShipTypeDrop = [];
@@ -366,6 +405,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  recordRequestId += 1
   debug('drop history cell destroyed', props.area_id, props.area_no)
 })
 
@@ -374,7 +414,10 @@ const emptyText = computed<string>(() => {
     return '';//マップ上のセルを選択してください';
   }
   if (recordFetching.value) {
-    return '履歴を取得中です...';
+    return translateApp('status.dropHistory.loading');
+  }
+  if (hasRecordError.value) {
+    return translateApp('status.dropHistory.error');
   }
 
   const filterShipTypes = selectedShipTypes.value;
@@ -391,9 +434,9 @@ const emptyText = computed<string>(() => {
     isFiltered = true;
   }
   if (isFiltered) {
-    return '該当する履歴が見つかりません（フィルタ指定有り）';
+    return translateApp('status.dropHistory.emptyFiltered');
   }
-  return '該当する履歴が見つかりません';
+  return translateApp('status.dropHistory.empty');
 })
 
 const isShipTypePieEnable = computed<boolean>(() => {
@@ -435,11 +478,19 @@ function onRankFilterChanged() {
   updateTableDatas();
 }
 
+watch(
+  () => globalSetting.locale,
+  () => {
+    updateShipTypePieData()
+    updateTableDatas()
+  }
+)
+
 </script>
 
 <template>
   <section class="drop-history-cell-root">
-    <div v-if="!props.selected_spot" class="overlay-help">マップ上のセルを選択するとドロップ情報が表示されます</div>
+    <div v-if="!props.selected_spot" class="overlay-help">{{ translateApp('drop.cell.select') }}</div>
     <div v-if="!props.selected_spot" class="overlay-background"></div>
     <div class="columns">
       <div class="column" ref="tableColumn">
@@ -460,19 +511,19 @@ function onRankFilterChanged() {
           <b-table-column centered 
             header-class="drop-rare" sortable field="backs" cell-class="drop-rare">
             <template #header>
-              <span>レア度<span v-if="isSortedField('backs')" class="order-text">{{ getOrderText() }}</span></span>
+              <span>{{ translateApp('drop.column.rarity') }}<span v-if="isSortedField('backs')" class="order-text">{{ getOrderText() }}</span></span>
             </template>
             <template #default="props">
               <span :class="{
                 'is-rare': isShipRare(props.row.backs), 
                 'is-unique': isShipUnique(props.row.backs)          
-              }">{{ getShipRareText(props.row.backs) }}</span>
+              }">{{ getDropShipRarityText(props.row.backs, translateApp) }}</span>
             </template>
           </b-table-column>
 
           <b-table-column centered header-class="drop-ship-name" sortable field="shipName" cell-class="drop-ship-name">
             <template #header>
-              <span>艦名<span v-if="isSortedField('shipName')" class="order-text">{{ getOrderText() }}</span></span>
+              <span>{{ translateApp('drop.column.shipName') }}<span v-if="isSortedField('shipName')" class="order-text">{{ getOrderText() }}</span></span>
             </template>
             <template #default="props">
               <span :class="{
@@ -485,7 +536,7 @@ function onRankFilterChanged() {
 
           <b-table-column centered header-class="drop-rate" sortable field="rate" cell-class="drop-rate">
             <template #header>
-              <span>確率<span v-if="isSortedField('rate')" class="order-text">{{ getOrderText() }}</span></span>
+              <span>{{ translateApp('drop.column.rate') }}<span v-if="isSortedField('rate')" class="order-text">{{ getOrderText() }}</span></span>
             </template>
             <template #default="props">
               <span>{{ props.row.rate }}%</span>
@@ -494,8 +545,8 @@ function onRankFilterChanged() {
 
           <b-table-column centered header-class="drop-count" sortable field="count" cell-class="drop-count">
             <template #header>
-              <span>ドロップ数<span 
-                v-if="totalCount > 0">(合計: {{ totalCount }})</span><span v-if="isSortedField('count')" class="order-text">{{ getOrderText() }}</span></span>
+              <span>{{ translateApp('drop.column.dropCount') }}<span
+                v-if="totalCount > 0">({{ translateApp('drop.column.dropCountTotal', { params: { count: totalCount } }) }})</span><span v-if="isSortedField('count')" class="order-text">{{ getOrderText() }}</span></span>
             </template>
             <template #default="props">
               <span>{{ props.row.count }} (S:{{ props.row.counts[RankDropCountIndex.S] }} A:{{ props.row.counts[RankDropCountIndex.A] }} B:{{ props.row.counts[RankDropCountIndex.B] }})</span>
@@ -504,7 +555,7 @@ function onRankFilterChanged() {
 
           <b-table-column centered header-class="drop-rank" sortable field="rankOrder" cell-class="drop-rank">
             <template #header>
-              <span>勝利ランク<span v-if="isSortedField('rankOrder')" class="order-text">{{ getOrderText() }}</span></span>
+              <span>{{ translateApp('drop.column.winRank') }}<span v-if="isSortedField('rankOrder')" class="order-text">{{ getOrderText() }}</span></span>
             </template>
             <template #default="props">
               <span v-html="buildRankHtml(props.row)"></span>
@@ -513,6 +564,14 @@ function onRankFilterChanged() {
 
           <template #empty>
             <div class="has-text-centered">{{ emptyText }}</div>
+            <button
+              v-if="hasRecordError"
+              type="button"
+              class="drop-history-cell-retry"
+              @click="retryFetchRecord"
+            >
+              {{ translateApp('common.retry') }}
+            </button>
             <img v-if="!props.selected_spot" src="../assets/img/app/drop-history-cell-table.png"/>
           </template>
 
@@ -521,18 +580,18 @@ function onRankFilterChanged() {
       <div class="column">
         <div class="filter-container">
           <div class="filter-content rare">
-            <div class="filter-title">レア度</div>
+            <div class="filter-title">{{ translateApp('drop.filter.rarity') }}</div>
             <b-field class="filters" grouped>
               <b-checkbox-button size="is-small" v-model="rareGroup" native-value="unique" 
-                @change="onRareFilterChanged" type="is-checked">ユニーク</b-checkbox-button>
+                @change="onRareFilterChanged" type="is-checked">{{ translateApp('drop.filter.rarity.unique') }}</b-checkbox-button>
               <b-checkbox-button size="is-small" v-model="rareGroup" native-value="rare" 
-                @change="onRareFilterChanged" type="is-checked">レア</b-checkbox-button>
+                @change="onRareFilterChanged" type="is-checked">{{ translateApp('drop.filter.rarity.rare') }}</b-checkbox-button>
               <b-checkbox-button size="is-small" v-model="rareGroup" native-value="common" 
-                @change="onRareFilterChanged" type="is-checked">コモン</b-checkbox-button>
+                @change="onRareFilterChanged" type="is-checked">{{ translateApp('drop.filter.rarity.common') }}</b-checkbox-button>
             </b-field>
           </div>
           <div class="filter-content">
-            <div class="filter-title">勝利ランク</div>
+            <div class="filter-title">{{ translateApp('drop.filter.winRank') }}</div>
             <b-field class="filters" grouped>
               <b-checkbox-button size="is-small" v-model="rankGroup" native-value="S" 
                 @change="onRankFilterChanged" type="is-checked">S</b-checkbox-button>

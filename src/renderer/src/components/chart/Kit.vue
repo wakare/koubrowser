@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed, ref } from 'vue'
+import { onMounted, onUnmounted, computed, ref, watch } from 'vue'
 import type { KitChartData } from '@common/record'
 import ChartImage from '@assets/img/chart.svg'
 import moment from 'moment'
 import Highcharts from 'highcharts'
 import noDataToDisplay from 'highcharts/modules/no-data-to-display'
 import * as chartStuff from '@renderer/components/chart/stuff'
+import { useHighchartsResize } from '@renderer/components/chart/use-highcharts-resize'
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
 
 noDataToDisplay(Highcharts)
 
-// loadingはchart描画後に要素が削除されることから false に設定不要
-const isLoading = ref<boolean>(true);
+const chartEl = ref<HTMLElement | null>(null)
 
 const SeriesTypes = {
   fast_repair: 'fast-repair',
@@ -50,7 +51,38 @@ const series_state: SeriesStates = {
 let date_from = 0
 let date_to = 0
 
+const rangeSelectorButtons = (): Highcharts.RangeSelectorButtonsOptions[] => [
+  { type: 'hour', count: 6, text: '6H' },
+  { type: 'hour', count: 12, text: '12H' },
+  { type: 'day', count: 1, text: translateApp('operation.resource.range.day') },
+  { type: 'week', count: 1, text: translateApp('operation.resource.range.week') },
+  { type: 'month', count: 1, text: translateApp('operation.resource.range.month') },
+  {
+    type: 'month',
+    count: 3,
+    text: translateApp('operation.resource.range.threeMonths')
+  },
+  {
+    type: 'month',
+    count: 6,
+    text: translateApp('operation.resource.range.halfYear')
+  },
+  { type: 'ytd', text: translateApp('operation.resource.range.yearToDate') },
+  {
+    type: 'year',
+    count: 1,
+    text: translateApp('operation.resource.range.year')
+  },
+  { type: 'all', text: translateApp('operation.resource.range.all') }
+]
+
 function drawChart(datas: KitChartData): void {
+  if (!chartEl.value) {
+    return
+  }
+
+  chart?.destroy()
+  chart = undefined
   console.log('kit record len', datas[0].length);
   
   function yAxisFormatter(
@@ -80,19 +112,6 @@ function drawChart(datas: KitChartData): void {
       year: 'year' },
     labels: { formatter: xAxisFormatter },
   }
-  const zoom_buttons: Highcharts.RangeSelectorButtonsOptions[] = [
-    { type: 'hour', count: 6, text: '6H' },
-    { type: 'hour', count: 12, text: '12H' },
-    { type: 'day', count: 1, text: '日' },
-    { type: 'week', count: 1, text: '週' },
-    { type: 'month', count: 1, text: '月' },
-    { type: 'month', count: 3, text: '3ヶ月' },
-    { type: 'month', count: 6, text: '半年' },
-    { type: 'ytd', text: '今年' },
-    { type: 'year', count: 1, text: '1年' },
-    { type: 'all', text: '全て' },
-  ]
-
   function TooltipFormatter(
     this: Highcharts.TooltipFormatterContextObject, 
     tooltip: Highcharts.Tooltip): (false|string|Array<(string|null|undefined)>|null|undefined) {
@@ -127,9 +146,9 @@ function drawChart(datas: KitChartData): void {
   }
 
   const options: Highcharts.Options = {
-    chart: { renderTo: 'chart-kit', backgroundColor: 'transparent', height: 400, spacingTop: 61 },
+    chart: { renderTo: chartEl.value, backgroundColor: 'transparent', height: 400, spacingTop: 61 },
     lang: {
-      noData: '表示するデータがありません。',
+      noData: translateApp('common.noData'),
     },
     noData: {
       style: {
@@ -143,7 +162,7 @@ function drawChart(datas: KitChartData): void {
       },
     },
     title: {},
-    rangeSelector: { selected: 4, inputEnabled: false, buttonPosition: { align: 'left' }, buttons: zoom_buttons, labelStyle: { display: 'none' }, floating: true, x: 0, y: -50 },
+    rangeSelector: { selected: 4, inputEnabled: false, buttonPosition: { align: 'left' }, buttons: rangeSelectorButtons(), labelStyle: { display: 'none' }, floating: true, x: 0, y: -50 },
     credits: { enabled: false },
     xAxis,
     yAxis,
@@ -159,6 +178,20 @@ function drawChart(datas: KitChartData): void {
 
   chart = Highcharts.stockChart(options);
 }
+
+watch(
+  () => globalSetting.locale,
+  () => {
+    chart?.update({
+      lang: { noData: translateApp('common.noData') },
+      rangeSelector: {
+        buttons: rangeSelectorButtons()
+      }
+    })
+  }
+)
+
+useHighchartsResize(chartEl, () => chart)
 
 function setMinMaxData(ctx: XAxisLabelContext): void {
   const findProcessedYData = (ctx: any, type: string): Array<number> | undefined => {
@@ -239,13 +272,7 @@ onUnmounted(() => {
 <template>
   <div class="kit-chart top-line">
     <div class="chart-container">
-      <div class="chart-content" id="chart-kit">
-        <b-loading
-          :is-full-page="false"
-          v-model="isLoading"
-          :can-cancel="false"
-        ></b-loading>
-      </div>
+      <div class="chart-content" ref="chartEl"></div>
       <div class="chart-material-buttons">
         <button @click="toggleSeries('fast-repair')" class="fuel" :class="{ 'is-visible': isSeriesFastRepairVisible }"><span class="s-icon titlebar-fast-repair"><span class="line-word"></span></span></button>
         <button @click="toggleSeries('fast-build')" class="bull" :class="{ 'is-visible': isSeriesFastBuildVisible }"><span class="s-icon titlebar-fast-build"><span class="line-word"></span></span></button>
@@ -253,8 +280,11 @@ onUnmounted(() => {
         <button @click="toggleSeries('remodel-kit')" class="buxite" :class="{ 'is-visible': isSeriesRemodelKitVisible }"><span class="s-icon titlebar-remodel-kit"><span class="line-word"></span></span></button>
       </div>
       <div v-if="isValidDateRange" class="chart-material-detail">
-        <ChartImage class="chart-image" /> 資材チャート: {{ dateFrom }} ～ {{ dateTo }}
-        <span :class="{ 'is-visible': isAnySeriesVisible }">増減 </span>
+        <ChartImage class="chart-image" />
+        {{ translateApp('operation.resource.chart.kit') }} {{ dateFrom }} ～ {{ dateTo }}
+        <span :class="{ 'is-visible': isAnySeriesVisible }">{{
+          translateApp('operation.resource.diff')
+        }} </span>
         <span class="mr-1" :class="diffFastRepairClass"><span class="s-icon titlebar-fast-repair">{{ fastRepairDiff }}</span></span>
         <span class="mr-1" :class="diffFastBuildClass"><span class="s-icon titlebar-fast-build">{{ fastBuildDiff }}</span></span>
         <span class="mr-1" :class="diffBuildKitClass"><span class="s-icon titlebar-build-kit">{{ buildKitDiff }}</span></span>

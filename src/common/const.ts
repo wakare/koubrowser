@@ -19,7 +19,7 @@ export class Const {
   static readonly InGameAssistDisplayRequirementHeight = 960
   static readonly GameWidth = 1200
   static readonly GameHeight = 720
-  static readonly GameBarHeight = 40
+  static readonly GameBarHeight = 0
   static readonly TitleBarHeight = 32
   static readonly MaxMedals = 33
   static readonly AssistBottomHeight = 202 - 34
@@ -27,7 +27,9 @@ export class Const {
   static readonly AppUserModelId = 'com.koubrowser.app'
   static readonly ArgIsAssist = '--is-assist'
   static readonly ArgIsTestMode = '--is-test-mode'
+  static readonly ArgIsLayoutFixture = '--is-layout-fixture'
+  static readonly ArgPseudoLocale = '--pseudo-locale'
   static readonly ArgIsInitMuted = '--is-init-muted'
   static readonly ArgAppLaunchId = '--app-launch-id' 
-  static readonly GamePageUrl = 'https://www.dmm.com/netgame/feature/kancolle.html'
+  static readonly GamePageUrl = 'https://play.games.dmm.com/game/kancolle'
 }

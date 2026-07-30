@@ -11,6 +11,14 @@ const debug = (...args: any[]) => {
   if (DEBUG) console.info("[Intake]", ...args);
 };
 
+export const IntakeQuitRequestTimeoutMs = 5_000
+
+export type IntakeQuitResult = 'disabled' | 'empty' | 'sent' | 'failed' | 'timed-out'
+
+export interface IntakeQuitOptions {
+  readonly timeoutMs?: number
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 
 const toISOForDt = (dt: string): string =>{
@@ -31,7 +39,7 @@ const toDropItem = (record: DropRecord): DropItem => {
   }
 }
 
-function toDropData(record: DropRecord): DropData {
+export function toDropData(record: DropRecord): DropData {
   return {
     v: 1,
     mid: record.mapId,
@@ -64,6 +72,7 @@ export class Intaker {
   static isfailureState = false;
   static onQuitPerformed = false;
   static isEnabled = true;
+  private static scheduledTimers = new Set<ReturnType<typeof setTimeout>>()
 
   private static get intervalMs(): number {
     if (this.isfailureState) {
@@ -86,6 +95,7 @@ export class Intaker {
     this.isEnabled = enabled;
     debug('set enable.', 'enable:', Intaker.isEnabled, 'arg:', enabled, 'changed:', changed);
     if (!enabled) {
+      this.cancelScheduledWork()
       this.clearDropData();
       return;
     }
@@ -101,6 +111,24 @@ export class Intaker {
     this.isfailureState = false;
   }
 
+  private static scheduleWork(callback: () => void, delayMs: number): void {
+    if (this.onQuitPerformed) {
+      return
+    }
+    const timer = setTimeout(() => {
+      this.scheduledTimers.delete(timer)
+      callback()
+    }, delayMs)
+    this.scheduledTimers.add(timer)
+  }
+
+  private static cancelScheduledWork(): void {
+    for (const timer of this.scheduledTimers) {
+      clearTimeout(timer)
+    }
+    this.scheduledTimers.clear()
+  }
+
   private static retry(): boolean {
 
     if (this.isfailureState) {
@@ -111,7 +139,7 @@ export class Intaker {
     // retry
     this.counter++;
     if (this.counter < this.maxRetry) {
-      setTimeout(() => {
+      this.scheduleWork(() => {
         debug(`Intaker retry dropData... attempt #${this.counter}, ${new Date()}`);
         this.doIntakeDrop();
       }, this.intakeRetryIntervalMs);
@@ -189,8 +217,8 @@ export class Intaker {
   }
 
   static setIntakeSchedule(): void {
-    setTimeout(() => {
-      if (!this.isEnabled) {
+    this.scheduleWork(() => {
+      if (this.onQuitPerformed || !this.isEnabled) {
         this.clearDropData();
         return;
       }
@@ -207,30 +235,52 @@ export class Intaker {
     }, this.intervalMs);
   }
 
-  static doIntakeDropOnQuit() : Promise<void> {
+  static async doIntakeDropOnQuit(
+    options: IntakeQuitOptions = {}
+  ): Promise<IntakeQuitResult> {
     this.onQuitPerformed = true;
+    this.cancelScheduledWork()
+    const timeoutMs = options.timeoutMs ?? IntakeQuitRequestTimeoutMs
+    if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) {
+      throw new RangeError('Intake quit timeout must be a positive finite number')
+    }
 
-    // 終了時の送信は、すべてではなく最大数分だけ送信する
-    // すべて送信できない場合、サーバ障害時が発生している
-    return new Promise((resolve) => {
-      if (!this.isEnabled) {
-        this.clearDropData();
-        resolve();
-        return;
+    // 終了時の送信は最大件数と短い締切を設ける。
+    // 外部 API、proxy、security software の停止で単一 instance lock を保持し続けない。
+    if (!this.isEnabled) {
+      this.clearDropData();
+      return 'disabled'
+    }
+    debug('sendintaker on quit. length:', this.datas.length, 'max:', this.maxCount);
+    if (this.datas.length === 0) {
+      return 'empty'
+    }
+
+    this.intaking = this.datas.splice(0, this.maxCount);
+    const controller = new AbortController()
+    let timeout: ReturnType<typeof setTimeout> | undefined
+    const timedOut = new Promise<'timed-out'>((resolve) => {
+      timeout = setTimeout(() => {
+        resolve('timed-out')
+        controller.abort()
+      }, timeoutMs)
+    })
+    const request = drop(this.intaking, { signal: controller.signal })
+      .then((responses: dropResponse): IntakeQuitResult => {
+        debug('Intaker dropData responses status on quit:', responses.status);
+        return 'sent'
+      })
+      .catch((error: any): IntakeQuitResult => {
+        debug('Intaker dropData error on quit:', error);
+        return 'failed'
+      })
+
+    try {
+      return await Promise.race([request, timedOut])
+    } finally {
+      if (timeout) {
+        clearTimeout(timeout)
       }
-      debug('sendintaker on quit. length:', this.datas.length, 'max:', this.maxCount);
-      if (this.datas.length > 0) {
-        this.intaking = this.datas.splice(0, this.maxCount);
-        drop(this.intaking).then((responses: dropResponse) => {
-          debug('Intaker dropData responses status on quit:', responses.status);
-          resolve();
-        }).catch((error: any) => {
-          debug('Intaker dropData error on quit:', error);
-          resolve();
-        });
-      } else {
-        resolve();
-      }
-    });
+    }
   }
 }

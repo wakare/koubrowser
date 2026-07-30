@@ -17,19 +17,23 @@ import {
   ApiDeckPortId
 } from '@common/kcs'
 import { svdata } from '@renderer/store/svdata'
-import {
-  SokuText,
-  FACutinText,
-  AACutinText,
-  SenseiTaisenText,
-  isMaxYCutins,
-  getYCutinText,
-  getYSCutinText
-} from '@common/locale'
+import { isMaxYCutins } from '@common/locale'
 import ShipBanner from '@renderer/components/ShipBanner.vue'
+import ShipHpGauge from '@renderer/components/ShipHpGauge.vue'
 import { computed, ref, onMounted } from 'vue'
 import { MathUtil } from '@common/math'
 import { RUtil } from '@renderer/util'
+import { translateApp } from '@renderer/store/global_setting'
+import {
+  escapeHtmlText,
+  getOperationAACutInText,
+  getOperationFACutInText,
+  getOperationNightAirCutInText,
+  getOperationNightCutInText,
+  getOperationRangeText,
+  getOperationSenseiTaisenText,
+  getOperationSpeedText
+} from '@renderer/common/operation-view'
 
 interface TKEntry {
   ship: ShipInfo
@@ -119,9 +123,9 @@ const shipsData = computed<DeckShip[]>(() => {
     fual_per: Math.floor((ship.api.api_fuel / ship.mst.api_fuel_max) * 100.0),
     bull_per: Math.floor((ship.api.api_bull / ship.mst.api_bull_max) * 100.0),
     sokuClass: RUtil.sokuClass(ship.api),
-    soku_text: SokuText[ship.api.api_soku / 5] ?? '',
+    soku_text: getOperationSpeedText(ship.api.api_soku / 5, translateApp),
     syateiClass: RUtil.syateiClass(ship),
-    syatei_text: RUtil.syateiText(ship),
+    syatei_text: getOperationRangeText(ship.api.api_leng, translateApp),
     hitClass: RUtil.condClass(ship.api),
     hit: MathUtil.floor(KcsUtil.shipHit(ship).hit, 0),
     evClass: RUtil.evClass(ship),
@@ -144,12 +148,17 @@ const tktipHtml = computed<string>(() => {
   const tk = parseInt(tkHoverTk.value) as TKCutin
   const ship = shipsData.value.find((s) => s.ship.api.api_id === shipId)
   if (!ship || !tk) return ''
-  const header = `Lv: ${ship.ship.api.api_lv} ${ship.ship.mst.api_name}`
+  const header = escapeHtmlText(`Lv: ${ship.ship.api.api_lv} ${ship.ship.mst.api_name}`)
   const tktag = TipTKCiTag({ entry: [], type: [tk] })
   const src = RUtil.shipBannerImg(ship.ship.api.api_ship_id, false, true)
   const rate = MathUtil.floor(KcsUtil.rateTK(tk) * 100.0, 1)
   const tkconst = TKCutinConsts[tk]
-  return `<div>${header}</div><img class="img" src="${src}"><div>${tktag} ${rate}%</div><div>固定:${tkconst.kotei} 変動:${tkconst.hendou}</div>`
+  const fixedVariable = escapeHtmlText(
+    translateApp('operation.deck.antiAirCutIn.fixedVariable', {
+      params: { fixed: tkconst.kotei, variable: tkconst.hendou }
+    })
+  )
+  return `<div>${header}</div><img class="img" src="${src}"><div>${tktag} ${rate}%</div><div>${fixedVariable}</div>`
 })
 
 const tkrateHover = (event: Event): void => {
@@ -204,9 +213,11 @@ const tkRates = computed<TKRate[]>(() => {
 const tkrateTotal = computed<number>(() => tkRates.value.reduce((acc, r) => acc + r.rate, 0.0))
 const tknorateText = computed<string>(() => {
   const total = tkrateTotal.value
-  if (total === 0) return '対空CIなし'
+  if (total === 0) return translateApp('operation.deck.antiAirCutIn.none')
   const v = MathUtil.floor((1.0 - total) * 100.0, 1)
-  return `${v <= 12.0 ? '' : '不発: '}${v}%`
+  return v <= 12.0
+    ? translateApp('operation.deck.antiAirCutIn.rate', { params: { rate: v } })
+    : translateApp('operation.deck.antiAirCutIn.failure', { params: { rate: v } })
 })
 const tknorateStyle = computed(() => ({
   '--left': `${tkrateTotal.value}`,
@@ -216,8 +227,11 @@ const totalTkrateText = computed<string>(() => MathUtil.floor(tkrateTotal.value 
 const tkrateStyle = (rate: TKRate) => ({ '--left': `${rate.left}`, '--width': `${rate.rate}` })
 const tkrateText = (rate: TKRate): string => {
   const v = MathUtil.floor(rate.rate * 100.0, 1)
-  const prefix = v > 12.0 ? `${rate.tk}種: ` : ''
-  return `${prefix}${v}%`
+  return v > 12.0
+    ? translateApp('operation.deck.antiAirCutIn.typeRate', {
+        params: { type: rate.tk, rate: v }
+      })
+    : translateApp('operation.deck.antiAirCutIn.rate', { params: { rate: v } })
 }
 const deckKTBText = computed(() => KcsUtil.shipsSeiku(shipsData.value.map((s) => s.ship)))
 
@@ -298,7 +312,11 @@ const toNaNTxt = (v: number): string => {
 
 const THCutinTag = (ships: ShipInfoSp[], st: THCutinState): string => {
   const kongos: THCutin[] = [THCutin.Kongou, THCutin.Hiei, THCutin.Haruna, THCutin.Kirisima];
-  const name = kongos.includes(st.type)  ? '夜戦突撃' : '特殊砲撃'
+  const name = escapeHtmlText(
+    kongos.includes(st.type)
+      ? translateApp('operation.deck.specialAttack.night')
+      : translateApp('operation.deck.specialAttack')
+  )
   const rate = KcsUtil.rateTH(st, ships)
   const rate_v = MathUtil.floor((rate?.rate ?? NaN) * 100.0, 1)
   return `<span class="sp"><span class="tag ${st.enable ? 'is-danger is-tokuhou' : 'is-disable'} ">${name}</span><span class="sp-rate">${toNaNTxt(rate_v)}%</span></span>`
@@ -306,7 +324,12 @@ const THCutinTag = (ships: ShipInfoSp[], st: THCutinState): string => {
 
 const TKCutinTag = (tk: TKCutinState): string => {
   const rates = tk.type.map((el) => toNaNTxt(MathUtil.floor(KcsUtil.rateTK(el) * 100.0, 1)) + '%')
-  return `<span class="sp"><span class="tag is-info">${tk.type.join('/')}種 対空CI</span><span class="sp-rate">${rates.join(' ')}</span></span>`
+  const label = escapeHtmlText(
+    translateApp('operation.deck.antiAirCutIn.types', {
+      params: { types: tk.type.join('/') }
+    })
+  )
+  return `<span class="sp"><span class="tag is-info">${label}</span><span class="sp-rate">${rates.join(' ')}</span></span>`
 }
 
 const SenseiTaisenTag = (st: SenseiTaisenState): string => {
@@ -315,12 +338,12 @@ const SenseiTaisenTag = (st: SenseiTaisenState): string => {
     issmall = 'small'
   }
   return `<span class="sp">`+
-    `<span class="${issmall} tag ${st.enable ? 'is-info' : 'is-disable'}">${SenseiTaisenText[st.type]}</span>`+
+    `<span class="${issmall} tag ${st.enable ? 'is-info' : 'is-disable'}">${escapeHtmlText(getOperationSenseiTaisenText(st.type, translateApp))}</span>`+
     `<span class="sp-rate">&nbsp;</span></span>`
 }
 
 const SenseiRaigekiTag = (st: SenseiRaigekiState): string => {
-  return '<span class="sp"><span class="tag is-info">先制雷撃</span><span class="sp-rate">&nbsp;</span></span>'
+  return `<span class="sp"><span class="tag is-info">${escapeHtmlText(translateApp('operation.deck.tag.openingTorpedo'))}</span><span class="sp-rate">&nbsp;</span></span>`
 }
 
 const FunsindanmakuTag = (ship: ShipInfoSp): string => {
@@ -329,7 +352,7 @@ const FunsindanmakuTag = (ship: ShipInfoSp): string => {
   if (fdrate) {
     rate_txt = toNaNTxt(MathUtil.floor(fdrate.rate * 100, 1))
   }
-  return `<span class="sp"><span class="small tag is-primary">噴弾</span><span class="sp-rate">${rate_txt}%</span></span>`
+  return `<span class="sp"><span class="small tag is-primary">${escapeHtmlText(translateApp('operation.deck.tag.antiAirRocket'))}</span><span class="sp-rate">${rate_txt}%</span></span>`
 }
 
 const YateiTag = (ship: ShipInfoSp, ships: ShipInfoSp[]): string => {
@@ -352,9 +375,9 @@ const YateiTag = (ship: ShipInfoSp, ships: ShipInfoSp[]): string => {
   let title = ''
   if (rate && !rate.enable) {
     disableCls = 'is-disable'
-    title = '艦隊に制空戦装備なし'
+    title = escapeHtmlText(translateApp('operation.deck.noAirControlEquipment'))
   }
-  return `<span class="sp"><span class="small tag is-dark ${disableCls}" title="${title}">夜偵</span><span class="sp-rate">${rate_txt}%</span></span>`
+  return `<span class="sp"><span class="small tag is-dark ${disableCls}" title="${title}">${escapeHtmlText(translateApp('operation.deck.tag.nightScout'))}</span><span class="sp-rate">${rate_txt}%</span></span>`
 }
 
 const FACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): string => {
@@ -372,7 +395,7 @@ const FACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): s
     })
     const total_kakuho = MathUtil.floor(MathUtil.totalRate(calc_rates[0]).total * 100, 1)
     const total_yuusei = MathUtil.floor(MathUtil.totalRate(calc_rates[1]).total * 100, 1)
-    total_html = `<span class="sp"><span class="tag is-danger">合計</span><span class="sp-rate">${toNaNTxt(total_kakuho)}%/${toNaNTxt(total_yuusei)}%</span></span>`
+    total_html = `<span class="sp"><span class="tag is-danger">${escapeHtmlText(translateApp('operation.common.total'))}</span><span class="sp-rate">${toNaNTxt(total_kakuho)}%/${toNaNTxt(total_yuusei)}%</span></span>`
   }
 
   let html;
@@ -382,7 +405,7 @@ const FACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): s
         acc.push('</span>')
         acc.push('<span class="sp">')
       }
-      acc.push(`<span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${FACutinText[rate.type]}</span>`);    
+      acc.push(`<span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${escapeHtmlText(getOperationFACutInText(rate.type, translateApp))}</span>`)
       return acc
     }, ['<span class="sp">'])
     if (rates.length % 2) {
@@ -394,7 +417,7 @@ const FACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): s
     html = rates.reduce((acc, rate) => {
       const rate_kakuho = MathUtil.floor(rate.rate[0] * 100, 1)
       const rate_yuusei = MathUtil.floor(rate.rate[1] * 100, 1)
-      acc += `<span class="sp"><span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${FACutinText[rate.type]}</span><span class="sp-rate">${toNaNTxt(rate_kakuho)}%/${toNaNTxt(rate_yuusei)}%</span></span>`
+      acc += `<span class="sp"><span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${escapeHtmlText(getOperationFACutInText(rate.type, translateApp))}</span><span class="sp-rate">${toNaNTxt(rate_kakuho)}%/${toNaNTxt(rate_yuusei)}%</span></span>`
       return acc
     }, '')
   }
@@ -417,7 +440,7 @@ const AACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): s
     })
     const total_kakuho = MathUtil.floor(MathUtil.totalRate(calc_rates[0]).total * 100, 1)
     const total_yuusei = MathUtil.floor(MathUtil.totalRate(calc_rates[1]).total * 100, 1)
-    total_html = `<span class="sp"><span class="tag is-danger">合計</span><span class="sp-rate">${toNaNTxt(total_kakuho)}%/${toNaNTxt(total_yuusei)}%</span></span>`
+    total_html = `<span class="sp"><span class="tag is-danger">${escapeHtmlText(translateApp('operation.common.total'))}</span><span class="sp-rate">${toNaNTxt(total_kakuho)}%/${toNaNTxt(total_yuusei)}%</span></span>`
   }
 
   let html;
@@ -427,7 +450,7 @@ const AACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): s
         acc.push('</span>')
         acc.push('<span class="sp">')
       }
-      acc.push(`<span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${AACutinText[rate.type]}</span>`);    
+      acc.push(`<span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${escapeHtmlText(getOperationAACutInText(rate.type, translateApp))}</span>`)
       return acc
     }, ['<span class="sp">'])
     if (rates.length % 2) {
@@ -439,7 +462,7 @@ const AACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): s
     html = rates.reduce((acc, rate) => {
       const rate_kakuho = MathUtil.floor(rate.rate[0] * 100, 1)
       const rate_yuusei = MathUtil.floor(rate.rate[1] * 100, 1)
-      acc += `<span class="sp"><span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${AACutinText[rate.type]}</span><span class="sp-rate">${toNaNTxt(rate_kakuho)}%/${toNaNTxt(rate_yuusei)}%</span></span>`
+      acc += `<span class="sp"><span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${escapeHtmlText(getOperationAACutInText(rate.type, translateApp))}</span><span class="sp-rate">${toNaNTxt(rate_kakuho)}%/${toNaNTxt(rate_yuusei)}%</span></span>`
       return acc
     }, '')
   }
@@ -458,7 +481,7 @@ const YCutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): st
   if (multiCi.length > 1) {
     const calc_rates: number[] = multiCi.map((rate) => rate.rate)
     const total = MathUtil.floor(MathUtil.totalRate(calc_rates).total * 100, 1)
-    total_html = `<span class="sp"><span class="tag is-dark">合計</span><span class="sp-rate">${toNaNTxt(total)}%</span></span>`
+    total_html = `<span class="sp"><span class="tag is-dark">${escapeHtmlText(translateApp('operation.common.total'))}</span><span class="sp-rate">${toNaNTxt(total)}%</span></span>`
   }
 
   let html;
@@ -486,7 +509,7 @@ const YCutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): st
         acc.push('<span class="sp">')
       }
       const isMaxClass = isMaxYCutins.includes(rate.type) ? ' is-max' : ''
-      acc.push(`<span class="tag is-dark${isMaxClass}">${getYCutinText(rate.type, true)}</span>`);    
+      acc.push(`<span class="tag is-dark${isMaxClass}">${escapeHtmlText(getOperationNightCutInText(rate.type, true, translateApp))}</span>`)
       return acc
     }, ['<span class="sp">'])
     if (rates.length % 2) {
@@ -499,7 +522,7 @@ const YCutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): st
       const isMaxClass = isMaxYCutins.includes(rate.type) ? ' is-max' : ''
       const rate_txt = MathUtil.floor(rate.rate * 100, 1)
       acc += `<span class="sp"><span class="tag is-dark${isMaxClass}">`+
-        `${getYCutinText(rate.type, false)}</span><span class="sp-rate">${toNaNTxt(rate_txt)}%</span></span>`
+        `${escapeHtmlText(getOperationNightCutInText(rate.type, false, translateApp))}</span><span class="sp-rate">${toNaNTxt(rate_txt)}%</span></span>`
       return acc
     }, '')
   }
@@ -516,7 +539,7 @@ const YSCutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): s
   if (rates.length > 1) {
     const calc_rates: number[] = rates.map((rate) => rate.rate)
     const total = MathUtil.floor(MathUtil.totalRate(calc_rates).total * 100, 1)
-    total_html = `<span class="sp"><span class="tag is-dark">合計</span><span class="sp-rate">${toNaNTxt(total)}%</span></span>`
+    total_html = `<span class="sp"><span class="tag is-dark">${escapeHtmlText(translateApp('operation.common.total'))}</span><span class="sp-rate">${toNaNTxt(total)}%</span></span>`
   }
 
   let html
@@ -526,7 +549,7 @@ const YSCutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): s
         acc.push('</span>')
         acc.push('<span class="sp">')
       }
-      acc.push(`<span class="tag is-dark">${getYSCutinText(rate.type, true)}</span>`);    
+      acc.push(`<span class="tag is-dark">${escapeHtmlText(getOperationNightAirCutInText(rate.type, true, translateApp))}</span>`)
       return acc
     }, ['<span class="sp">'])
     if (rates.length % 2) {
@@ -537,7 +560,7 @@ const YSCutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[], isReduce: boolean): s
   } else {
       html = rates.reduce((acc, rate) => {
       const rate_txt = MathUtil.floor(rate.rate * 100, 1)
-      acc += `<span class="sp"><span class="tag is-dark">${getYSCutinText(rate.type, false)}</span><span class="sp-rate">${toNaNTxt(rate_txt)}%</span></span>`
+      acc += `<span class="sp"><span class="tag is-dark">${escapeHtmlText(getOperationNightAirCutInText(rate.type, false, translateApp))}</span><span class="sp-rate">${toNaNTxt(rate_txt)}%</span></span>`
       return acc
     }, '')
   }
@@ -609,7 +632,11 @@ const shipBouku = (shipSps: ShipInfoSp[], ship: ShipInfoSp): string => {
 
 const TipTKCiTag = (st: TKCutinState): string => {
   //return `<span class="sp tag is-info">${st.type.join(' ,')}種対空CI(${st.entry.join(',')})</span>`;
-  return `<span class="sp tag is-link">${st.type.join(' ,')}種 対空CI</span>`
+  return `<span class="sp tag is-link">${escapeHtmlText(
+    translateApp('operation.deck.antiAirCutIn.types', {
+      params: { types: st.type.join(' ,') }
+    })
+  )}</span>`
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -632,7 +659,14 @@ function rowClass(): string {
       >
         <!-- todo: load image error draw ship name -->
         <ShipBanner :ship_info="ship.ship" />
-        <span v-if="ship.escaped" class="ship-state">退避</span>
+        <ShipHpGauge
+          :now-hp="ship.ship.api.api_nowhp"
+          :max-hp="ship.ship.api.api_maxhp"
+          :ship-name="ship.ship.mst.api_name"
+        />
+        <span v-if="ship.escaped" class="ship-state">{{
+          translateApp('operation.deck.escape')
+        }}</span>
         <span class="slots">
           <img
             v-for="(slot, index) in ship.ship.slots"
@@ -697,7 +731,7 @@ function rowClass(): string {
         </b-table-column>
         <b-table-column v-slot="props" label="hp" centered cell-class="cell-status small">
           <div v-if="props.row !== null">
-            <div class="s-icon heart-a2" title="耐久"></div>
+            <div class="s-icon heart-a2" :title="translateApp('operation.deck.stat.hp')"></div>
             <div>
               <span :class="props.row.hpClass">{{ props.row.ship.api.api_nowhp }}</span>
             </div>
@@ -705,7 +739,7 @@ function rowClass(): string {
         </b-table-column>
         <b-table-column v-slot="props" label="cond" centered cell-class="cell-status small">
           <div v-if="props.row !== null">
-            <div class="s-icon cond" :class="props.row.condClass" title="コンディション"></div>
+            <div class="s-icon cond" :class="props.row.condClass" :title="translateApp('operation.deck.stat.condition')"></div>
             <div>
               <span :class="props.row.condClass">{{ props.row.ship.api.api_cond }}</span>
             </div>
@@ -713,7 +747,7 @@ function rowClass(): string {
         </b-table-column>
         <b-table-column v-slot="props" label="fual" centered cell-class="cell-status large0">
           <div v-if="props.row !== null">
-            <div class="s-icon fuel" title="燃料"></div>
+            <div class="s-icon fuel" :title="translateApp('operation.deck.stat.fuel')"></div>
             <div :class="props.row.fualClass">
               <span>{{ props.row.fual_per }}%</span>
             </div>
@@ -721,7 +755,7 @@ function rowClass(): string {
         </b-table-column>
         <b-table-column v-slot="props" label="bull" centered cell-class="cell-status large0">
           <div v-if="props.row !== null">
-            <div class="s-icon bull" title="弾薬"></div>
+            <div class="s-icon bull" :title="translateApp('operation.deck.stat.ammunition')"></div>
             <div :class="props.row.bullClass">
               <span>{{ props.row.bull_per }}%</span>
             </div>
@@ -729,7 +763,7 @@ function rowClass(): string {
         </b-table-column>
         <b-table-column v-slot="props" label="speed" centered cell-class="cell-status large1">
           <div v-if="props.row !== null">
-            <div class="s-icon speed" title="速力"></div>
+            <div class="s-icon speed" :title="translateApp('operation.deck.stat.speed')"></div>
             <div>
               <span :class="props.row.sokuClass">{{ props.row.soku_text }}</span>
             </div>
@@ -737,7 +771,7 @@ function rowClass(): string {
         </b-table-column>
         <b-table-column v-slot="props" label="range" centered cell-class="cell-status large1">
           <div v-if="props.row !== null">
-            <div class="s-icon range" title="射程"></div>
+            <div class="s-icon range" :title="translateApp('operation.deck.stat.range')"></div>
             <div>
               <span :class="props.row.syateiClass">{{ props.row.syatei_text }}</span>
             </div>
@@ -745,19 +779,19 @@ function rowClass(): string {
         </b-table-column>
         <b-table-column v-slot="props" label="hit" centered cell-class="cell-status large0">
           <div v-if="props.row !== null">
-            <div class="s-icon hit" title="命中項"></div>
+            <div class="s-icon hit" :title="translateApp('operation.deck.stat.hitTerm')"></div>
             <div :class="props.row.hitClass">{{ props.row.hit }}%</div>
           </div>
         </b-table-column>
         <b-table-column v-slot="props" label="ev" centered cell-class="cell-status large0">
           <div v-if="props.row !== null">
-            <div class="s-icon ev" title="回避項"></div>
+            <div class="s-icon ev" :title="translateApp('operation.deck.stat.evasionTerm')"></div>
             <div :class="props.row.evClass">{{ props.row.ev }}%</div>
           </div>
         </b-table-column>
         <b-table-column v-slot="props" label="boku" cell-class="cell-status large_aa">
           <div v-if="props.row !== null">
-            <div class="s-icon aa" title="撃墜 割合/固定"></div>
+            <div class="s-icon aa" :title="translateApp('operation.deck.stat.shootdown')"></div>
             <div class="status-txt">{{ props.row.boku_text }}</div>
           </div>
         </b-table-column>
@@ -779,7 +813,16 @@ function rowClass(): string {
       <template #content><span class="tktip" v-html="tktipHtml"></span></template>
       <section class="deck-ship-list tkrate">
         <span class="tkrate1 list-title"
-          >対空CI合計: {{ totalTkrateText }} <span>艦防: {{ deckKTBText }}</span></span
+          >{{
+            translateApp('operation.deck.antiAirCutIn.total', {
+              params: { rate: totalTkrateText }
+            })
+          }}
+          <span>{{
+            translateApp('operation.deck.antiAirCutIn.fleetDefense', {
+              params: { value: deckKTBText }
+            })
+          }}</span></span
         >
         <span class="tkrate2">
           <span class="tkrate-container">

@@ -3,7 +3,7 @@ import { gameSetting } from '@renderer/store/gamesetting'
 import { Const } from '@common/const'
 
 class CaptureStuff {
-  public capture(webview: WebviewTag) {
+  public async capture(webview: WebviewTag): Promise<string> {
     const date = new Date()
     const rect: Rectangle = {
       x: 0,
@@ -12,10 +12,9 @@ class CaptureStuff {
       height: Math.floor(Const.GameHeight * gameSetting.zoom_factor)
     }
     console.log('capture stuff', rect, 'zoom-factor:', gameSetting.zoom_factor)
-    webview.capturePage(rect).then((image: Electron.NativeImage) => {
-      const buffer = image.toPNG()
-      window.api.saveCapture(date, buffer)
-    })
+    const image = await webview.capturePage(rect)
+    const buffer = image.toPNG()
+    return window.api.saveCapture(date, buffer)
   }
 }
 export const captureStuff = new CaptureStuff()

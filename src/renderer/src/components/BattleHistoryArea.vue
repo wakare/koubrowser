@@ -2,7 +2,6 @@
 import type { BattleRecord } from '@common/record'
 import { isBattleRecordItemGet } from '@common/record'
 import { ApiBattleBase, ApiEventId, isShipRare, isShipUnique, MstShip } from '@common/kcs'
-import { getAirSearchResultText, getFormationShortText, getStateText, getTacticsText  } from '@common/locale'
 import MapImg from '@renderer/components/MapImg.vue'
 import PassedCellImage from '@renderer/assets/img/passed-cell.svg'
 import Line from '@renderer/components/area/Line.vue'
@@ -14,6 +13,13 @@ import { CellInfo, Spot } from '@common/map'
 import { mapInfoCache } from '@renderer/common/mapinfo'
 import * as place from '@renderer/stuff/place'
 import { RUtil } from '@renderer/util'
+import {
+  getBattleAirSearchText,
+  getBattleAirStateText,
+  getBattleFormationShortText,
+  getBattleTacticsText
+} from '@renderer/common/battle-equipment-view'
+import { translateApp } from '@renderer/store/global_setting'
 const containerEl = ref<HTMLElement | null>(null)
 
 // トランジションを開始する合図
@@ -448,13 +454,13 @@ function getFormationsText(bs: BattleSpot): string {
   if (formations.length < 3) {
     return '? - ?';
   }
-  const ff = getFormationShortText(formations[0]);
-  const ef = getFormationShortText(formations[1]);
+  const ff = getBattleFormationShortText(formations[0], translateApp);
+  const ef = getBattleFormationShortText(formations[1], translateApp);
   return `${ff} / ${ef}`;
 }
 
 function battleSpotTitle(bs: BattleSpot): string {
-  const header = `Cell No: ${bs.spot.no} ${getTacticsText(bs.record.formations[2])}\n■${bs.record.enemyDeckName}`
+  const header = `Cell No: ${bs.spot.no} ${getBattleTacticsText(bs.record.formations[2], translateApp)}\n■${bs.record.enemyDeckName}`
   const enemies: string[] = [];
   const enemies2: string[] = [];
   bs.enemyIds.forEach((eid) => {
@@ -527,7 +533,7 @@ function battleSpotTitle(bs: BattleSpot): string {
           <span class="seiku" 
             v-if="bs.record.seiku >= 0"
             :class="seikuClass(bs)"
-            >{{ getStateText(bs.record.seiku) }}</span><span class="rank" 
+            >{{ getBattleAirStateText(bs.record.seiku, translateApp) }}</span><span class="rank"
             :class="{
               rankS: bs.record.rank === 'S',
               rankA: bs.record.rank === 'A',
@@ -535,7 +541,7 @@ function battleSpotTitle(bs: BattleSpot): string {
               rankC: bs.record.rank === 'C',
               rankD: bs.record.rank === 'D',
               rankE: bs.record.rank === 'E',              
-            }"><span v-if="bs.record.midnightJson" class="nightbattle-label">夜</span>{{ bs.record.rank }}</span><span 
+            }"><span v-if="bs.record.midnightJson" class="nightbattle-label">{{ translateApp('battleEquipment.battle.night') }}</span>{{ bs.record.rank }}</span><span
               v-if="bs.dropShip" 
               class="drop" 
               :class="{
@@ -574,7 +580,7 @@ function battleSpotTitle(bs: BattleSpot): string {
             'is-success': bs.record.airsearchResult === 1,
             'is-great-success': bs.record.airsearchResult === 2
           }"
-          >{{ getAirSearchResultText(bs.record.airsearchResult) }}</div>
+          >{{ getBattleAirSearchText(bs.record.airsearchResult, translateApp) }}</div>
           <div class="item-info"><img 
             class="item-img" :src="itemSrc(bs)" /><span 
             class="count">+{{ bs.record.items![0].itemCount }}</span></div>

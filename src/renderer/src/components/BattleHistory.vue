@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { AreaItemGetInfo, BattleRecord, BattleRecordQuery, ShipInfoRecord, SlotitemInfo } from '@common/record'
 import { DbName, isBattleRecordItemGet, recordMapIdToIdNo, toRecordDate, toRecordMapId } from '@common/record'
-import { areaNames, getAreaName, getEventPeriodName } from '@common/area_name'
+import { getAreaName, getEventPeriodName } from '@common/area_name'
 import { ApiEventId, ApiItemId, KcsUtil } from '@common/kcs'
-import { getAirSearchResultText, MapLvText } from '@common/locale'
+import { MapLvText } from '@common/locale'
 import BattleHistoryArea from '@renderer/components/BattleHistoryArea.vue'
 import { svdata } from '@renderer/store/svdata'
 import { computed, nextTick, onMounted, onUnmounted, ref, toRaw, watch } from 'vue'
@@ -15,6 +15,20 @@ import ShipBanner from '@renderer/components/ShipBanner.vue'
 import SlotItemForRecord from './SlotItemForRecord.vue'
 import ReportsImage from '@assets/img/reports.svg'
 import { SessionStorageKeyName } from '@renderer/store/storage_key'
+import { useObservedElementHeight } from './table/use-observed-element-height'
+import FixedCanvasViewport from './layout/FixedCanvasViewport.vue'
+import {
+  BattleHistoryLimitOptions,
+  getBattleHistoryViewState,
+  saveBattleHistoryViewState
+} from '@renderer/store/panel_view_state'
+import { withPanelLoadTimeout } from '@renderer/common/panel-load'
+import { translateApp } from '@renderer/store/global_setting'
+import { getBattleAirSearchText } from '@renderer/common/battle-equipment-view'
+import {
+  buildBattleHistoryAreaOptions,
+  type BattleHistoryAreaOption
+} from '@renderer/common/battle-history-area-options'
 const abortController = new AbortController();
 const ROW_ID_PREFIX = 'row-'
 const DETAIL_ROW_ID_PREFIX = 'detailRow-'
@@ -23,6 +37,8 @@ const tableEl = ref<HTMLElement | null>(null);
 let _tableHeaderHeight = 0;
 const isSearching = ref(true);
 const isInitial = ref(true);
+const hasSearchError = ref(false);
+let searchRequestId = 0;
 
 /////////////////////////////////////////////////////////////////////////////////////
 // 
@@ -103,11 +119,33 @@ const openDetailedDatas = computed(() => {
   return datas.value.map((data => data.header.uuid))
 });
 
-const filterMapId = ref<number | null>(null);
-const filterLimit = ref<number>(40);
+const dateFromViewState = (value: string | null): Date | null => {
+  if (!value) {
+    return null
+  }
+  const [year, month, day] = value.split('-').map(Number)
+  const date = new Date(year, month - 1, day)
+  return Number.isFinite(date.getTime()) ? date : null
+}
+const dateToViewState = (value: Date | null): string | null => {
+  if (!value) {
+    return null
+  }
+  const year = value.getFullYear()
+  const month = String(value.getMonth() + 1).padStart(2, '0')
+  const day = String(value.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+const savedViewState = getBattleHistoryViewState()
+const filterMapId = ref<number | null>(savedViewState.mapId);
+const filterLimit = ref<number>(savedViewState.limit);
 const filterStartMinDate = ref<Date | null>(null);
-const filterStartDate = ref<Date | null>(null);
-const filterEndDate = ref<Date | null>(null);
+const filterStartDate = ref<Date | null>(
+  dateFromViewState(savedViewState.startDate)
+);
+const filterEndDate = ref<Date | null>(
+  dateFromViewState(savedViewState.endDate)
+);
 
 const yearHolder = () => {
   const year = ref(new Date().getFullYear());
@@ -127,17 +165,24 @@ const { year: filterStartYear, isYearMin: isStartYearMin, isYearMax: isStartYear
 const { year: filterEndYear, isYearMin: isEndYearMin, isYearMax: isEndYearMax } =
   yearHolder();
 
-const filterMapIdPlaceholder = '海域を選択'
+const filterMapIdPlaceholder = computed(() =>
+  translateApp('battleEquipment.history.areaPlaceholder')
+)
 
-interface AreaOption {
-  value: number;
-  label: string;
-}
-
-const mapAreaOptions = ref<AreaOption[]>(getAreaOptions());
-const countOptions = [1, 10, 20, 40, 80, 100, 200, 400, 800, 1000, 2000, 3000, 4000];
+const initialAreaMapIds =
+  savedViewState.mapId === null ? [] : [savedViewState.mapId]
+const mapAreaOptions = ref<BattleHistoryAreaOption[]>(
+  buildBattleHistoryAreaOptions(initialAreaMapIds, svdata.mstMapInfos)
+);
+const countOptions = BattleHistoryLimitOptions;
 
 function onFilterSearch(): void {
+  saveBattleHistoryViewState({
+    mapId: filterMapId.value,
+    limit: filterLimit.value,
+    startDate: dateToViewState(filterStartDate.value),
+    endDate: dateToViewState(filterEndDate.value)
+  })
   search();
 }
 
@@ -477,14 +522,65 @@ async function fetchFirstBattleDate(): Promise<string | null> {
   })
 }
 
-function search(): void {
+interface BattleMapIdRecord {
+  readonly mapId: number
+}
+
+async function fetchRecordedEventMapIds(): Promise<number[]> {
+  const query: BattleRecordQuery = {
+    dbName: DbName.battle,
+    find: {
+      mapId: {
+        $gte: toRecordMapId(41, 0)
+      }
+    },
+    projection: {
+      mapId: 1
+    }
+  }
+  const records = await window.api.queryDb(query) as BattleMapIdRecord[]
+  return records.map((record) => record.mapId)
+}
+
+async function refreshAreaOptions(): Promise<void> {
+  try {
+    const mapIds = await withPanelLoadTimeout(
+      fetchRecordedEventMapIds(),
+      'Battle history area query timed out'
+    )
+    if (abortController.signal.aborted) {
+      return
+    }
+    if (filterMapId.value !== null) {
+      mapIds.push(filterMapId.value)
+    }
+    mapAreaOptions.value = buildBattleHistoryAreaOptions(
+      mapIds,
+      svdata.mstMapInfos
+    )
+  } catch (err) {
+    if (!abortController.signal.aborted) {
+      console.error('battle history area query failed:', err)
+    }
+  }
+}
+
+async function search(): Promise<void> {
+  const requestId = ++searchRequestId;
   const task1 = fetchFirstBattleDate();
   const task2 = fetchRecentRecords();
 
   isSearching.value = true;
-  Promise.all([task1, task2]).then(([firstDate, records]) => {
-    if (abortController.signal.aborted) {
-      console.log('aborted, skipping processing');
+  hasSearchError.value = false;
+  try {
+    const [firstDate, records] = await withPanelLoadTimeout(
+      Promise.all([task1, task2]),
+      'Battle history query timed out'
+    );
+    if (
+      abortController.signal.aborted ||
+      requestId !== searchRequestId
+    ) {
       return;
     }
     // set min date
@@ -495,28 +591,48 @@ function search(): void {
     }
 
     const tableData = toTableData(records).slice(0, filterLimit.value);
-    fetchCellInfo(tableData).then((_cellInfos) => {
-      if (abortController.signal.aborted) {
-        console.log('aborted, skipping processing');
-        return;
-      }
-      // clear accsent
-      setAccent(null, selected.value);
+    await withPanelLoadTimeout(
+      fetchCellInfo(tableData),
+      'Battle history map query timed out'
+    );
+    if (
+      abortController.signal.aborted ||
+      requestId !== searchRequestId
+    ) {
+      return;
+    }
 
-      // update table data
-      datas.value = tableData;
-      selected.value = datas.value.length > 0 ? datas.value[0] : null
-      console.log('processed battle table data:', toRaw(selected.value));
+    // clear accsent
+    setAccent(null, selected.value);
 
-    }).catch((err) => {
-      console.error('fetchCellInfo error:', err);
-    }).finally(() => {
+    // update table data
+    datas.value = tableData;
+    selected.value = datas.value.length > 0 ? datas.value[0] : null
+    console.log('processed battle table data:', toRaw(selected.value));
+    isInitial.value = false;
+  } catch (err) {
+    if (
+      abortController.signal.aborted ||
+      requestId !== searchRequestId
+    ) {
+      return;
+    }
+    console.error('battle history search failed:', err);
+    hasSearchError.value = true;
+    isInitial.value = false;
+  } finally {
+    if (
+      !abortController.signal.aborted &&
+      requestId === searchRequestId
+    ) {
       isSearching.value = false;
-      isInitial.value = false;
-    });
-  }).catch((err) => {
-    console.error('promise all error:', err);
-  });
+    }
+  }
+}
+
+function retrySearch(): void {
+  void search();
+  void refreshAreaOptions();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -552,7 +668,7 @@ watch(selected, (newVal, oldVal) => {
 onMounted(() => {
   // 既存のマウント処理の後にテーブルラッパーを監視して選択変化でスクロール
   nextTick(() => {
-    const wrapper = document.querySelector('.battle-history-table .b-table .table-wrapper') as HTMLElement | null;
+    const wrapper = tableEl.value?.querySelector('.b-table .table-wrapper') as HTMLElement | null;
     if (wrapper) {
       console.log('setting up selection observer for drop ship history table');
       _selectionObserver = new MutationObserver(() => {
@@ -568,13 +684,17 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  searchRequestId += 1;
   abortController.abort();
+  _selectionObserver?.disconnect()
+  _selectionObserver = null
 });
 
 /////////////////////////////////////////////////////////////////////////////////////
 // initialize
 (() => {
-  search();
+  void search();
+  void refreshAreaOptions();
 })();
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -583,29 +703,11 @@ function rowClass(_row: BattleTableData, index: number): string {
   return index % 2 === 0 ? '' : 'is-striped';
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
-// area options
-function getAreaOptions(): AreaOption[] {
-  const ret = areaNames.filter((area) => !KcsUtil.isEventAreaId(area.areaId).valueOf()).map((area) => ({
-    value:  toRecordMapId(area.areaId, area.areaNo),
-    label: `${area.areaId} - ${area.areaNo} ${area.areaName}`,
-  }))
-
-  // todo: イベント海域の表示は暫定的に62のみ
-  // 履歴に存在するイベントを選択可能とする
-  const eventName = getEventPeriodName(62);
-  ret.push(...areaNames.filter((area) => area.areaId === 62).map((area) => ({
-    value:  toRecordMapId(area.areaId, area.areaNo),
-    label: `${eventName} E${area.areaNo} ${area.areaName}`,
-  })))
-  return ret
-}
-
 function onChangeFilterMapId(event: Event): void {
   console.log('filterMapId changed:', filterMapId.value, event);
   if (filterMapId.value === null) {
     const select = event.target as HTMLSelectElement;
-    select.value = filterMapIdPlaceholder
+    select.value = filterMapIdPlaceholder.value
   }
 }
 
@@ -833,19 +935,18 @@ function toNumber(num: number): string {
   return num.toString();
 }
 
-const listHeight = ref<number>(480-76);
+const listHeight = useObservedElementHeight(tableEl, 404);
 
 /////////////////////////////////////////////////////////////////////////////////////
 // 
 const isOverlayHelpVisible = computed<boolean>(() => {
-  return isSearching.value
+  return isSearching.value || hasSearchError.value
 });
 
 const helpText = computed<string>(() => {
-  //if (!isInitial.value) {
-  //  return '出撃履歴がありません。';
-  //}
-  return '戦闘履歴検索中...';
+  return isSearching.value
+    ? translateApp('status.battleHistory.loading')
+    : translateApp('status.battleHistory.error');
 });
 
 </script>
@@ -860,7 +961,20 @@ const helpText = computed<string>(() => {
       <img src="../assets/img/app/battlehistory.png"/>
     </div>
     <div v-if="isOverlayHelpVisible" class="overlay-background"></div>
-    <div v-if="isOverlayHelpVisible" class="overlay-help">{{ helpText }}</div>
+    <div
+      v-if="isOverlayHelpVisible"
+      class="overlay-help"
+      :class="{ 'is-error': hasSearchError }"
+    >
+      <span>{{ helpText }}</span>
+      <button
+        v-if="hasSearchError"
+        type="button"
+        @click="retrySearch"
+      >
+        {{ translateApp('common.retry') }}
+      </button>
+    </div>
 
     <!--
       マップタイトル、状況表示ボタン
@@ -876,7 +990,7 @@ const helpText = computed<string>(() => {
             sesStorage.setBoolean(SessionStorageKeyName.BattleHistoryShowReports, showReports)
           }" 
           :class="{ 'is-active': showReports }">
-          <ReportsImage /><span class="button-text">セル状況表示</span></b-button>
+          <ReportsImage /><span class="button-text">{{ translateApp('battleEquipment.history.showCellReports') }}</span></b-button>
       </div>
     </div>
 
@@ -884,20 +998,26 @@ const helpText = computed<string>(() => {
       出撃履歴マップ表示
     -->
     <div class="map-content">
-      <BattleHistoryArea v-if="battleAreaInfo" :info="battleAreaInfo" :show-reports="showReports"/>
+      <FixedCanvasViewport :logical-width="600" :logical-height="350">
+        <BattleHistoryArea
+          v-if="battleAreaInfo"
+          :info="battleAreaInfo"
+          :show-reports="showReports"
+        />
+      </FixedCanvasViewport>
     </div>
 
     <!--
       履歴検索コントロール
     -->
     <div class="battle-history-control">
-      <b-field class="inputs" grouped multiline>
+      <b-field class="inputs" grouped group-multiline>
         <label class="input-area">
-          <div class="filter-label">海域</div>
+          <div class="filter-label">{{ translateApp('battleEquipment.history.area') }}</div>
           <b-select v-model="filterMapId" size="is-small" :placeholder="filterMapIdPlaceholder"
             @change="onChangeFilterMapId"
             >
-            <option :value="null" selected>未選択</option>
+            <option :value="null" selected>{{ translateApp('battleEquipment.history.unselected') }}</option>
             <option
               v-for="area in mapAreaOptions"
               :key="area.value"
@@ -907,7 +1027,7 @@ const helpText = computed<string>(() => {
         </label>
 
         <label class="input-count">
-          <div class="filter-label">検索件数</div>
+          <div class="filter-label">{{ translateApp('battleEquipment.history.searchLimit') }}</div>
           <b-select v-model.number="filterLimit" size="is-small">
             <option
               v-for="value in countOptions"
@@ -918,7 +1038,7 @@ const helpText = computed<string>(() => {
         </label>
 
         <div class="input-date-range">
-          <div class="filter-label">検索対象日</div>
+          <div class="filter-label">{{ translateApp('battleEquipment.history.dateRange') }}</div>
           <div class="date-range">
             <b-datepicker
               v-model="filterStartDate"
@@ -927,7 +1047,7 @@ const helpText = computed<string>(() => {
               :clearable="true"
               :min-date="filterStartMinDate"
               :max-date="new Date()"
-              placeholder="開始日"
+              :placeholder="translateApp('battleEquipment.history.startDate')"
               position="is-bottom-left"
               icon-pack="fa"
               :class="{ 'is-year-min': isStartYearMin, 'is-year-max': isStartYearMax }"
@@ -941,7 +1061,7 @@ const helpText = computed<string>(() => {
               :clearable="true"
               :min-date="filterStartMinDate"
               :max-date="new Date()"
-              placeholder="終了日"
+              :placeholder="translateApp('battleEquipment.history.endDate')"
               position="is-bottom-left"
               icon-pack="fa"
               :class="{ 'is-year-min': isEndYearMin, 'is-year-max': isEndYearMax }"
@@ -952,20 +1072,20 @@ const helpText = computed<string>(() => {
 
         <label class="input-button search">
           <div class="filter-label is-invisible">empty</div>
-          <b-button size="is-small" @click="onFilterSearch">検索</b-button>
+          <b-button size="is-small" @click="onFilterSearch">{{ translateApp('battleEquipment.history.search') }}</b-button>
         </label>
         <label class="input-button clear">
           <div class="filter-label is-invisible">empty</div>
-          <b-button size="is-small" @click="onFilterClear">条件<br>クリア</b-button>
+          <b-button size="is-small" @click="onFilterClear">{{ translateApp('battleEquipment.history.clearCondition.line1') }}<br>{{ translateApp('battleEquipment.history.clearCondition.line2') }}</b-button>
         </label>
       </b-field>
       <div class="results">
         <span class="result-count">
-          <div><span class="char4">出撃件数:</span> {{ datas.length }}件</div>
-          <div class="boss-count"><span class="char4">ボス到達:</span> {{ totalBossCount }}件</div>
+          <div><span class="char4">{{ translateApp('battleEquipment.history.resultCount') }}</span> {{ translateApp('battleEquipment.history.resultUnit', { params: { count: datas.length } }) }}</div>
+          <div class="boss-count"><span class="char4">{{ translateApp('battleEquipment.history.bossReached') }}</span> {{ translateApp('battleEquipment.history.resultUnit', { params: { count: totalBossCount } }) }}</div>
         </span>
         <span class="total-detail">
-          <span class="total-used">消費合計: 
+          <span class="total-used">{{ translateApp('battleEquipment.history.totalUsed') }}
             <span class="used-unit">
               <span class="s-icon fuel"></span><span class="value">{{ toNumber(totalUsed.fuel) }}</span>
             </span>
@@ -976,7 +1096,7 @@ const helpText = computed<string>(() => {
               <span class="s-icon buxite"></span><span class="value">{{ toNumber(totalUsed.buxite) }}</span>
             </span>
           </span>
-          <span class="total-get-items" v-if="totalGetItems.length > 0">獲得合計: 
+          <span class="total-get-items" v-if="totalGetItems.length > 0">{{ translateApp('battleEquipment.history.totalAcquired') }}
             <template 
               v-for="(item, item_index) in totalGetItems" 
               :key="`totalgetitem-${item_index}`"><span :class="['s-icon', { 
@@ -1019,7 +1139,7 @@ const helpText = computed<string>(() => {
       >
         <b-table-column centered header-class="battle-area" cell-class="battle-area">
           <template #header>
-            <span>出撃エリア</span>
+            <span>{{ translateApp('battleEquipment.history.column.area') }}</span>
           </template>
           <template #default="props">
             <span :id="ROW_ID_PREFIX+props.row.detailKey">{{ areaNoText(props.row) }}<span
@@ -1029,7 +1149,7 @@ const helpText = computed<string>(() => {
 
         <b-table-column centered header-class="battle-date" cell-class="battle-date">
           <template #header>
-            <span>出撃日時</span>
+            <span>{{ translateApp('battleEquipment.history.column.date') }}</span>
           </template>
           <template #default="props">
             <span>{{ dateText(props.row) }} {{ timeText(props.row) }}</span>
@@ -1038,7 +1158,7 @@ const helpText = computed<string>(() => {
 
         <b-table-column centered header-class="battle-date" cell-class="battle-route">
           <template #header>
-            <span>ルート詳細</span>
+            <span>{{ translateApp('battleEquipment.history.column.route') }}</span>
           </template>
           <template #default="props">
             <span>{{ routeText(props.row) }} </span><span 
@@ -1062,14 +1182,14 @@ const helpText = computed<string>(() => {
                     'is-success': item.airsearchResult === 1,
                     'is-great-success': item.airsearchResult === 2,
                     'is-boss-lose': item.bossLose,
-                  }">({{ getAirSearchResultText(item.airsearchResult) }})
+                  }">({{ getBattleAirSearchText(item.airsearchResult, translateApp) }})
                   </span></span></template></span>
           </template>
         </b-table-column>
 
         <b-table-column centered header-class="battle-used" cell-class="battle-used">
           <template #header>
-            <span>資源消費量</span>
+            <span>{{ translateApp('battleEquipment.history.column.used') }}</span>
           </template>
           <template #default="props">
             <div class="used-units">
@@ -1133,7 +1253,9 @@ const helpText = computed<string>(() => {
         </template>
 
         <template #empty>
-          <div class="has-text-centered">出撃履歴がありません。</div>
+          <div class="has-text-centered">
+            {{ translateApp('status.battleHistory.empty') }}
+          </div>
         </template>
       </b-table>
     </div>

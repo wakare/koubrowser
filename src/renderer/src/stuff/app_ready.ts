@@ -8,5 +8,5 @@ export function setAppSettingOk(ok: boolean) {
 }
 
 export const isAppReady = computed((): boolean => {
-  return appSettingOk.value && svdata.isMstDataOk
+  return appSettingOk.value && svdata.isMstDataOk && svdata.isShipDataOk
 })

@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { AppStuff } from '@main/app'
+import { resolveDataResourcePath } from '@main/data-path'
 import type { CellInfo } from '@common/map'
 
 /**
@@ -44,8 +44,8 @@ class MapStuffImpl {
 
     try {
       // read public map info
-      const json = '/map/' + key + '_map.json'
-      const path = AppStuff.resolveResourcePath(json)
+      const json = 'map/' + key + '_map.json'
+      const path = resolveDataResourcePath(json)
       console.log('read public cellInfo path:', path)
       const cell_info = JSON.parse(fs.readFileSync(path, 'utf8')) as CellInfo
       if (!cell_info.checks) {
@@ -82,8 +82,8 @@ class MapStuffImpl {
 
       try {
         // read public map info
-        const json = '/map/' + key + '_map.json'
-        const path = AppStuff.resolveResourcePath(json)
+        const json = 'map/' + key + '_map.json'
+        const path = resolveDataResourcePath(json)
         console.log('read public cellInfo async path:', path)
         const info = JSON.parse(fs.readFileSync(path, 'utf8')) as CellInfo
         if (!info.checks) {

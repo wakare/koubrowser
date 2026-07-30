@@ -7,7 +7,7 @@ import {
   ApiDeckPortId,
   ApiShipCategory,
   SlotitemType,
-  SlotInfo,
+  KcsUtil,
   toShipMsts,
   shipTypeCount,
   shipCategoryCount,
@@ -15,11 +15,17 @@ import {
   isShipType,
   isShipIds,
   deckShipCount,
-  isShipIdLvs,
   ApiShipTypeJyujyunClasses,
   ApiShipTypeSenkanClasses,
 } from '@common/kcs'
-import type { Quest, QuestCounter } from '@common/record'
+import { isQuestCounter, type Quest, type QuestCounter } from '@common/record'
+import {
+  createAppTranslator,
+  type AppMessageKey,
+  type AppTranslator
+} from '@common/localization'
+
+const DefaultQuestTranslator = createAppTranslator(() => 'ja-JP')
 
 /**
  * クエストの種類
@@ -87,6 +93,37 @@ export type QuestMap = [number, number, BattleRank] // area_id, area_no, win_ran
 export type QuestMapCell = [number, number, WinRank, number[] | undefined] // area_id, area_no, win_rank, cells
 export type QuestMapOrCell = QuestMap | QuestMapCell
 
+export type QuestProgressDetailKind =
+  | 'sortie'
+  | 'battle'
+  | 'arrival'
+  | 'gauge'
+  | 'practice'
+  | 'expedition'
+  | 'maintenance'
+  | 'development'
+  | 'construction'
+  | 'disposal'
+  | 'equipment'
+  | 'formation'
+  | 'collection'
+
+export interface QuestProgressDetailItem {
+  kind: QuestProgressDetailKind
+  label: string
+  current: number
+  required: number
+  completed: boolean
+}
+
+export interface QuestProgressDetailResolvers {
+  slotitemName?: (itemId: number) => string | undefined
+  equipmentCondition?: (
+    questId: number
+  ) => DestroyItemCondition | undefined
+  translate?: AppTranslator
+}
+
 const QuestMapCell_5_6_3 = (rank: WinRank): QuestMapCell => {
   return [5, 6, rank, [43]]
 }
@@ -101,6 +138,10 @@ const QuestMapCell_7_2_2 = (rank: WinRank): QuestMapCell => {
 
 const QuestMapCell_7_3_2 = (rank: WinRank): QuestMapCell => {
   return [7, 3, rank, [18, 23, 24, 25]]
+}
+
+const QuestMapCell_7_3_1 = (rank: WinRank): QuestMapCell => {
+  return [7, 3, rank, [5]]
 }
 
 const QuestMapCell_7_5_2 = (rank: WinRank): QuestMapCell => {
@@ -118,6 +159,8 @@ export interface QuestCommon {
   max: number[]
   key: QuestKey
   notFixState?: boolean
+  progress_target_label?: string
+  progress_material_label?: string
 }
 
 /**
@@ -132,6 +175,173 @@ export interface QuestFormatter {
  */
 export interface QuestDeckMatcher {
   isDeckMatch(svdata: SvData, ship_ids: number[]): boolean
+}
+
+export type QuestFleetRule =
+  | {
+      kind: 'ship-count'
+      min?: number
+      exact?: number
+      maximum?: number
+    }
+  | {
+      kind: 'flagship-type'
+      types: readonly ApiShipType[]
+      label?: string
+      minimumLevel?: number
+    }
+  | {
+      kind: 'flagship-category'
+      categories: readonly ApiShipCategory[]
+      label?: string
+      minimumLevel?: number
+    }
+  | {
+      kind: 'flagship-specific'
+      baseShipIds: readonly number[]
+      label?: string
+      minimumLevel?: number
+      exactMasterIds?: boolean
+    }
+  | {
+      kind: 'flagship-level'
+      minimum: number
+      maximum?: number
+    }
+  | {
+      kind: 'ship-type-count'
+      types: readonly ApiShipType[]
+      min?: number
+      exact?: number
+      maximum?: number
+      label?: string
+      minimumLevel?: number
+      excludePositions?: readonly number[]
+    }
+  | {
+      kind: 'sum-of-counts'
+      label: string
+      min?: number
+      exact?: number
+      maximum?: number
+      components: readonly (
+        | {
+            kind: 'ship-type'
+            types: readonly ApiShipType[]
+            minimumLevel?: number
+          }
+        | {
+            kind: 'ship-category'
+            categories: readonly ApiShipCategory[]
+            minimumLevel?: number
+          }
+        | {
+            kind: 'specific-ships'
+            baseShipIds: readonly number[]
+            minimumLevel?: number
+            exactMasterIds?: boolean
+          }
+      )[]
+    }
+  | {
+      kind: 'ship-category-count'
+      categories: readonly ApiShipCategory[]
+      min?: number
+      exact?: number
+      maximum?: number
+      label?: string
+      minimumLevel?: number
+      excludeBaseShipIds?: readonly number[]
+      excludePositions?: readonly number[]
+    }
+  | {
+      kind: 'specific-ship-count'
+      baseShipIds: readonly number[]
+      min?: number
+      exact?: number
+      maximum?: number
+      label?: string
+      minimumLevel?: number
+      exactMasterIds?: boolean
+      excludePositions?: readonly number[]
+    }
+  | {
+      kind: 'allowed-ship-types'
+      types: readonly ApiShipType[]
+      label?: string
+    }
+  | {
+      kind: 'ship-position-specific'
+      position: number
+      baseShipIds: readonly number[]
+      label?: string
+      minimumLevel?: number
+      exactMasterIds?: boolean
+    }
+  | {
+      kind: 'ship-position-type'
+      position: number
+      types: readonly ApiShipType[]
+      label?: string
+      minimumLevel?: number
+    }
+  | {
+      kind: 'ship-position-category'
+      position: number
+      categories: readonly ApiShipCategory[]
+      label?: string
+      minimumLevel?: number
+    }
+  | {
+      kind: 'ship-position-slotitem-count'
+      position: number
+      itemId: number
+      slotPositions?: readonly number[]
+      min?: number
+      exact?: number
+      maximum?: number
+      label?: string
+    }
+  | {
+      kind: 'deck-available'
+      deckId: ApiDeckPortId | number
+    }
+  | {
+      kind: 'battle-deck'
+      deckId: ApiDeckPortId | number
+    }
+  | {
+      kind: 'any-of'
+      label: string
+      alternatives: readonly (readonly QuestFleetRule[])[]
+    }
+  | {
+      kind: 'all-fast'
+    }
+
+export interface QuestFleetCondition {
+  deckId?: ApiDeckPortId | number
+  rules: readonly QuestFleetRule[]
+}
+
+export type QuestFleetCheckKind =
+  | 'deck'
+  | 'ship-count'
+  | 'flagship'
+  | 'ship-type'
+  | 'ship-category'
+  | 'specific-ships'
+  | 'alternative'
+  | 'combined-count'
+  | 'equipment'
+  | 'speed'
+
+export interface QuestFleetCheck {
+  kind: QuestFleetCheckKind
+  label: string
+  current: number | undefined
+  required: number | undefined
+  satisfied: boolean | undefined
 }
 
 /**
@@ -164,8 +374,23 @@ export interface DestroyItemCondition {
   flagship_slotitem_lvl: number[]
   flagship_slotitem_alv_max?: boolean
   flagship_slotitem_only?: boolean
+  deck_condition?: QuestFleetCondition
   deck_checked?: boolean
 }
+
+export type QuestConditionCheckKind =
+  | QuestFleetCheckKind
+  | 'flagship-level'
+  | 'equipment-only'
+
+export interface QuestConditionCheck {
+  kind: QuestConditionCheckKind
+  label: string
+  current?: number
+  required?: number
+  satisfied: boolean | undefined
+}
+
 export interface QuestCondition {
   getCondition(svdata: SvData): DestroyItemCondition | undefined
 }
@@ -496,18 +721,26 @@ type QuestStuffClass<T extends QuestType> = Newable & QuestStuffByType[T]
  * レジストリ
  */
 const questStuffs = new Map<number, QuestStuffClass<QuestType>>()
+const questFleetConditions = new Map<number, QuestFleetCondition>()
 
 /**
  * register 関数
  * id とクラス（静的側）を登録。
  * 渡されたクラスの `questType` に応じて、型安全に byType へも振り分けます。
  */
-function register<T extends QuestType>(id: number, cls: QuestStuffClass<T>): void {
+function register<T extends QuestType>(
+  id: number,
+  cls: QuestStuffClass<T>,
+  fleetCondition?: QuestFleetCondition
+): void {
   if (questStuffs.get(id)) {
     console.error(`[ERROR] quest stuff id ${id} is already registered`)
     return
   }
   questStuffs.set(id, cls as QuestStuffClass<QuestType>)
+  if (fleetCondition) {
+    questFleetConditions.set(id, fleetCondition)
+  }
 }
 
 /**
@@ -609,7 +842,6 @@ function detailFormatOneByMap(quest: Quest, maps: QuestMapOrCell[], colon: strin
     return ''
   }
 
-  console.log('quest stuff maps', quest.no, quest.quest?.api_title, maps)
   return state.count
     .reduce<string[]>((acc, el, index) => {
       const cleared = el === state.countMax[index]
@@ -637,7 +869,6 @@ function detailFormatMaps(quest: Quest, maps: QuestMapOrCell[], colon: string = 
     return ''
   }
 
-  console.log('quest stuff maps', quest.no, quest.quest?.api_title, maps)
   return state.count
     .reduce<string[]>((acc, el, index) => {
       const cleared = el === state.countMax[index]
@@ -678,111 +909,858 @@ function detailFormatOne(prefixs: string[], quest: Quest): string {
     .join(' ')
 }
 
-export function checkCondition(svdata: SvData, condition: DestroyItemCondition): boolean {
+function questConditionNames(
+  names: readonly string[],
+  fallback: string,
+  translate: AppTranslator = DefaultQuestTranslator
+): string {
+  const uniqueNames = [...new Set(names.filter((name) => name.length > 0))]
+  if (uniqueNames.length === 0) {
+    return fallback
+  }
+  if (uniqueNames.length <= 3) {
+    return uniqueNames.join(' / ')
+  }
+  return translate('quest.condition.namesMore', {
+    params: {
+      names: uniqueNames.slice(0, 3).join(' / '),
+      count: uniqueNames.length - 3
+    }
+  })
+}
+
+export function questConditionChecks(
+  svdata: SvData,
+  condition: DestroyItemCondition,
+  translate: AppTranslator = DefaultQuestTranslator
+): QuestConditionCheck[] {
+  const checks: QuestConditionCheck[] = []
   const deck = svdata.deckPort(ApiDeckPortId.deck1st)
   if (!deck) {
-    return false
+    return [
+      {
+        kind: 'deck',
+        label: translate('quest.condition.deckData', {
+          params: { deck: 1 }
+        }),
+        satisfied: undefined
+      }
+    ]
   }
 
-  // check deck checked
   if (condition.deck_checked !== undefined) {
-    if (! condition.deck_checked ) {
-      return false
-    }
+    checks.push({
+      kind: 'deck',
+      label: translate('quest.condition.specifiedFleet'),
+      satisfied: condition.deck_checked
+    })
   }
 
-  if (condition.flagship_ids && condition.flagship_ids.length > 0) {
-    if (!isShipIds(svdata, deck.api_ship[0], condition.flagship_ids)) {
-      return false
-    }
-  }
-
-  if (condition.flagship_categories && condition.flagship_categories.length > 0) {
-    const msts = toShipMsts(svdata, [deck.api_ship[0]])
-    if (!shipCategoryCount(msts, condition.flagship_categories)) {
-      return false
-    }
-  }
-
-  if (condition.flagship_id_lvs && condition.flagship_id_lvs.length > 0) {
-    if (! isShipIdLvs(svdata, deck.api_ship[0], condition.flagship_id_lvs)) {
-      return false;
-    }
+  if (condition.deck_condition) {
+    checks.push(
+      ...questFleetConditionChecks(
+        svdata,
+        condition.deck_condition,
+        undefined,
+        translate
+      )
+    )
   }
 
   const ship = svdata.ship(deck.api_ship[0])
-  if (!ship) {
-    return false
+  const mst = ship ? svdata.mstShip(ship.api_ship_id) : undefined
+  if (!ship || !mst) {
+    checks.push({
+      kind: 'flagship',
+      label: translate('quest.condition.flagshipData'),
+      satisfied: undefined
+    })
+    return checks
   }
 
-  if (condition.flagship_lv && condition.flagship_lv > ship.api_lv) {
-    return false
+  if (condition.flagship_ids && condition.flagship_ids.length > 0) {
+    const names = condition.flagship_ids.map(
+      (id) => svdata.mstShip(id)?.api_name ?? ''
+    )
+    checks.push({
+      kind: 'flagship',
+      label: translate('quest.condition.flagship', {
+        params: {
+          target: questConditionNames(
+            names,
+            translate('quest.progress.ship.specifiedGirl'),
+            translate
+          )
+        }
+      }),
+      satisfied: condition.flagship_ids.includes(ship.api_ship_id)
+    })
   }
 
-  if (!condition.flagship_slotitem_ids.length) {
-    return true
+  if (condition.flagship_categories && condition.flagship_categories.length > 0) {
+    checks.push({
+      kind: 'flagship',
+      label: translate('quest.condition.flagship', {
+        params: {
+          target: questShipCategoriesLabel(
+            condition.flagship_categories,
+            translate
+          )
+        }
+      }),
+      satisfied: condition.flagship_categories.includes(mst.api_ctype)
+    })
   }
 
-  let slotitem_ok = false
-  let slot: SlotInfo | undefined
+  if (condition.flagship_type_ids && condition.flagship_type_ids.length > 0) {
+    checks.push({
+      kind: 'flagship',
+      label: translate('quest.condition.flagship', {
+        params: {
+          target: questShipTypesLabel(
+            condition.flagship_type_ids,
+            translate
+          )
+        }
+      }),
+      satisfied: isShipType(mst, condition.flagship_type_ids)
+    })
+  }
+
+  if (condition.flagship_id_lvs && condition.flagship_id_lvs.length > 0) {
+    for (const requirement of condition.flagship_id_lvs) {
+      const names = requirement.ids.map(
+        (id) => svdata.mstShip(id)?.api_name ?? ''
+      )
+      checks.push({
+        kind: 'flagship-level',
+        label: translate('quest.condition.flagshipLevelAtLeast', {
+          params: {
+            target: questConditionNames(
+              names,
+              translate('quest.progress.ship.specifiedGirl'),
+              translate
+            ),
+            level: requirement.lv
+          }
+        }),
+        satisfied:
+          requirement.ids.includes(ship.api_ship_id) &&
+          ship.api_lv >= requirement.lv
+      })
+    }
+  }
+
+  if (condition.flagship_lv !== undefined) {
+    checks.push({
+      kind: 'flagship-level',
+      label: translate('quest.condition.flagshipLevelOnlyAtLeast', {
+        params: { level: condition.flagship_lv }
+      }),
+      satisfied: ship.api_lv >= condition.flagship_lv
+    })
+  }
+
   for (let i = 0; i < condition.flagship_slotitem_ids.length; ++i) {
-    if (! condition.flagship_slotitem_ids[i]) {
+    const expectedItemId = condition.flagship_slotitem_ids[i]
+    if (!expectedItemId) {
       continue
     }
-
-    slot = svdata.slot(ship.api_slot[i])
-    if (!slot) {
-      return false
-    }
-    slotitem_ok = slot.mst.api_id === condition.flagship_slotitem_ids[i]
-    if (!slotitem_ok) {
-      return false
-    }
-
-  }
-
-  if (
-    !condition.flagship_slotitem_lvl.length &&
-    condition.flagship_slotitem_alv_max === undefined
-  ) {
-    return slotitem_ok
-  }
-
-  // check item level
-  for (let i = 0; i < condition.flagship_slotitem_lvl.length; ++i) {
-    if (! condition.flagship_slotitem_ids[i]) {
-      continue
-    }
-
     const slot = svdata.slot(ship.api_slot[i])
-    if (!slot) {
-      slotitem_ok = false
-      break
-    }
-    const is_lv_max_ok = condition.flagship_slotitem_lvl[i] <= (slot.api.api_level ?? 0)
-    if (!is_lv_max_ok) {
-      slotitem_ok = false
-      break
-    }
-    if (0 === i) {
-      const is_alv_max_ok =
-        condition.flagship_slotitem_alv_max === undefined || slot!.api.api_alv === 7
-      if (!is_alv_max_ok) {
-        slotitem_ok = false
-        break
+    const requiredLevel = condition.flagship_slotitem_lvl[i] ?? 0
+    const proficiencyMax =
+      i === 0 && condition.flagship_slotitem_alv_max === true
+    const itemName =
+      svdata.mstSlotitem(expectedItemId)?.api_name ??
+      translate('quest.progress.equipment.unknown', {
+        params: { id: expectedItemId }
+      })
+    const levelText = requiredLevel > 0 ? ` ★+${requiredLevel}` : ''
+    const proficiencyText = proficiencyMax
+      ? translate('quest.progress.proficiency.parenthesized', {
+          params: {
+            value: translate('quest.progress.proficiency.max')
+          }
+        })
+      : ''
+    checks.push({
+      kind: 'equipment',
+      label: translate('quest.condition.flagshipSlot', {
+        params: {
+          slot: i + 1,
+          item: `${itemName}${levelText}${proficiencyText}`
+        }
+      }),
+      satisfied:
+        !!slot &&
+        slot.mst.api_id === expectedItemId &&
+        (slot.api.api_level ?? 0) >= requiredLevel &&
+        (!proficiencyMax || slot.api.api_alv === 7)
+    })
+  }
+
+  if (condition.flagship_slotitem_only) {
+    const otherSlotIds = [
+      ...ship.api_slot.slice(1),
+      ...(ship.api_slot_ex > 0 ? [ship.api_slot_ex] : [])
+    ]
+    checks.push({
+      kind: 'equipment-only',
+      label: translate('quest.condition.flagshipOtherSlotsEmpty'),
+      satisfied: otherSlotIds.every((slotId) => !svdata.slot(slotId))
+    })
+  }
+
+  return checks
+}
+
+export function checkCondition(svdata: SvData, condition: DestroyItemCondition): boolean {
+  const checks = questConditionChecks(svdata, condition)
+  return checks.length === 0 || checks.every((check) => check.satisfied === true)
+}
+
+function questFleetRequiredCount(
+  rule: {
+    min?: number
+    exact?: number
+  }
+): number {
+  return rule.exact ?? rule.min ?? 1
+}
+
+function questFleetCountSatisfied(
+  current: number,
+  rule: {
+    min?: number
+    exact?: number
+    maximum?: number
+  }
+): boolean {
+  return rule.exact !== undefined
+    ? current === rule.exact
+    : current >= (rule.min ?? 1) &&
+        (rule.maximum === undefined || current <= rule.maximum)
+}
+
+function questFleetCountLabel(
+  label: string,
+  rule: {
+    min?: number
+    exact?: number
+    maximum?: number
+    minimumLevel?: number
+  },
+  translate: AppTranslator = DefaultQuestTranslator
+): string {
+  const required = questFleetRequiredCount(rule)
+  const leveledLabel = rule.minimumLevel
+    ? translate('quest.condition.levelAtLeast', {
+        params: { label, level: rule.minimumLevel }
+      })
+    : label
+  return rule.exact !== undefined
+    ? translate('quest.condition.countExact', {
+        params: { label: leveledLabel, count: required }
+      })
+    : rule.maximum !== undefined
+      ? translate('quest.condition.countRange', {
+          params: {
+            label: leveledLabel,
+            minimum: required,
+            maximum: rule.maximum
+          }
+        })
+      : translate('quest.condition.countAtLeast', {
+          params: { label: leveledLabel, count: required }
+        })
+}
+
+function questFleetDeckLabel(
+  deckId: ApiDeckPortId | number,
+  translate: AppTranslator
+): string {
+  return translate('quest.condition.deck', {
+    params: { deck: deckId }
+  })
+}
+
+export function questFleetConditionChecks(
+  svdata: SvData,
+  condition: QuestFleetCondition,
+  providedShipIds?: readonly number[],
+  translate: AppTranslator = DefaultQuestTranslator
+): QuestFleetCheck[] {
+  const deckId = condition.deckId ?? ApiDeckPortId.deck1st
+  const deck = svdata.deckPort(deckId)
+  const shipIds = providedShipIds ?? deck?.api_ship
+  if (!shipIds) {
+    const firstDeckLoaded = !!svdata.deckPort(ApiDeckPortId.deck1st)
+    return [
+      {
+        kind: 'deck',
+        label: translate('quest.condition.deckData', {
+          params: { deck: deckId }
+        }),
+        current: undefined,
+        required: undefined,
+        satisfied:
+          deckId === ApiDeckPortId.deck1st || !firstDeckLoaded
+            ? undefined
+            : false
+      }
+    ]
+  }
+
+  const ships = toShipMsts(svdata, [...shipIds])
+  const deckCount = deckShipCount([...shipIds])
+  return condition.rules.map((rule): QuestFleetCheck => {
+    switch (rule.kind) {
+      case 'ship-count': {
+        const required = questFleetRequiredCount(rule)
+        const label =
+          rule.exact !== undefined
+            ? translate('quest.condition.shipCountExact', {
+                params: { count: required }
+              })
+            : rule.maximum !== undefined
+              ? translate('quest.condition.shipCountRange', {
+                  params: {
+                    minimum: required,
+                    maximum: rule.maximum
+                  }
+                })
+              : translate('quest.condition.shipCountAtLeast', {
+                  params: { count: required }
+                })
+        return {
+          kind: 'ship-count',
+          label,
+          current: deckCount,
+          required,
+          satisfied: questFleetCountSatisfied(deckCount, rule)
+        }
+      }
+      case 'flagship-type': {
+        const flagship = ships[0]
+        const matches =
+          !!flagship &&
+          isShipType(flagship.mst, [...rule.types]) &&
+          (rule.minimumLevel === undefined ||
+            flagship.api.api_lv >= rule.minimumLevel)
+        const typeLabel =
+          rule.label ?? questShipTypesLabel([...rule.types], translate)
+        const target = rule.minimumLevel
+          ? translate('quest.condition.levelAtLeast', {
+              params: { label: typeLabel, level: rule.minimumLevel }
+            })
+          : typeLabel
+        return {
+          kind: 'flagship',
+          label: translate('quest.condition.flagship', {
+            params: { target }
+          }),
+          current: matches ? 1 : 0,
+          required: 1,
+          satisfied: matches
+        }
+      }
+      case 'flagship-category': {
+        const flagship = ships[0]
+        const matches =
+          !!flagship &&
+          rule.categories.includes(flagship.mst.api_ctype) &&
+          (rule.minimumLevel === undefined ||
+            flagship.api.api_lv >= rule.minimumLevel)
+        const categoryLabel =
+          rule.label ??
+          questShipCategoriesLabel([...rule.categories], translate)
+        const target = rule.minimumLevel
+          ? translate('quest.condition.levelAtLeast', {
+              params: {
+                label: categoryLabel,
+                level: rule.minimumLevel
+              }
+            })
+          : categoryLabel
+        return {
+          kind: 'flagship',
+          label: translate('quest.condition.flagship', {
+            params: { target }
+          }),
+          current: matches ? 1 : 0,
+          required: 1,
+          satisfied: matches
+        }
+      }
+      case 'flagship-specific': {
+        const flagship = ships[0]
+        const acceptedIds = rule.exactMasterIds
+          ? [...rule.baseShipIds]
+          : rule.baseShipIds.flatMap((id) => svdata.shipMstIds(id))
+        const matches =
+          !!flagship &&
+          acceptedIds.includes(flagship.mst.api_id) &&
+          (rule.minimumLevel === undefined ||
+            flagship.api.api_lv >= rule.minimumLevel)
+        const names = rule.baseShipIds.map(
+          (id) => svdata.mstShip(id)?.api_name ?? ''
+        )
+        const baseTarget =
+          rule.label ??
+          questConditionNames(
+            names,
+            translate('quest.progress.ship.specified'),
+            translate
+          )
+        const target = rule.minimumLevel
+          ? translate('quest.condition.levelAtLeast', {
+              params: {
+                label: baseTarget,
+                level: rule.minimumLevel
+              }
+            })
+          : baseTarget
+        return {
+          kind: 'flagship',
+          label: translate('quest.condition.flagship', {
+            params: { target }
+          }),
+          current: matches ? 1 : 0,
+          required: 1,
+          satisfied: matches
+        }
+      }
+      case 'flagship-level': {
+        const flagshipLevel = ships[0]?.api.api_lv
+        const matches =
+          flagshipLevel !== undefined &&
+          flagshipLevel >= rule.minimum &&
+          (rule.maximum === undefined || flagshipLevel <= rule.maximum)
+        return {
+          kind: 'flagship',
+          label:
+            rule.maximum === undefined
+              ? translate(
+                  'quest.condition.flagshipLevelOnlyAtLeast',
+                  {
+                    params: { level: rule.minimum }
+                  }
+                )
+              : translate('quest.condition.flagshipLevelRange', {
+                  params: {
+                    minimum: rule.minimum,
+                    maximum: rule.maximum
+                  }
+                }),
+          current: flagshipLevel,
+          required: rule.minimum,
+          satisfied: flagshipLevel === undefined ? undefined : matches
+        }
+      }
+      case 'ship-type-count': {
+        const current = ships.filter(
+          (ship, index) =>
+            !rule.excludePositions?.includes(index + 1) &&
+            isShipType(ship.mst, [...rule.types]) &&
+            (rule.minimumLevel === undefined ||
+              ship.api.api_lv >= rule.minimumLevel)
+        ).length
+        const required = questFleetRequiredCount(rule)
+        return {
+          kind: 'ship-type',
+          label: questFleetCountLabel(
+            rule.label ??
+              (rule.excludePositions?.length
+                ? translate('quest.condition.excludingPositions', {
+                    params: {
+                      target: questShipTypesLabel(
+                        [...rule.types],
+                        translate
+                      )
+                    }
+                  })
+                : questShipTypesLabel([...rule.types], translate)),
+            rule,
+            translate
+          ),
+          current,
+          required,
+          satisfied: questFleetCountSatisfied(current, rule)
+        }
+      }
+      case 'allowed-ship-types': {
+        const current = ships.filter((ship) =>
+          isShipType(ship.mst, [...rule.types])
+        ).length
+        return {
+          kind: 'ship-type',
+          label: translate('quest.condition.allowedShipTypes', {
+            params: {
+              types:
+                rule.label ??
+                questShipTypesLabel([...rule.types], translate)
+            }
+          }),
+          current,
+          required: deckCount,
+          satisfied: current === deckCount
+        }
+      }
+      case 'ship-category-count': {
+        const excludedIds = rule.excludeBaseShipIds?.flatMap((id) =>
+          svdata.shipMstIds(id)
+        )
+        const current = ships.filter(
+          (ship, index) =>
+            !rule.excludePositions?.includes(index + 1) &&
+            (!excludedIds || !excludedIds.includes(ship.mst.api_id)) &&
+            rule.categories.includes(ship.mst.api_ctype) &&
+            (rule.minimumLevel === undefined ||
+              ship.api.api_lv >= rule.minimumLevel)
+        ).length
+        const required = questFleetRequiredCount(rule)
+        return {
+          kind: 'ship-category',
+          label: questFleetCountLabel(
+            rule.label ??
+              (excludedIds || rule.excludePositions?.length
+                ? translate('quest.condition.excludingShips', {
+                    params: {
+                      target: questShipCategoriesLabel(
+                        [...rule.categories],
+                        translate
+                      )
+                    }
+                  })
+                : questShipCategoriesLabel(
+                    [...rule.categories],
+                    translate
+                  )),
+            rule,
+            translate
+          ),
+          current,
+          required,
+          satisfied: questFleetCountSatisfied(current, rule)
+        }
+      }
+      case 'specific-ship-count': {
+        const acceptedIds = rule.exactMasterIds
+          ? [...rule.baseShipIds]
+          : rule.baseShipIds.flatMap((id) => svdata.shipMstIds(id))
+        const current = ships.filter(
+          (ship, index) =>
+            !rule.excludePositions?.includes(index + 1) &&
+            acceptedIds.includes(ship.mst.api_id) &&
+            (rule.minimumLevel === undefined ||
+              ship.api.api_lv >= rule.minimumLevel)
+        ).length
+        const names = rule.baseShipIds.map(
+          (id) => svdata.mstShip(id)?.api_name ?? ''
+        )
+        const required = questFleetRequiredCount(rule)
+        return {
+          kind: 'specific-ships',
+          label: questFleetCountLabel(
+            rule.label ??
+              (rule.excludePositions?.length
+                ? translate('quest.condition.excludingPositions', {
+                    params: {
+                      target: questConditionNames(
+                        names,
+                        translate('quest.progress.ship.specified'),
+                        translate
+                      )
+                    }
+                  })
+                : questConditionNames(
+                    names,
+                    translate('quest.progress.ship.specified'),
+                    translate
+                  )),
+            rule,
+            translate
+          ),
+          current,
+          required,
+          satisfied: questFleetCountSatisfied(current, rule)
+        }
+      }
+      case 'sum-of-counts': {
+        const current = rule.components.reduce((total, component) => {
+          switch (component.kind) {
+            case 'ship-type':
+              return total + ships.filter(
+                (ship) =>
+                  isShipType(ship.mst, [...component.types]) &&
+                  (component.minimumLevel === undefined ||
+                    ship.api.api_lv >= component.minimumLevel)
+              ).length
+            case 'ship-category':
+              return total + ships.filter(
+                (ship) =>
+                  component.categories.includes(ship.mst.api_ctype) &&
+                  (component.minimumLevel === undefined ||
+                    ship.api.api_lv >= component.minimumLevel)
+              ).length
+            case 'specific-ships': {
+              const acceptedIds = component.exactMasterIds
+                ? [...component.baseShipIds]
+                : component.baseShipIds.flatMap((id) =>
+                    svdata.shipMstIds(id)
+                  )
+              return total + ships.filter(
+                (ship) =>
+                  acceptedIds.includes(ship.mst.api_id) &&
+                  (component.minimumLevel === undefined ||
+                    ship.api.api_lv >= component.minimumLevel)
+              ).length
+            }
+          }
+        }, 0)
+        const required = questFleetRequiredCount(rule)
+        return {
+          kind: 'combined-count',
+          label: questFleetCountLabel(
+            rule.label,
+            rule,
+            translate
+          ),
+          current,
+          required,
+          satisfied: questFleetCountSatisfied(current, rule)
+        }
+      }
+      case 'ship-position-specific': {
+        const shipId = shipIds[rule.position - 1]
+        const ship = shipId === undefined ? undefined : svdata.ship(shipId)
+        const mst = ship ? svdata.mstShip(ship.api_ship_id) : undefined
+        const acceptedIds = rule.exactMasterIds
+          ? [...rule.baseShipIds]
+          : rule.baseShipIds.flatMap((id) => svdata.shipMstIds(id))
+        const matches =
+          !!ship &&
+          !!mst &&
+          acceptedIds.includes(mst.api_id) &&
+          (rule.minimumLevel === undefined ||
+            ship.api_lv >= rule.minimumLevel)
+        const names = rule.baseShipIds.map(
+          (id) => svdata.mstShip(id)?.api_name ?? ''
+        )
+        const baseTarget =
+          rule.label ??
+          questConditionNames(
+            names,
+            translate('quest.progress.ship.specified'),
+            translate
+          )
+        const target = rule.minimumLevel
+          ? translate('quest.condition.levelAtLeast', {
+              params: {
+                label: baseTarget,
+                level: rule.minimumLevel
+              }
+            })
+          : baseTarget
+        return {
+          kind: 'specific-ships',
+          label: translate('quest.condition.positionShip', {
+            params: {
+              position: rule.position,
+              target
+            }
+          }),
+          current: matches ? 1 : 0,
+          required: 1,
+          satisfied: matches
+        }
+      }
+      case 'ship-position-type': {
+        const ship = ships[rule.position - 1]
+        const matches =
+          !!ship &&
+          isShipType(ship.mst, [...rule.types]) &&
+          (rule.minimumLevel === undefined ||
+            ship.api.api_lv >= rule.minimumLevel)
+        const typeLabel =
+          rule.label ?? questShipTypesLabel([...rule.types], translate)
+        const target = rule.minimumLevel
+          ? translate('quest.condition.levelAtLeast', {
+              params: { label: typeLabel, level: rule.minimumLevel }
+            })
+          : typeLabel
+        return {
+          kind: 'ship-type',
+          label: translate('quest.condition.positionShip', {
+            params: { position: rule.position, target }
+          }),
+          current: matches ? 1 : 0,
+          required: 1,
+          satisfied: matches
+        }
+      }
+      case 'ship-position-category': {
+        const ship = ships[rule.position - 1]
+        const matches =
+          !!ship &&
+          rule.categories.includes(ship.mst.api_ctype) &&
+          (rule.minimumLevel === undefined ||
+            ship.api.api_lv >= rule.minimumLevel)
+        const categoryLabel =
+          rule.label ??
+          questShipCategoriesLabel([...rule.categories], translate)
+        const target = rule.minimumLevel
+          ? translate('quest.condition.levelAtLeast', {
+              params: {
+                label: categoryLabel,
+                level: rule.minimumLevel
+              }
+            })
+          : categoryLabel
+        return {
+          kind: 'ship-category',
+          label: translate('quest.condition.positionShip', {
+            params: { position: rule.position, target }
+          }),
+          current: matches ? 1 : 0,
+          required: 1,
+          satisfied: matches
+        }
+      }
+      case 'ship-position-slotitem-count': {
+        const shipId = shipIds[rule.position - 1]
+        const info =
+          shipId === undefined ? undefined : svdata.shipInfo(shipId)
+        const slotIndexes = rule.slotPositions?.map(
+          (position) => position - 1
+        )
+        const current = info
+          ? info.slots.filter(
+              (slot, index) =>
+                (!slotIndexes || slotIndexes.includes(index)) &&
+                slot?.mst.api_id === rule.itemId
+            ).length
+          : undefined
+        const required = questFleetRequiredCount(rule)
+        const itemName =
+          rule.label ??
+          svdata.mstSlotitem(rule.itemId)?.api_name ??
+          translate('quest.progress.equipment.unknown', {
+            params: { id: rule.itemId }
+          })
+        const requirement = questFleetCountLabel(
+          itemName,
+          rule,
+          translate
+        )
+        return {
+          kind: 'equipment',
+          label: rule.slotPositions
+            ? translate('quest.condition.positionSlots', {
+                params: {
+                  position: rule.position,
+                  slots: translate('quest.condition.slotList', {
+                    params: {
+                      slots: rule.slotPositions.join('・第')
+                    }
+                  }),
+                  requirement
+                }
+              })
+            : translate('quest.condition.positionShip', {
+                params: {
+                  position: rule.position,
+                  target: requirement
+                }
+              }),
+          current,
+          required,
+          satisfied:
+            current === undefined
+              ? undefined
+              : questFleetCountSatisfied(current, rule)
+        }
+      }
+      case 'deck-available': {
+        const available = !!svdata.deckPort(rule.deckId)
+        return {
+          kind: 'deck',
+          label: translate('quest.condition.deckOpen', {
+            params: {
+              deck: questFleetDeckLabel(rule.deckId, translate)
+            }
+          }),
+          current: available ? 1 : 0,
+          required: 1,
+          satisfied: available
+        }
+      }
+      case 'battle-deck': {
+        const activeDeckId = svdata.battleDeck?.api_id
+        const matches = activeDeckId === rule.deckId
+        return {
+          kind: 'deck',
+          label: translate('quest.condition.sortieDeck', {
+            params: {
+              deck: questFleetDeckLabel(rule.deckId, translate)
+            }
+          }),
+          current: activeDeckId,
+          required: rule.deckId,
+          satisfied: activeDeckId === undefined ? undefined : matches
+        }
+      }
+      case 'any-of': {
+        const alternatives = rule.alternatives.map((rules) =>
+          questFleetConditionChecks(
+            svdata,
+            {
+              deckId,
+              rules
+            },
+            shipIds,
+            translate
+          )
+        )
+        const matches = alternatives.some((checks) =>
+          checks.every((check) => check.satisfied === true)
+        )
+        return {
+          kind: 'alternative',
+          label: rule.label,
+          current: matches ? 1 : 0,
+          required: 1,
+          satisfied: matches
+        }
+      }
+      case 'all-fast': {
+        const current = ships.filter((ship) => ship.mst.api_soku >= 10).length
+        return {
+          kind: 'speed',
+          label: translate('quest.condition.allFast'),
+          current,
+          required: deckCount,
+          satisfied: current === deckCount
+        }
       }
     }
-  }
+  })
+}
 
-  // check equip only one
-  if (slotitem_ok && condition.flagship_slotitem_only) {
-    const slot = svdata.slot(ship.api_slot[1] ?? -1)
-    if (slot) {
-      return false
-    }
-  }
-
-  return slotitem_ok
+export function questFleetChecks(
+  svdata: SvData,
+  questId: number,
+  translate: AppTranslator = DefaultQuestTranslator
+): QuestFleetCheck[] | undefined {
+  const condition = questFleetConditions.get(questId)
+  return condition
+    ? questFleetConditionChecks(
+        svdata,
+        condition,
+        undefined,
+        translate
+      )
+    : undefined
 }
 
 // 101: はじめての「編成」！
@@ -798,6 +1776,9 @@ register(
     static isDeckMatch(_svdata: SvData, ship_ids: number[]): boolean {
       return deckShipCount(ship_ids) >= 2
     }
+  },
+  {
+    rules: [{ kind: 'ship-count', min: 2 }]
   }
 )
 
@@ -815,6 +1796,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -835,6 +1825,19 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.keijyun]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -851,6 +1854,9 @@ register(
     static isDeckMatch(_svdata: SvData, ship_ids: number[]): boolean {
       return deckShipCount(ship_ids) === 6
     }
+  },
+  {
+    rules: [{ kind: 'ship-count', exact: 6 }]
   }
 )
 
@@ -868,6 +1874,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.keijyun]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.keijyun],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -885,6 +1900,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.jyuujyun]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.jyuujyun],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -908,6 +1932,21 @@ register(
       }
       return deckShipCount(ship_ids) === 6;
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.kei_kuubo, ApiShipType.seiki_kuubo],
+        label: '軽空母 / 正規空母'
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 3
+      },
+      { kind: 'ship-count', exact: 6 }
+    ]
   }
 )
 
@@ -925,6 +1964,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipCategoryCount(msts, [ApiShipCategory.tenryu]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.tenryu],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -942,6 +1990,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipCategoryCount(msts, [ApiShipCategory.sendai]) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.sendai],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -959,6 +2016,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipCategoryCount(msts, [ApiShipCategory.myoukou]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.myoukou],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -976,6 +2042,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipCategoryCount(msts, [ApiShipCategory.fusou]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.fusou],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -993,6 +2068,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipCategoryCount(msts, [ApiShipCategory.ise]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.ise],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -1013,6 +2097,21 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.jyuujyun]) >= 2 
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koukuu_senkan, ApiShipType.teisoku_senkan],
+        label: '戦艦 / 航空戦艦',
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.jyuujyun],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -1039,6 +2138,16 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 4 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [83, 84, 90, 91],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1055,6 +2164,14 @@ register(
     static isDeckMatch(svdata: SvData, _ship_ids: number[]): boolean {
       return !!svdata.deckPort(ApiDeckPortId.deck2st)
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'deck-available',
+        deckId: ApiDeckPortId.deck2st
+      }
+    ]
   }
 )
 
@@ -1072,6 +2189,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.suibo]) >= 1
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.suibo],
+        min: 1
+      }
+    ]
   }
 )
 
@@ -1097,6 +2223,22 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 2 
     }
+  },
+  {
+    deckId: ApiDeckPortId.deck2st,
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: ApiShipTypeKuboClasses,
+        label: '空母系',
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -1114,6 +2256,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipCategoryCount(msts, [ApiShipCategory.kongou]) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.kongou],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1144,6 +2295,18 @@ register(
       }
       return !msts.find((el) => el.mst.api_soku < 10);
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 6 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [69, 61, 60, 59, 51],
+        exact: 5,
+        label: '鳥海 / 青葉 / 加古 / 古鷹 / 天龍'
+      },
+      { kind: 'all-fast' }
+    ]
   }
 )
 
@@ -1170,6 +2333,16 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 4 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [34, 35, 36, 37],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1193,6 +2366,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [67, 66, 69, 68],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1216,6 +2398,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [26, 27, 70, 43],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1240,6 +2431,20 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [110, 111],
+        exact: 2
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -1268,6 +2473,16 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 6
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 6 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [69, 61, 60, 59, 51, 123],
+        exact: 6
+      }
+    ]
   }
 )
 
@@ -1285,6 +2500,16 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.sensuikan, ApiShipType.sensui_kuubo]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.sensuikan, ApiShipType.sensui_kuubo],
+        label: '潜水艦 / 潜水空母',
+        min: 2
+      }
+    ]
   }
 )
 
@@ -1305,6 +2530,20 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.koujyun]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koukuu_senkan],
+        min: 2
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koujyun],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -1322,6 +2561,16 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.sensuikan, ApiShipType.sensui_kuubo]) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.sensuikan, ApiShipType.sensui_kuubo],
+        label: '潜水艦 / 潜水空母',
+        min: 3
+      }
+    ]
   }
 )
 
@@ -1345,6 +2594,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [61, 60, 59, 123],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1368,6 +2626,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [63, 64, 100, 101],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1392,6 +2659,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [114, 15, 16, 49, 18],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -1418,6 +2694,16 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 4 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [95, 97, 96, 98],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1444,6 +2730,16 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 4 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [49, 48, 17, 18],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1470,6 +2766,16 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 4 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [1, 2, 164, 31],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1488,6 +2794,15 @@ register(
       const lv = msts[0].api.api_lv
       return 90 <= lv && lv <= 99
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-level',
+        minimum: 90,
+        maximum: 99
+      }
+    ]
   }
 )
 
@@ -1509,6 +2824,15 @@ register(
       const lv = msts[0].api.api_lv
       return lv >= 100
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 6 },
+      {
+        kind: 'flagship-level',
+        minimum: 100
+      }
+    ]
   }
 )
 
@@ -1535,6 +2859,16 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 4 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [1, 165, 164, 31],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1557,6 +2891,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [62, 63, 65],
+        exact: 3
+      }
+    ]
   }
 )
 
@@ -1586,6 +2929,24 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [196]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [90],
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -1606,6 +2967,20 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.sensui_kuubo, ApiShipType.sensuikan]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.sensuibokan]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.sensui_kuubo, ApiShipType.sensuikan],
+        label: '潜水艦 / 潜水空母',
+        min: 4
+      }
+    ]
   }
 )
 
@@ -1626,6 +3001,14 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 1
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [319]
+      }
+    ]
   }
 )
 
@@ -1655,6 +3038,24 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [197]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [196],
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -1678,10 +3079,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [149, 150, 151, 152],
+        exact: 4
+      }
+    ]
   }
 )
 
-// 143: 精鋭「第三戦隊」全艦集結せよ！
+// 143: 「新型正規空母」を配備せよ！
 register(
   143,
   class {
@@ -1698,6 +3108,14 @@ register(
       ].flat()
       return !!shipCount(msts, shipIds)
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [404]
+      }
+    ]
   }
 )
 
@@ -1721,6 +3139,24 @@ register(
       }
       return shipCategoryCount(msts, [ApiShipCategory.fusou]) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.nagato],
+        exact: 2
+      },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.fusou],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -1746,6 +3182,26 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.keijyun]) > 0;
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [
+          ApiShipCategory.yamato,
+          ApiShipCategory.nagato,
+          ApiShipCategory.ise,
+          ApiShipCategory.fusou
+        ],
+        label: '低速戦艦系',
+        min: 3
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.keijyun],
+        min: 1
+      }
+    ]
   }
 )
 
@@ -1766,6 +3222,14 @@ register(
       ].flat()
       return !!shipCount(msts, shipIds)
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [182]
+      }
+    ]
   }
 )
 
@@ -1790,6 +3254,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [26, 27, 70, 43, 97],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -1822,6 +3295,29 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) === 4;
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [49]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [64],
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.keijyun],
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1850,6 +3346,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [9, 10, 11, 32, 33],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1877,6 +3386,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [38, 39, 40, 41],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1906,6 +3428,24 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [28, 29, 6],
+        exact: 3
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -1938,6 +3478,19 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [427]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [59, 60, 61, 123, 115, 51],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -1963,6 +3516,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [51, 52],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -1996,6 +3562,23 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [437]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [35, 36, 37],
+        exact: 3
+      }
+    ]
   }
 )
 
@@ -2031,6 +3614,23 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 6
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [114]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [35, 41, 40, 46, 50],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -2066,6 +3666,23 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 6
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [200]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [35, 133, 135, 132, 50],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -2097,6 +3714,23 @@ register(
       ].flat()
       return !!shipCount([msts[1]], shipIds2)
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 2
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [541]
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [573]
+      }
+    ]
   }
 )
 
@@ -2120,6 +3754,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [110, 111, 93, 132],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -2143,6 +3786,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [192, 193, 100, 101],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -2172,6 +3824,19 @@ register(
 
       return shipCount(msts.slice(1), shipIds2) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [64]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [100, 21],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -2202,6 +3867,19 @@ register(
 
       return shipCount(msts.slice(1), shipIds2) === 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [112]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [116, 108, 109],
+        exact: 3
+      }
+    ]
   }
 )
 
@@ -2223,6 +3901,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [82, 88],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -2259,6 +3946,23 @@ register(
 
       return shipCount(msts.slice(1), shipIds2) === 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 6
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [112]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [117, 108, 109, 82, 88],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -2287,6 +3991,24 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [461, 462],
+        exact: 2
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -2319,6 +4041,23 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 6
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [53]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [22, 113],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -2346,6 +4085,29 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 6
+      },
+      {
+        kind: 'ship-type-count',
+        types: ApiShipTypeKuboClasses,
+        exact: 2
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koukuu_senkan, ApiShipType.koujyun],
+        exact: 2
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -2379,6 +4141,23 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 6
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [49]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [64, 183, 425, 410],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -2407,6 +4186,19 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [141]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [418, 309],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -2440,6 +4232,23 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [242]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [43, 405, 46],
+        exact: 3
+      }
+    ]
   }
 )
 
@@ -2475,6 +4284,28 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 5
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [158]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [469, 145],
+        exact: 2
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -2495,6 +4326,19 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.keijyun]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -2528,6 +4372,23 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [463]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [97, 96, 98],
+        exact: 3
+      }
+    ]
   }
 )
 
@@ -2549,6 +4410,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [468, 199],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -2575,6 +4445,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [12, 486, 13, 14],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -2598,6 +4481,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [113, 61, 25, 24],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -2634,6 +4526,23 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 6
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [487]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [119, 118, 215, 264, 368, 208],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -2665,6 +4574,23 @@ register(
       ].flat()
       return !!shipCount([msts[1]], shipIds2)
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 2
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [541]
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [276]
+      }
+    ]
   }
 )
 
@@ -2704,6 +4630,28 @@ register(
       ].flat()
       return shipCount(msts.slice(2), shipIds3) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 4
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [504]
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [503]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [73, 121],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -2746,6 +4694,36 @@ register(
       }
       return shipTypeCount(msts.slice(2), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 6
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 1,
+        baseShipIds: [82, 88],
+        minimumLevel: 50
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [82, 88],
+        minimumLevel: 50
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.keijyun],
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -2784,6 +4762,28 @@ register(
 
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) === 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 6
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [488]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [44, 45, 405, 46],
+        exact: 4
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -2811,6 +4811,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [548, 418, 366, 258],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -2839,6 +4852,24 @@ register(
 
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [545]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.keijyun],
+        exact: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -2866,6 +4897,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [463, 199, 490, 489],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -2899,6 +4943,20 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 5
     }
+  },
+  {
+    deckId: ApiDeckPortId.deck3st,
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 5
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [70, 43, 97, 413, 414],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -2931,6 +4989,23 @@ register(
       ].flat()
       return !!shipCount(msts.slice(1), shipIds2)
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 2
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [543]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [345, 359, 344],
+        min: 1
+      }
+    ]
   }
 )
 
@@ -2965,6 +5040,23 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 6
+      },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [498]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [488, 144, 323, 246, 330],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -2992,6 +5084,20 @@ register(
       ].flat()
       return shipCount(msts, shipIds) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 3,
+        maximum: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [240, 326, 419],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -3019,10 +5125,23 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [317, 313, 557, 558],
+        exact: 4
+      }
+    ]
   }
 )
 
-// 192: 改装「第十七駆逐隊」、再編始め！
+// 192: 精鋭「第十八駆逐隊」を編成せよ！
 register(
   192,
   class {
@@ -3046,6 +5165,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [198, 464, 225, 226],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -3074,13 +5206,34 @@ register(
         return false
       }
 
-      const filtered = msts.filter(mst => !shipIds.includes(mst.api.api_id))
+      const filtered = msts.filter(mst => !shipIds.includes(mst.mst.api_id))
       if (shipCategoryCount(filtered, [ApiShipCategory.kagerou, ApiShipCategory.yuugumo]) !== 3) {
         return false
       }
 
       return !filtered.some(mst => mst.api.api_lv < 70)
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 6
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [566, 567, 568],
+        exact: 3
+      },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.kagerou, ApiShipCategory.yuugumo],
+        exact: 3,
+        label: '指定艦以外の陽炎型 / 夕雲型',
+        minimumLevel: 70,
+        excludeBaseShipIds: [566, 567, 568]
+      }
+    ]
   }
 )
 
@@ -3105,6 +5258,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 2
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [477, 478],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -3132,6 +5298,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [557, 558, 556, 559],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -3156,6 +5335,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 2
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [542, 563],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -3182,6 +5374,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [542, 563, 564, 648],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -3205,6 +5410,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [230, 232, 231, 233],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -3244,6 +5458,19 @@ register(
       shipIds.push(...shipIdsMonth6)
       return shipCount(msts, shipIds) >= 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 5
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [994, 992, 993, 642, 16, 35, 41, 20, 533, 532],
+        min: 5
+      }
+    ]
   }
 )
 
@@ -3345,6 +5572,23 @@ register(
       }
       return shipTypeCount(ships.slice(1), [ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 4
+      },
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.keijyun]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -3364,6 +5608,14 @@ register(
       const ships = toShipMsts(svdata, [ship_ids[0]])
       return !!shipTypeCount([ships[0]], [ApiShipType.jyuujyun])
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.jyuujyun]
+      }
+    ]
   }
 )
 
@@ -3383,6 +5635,14 @@ register(
       const ships = toShipMsts(svdata, [ship_ids[0]])
       return !!shipTypeCount([ships[0]], [ApiShipType.kousoku_senkan, ApiShipType.teisoku_senkan])
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.kousoku_senkan, ApiShipType.teisoku_senkan]
+      }
+    ]
   }
 )
 
@@ -3405,6 +5665,18 @@ register(
       const ships = toShipMsts(svdata, [ship_ids[0]])
       return !!shipTypeCount([ships[0]], ApiShipTypeKuboClasses)
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 4
+      },
+      {
+        kind: 'flagship-type',
+        types: ApiShipTypeKuboClasses
+      }
+    ]
   }
 )
 
@@ -3492,6 +5764,14 @@ register(
     static isDeckMatch(svdata: SvData, _ship_ids: number[]): boolean {
       return svdata.battleDeck?.api_id === ApiDeckPortId.deck2st
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'battle-deck',
+        deckId: ApiDeckPortId.deck2st
+      }
+    ]
   }
 )
 
@@ -3566,6 +5846,22 @@ register(
       }
       return !msts.find((el) => el.mst.api_soku < 10);
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 6
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [69, 61, 60, 59, 51],
+        exact: 5
+      },
+      {
+        kind: 'all-fast'
+      }
+    ]
   }
 )
 
@@ -3622,6 +5918,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 4
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [34, 35, 36, 37],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -3647,6 +5956,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [67, 66, 69, 68],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -3673,6 +5991,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [26, 27, 70, 43],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -3697,6 +6024,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [110, 111],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -3748,6 +6084,19 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 6
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        exact: 6
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [69, 61, 60, 59, 51, 123],
+        exact: 6
+      }
+    ]
   }
 )
 
@@ -3816,6 +6165,16 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.sensuikan, ApiShipType.sensui_kuubo]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.sensuikan, ApiShipType.sensui_kuubo],
+        label: '潜水艦 / 潜水空母',
+        min: 2
+      }
+    ]
   }
 )
 
@@ -3839,6 +6198,20 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.koujyun]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koukuu_senkan],
+        min: 2
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koujyun],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -3865,6 +6238,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [61, 60, 59, 123],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -3903,6 +6285,19 @@ register(
       }
       return shipCount(ships.slice(1), check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [24, 99, 465, 471, 424, 675, 485, 528, 484, 162, 995]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [24, 99, 465, 471, 424, 675, 485, 528, 484, 162, 995],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -3929,6 +6324,21 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: ApiShipTypeKeijyunClasses,
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        label: '駆逐艦 / 海防艦',
+        min: 3
+      }
+    ]
   }
 )
 
@@ -3964,6 +6374,19 @@ register(
       ].flat()
       return shipCount(ships.slice(1), ids2) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [587]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [457, 459, 47],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -4005,6 +6428,53 @@ register(
         shipTypeCount(ships, [ApiShipType.jyuujyun]) === 2 && 
         shipTypeCount(ships, [ApiShipType.kutikukan]) === 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-count',
+        min: 5,
+        maximum: 6
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [65, 471],
+        exact: 2
+      },
+      {
+        kind: 'any-of',
+        label: '6隻（駆逐艦5）/ 5隻（重巡2・駆逐艦3）',
+        alternatives: [
+          [
+            {
+              kind: 'ship-count',
+              exact: 6
+            },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              exact: 5
+            }
+          ],
+          [
+            {
+              kind: 'ship-count',
+              exact: 5
+            },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.jyuujyun],
+              exact: 2
+            },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              exact: 3
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -4039,6 +6509,19 @@ register(
       }
       return shipCount(ships.slice(1), check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [416, 142, 321, 972, 535, 944, 639]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [416, 142, 321, 972, 535, 944, 639],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -4065,6 +6548,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [95, 97, 96, 98],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -4091,6 +6583,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [49, 48, 17, 18],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -4163,6 +6664,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [1, 2, 164, 31],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -4188,6 +6698,19 @@ register(
       const lv = msts[0].api.api_lv
       return 90 <= lv && lv <= 99
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'battle-deck',
+        deckId: ApiDeckPortId.deck1st
+      },
+      {
+        kind: 'flagship-level',
+        minimum: 90,
+        maximum: 99
+      }
+    ]
   }
 )
 
@@ -4213,6 +6736,18 @@ register(
       const lv = msts[0].api.api_lv
       return 100 <= lv 
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'battle-deck',
+        deckId: ApiDeckPortId.deck1st
+      },
+      {
+        kind: 'flagship-level',
+        minimum: 100
+      }
+    ]
   }
 )
 
@@ -4233,6 +6768,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.koukuu_senkan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koukuu_senkan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -4259,6 +6803,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [1, 2, 164, 31],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -4277,6 +6830,15 @@ register(
       const check_ids = [svdata.shipMstIds(62), svdata.shipMstIds(63), svdata.shipMstIds(65)].flat()
       return shipCount(toShipMsts(svdata, ship_ids), check_ids) === 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [62, 63, 65],
+        exact: 3
+      }
+    ]
   }
 )
 
@@ -4309,6 +6871,24 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [196]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [90],
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -4341,6 +6921,13 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [197] },
+      { kind: 'specific-ship-count', baseShipIds: [196], min: 1 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -4364,6 +6951,9 @@ register(
       ].flat()
       return !!shipCount([msts[0]], shipIds)
     }
+  },
+  {
+    rules: [{ kind: 'flagship-specific', baseShipIds: [954] }]
   }
 )
 
@@ -4387,6 +6977,9 @@ register(
       ].flat()
       return !!shipCount(msts, shipIds)
     }
+  },
+  {
+    rules: [{ kind: 'specific-ship-count', baseShipIds: [406], min: 1 }]
   }
 )
 
@@ -4426,6 +7019,32 @@ register(
       }
       return (keijyun + kutiku + keikuubo) === cnt
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 5 },
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], exact: 1 },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 3,
+        maximum: 4
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kei_kuubo],
+        min: 1,
+        maximum: 2
+      },
+      {
+        kind: 'allowed-ship-types',
+        types: [
+          ApiShipType.keijyun,
+          ApiShipType.kutikukan,
+          ApiShipType.kei_kuubo
+        ]
+      }
+    ]
   }
 )
 
@@ -4461,6 +7080,22 @@ register(
       const kutiku = shipTypeCount(msts, [ApiShipType.kutikukan])
       return (keijyun + kutiku) === cnt
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2 },
+      { kind: 'flagship-type', types: [ApiShipType.keijyun] },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.keijyun],
+        min: 1,
+        maximum: 2
+      },
+      {
+        kind: 'allowed-ship-types',
+        types: [ApiShipType.keijyun, ApiShipType.kutikukan]
+      }
+    ]
   }
 )
 
@@ -4501,6 +7136,22 @@ register(
       }
       return keijyun <= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 6 },
+      { kind: 'flagship-type', types: [ApiShipType.keijyun] },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.keijyun],
+        min: 1,
+        maximum: 3
+      },
+      {
+        kind: 'allowed-ship-types',
+        types: [ApiShipType.keijyun, ApiShipType.kutikukan]
+      }
+    ]
   }
 )
 
@@ -4524,6 +7175,20 @@ register(
       }
       return shipCategoryCount(msts, [ApiShipCategory.fusou]) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.nagato],
+        exact: 2
+      },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.fusou],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -4555,6 +7220,16 @@ register(
       ].flat()
       return shipCount(ships, check_ids) === 3
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [131, 143, 80, 81, 77, 87, 26, 27],
+        exact: 3
+      }
+    ]
   }
 )
 
@@ -4578,6 +7253,16 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kei_kuubo]) >= 1
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: ApiShipTypeSenkanClasses,
+        min: 2
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kei_kuubo], min: 1 }
+    ]
   }
 )
 
@@ -4619,6 +7304,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [26, 27, 70, 43, 97],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -4645,6 +7339,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [61, 60, 59, 123],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -4666,6 +7369,12 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: ApiShipTypeKuboClasses, min: 2 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -4707,6 +7416,14 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.kutikukan] },
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], exact: 1 },
+      { kind: 'ship-type-count', types: [ApiShipType.jyuujyun], exact: 1 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], exact: 4 }
+    ]
   }
 )
 
@@ -4734,6 +7451,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [9, 10, 11, 32, 33],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -4761,6 +7487,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [9, 10, 11, 32, 33],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -4787,6 +7522,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [38, 39, 40, 41],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -4815,6 +7559,12 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 4
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [28, 29, 6], exact: 3 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 4 }
+    ]
   }
 )
 
@@ -4847,6 +7597,16 @@ register(
       ].flat()
       return shipCount(msts.slice(1), ids2) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [63] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [41, 49, 15, 16],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -4877,6 +7637,13 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [271], min: 1 },
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -4912,6 +7679,16 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 5
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [427] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [59, 60, 61, 123, 115, 51],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -4938,6 +7715,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [34, 35, 36, 37],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -4958,6 +7744,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipCategoryCount(msts, [ApiShipCategory.tenryu]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.tenryu],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -4990,6 +7785,16 @@ register(
       ].flat()
       return shipCount(msts, ids) === 6
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 6 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [85, 86, 21, 34, 36, 37],
+        exact: 6
+      }
+    ]
   }
 )
 
@@ -5016,6 +7821,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [34, 35, 36, 37],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -5054,6 +7868,17 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 5
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 6 },
+      { kind: 'flagship-specific', baseShipIds: [114] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [35, 41, 40, 46, 50],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -5092,6 +7917,17 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 5
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 6 },
+      { kind: 'flagship-specific', baseShipIds: [200] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [35, 133, 135, 132, 50],
+        exact: 5
+      }
+    ]
   }
 )
 
@@ -5125,6 +7961,25 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [
+          ApiShipType.kei_kuubo,
+          ApiShipType.renjyun,
+          ApiShipType.raijyun,
+          ApiShipType.keijyun
+        ],
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -5158,6 +8013,12 @@ register(
       ].flat()
       return !!shipCount([msts[1]], shipIds2)
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-position-specific', position: 1, baseShipIds: [541] },
+      { kind: 'ship-position-specific', position: 2, baseShipIds: [276] }
+    ]
   }
 )
 
@@ -5190,6 +8051,12 @@ register(
       ].flat()
       return !!shipCount([msts[1]], shipIds2)
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-position-specific', position: 1, baseShipIds: [541] },
+      { kind: 'ship-position-specific', position: 2, baseShipIds: [276] }
+    ]
   }
 )
 
@@ -5226,6 +8093,13 @@ register(
       ].flat()
       return !!shipCount([msts[1]], shipIds2)
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2 },
+      { kind: 'ship-position-specific', position: 1, baseShipIds: [594] },
+      { kind: 'ship-position-specific', position: 2, baseShipIds: [84] }
+    ]
   }
 )
 
@@ -5259,6 +8133,25 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [
+          ApiShipType.kei_kuubo,
+          ApiShipType.keijyun,
+          ApiShipType.renjyun,
+          ApiShipType.raijyun
+        ],
+        min: 1
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -5279,6 +8172,14 @@ register(
       const msts = toShipMsts(svdata, [ship_ids[0]])
       return !! shipTypeCount([msts[0]], [ApiShipType.soukou_kuubo, ApiShipType.seiki_kuubo])
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.soukou_kuubo, ApiShipType.seiki_kuubo]
+      }
+    ]
   }
 )
 
@@ -5321,6 +8222,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [110, 111, 93, 132],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -5347,6 +8257,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [192, 193, 100, 101],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -5379,6 +8298,16 @@ register(
 
       return shipCount(msts.slice(1), shipIds2) === 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [64] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [100, 21],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -5403,6 +8332,9 @@ register(
       ].flat()
       return !!shipCount([msts[0]], ids)
     }
+  },
+  {
+    rules: [{ kind: 'flagship-specific', baseShipIds: [86] }]
   }
 )
 
@@ -5437,6 +8369,31 @@ register(
       const suibo = shipTypeCount(msts.slice(1), [ApiShipType.suibo])
       return (akasi + suibo) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [183] },
+      {
+        kind: 'any-of',
+        label: '随伴艦 明石 または 水上機母艦',
+        alternatives: [
+          [
+            {
+              kind: 'specific-ship-count',
+              baseShipIds: [182],
+              min: 1
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.suibo],
+              min: 1
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -5470,6 +8427,17 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [591] },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.kongou],
+        min: 1
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -5503,6 +8471,16 @@ register(
 
       return shipCount(msts.slice(1), shipIds2) === 3
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [112] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [116, 108, 109],
+        exact: 3
+      }
+    ]
   }
 )
 
@@ -5542,10 +8520,21 @@ register(
 
       return shipCount(msts.slice(1), shipIds2) === 5
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 6 },
+      { kind: 'flagship-specific', baseShipIds: [112] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [117, 108, 109, 82, 88],
+        exact: 5
+      }
+    ]
   }
 )
 
-// 295: 「小沢艦隊」出撃せよ！
+// 295: 「第十六戦隊(第二次)」出撃せよ！
 register(
   295,
   class {
@@ -5573,6 +8562,16 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [53] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [22, 113],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -5603,6 +8602,18 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) === 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 6 },
+      { kind: 'ship-type-count', types: ApiShipTypeKuboClasses, exact: 2 },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koukuu_senkan, ApiShipType.koujyun],
+        exact: 2
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], exact: 2 }
+    ]
   }
 )
 
@@ -5636,6 +8647,16 @@ register(
       ].flat()
       return shipCount(msts.slice(1), shipIds2) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [49] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [64, 183, 425, 410],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -5665,6 +8686,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [15, 16, 93, 94],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -5692,6 +8722,16 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -5915,6 +8955,11 @@ register(
       }
       return true
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 2 }
+    ]
   }
 )
 
@@ -5938,6 +8983,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [240, 326, 419],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -5956,6 +9010,11 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 4
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 4 }
+    ]
   }
 )
 
@@ -5979,6 +9038,12 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.kaiboukan] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -5999,6 +9064,16 @@ register(
         shipCategoryCount([mst], [ApiShipCategory.kagerou, ApiShipCategory.yuugumo]) && mst.api.api_lv >= 70)
       return filtered.length >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.kagerou, ApiShipCategory.yuugumo],
+        min: 4,
+        minimumLevel: 70
+      }
+    ]
   }
 )
 
@@ -6024,6 +9099,12 @@ register(
       
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [553] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -6046,6 +9127,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [542, 543],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -6078,6 +9168,15 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipCategoryCount(msts, [ApiShipCategory.asasio]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.asasio],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -6102,6 +9201,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [557, 558, 556, 559],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -6129,6 +9237,43 @@ register(
       }
       return false
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '海防艦3 / 潜水母艦＋潜水艦3 / 補給艦・揚陸艦＋駆逐艦5',
+        alternatives: [
+          [
+            { kind: 'flagship-type', types: [ApiShipType.kaiboukan] },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 3
+            }
+          ],
+          [
+            { kind: 'flagship-type', types: [ApiShipType.sensuibokan] },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.sensuikan, ApiShipType.sensui_kuubo],
+              min: 3
+            }
+          ],
+          [
+            {
+              kind: 'flagship-type',
+              types: [ApiShipType.hokyuukan, ApiShipType.yourikukan]
+            },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 5
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -6153,6 +9298,13 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: ApiShipTypeKuboClasses },
+      { kind: 'ship-type-count', types: ApiShipTypeKuboClasses, min: 2 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -6177,6 +9329,20 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+        min: 2
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -6198,6 +9364,16 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -6219,6 +9395,12 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: ApiShipTypeKuboClasses, min: 3 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -6240,6 +9422,12 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: ApiShipTypeKuboClasses, min: 3 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -6262,6 +9450,11 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 2
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [68, 65], exact: 2 }
+    ]
   }
 )
 
@@ -6280,6 +9473,19 @@ register(
       const msts = toShipMsts(svdata, ship_ids)
       return shipTypeCount(msts, [ApiShipType.hokyuukan, ApiShipType.yourikukan, ApiShipType.kaiboukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [
+          ApiShipType.hokyuukan,
+          ApiShipType.yourikukan,
+          ApiShipType.kaiboukan
+        ],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -6304,6 +9510,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [49, 48, 17, 18],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -6322,6 +9537,15 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipCategoryCount(ships, [ApiShipCategory.mutuki]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.mutuki],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -6346,6 +9570,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [12, 486, 13, 14],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -6367,6 +9600,30 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '海防艦3隻 または 駆逐艦4隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 3
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 4
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -6394,6 +9651,39 @@ register(
       ])
       return kutikuOrKaibou >= 3 && keijyun >= 1
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '駆逐・海防4隻 または 駆逐・海防3隻＋軽巡級1隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+              min: 4
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+              min: 3
+            },
+            {
+              kind: 'ship-type-count',
+              types: [
+                ApiShipType.keijyun,
+                ApiShipType.renjyun,
+                ApiShipType.raijyun
+              ],
+              min: 1
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -6418,6 +9708,17 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.seiki_kuubo] },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.seiki_kuubo],
+        min: 2
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -6441,6 +9742,15 @@ register(
       ].flat()
       return shipCount(msts, check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [65, 64, 471],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -6467,6 +9777,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [439, 78, 515, 571, 519, 520],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -6486,6 +9805,16 @@ register(
       const check_ids = [542, 563, 564, 648]
       return shipCount(ships, check_ids) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [542, 563, 564, 648],
+        exact: 4,
+        exactMasterIds: true
+      }
+    ]
   }
 )
 
@@ -6507,6 +9836,12 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 4
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [20] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 4 }
+    ]
   }
 )
 
@@ -6531,6 +9866,20 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.keijyun, ApiShipType.renjyun]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.keijyun, ApiShipType.renjyun],
+        min: 3
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -6563,6 +9912,19 @@ register(
       }
       return shipCount(ships.slice(1), check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [973, 615, 962, 574, 613, 372, 15, 93, 996]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [973, 615, 962, 574, 613, 372, 15, 93, 996],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -6587,6 +9949,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [93, 15, 94, 16],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -6608,6 +9979,16 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [501, 506],
+        exactMasterIds: true
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 3 }
+    ]
   }
 )
 
@@ -6629,6 +10010,16 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [663, 668],
+        exactMasterIds: true
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 4 }
+    ]
   }
 )
 
@@ -6653,6 +10044,20 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.jyuujyun, ApiShipType.koujyun]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.jyuujyun, ApiShipType.koujyun],
+        exact: 4
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], exact: 2 }
+    ]
   }
 )
 
@@ -6675,6 +10080,20 @@ register(
       const count = shipCategoryCount(ships, [ApiShipCategory.fletcher, ApiShipCategory.johnCButle])
       return count >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [707],
+        exactMasterIds: true
+      },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.fletcher, ApiShipCategory.johnCButle],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -6700,6 +10119,22 @@ register(
       }
       return true
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-position-specific',
+        position: 1,
+        baseShipIds: [568, 670],
+        exactMasterIds: true
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [568, 670],
+        exactMasterIds: true
+      }
+    ]
   }
 )
 
@@ -6724,6 +10159,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [666, 647, 195, 627],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -6752,6 +10196,14 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.keijyun]) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 5 },
+      { kind: 'specific-ship-count', baseShipIds: [131, 143], min: 2 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 },
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 }
+    ]
   }
 )
 
@@ -6775,6 +10227,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [544, 562, 561],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -6809,6 +10270,18 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [
+          1005, 114, 93, 45, 44, 415, 95, 528, 484, 921, 922, 519, 562,
+          881
+        ],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -6830,6 +10303,12 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [894] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 3 }
+    ]
   }
 )
 
@@ -6867,6 +10346,42 @@ register(
         shipTypeCount(ships, [ApiShipType.kei_kuubo]) >= 1
       )
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-position-slotitem-count',
+        position: 1,
+        itemId: 42,
+        slotPositions: [1, 2],
+        min: 2
+      },
+      {
+        kind: 'any-of',
+        label: '海防艦2隻 または 駆逐艦4隻＋軽空母1隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 2
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 4
+            },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kei_kuubo],
+              min: 1
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -6891,6 +10406,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [9, 10, 11, 32],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -6927,6 +10451,21 @@ register(
       }
       return shipCount([ships[1]], check_ids) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2 },
+      {
+        kind: 'ship-position-specific',
+        position: 1,
+        baseShipIds: [992, 93, 15, 94, 16, 9, 973, 988, 995, 451]
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [992, 93, 15, 94, 16, 9, 973, 988, 995, 451]
+      }
+    ]
   }
 )
 
@@ -6949,6 +10488,12 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [591, 593], min: 2 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -6973,6 +10518,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [43, 42, 632, 633],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -6994,6 +10548,12 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [961] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 3 }
+    ]
   }
 )
 
@@ -7015,6 +10575,30 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '海防艦3隻 または 駆逐艦5隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 3
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 5
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -7039,6 +10623,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [181, 20, 186, 190],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -7070,6 +10663,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [421, 423, 995, 527, 452, 167, 74, 97, 145, 962, 931],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -7105,6 +10707,25 @@ register(
       const other = shipCount(ships, check_ids)
       return kaibou + other >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'sum-of-counts',
+        label: '丁型海防艦・指定艦 合計',
+        min: 4,
+        components: [
+          {
+            kind: 'ship-category',
+            categories: [ApiShipCategory.tyougataKaiboukan]
+          },
+          {
+            kind: 'specific-ships',
+            baseShipIds: [465, 524, 525, 531, 565, 921, 527, 528, 169, 459, 414, 413, 900]
+          }
+        ]
+      }
+    ]
   }
 )
 
@@ -7133,6 +10754,16 @@ register(
       ].flat()
       return shipCount(ships.slice(1), shipIds) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [405] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [42, 43, 45, 44, 46],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -7157,6 +10788,24 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.koukuu_senkan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-category',
+        categories: [ApiShipCategory.akizuki]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 3
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koukuu_senkan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -7184,6 +10833,29 @@ register(
       }
       return shipCategoryCount(ships, cats) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-category',
+        categories: [
+          ApiShipCategory.richelieu,
+          ApiShipCategory.commandantTeste,
+          ApiShipCategory.la_galissonniere,
+          ApiShipCategory.mogador
+        ]
+      },
+      {
+        kind: 'ship-category-count',
+        categories: [
+          ApiShipCategory.richelieu,
+          ApiShipCategory.commandantTeste,
+          ApiShipCategory.la_galissonniere,
+          ApiShipCategory.mogador
+        ],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -7209,6 +10881,15 @@ register(
       ].flat()
       return shipCount(ships, shipIds) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [674, 675, 485, 528, 484],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -7234,6 +10915,13 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [86, 85], min: 2 },
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -7259,6 +10947,17 @@ register(
       const shipIds = [svdata.shipMstIds(85), svdata.shipMstIds(86)].flat()
       return shipCount(ships, shipIds) === 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 },
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [85, 86],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -7288,6 +10987,19 @@ register(
       )
       return shipCount(ships, shipIds) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [409, 625, 410]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [409, 625, 410, 425],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -7314,6 +11026,17 @@ register(
       }
       return countSensuikan >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.sensuibokan] },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.sensuibokan, ApiShipType.sensuikan],
+        min: 3
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.sensuikan], min: 1 }
+    ]
   }
 )
 
@@ -7338,6 +11061,15 @@ register(
       ].flat()
       return shipCount(ships, shipIds) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [426, 986, 959, 203],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -7361,6 +11093,35 @@ register(
       }
       return escortCount >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '揚陸艦1隻＋海防艦2隻 または 海防艦3隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.yourikukan],
+              min: 1
+            },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 2
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 3
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -7384,6 +11145,25 @@ register(
       }
       return akizuki + shipCount(ships, ids) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'sum-of-counts',
+        label: '秋月型・指定艦 合計',
+        min: 3,
+        components: [
+          {
+            kind: 'ship-category',
+            categories: [ApiShipCategory.akizuki]
+          },
+          {
+            kind: 'specific-ships',
+            baseShipIds: [132, 625, 445]
+          }
+        ]
+      }
+    ]
   }
 )
 
@@ -7425,6 +11205,16 @@ register(
       shipIds.push(...shipIdsMonth6)
       return shipCount(msts, shipIds) >= 5
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 5 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [994, 992, 993, 642, 16, 35, 41, 20, 533, 532],
+        min: 5
+      }
+    ]
   }
 )
 
@@ -7452,6 +11242,21 @@ register(
       ]
       return shipCategoryCount(ships, cats) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 3 },
+      {
+        kind: 'ship-category-count',
+        categories: [
+          ApiShipCategory.richelieu,
+          ApiShipCategory.commandantTeste,
+          ApiShipCategory.la_galissonniere,
+          ApiShipCategory.mogador
+        ],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -10089,6 +13894,7 @@ register(
       7, 260, 31, 261
     ]
     static use_ship_count = 4
+    static progress_material_label = '睦月型'
     static formatter(quest: Quest): string {
       return detailFormatOne(['駆逐艦へ睦月型4隻使用改修成功1回：'], quest)
     }
@@ -10109,6 +13915,8 @@ register(
       9, 201, 426, 10, 202, 32, 203, 11, 204, 33, 205, 420, 631, 700, 12, 206, 486, 368
     ]
     static use_ship_count = 5
+    static progress_target_label = '綾波型'
+    static progress_material_label = '吹雪型駆逐艦'
     static formatter(quest: Quest): string {
       return detailFormat(['綾波型への吹雪型駆逐艦5隻使用改修成功：'], quest)
     }
@@ -10230,6 +14038,7 @@ register(
     ] // kumano
     static use_ship_type = [ApiShipType.keijyun, ApiShipType.renjyun, ApiShipType.raijyun]
     static use_ship_count = 3
+    static progress_target_label = '最上型'
     static formatter(quest: Quest): string {
       return detailFormat(['最上型への軽巡級3隻使用改修成功：'], quest)
     }
@@ -10246,6 +14055,7 @@ register(
     static powerup_ship_ids = [70, 73, 501, 506, 120, 121, 124, 129, 503, 508, 125, 130, 504, 509]
     static use_ship_type = [ApiShipType.jyuujyun, ApiShipType.koujyun]
     static use_ship_count = 4
+    static progress_target_label = '最上型'
     static formatter(quest: Quest): string {
       return detailFormat(['最上型への重巡級4隻使用改修成功：'], quest)
     }
@@ -10301,6 +14111,34 @@ register(
       }
       return false
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.keijyun, ApiShipType.renjyun, ApiShipType.raijyun]
+      },
+      {
+        kind: 'any-of',
+        label: '海防艦2隻 または 駆逐艦3隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 2
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 3
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -10334,6 +14172,20 @@ register(
       }
       return true
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [...ApiShipTypeKeijyunClasses, ...ApiShipTypeJyujyunClasses]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [...ApiShipTypeKeijyunClasses, ...ApiShipTypeJyujyunClasses],
+        min: 3
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 1 }
+    ]
   }
 )
 
@@ -10360,6 +14212,12 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: ApiShipTypeKuboClasses },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -10394,6 +14252,41 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [515, 885, 549, 603, 90, 91, 110, 111],
+        min: 2
+      }
+    ]
+  }
+)
+
+// 806: 旗艦「霞」出撃！敵艦隊を撃滅せよ！
+register(
+  806,
+  class {
+    static readonly questType = QuestType.battleMapDeck
+    static max = [1]
+    static key = QuestKey.infer
+    static maps: QuestMap[] = [[2, 5, 'S']]
+    static formatter(quest: Quest): string {
+      return detailFormatOneByMap(quest, this.maps)
+    }
+    static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
+      if (!isShipIds(svdata, ship_ids[0], svdata.shipMstIds(464))) {
+        return false
+      }
+      return shipTypeCount(toShipMsts(svdata, ship_ids), [ApiShipType.kutikukan]) >= 3
+    }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [464] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 3 }
+    ]
   }
 )
 
@@ -10415,6 +14308,12 @@ register(
     static formatter(quest: Quest): string {
       return detailFormatOneByMap(quest, this.maps)
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: ApiShipTypeKeijyunClasses },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 4 }
+    ]
   }
 )
 
@@ -10450,6 +14349,12 @@ register(
       }
       return shipTypeCount(ships.slice(1), [ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.kei_kuubo] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 3 }
+    ]
   }
 )
 
@@ -10487,6 +14392,21 @@ register(
       ].flat()
       return shipCount(ships, check_ids) == 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2 },
+      {
+        kind: 'ship-position-specific',
+        position: 1,
+        baseShipIds: [89, 183, 93, 94, 15, 16, 953, 182, 634, 635]
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [89, 183, 93, 94, 15, 16, 953, 182, 634, 635]
+      }
+    ]
   }
 )
 
@@ -10523,6 +14443,21 @@ register(
       ].flat()
       return shipCount(ships, check_ids) == 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2 },
+      {
+        kind: 'ship-position-specific',
+        position: 1,
+        baseShipIds: [935, 931, 534, 1005, 115, 965, 562, 453, 409]
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [935, 931, 534, 1005, 115, 965, 562, 453, 409]
+      }
+    ]
   }
 )
 
@@ -10564,6 +14499,72 @@ register(
       }
       return true
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 3 },
+      { kind: 'flagship-type', types: [ApiShipType.jyuujyun] },
+      { kind: 'ship-type-count', types: [ApiShipType.jyuujyun], min: 2 },
+      {
+        kind: 'any-of',
+        label: '軽空母 または 指定揚陸艦',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kei_kuubo],
+              min: 1
+            }
+          ],
+          [
+            {
+              kind: 'specific-ship-count',
+              baseShipIds: [161, 900, 943],
+              min: 1
+            }
+          ]
+        ]
+      }
+    ]
+  }
+)
+
+// 844: 精鋭「第八駆逐隊」突入せよ！
+register(
+  844,
+  class {
+    static readonly questType = QuestType.battleMapDeck
+    static max = [2]
+    static key = QuestKey.infer
+    static maps: QuestMap[] = [[5, 5, 'A']]
+    static formatter(quest: Quest): string {
+      return detailFormatByMap(quest, this.maps)
+    }
+    static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
+      if (svdata.battleDeck?.api_id !== ApiDeckPortId.deck1st) {
+        return false
+      }
+      if (!isShipIds(svdata, ship_ids[0], svdata.shipMstIds(490))) {
+        return false
+      }
+      const eighthSquadronIds = [
+        svdata.shipMstIds(95),
+        svdata.shipMstIds(96),
+        svdata.shipMstIds(97)
+      ].flat()
+      return shipCount(toShipMsts(svdata, ship_ids), eighthSquadronIds) >= 1
+    }
+  },
+  {
+    deckId: ApiDeckPortId.deck1st,
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [490] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [95, 96, 97],
+        min: 1
+      }
+    ]
   }
 )
 
@@ -10587,6 +14588,45 @@ register(
   }
 )
 
+// 846: 潜水艦隊、中部海域の哨戒を実施せよ！
+register(
+  846,
+  class {
+    static readonly questType = QuestType.battleMapDeck
+    static max = [1]
+    static key = QuestKey.infer
+    static maps: QuestMap[] = [[6, 1, 'B']]
+    static formatter(quest: Quest): string {
+      return detailFormatOneByMap(quest, this.maps)
+    }
+    static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
+      if (svdata.battleDeck?.api_id !== ApiDeckPortId.deck1st) {
+        return false
+      }
+      const ships = toShipMsts(svdata, ship_ids)
+      const types = [ApiShipType.sensuikan, ApiShipType.sensui_kuubo]
+      if (shipTypeCount([ships[0]], types) !== 1) {
+        return false
+      }
+      return shipTypeCount(ships, types) >= 4
+    }
+  },
+  {
+    deckId: ApiDeckPortId.deck1st,
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.sensuikan, ApiShipType.sensui_kuubo]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.sensuikan, ApiShipType.sensui_kuubo],
+        min: 4
+      }
+    ]
+  }
+)
+
 // 847: 球磨型軽巡一番艦、出撃だクマ！
 register(
   847,
@@ -10601,6 +14641,15 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return isShipIds(svdata, ship_ids[0], [652, 657])
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [652, 657],
+        exactMasterIds: true
+      }
+    ]
   }
 )
 
@@ -10642,6 +14691,15 @@ register(
     static formatter(quest: Quest): string {
       return detailFormat(['1-6 ゴール：'], quest)
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.koukuu_senkan, ApiShipType.hokyuukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -10666,6 +14724,12 @@ register(
       }
       return true
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.suibo], min: 1 },
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 2 }
+    ]
   }
 )
 
@@ -10733,6 +14797,16 @@ register(
       }
       return shipTypeCount(ships.slice(1), [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.keijyun] },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -10769,6 +14843,11 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.keijyun]) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 }
+    ]
   }
 )
 
@@ -10795,6 +14874,16 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [543], min: 1 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [345, 359, 344],
+        min: 1
+      }
+    ]
   }
 )
 
@@ -10834,6 +14923,19 @@ register(
       }
       return shipCount(msts.slice(1), check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [137, 140, 2, 11, 486, 479, 480, 583, 410, 425, 451]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [137, 140, 2, 11, 486, 479, 480, 583, 410, 425, 451],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -10865,6 +14967,15 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [69, 61, 123, 60, 59, 51, 115],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -10908,6 +15019,11 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, ApiShipTypeKuboClasses) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: ApiShipTypeKuboClasses, min: 1 }
+    ]
   }
 )
 
@@ -10928,6 +15044,75 @@ register(
     static formatter(quest: Quest): string {
       return detailFormatOneByMap(quest, this.maps)
     }
+  }
+)
+
+// 901: 「夕張改二」試してみてもいいかしら？
+register(
+  901,
+  class {
+    static readonly questType = QuestType.battleMapDeck
+    static max = [1, 1, 1, 1]
+    static key = QuestKey.infer
+    static maps: QuestMap[] = [
+      [2, 5, 'S'],
+      [3, 3, 'S'],
+      [5, 3, 'S'],
+      [6, 3, 'S']
+    ]
+    static formatter(quest: Quest): string {
+      return detailFormatOneByMap(quest, this.maps)
+    }
+    static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
+      return isShipIds(svdata, ship_ids[0], svdata.shipMstIds(622))
+    }
+  },
+  {
+    rules: [{ kind: 'flagship-specific', baseShipIds: [622] }]
+  }
+)
+
+// 902: 新編「六水戦」出撃！後で感想、聞かせてね！
+register(
+  902,
+  class {
+    static readonly questType = QuestType.battleMapDeck
+    static max = [1, 1, 1, 1, 1]
+    static key = QuestKey.infer
+    static maps: QuestMap[] = [
+      [1, 5, 'S'],
+      [1, 6, ''],
+      [2, 2, 'S'],
+      [3, 2, 'S'],
+      [7, 1, 'S']
+    ]
+    static formatter(quest: Quest): string {
+      return detailFormatOneByMap(quest, this.maps)
+    }
+    static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
+      if (!isShipIds(svdata, ship_ids[0], svdata.shipMstIds(622))) {
+        return false
+      }
+      const sixthSquadronIds = [
+        svdata.shipMstIds(1),
+        svdata.shipMstIds(2),
+        svdata.shipMstIds(164),
+        svdata.shipMstIds(165),
+        svdata.shipMstIds(30),
+        svdata.shipMstIds(31)
+      ].flat()
+      return shipCount(toShipMsts(svdata, ship_ids), sixthSquadronIds) >= 3
+    }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [622] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [1, 2, 164, 165, 30, 31],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -10969,6 +15154,31 @@ register(
       }
       return check1() || check2()
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [622] },
+      {
+        kind: 'any-of',
+        label: '随伴艦 夕張1隻 または 指定艦2隻',
+        alternatives: [
+          [
+            {
+              kind: 'specific-ship-count',
+              baseShipIds: [23],
+              min: 1
+            }
+          ],
+          [
+            {
+              kind: 'specific-ship-count',
+              baseShipIds: [1, 2, 164, 165, 30, 31],
+              min: 2
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -10993,6 +15203,16 @@ register(
       const check_ids = [195, 627]
       return shipCount(ships, check_ids) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [195, 627],
+        exact: 2,
+        exactMasterIds: true
+      }
+    ]
   }
 )
 
@@ -11020,6 +15240,12 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kaiboukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', maximum: 5 },
+      { kind: 'ship-type-count', types: [ApiShipType.kaiboukan], min: 3 }
+    ]
   }
 )
 
@@ -11043,6 +15269,15 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -11065,6 +15300,15 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -11092,6 +15336,19 @@ register(
       }
       return shipCount(ships.slice(1), check_ids) >= 1
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [1005, 561, 133, 16]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [1005, 561, 133, 16],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -11135,6 +15392,16 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -11163,6 +15430,12 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [182] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 3 }
+    ]
   }
 )
 
@@ -11189,6 +15462,12 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.jyuujyun], min: 3 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 1 }
+    ]
   }
 )
 
@@ -11214,6 +15493,98 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.kutikukan, ApiShipType.kaiboukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.suibo] },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+        min: 2
+      }
+    ]
+  }
+)
+
+// 923: 合同艦隊機動部隊、出撃せよ！
+register(
+  923,
+  class {
+    static readonly questType = QuestType.battleMapDeck
+    static max = [1, 1, 1, 1]
+    static key = QuestKey.infer
+    static maps: QuestMapOrCell[] = [
+      [4, 3, 'S'],
+      [3, 4, 'S'],
+      [5, 2, 'S'],
+      QuestMapCell_7_2_2('S')
+    ]
+    static formatter(quest: Quest): string {
+      return detailFormatOneByMap(quest, this.maps)
+    }
+    static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
+      return (
+        shipCategoryCount(toShipMsts(svdata, ship_ids), [
+          ApiShipCategory.lexington,
+          ApiShipCategory.ranger,
+          ApiShipCategory.yorktown,
+          ApiShipCategory.intrepid,
+          ApiShipCategory.gambierBay,
+          ApiShipCategory.independence,
+          ApiShipCategory.courageous_jyunyou,
+          ApiShipCategory.courageous_kubo,
+          ApiShipCategory.arkRoyal,
+          ApiShipCategory.illustrious
+        ]) >= 1
+      )
+    }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [
+          ApiShipCategory.lexington,
+          ApiShipCategory.ranger,
+          ApiShipCategory.yorktown,
+          ApiShipCategory.intrepid,
+          ApiShipCategory.gambierBay,
+          ApiShipCategory.independence,
+          ApiShipCategory.courageous_jyunyou,
+          ApiShipCategory.courageous_kubo,
+          ApiShipCategory.arkRoyal,
+          ApiShipCategory.illustrious
+        ],
+        min: 1,
+        label: '米英空母'
+      }
+    ]
+  }
+)
+
+// 927: 重巡「羽黒」、出撃！ペナン沖海戦
+register(
+  927,
+  class {
+    static readonly questType = QuestType.battleMapDeck
+    static max = [4]
+    static key = QuestKey.infer
+    static maps: QuestMapOrCell[] = [QuestMapCell_7_3_1('A')]
+    static formatter(quest: Quest): string {
+      return detailFormatByMap(quest, this.maps)
+    }
+    static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
+      if (deckShipCount(ship_ids) > 5) {
+        return false
+      }
+      return isShipIds(svdata, ship_ids[0], svdata.shipMstIds(65))
+    }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', maximum: 5 },
+      { kind: 'flagship-specific', baseShipIds: [65] }
+    ]
   }
 )
 
@@ -11239,6 +15610,80 @@ register(
       ].flat()
       return shipCount(ships, check_ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [65, 64, 62, 66, 471],
+        min: 2
+      }
+    ]
+  }
+)
+
+// 929: 静かな海を護る「鯨」、動き出す！
+register(
+  929,
+  class {
+    static readonly questType = QuestType.battleMapDeck
+    static max = [1, 1, 1, 1]
+    static key = QuestKey.infer
+    static maps: QuestMap[] = [
+      [1, 2, 'S'],
+      [1, 3, 'S'],
+      [2, 1, 'S'],
+      [2, 3, 'S']
+    ]
+    static formatter(quest: Quest): string {
+      return detailFormatOneByMap(quest, this.maps)
+    }
+    static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
+      if (svdata.battleDeck?.api_id !== ApiDeckPortId.deck1st) {
+        return false
+      }
+      const ships = toShipMsts(svdata, ship_ids)
+      const submarineTenderIds = [
+        [184],
+        svdata.shipMstIds(634),
+        svdata.shipMstIds(635)
+      ].flat()
+      if (shipCount([ships[0]], submarineTenderIds) !== 1) {
+        return false
+      }
+      return (
+        shipTypeCount(ships, [ApiShipType.sensuikan, ApiShipType.sensui_kuubo]) >= 2
+      )
+    }
+  },
+  {
+    deckId: ApiDeckPortId.deck1st,
+    rules: [
+      {
+        kind: 'any-of',
+        label: '旗艦 大鯨 または 迅鯨型',
+        alternatives: [
+          [
+            {
+              kind: 'flagship-specific',
+              baseShipIds: [184],
+              exactMasterIds: true
+            }
+          ],
+          [
+            {
+              kind: 'flagship-specific',
+              baseShipIds: [634, 635]
+            }
+          ]
+        ]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.sensuikan, ApiShipType.sensui_kuubo],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -11263,6 +15708,15 @@ register(
       const check_ids = [svdata.shipMstIds(497), svdata.shipMstIds(145)].flat()
       return shipCount(toShipMsts(svdata, ship_ids), check_ids) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [497, 145],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -11289,6 +15743,16 @@ register(
       ].flat()
       return isShipIds(svdata, ship_ids[1] ?? 0, check_ids)
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [181] },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [20, 186, 190]
+      }
+    ]
   }
 )
 
@@ -11325,6 +15789,56 @@ register(
       }
       return kutiku >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '旗艦 大淀または丹陽と護衛艦3隻',
+        alternatives: [
+          [
+            { kind: 'flagship-specific', baseShipIds: [183] },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 3
+            }
+          ],
+          [
+            { kind: 'flagship-specific', baseShipIds: [183] },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 3
+            }
+          ],
+          [
+            {
+              kind: 'flagship-specific',
+              baseShipIds: [651],
+              exactMasterIds: true
+            },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 3
+            }
+          ],
+          [
+            {
+              kind: 'flagship-specific',
+              baseShipIds: [651],
+              exactMasterIds: true
+            },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 4
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -11348,6 +15862,11 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return isShipIds(svdata, ship_ids[0], svdata.shipMstIds(651))
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [651] }
+    ]
   }
 )
 
@@ -11372,6 +15891,15 @@ register(
       const check_ids = [svdata.shipMstIds(145), svdata.shipMstIds(656)].flat()
       return shipCount(toShipMsts(svdata, ship_ids), check_ids) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [145, 656],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -11399,6 +15927,12 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [662] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 3 }
+    ]
   }
 )
 
@@ -11422,6 +15956,15 @@ register(
       const check_ids = [svdata.shipMstIds(665), svdata.shipMstIds(407)].flat()
       return shipCount(toShipMsts(svdata, ship_ids), check_ids) === 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [665, 407],
+        exact: 2
+      }
+    ]
   }
 )
 
@@ -11444,6 +15987,11 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return isShipIds(svdata, ship_ids[0], svdata.shipMstIds(501))
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [501] }
+    ]
   }
 )
 
@@ -11479,6 +16027,21 @@ register(
       ].flat()
       return shipCount(ships, check) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 6 },
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [501, 506],
+        exactMasterIds: true
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [43, 97, 413, 414],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -11505,6 +16068,12 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [663] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -11534,6 +16103,44 @@ register(
       }
       return shipTypeCount(ships.slice(1), [ApiShipType.kutikukan, ApiShipType.kaiboukan, ApiShipType.sensuikan]) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', exact: 5 },
+      {
+        kind: 'any-of',
+        label: '旗艦と随伴4隻の指定艦種',
+        alternatives: [
+          [
+            { kind: 'flagship-type', types: [ApiShipType.kutikukan] },
+            {
+              kind: 'ship-type-count',
+              types: [
+                ApiShipType.kutikukan,
+                ApiShipType.kaiboukan,
+                ApiShipType.sensuikan
+              ],
+              exact: 5
+            }
+          ],
+          [
+            {
+              kind: 'flagship-type',
+              types: [ApiShipType.renjyun, ApiShipType.sensuibokan]
+            },
+            {
+              kind: 'ship-type-count',
+              types: [
+                ApiShipType.kutikukan,
+                ApiShipType.kaiboukan,
+                ApiShipType.sensuikan
+              ],
+              exact: 4
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -11569,6 +16176,21 @@ register(
       ].flat()
       return shipCount([ships[0], ships[1]], shipIds) === 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2 },
+      {
+        kind: 'ship-position-specific',
+        position: 1,
+        baseShipIds: [9, 133, 165, 44, 181, 634, 635, 944]
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [9, 133, 165, 44, 181, 634, 635, 944]
+      }
+    ]
   }
 )
 
@@ -11596,6 +16218,16 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipCount(ships, svdata.shipMstIds(145)) === 1
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [883] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [145],
+        exact: 1
+      }
+    ]
   }
 )
 
@@ -11626,6 +16258,32 @@ register(
       }
       return kutiku + kaiboukan >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '旗艦 重巡または駆逐艦と護衛艦3隻',
+        alternatives: [
+          [
+            { kind: 'flagship-type', types: [ApiShipType.jyuujyun] },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+              min: 3
+            }
+          ],
+          [
+            { kind: 'flagship-type', types: [ApiShipType.kutikukan] },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+              min: 4
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -11661,6 +16319,35 @@ register(
       }
       return kutiku + kaiboukan >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '旗艦 軽巡級または駆逐艦と護衛艦3隻',
+        alternatives: [
+          [
+            {
+              kind: 'flagship-type',
+              types: [ApiShipType.keijyun, ApiShipType.renjyun]
+            },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+              min: 3
+            }
+          ],
+          [
+            { kind: 'flagship-type', types: [ApiShipType.kutikukan] },
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan, ApiShipType.kaiboukan],
+              min: 4
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -11686,6 +16373,16 @@ register(
       }
       return shipTypeCount(ships, [ApiShipType.jyuujyun, ApiShipType.koujyun]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: ApiShipTypeKuboClasses },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.jyuujyun, ApiShipType.koujyun],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -11709,6 +16406,11 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kei_kuubo]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.kei_kuubo], min: 2 }
+    ]
   }
 )
 
@@ -11732,6 +16434,11 @@ register(
       const ships = toShipMsts(svdata, [ship_ids[0]])
       return isShipType(ships[0].mst, ApiShipTypeKuboClasses)
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: ApiShipTypeKuboClasses }
+    ]
   }
 )
 
@@ -11758,6 +16465,16 @@ register(
       const count = shipCategoryCount(ships, [ApiShipCategory.fletcher])
       return count > 0
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [707] },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.fletcher],
+        min: 1
+      }
+    ]
   }
 )
 
@@ -11784,6 +16501,12 @@ register(
       const ships = toShipMsts(svdata, ship_ids)
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 6 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 3 }
+    ]
   }
 )
 
@@ -11816,6 +16539,42 @@ register(
       }
       return shipTypeCount(ships.slice(2), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 4 },
+      {
+        kind: 'any-of',
+        label: '第1・第2艦 海防艦または水上機母艦',
+        alternatives: [
+          [
+            {
+              kind: 'ship-position-type',
+              position: 1,
+              types: [ApiShipType.kaiboukan]
+            },
+            {
+              kind: 'ship-position-type',
+              position: 2,
+              types: [ApiShipType.kaiboukan]
+            }
+          ],
+          [
+            {
+              kind: 'ship-position-type',
+              position: 1,
+              types: [ApiShipType.suibo]
+            },
+            {
+              kind: 'ship-position-type',
+              position: 2,
+              types: [ApiShipType.suibo]
+            }
+          ]
+        ]
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -11843,6 +16602,12 @@ register(
       }
       return shipTypeCount(ships.slice(1), [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.kei_kuubo] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -11874,6 +16639,31 @@ register(
       const count2 = shipTypeCount(ships, [ApiShipType.jyuujyun])
       return count1 >= 2 || count2 >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: ApiShipTypeSenkanClasses, min: 1 },
+      {
+        kind: 'any-of',
+        label: '夕雲型2隻 または 重巡2隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-category-count',
+              categories: [ApiShipCategory.yuugumo],
+              min: 2
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.jyuujyun],
+              min: 2
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -11906,6 +16696,31 @@ register(
       }
       return false
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [588] },
+      {
+        kind: 'any-of',
+        label: '海防艦2隻 または 駆逐艦3隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 2
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 3
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -11928,6 +16743,15 @@ register(
       ].flat()
       return shipCount(toShipMsts(svdata, ship_ids), shipIds) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [588, 469, 587],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -11960,6 +16784,20 @@ register(
         ]
       )
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [
+          ApiShipType.keijyun,
+          ApiShipType.renjyun,
+          ApiShipType.kousakusen,
+          ApiShipType.internal_tokumukan,
+          ApiShipType.sensui_kuubo
+        ]
+      }
+    ]
   }
 )
 
@@ -11994,6 +16832,32 @@ register(
       }
       return false
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '旗艦 練習巡洋艦・工作艦・特務艦または山汐丸型',
+        alternatives: [
+          [
+            {
+              kind: 'flagship-type',
+              types: [
+                ApiShipType.renjyun,
+                ApiShipType.kousakusen,
+                ApiShipType.internal_tokumukan
+              ]
+            }
+          ],
+          [
+            {
+              kind: 'flagship-category',
+              categories: [ApiShipCategory.yamasiomaru]
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -12013,6 +16877,15 @@ register(
       const shipIds = [svdata.shipMstIds(670), svdata.shipMstIds(568)].flat()
       return shipCount(msts, shipIds) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [670, 568],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12050,6 +16923,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [455, 456, 48, 93, 94, 16, 15, 133, 528, 484, 671, 527, 480, 562],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -12085,6 +16967,45 @@ register(
       ].flat()
       return shipCount([msts[0]], shipIds) > 0 && shipCount(msts, shipIds) > 1
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '旗艦 指定支援艦',
+        alternatives: [
+          [
+            {
+              kind: 'flagship-specific',
+              baseShipIds: [953, 182, 645, 162, 460, 634, 635, 944, 451, 943, 900]
+            }
+          ],
+          [
+            {
+              kind: 'flagship-specific',
+              baseShipIds: [184],
+              exactMasterIds: true
+            }
+          ]
+        ]
+      },
+      {
+        kind: 'sum-of-counts',
+        label: '指定支援艦',
+        min: 2,
+        components: [
+          {
+            kind: 'specific-ships',
+            baseShipIds: [953, 182, 645, 162, 460, 634, 635, 944, 451, 943, 900]
+          },
+          {
+            kind: 'specific-ships',
+            baseShipIds: [184],
+            exactMasterIds: true
+          }
+        ]
+      }
+    ]
   }
 )
 
@@ -12114,6 +17035,19 @@ register(
       ].flat()
       return shipCount([msts[0]], shipIds) > 0 && shipCount(msts, shipIds) > 1
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [439, 927, 924, 441, 935]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [439, 927, 924, 441, 935],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12148,6 +17082,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [123, 124, 125, 663, 140, 514, 597, 183, 99, 465],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -12179,6 +17122,9 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return true
     }
+  },
+  {
+    rules: []
   }
 )
 
@@ -12198,6 +17144,11 @@ register(
       const shipIds = svdata.shipMstIds(884)
       return shipCount(msts, shipIds) > 0
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [884], min: 1 }
+    ]
   }
 )
 
@@ -12227,6 +17178,16 @@ register(
       const shipIds2 = [svdata.shipMstIds(61), svdata.shipMstIds(24), svdata.shipMstIds(480)].flat()
       return shipCount(msts, shipIds2) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [903], min: 1 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [61, 24, 480],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12252,6 +17213,15 @@ register(
       const shipIds = [svdata.shipMstIds(647), svdata.shipMstIds(61), svdata.shipMstIds(113)].flat()
       return shipCount(msts, shipIds) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [647, 61, 113],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -12282,6 +17252,28 @@ register(
 
       return shipTypeCount(msts.slice(1), [ApiShipType.sensuibokan, ApiShipType.keijyun]) > 0;
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.sensuibokan, ApiShipType.keijyun]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [
+          ApiShipType.kutikukan,
+          ApiShipType.sensui_kuubo,
+          ApiShipType.sensuikan
+        ],
+        min: 2
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.sensuibokan, ApiShipType.keijyun],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12324,6 +17316,41 @@ register(
       }
       return false
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2 },
+      {
+        kind: 'any-of',
+        label: '第1・第2艦 赤城・加賀 または 翔鶴・瑞鶴',
+        alternatives: [
+          [
+            {
+              kind: 'ship-position-specific',
+              position: 1,
+              baseShipIds: [83, 84]
+            },
+            {
+              kind: 'ship-position-specific',
+              position: 2,
+              baseShipIds: [83, 84]
+            }
+          ],
+          [
+            {
+              kind: 'ship-position-specific',
+              position: 1,
+              baseShipIds: [110, 111]
+            },
+            {
+              kind: 'ship-position-specific',
+              position: 2,
+              baseShipIds: [110, 111]
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -12378,6 +17405,50 @@ register(
       ]
       return shipCategoryCount(ships, cats) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: ApiShipTypeKuboClasses,
+        exact: 0
+      },
+      {
+        kind: 'ship-category-count',
+        categories: [
+          ApiShipCategory.colorado,
+          ApiShipCategory.northCarolina,
+          ApiShipCategory.southDakota,
+          ApiShipCategory.iowa,
+          ApiShipCategory.nevada,
+          ApiShipCategory.lexington,
+          ApiShipCategory.ranger,
+          ApiShipCategory.yorktown,
+          ApiShipCategory.intrepid,
+          ApiShipCategory.gambierBay,
+          ApiShipCategory.independence,
+          ApiShipCategory.northampton,
+          ApiShipCategory.new_orleans,
+          ApiShipCategory.brooklyn,
+          ApiShipCategory.st_Louis,
+          ApiShipCategory.atlanta,
+          ApiShipCategory.fletcher,
+          ApiShipCategory.johnCButle,
+          ApiShipCategory.gato,
+          ApiShipCategory.salmon,
+          ApiShipCategory.queenElizabeth,
+          ApiShipCategory.nelson,
+          ApiShipCategory.courageous_jyunyou,
+          ApiShipCategory.courageous_kubo,
+          ApiShipCategory.arkRoyal,
+          ApiShipCategory.illustrious,
+          ApiShipCategory.town,
+          ApiShipCategory.jervis
+        ],
+        min: 3,
+        label: '米英艦'
+      }
+    ]
   }
 )
 
@@ -12399,6 +17470,11 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return !!shipCount(toShipMsts(svdata, ship_ids), svdata.shipMstIds(666))
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [666], min: 1 }
+    ]
   }
 )
 
@@ -12428,6 +17504,15 @@ register(
       ].flat()
       return shipCount(msts, shipIds) === 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [666, 647, 195, 627],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -12457,6 +17542,13 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [911] },
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -12479,6 +17571,16 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [911, 546],
+        min: 2
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
@@ -12496,6 +17598,11 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return shipCount(toShipMsts(svdata, [ship_ids[0]]), svdata.shipMstIds(916)) > 0
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [916] }
+    ]
   }
 )
 
@@ -12522,6 +17629,26 @@ register(
       const msts = toShipMsts(svdata, ship_ids.slice(0, 3))
       return shipTypeCount(msts, [ApiShipType.kaiboukan]) === 3
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 3 },
+      {
+        kind: 'ship-position-type',
+        position: 1,
+        types: [ApiShipType.kaiboukan]
+      },
+      {
+        kind: 'ship-position-type',
+        position: 2,
+        types: [ApiShipType.kaiboukan]
+      },
+      {
+        kind: 'ship-position-type',
+        position: 3,
+        types: [ApiShipType.kaiboukan]
+      }
+    ]
   }
 )
 
@@ -12546,6 +17673,15 @@ register(
       const ids = [svdata.shipMstIds(915), svdata.shipMstIds(670), svdata.shipMstIds(568)].flat()
       return shipCount(msts, ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [915, 670, 568],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12568,6 +17704,18 @@ register(
         ]) >= 2
       )
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [
+          ApiShipCategory.fletcher,
+          ApiShipCategory.johnCButle
+        ],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12590,6 +17738,11 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return shipCount(toShipMsts(svdata, ship_ids), svdata.shipMstIds(920)) > 0
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [920], min: 1 }
+    ]
   }
 )
 
@@ -12613,6 +17766,15 @@ register(
       const ids = [svdata.shipMstIds(544), svdata.shipMstIds(561), svdata.shipMstIds(562)].flat()
       return shipCount(toShipMsts(svdata, ship_ids), ids) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [544, 561, 562],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -12645,6 +17807,19 @@ register(
       if (!shipCount([msts[0]], ids)) return false
       return shipCount(msts, ids) > 1
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [93, 921, 922, 45, 95, 410, 555]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [93, 921, 922, 45, 95, 410, 555],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12673,6 +17848,15 @@ register(
       ].flat()
       return shipCount(toShipMsts(svdata, ship_ids), ids) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [49, 64, 183, 425, 410],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -12698,6 +17882,15 @@ register(
       ].flat()
       return shipCount(toShipMsts(svdata, ship_ids), ids) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [544, 1005, 923, 896, 562, 535],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -12733,6 +17926,19 @@ register(
       }
       return shipCount(msts, shipIds) >= 3;
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [442, 1005, 44, 45, 93, 15, 575, 614, 443, 653, 519, 535]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [442, 1005, 44, 45, 93, 15, 575, 614, 443, 653, 519, 535],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -12755,6 +17961,11 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return !!shipTypeCount(toShipMsts(svdata, [ship_ids[0]]), [ApiShipType.keijyun])
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.keijyun] }
+    ]
   }
 )
 
@@ -12779,6 +17990,11 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return shipCount(toShipMsts(svdata, [ship_ids[0]]), svdata.shipMstIds(894)) > 0
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [894] }
+    ]
   }
 )
 
@@ -12811,6 +18027,19 @@ register(
       if (!shipCount([msts[0]], ids)) return false
       return shipCount(msts, ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [15, 540, 132, 453, 891]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [15, 540, 132, 453, 891],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12841,6 +18070,32 @@ register(
         return false
       return true
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-type', types: [ApiShipType.keijyun] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 1 },
+      {
+        kind: 'any-of',
+        label: '航空巡洋艦またはGotland級',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.koujyun],
+              min: 1
+            }
+          ],
+          [
+            {
+              kind: 'ship-category-count',
+              categories: [ApiShipCategory.gotland],
+              min: 1
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -12868,6 +18123,15 @@ register(
       ].flat()
       return shipCount(toShipMsts(svdata, ship_ids), ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [181, 20, 186, 190],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12891,6 +18155,15 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return toShipMsts(svdata, [ship_ids[0]])[0].mst.api_id === 951
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [951],
+        exactMasterIds: true
+      }
+    ]
   }
 )
 
@@ -12923,6 +18196,23 @@ register(
         return false
       return true
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [
+          ApiShipType.koukuu_senkan,
+          ApiShipType.kousoku_senkan,
+          ApiShipType.teisoku_senkan
+        ]
+      },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.yuugumo],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12942,6 +18232,16 @@ register(
       if (shipCategoryCount(msts, [ApiShipCategory.fubuki]) < 2) return false
       return shipCount(msts, svdata.shipMstIds(959)) > 0
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.fubuki],
+        min: 2
+      },
+      { kind: 'specific-ship-count', baseShipIds: [959], min: 1 }
+    ]
   }
 )
 
@@ -12969,6 +18269,16 @@ register(
       const ids = [svdata.shipMstIds(591), svdata.shipMstIds(593)].flat()
       return shipCount(msts, ids) > 1
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [591, 593],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -12995,6 +18305,37 @@ register(
       if (shipTypeCount(msts, [ApiShipType.suibo]) >= 2) return true
       return false
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '駆逐艦4隻・海防艦3隻・水上機母艦2隻のいずれか',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 4
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 3
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.suibo],
+              min: 2
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -13021,6 +18362,16 @@ register(
       const ids2 = [svdata.shipMstIds(42), svdata.shipMstIds(632), svdata.shipMstIds(633)].flat()
       return shipCount(msts, ids2) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'specific-ship-count', baseShipIds: [961], min: 1 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [42, 632, 633],
+        min: 1
+      }
+    ]
   }
 )
 
@@ -13051,6 +18402,21 @@ register(
       ].flat()
       return shipCount(msts, ids2) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [955],
+        min: 1,
+        exactMasterIds: true
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [49, 425, 183, 64],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -13084,6 +18450,19 @@ register(
       }
       return shipCount(msts, ids) >= 3;
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [544, 1005, 923, 519, 93, 45, 44, 95, 415, 671]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [544, 1005, 923, 519, 93, 45, 44, 95, 415, 671],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -13111,6 +18490,11 @@ register(
         ) >= 1
       )
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [891, 299] }
+    ]
   }
 )
 
@@ -13133,6 +18517,11 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return shipCount(toShipMsts(svdata, [ship_ids[0]]), svdata.shipMstIds(502)) === 1
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [502] }
+    ]
   }
 )
 
@@ -13161,6 +18550,15 @@ register(
       ].flat()
       return shipCount(toShipMsts(svdata, ship_ids), ids) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [230, 232, 231, 233],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -13189,6 +18587,15 @@ register(
       ].flat()
       return shipCount(toShipMsts(svdata, ship_ids), ids) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [405, 45, 44, 46],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -13213,6 +18620,13 @@ register(
       if (shipTypeCount(msts, [ApiShipType.kutikukan]) < 2) return false
       return shipTypeCount(msts, [ApiShipType.keijyun]) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [975] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 },
+      { kind: 'ship-type-count', types: [ApiShipType.keijyun], min: 1 }
+    ]
   }
 )
 
@@ -13236,6 +18650,15 @@ register(
       const ids = [svdata.shipMstIds(144), svdata.shipMstIds(975)].flat()
       return shipCount(toShipMsts(svdata, ship_ids), ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [144, 975],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -13278,6 +18701,21 @@ register(
 
       return shipCount([msts[0], msts[1]], ids) === 2
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2 },
+      {
+        kind: 'ship-position-specific',
+        position: 1,
+        baseShipIds: [131, 110, 142, 574, 9, 991, 962, 562, 628, 973, 634]
+      },
+      {
+        kind: 'ship-position-specific',
+        position: 2,
+        baseShipIds: [131, 110, 142, 574, 9, 991, 962, 562, 628, 973, 634]
+      }
+    ]
   }
 )
 
@@ -13305,6 +18743,11 @@ register(
       ].flat()
       return !!shipCount(msts, ids)
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [963] }
+    ]
   }
 )
 
@@ -13354,6 +18797,18 @@ register(
       ].flat()
       return shipCount(msts.slice(2), ids2) === 4
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 6 },
+      { kind: 'ship-position-specific', position: 1, baseShipIds: [131] },
+      { kind: 'ship-position-specific', position: 2, baseShipIds: [139] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [167, 170, 20, 533, 532, 49, 41, 425],
+        exact: 4
+      }
+    ]
   }
 )
 
@@ -13381,6 +18836,19 @@ register(
       if ((kaibou_count+1) > 4) return false
       return true
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2, maximum: 4 },
+      {
+        kind: 'flagship-category',
+        categories: [ApiShipCategory.ukuru]
+      },
+      {
+        kind: 'allowed-ship-types',
+        types: [ApiShipType.kaiboukan]
+      }
+    ]
   }
 )
 
@@ -13404,6 +18872,15 @@ register(
     static isDeckMatch(svdata: SvData, ship_ids: number[]): boolean {
       return shipCount(toShipMsts(svdata, [ship_ids[0]]), [979]) > 0
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [979],
+        exactMasterIds: true
+      }
+    ]
   }
 )
 
@@ -13430,6 +18907,30 @@ register(
         shipTypeCount(msts, [ApiShipType.kaiboukan, ApiShipType.kutikukan]) >= 4
       )
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '海防艦3隻 または 海防艦・駆逐艦4隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 3
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan, ApiShipType.kutikukan],
+              min: 4
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -13463,6 +18964,25 @@ register(
       const mstCount = shipCount(msts, ids)
       return akizukiCount + mstCount >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'sum-of-counts',
+        label: '秋月型・指定防空艦',
+        min: 3,
+        components: [
+          {
+            kind: 'ship-category',
+            categories: [ApiShipCategory.akizuki]
+          },
+          {
+            kind: 'specific-ships',
+            baseShipIds: [271, 477, 478, 141]
+          }
+        ]
+      }
+    ]
   }
 )
 
@@ -13491,6 +19011,11 @@ register(
 
       return !!shipCount(msts, shipIds)
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [968] }
+    ]
   }
 )
 
@@ -13520,6 +19045,19 @@ register(
       if (!isShipIds(svdata, ship_ids[0], ids)) return false
       return shipCount(ships, ids) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [409, 625, 425, 410]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [409, 625, 425, 410],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -13548,10 +19086,20 @@ register(
       if (shipCount(ships, ids) !== 2) return false
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [85, 86],
+        exact: 2
+      },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 2 }
+    ]
   }
 )
 
-// 1019:「第三戦隊」第二小隊、鉄底海峡へ！
+// 1019: 激闘！「第三戦隊」精鋭第二小隊！
 register(
   1019,
   class {
@@ -13578,6 +19126,35 @@ register(
         shipCategoryCount(ships, [ApiShipCategory.siratuyu]) >= 2
       )
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [85, 86],
+        exact: 2
+      },
+      {
+        kind: 'any-of',
+        label: '夕雲型2隻 または 白露型2隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-category-count',
+              categories: [ApiShipCategory.yuugumo],
+              min: 2
+            }
+          ],
+          [
+            {
+              kind: 'ship-category-count',
+              categories: [ApiShipCategory.siratuyu],
+              min: 2
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -13607,6 +19184,15 @@ register(
       ].flat()
       return shipCount(ships, ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [78, 79, 85, 86],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -13635,6 +19221,16 @@ register(
       )
       return shipCount(ships, shipIds) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [956] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [956, 410, 625],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -13664,6 +19260,15 @@ register(
       ].flat()
       return shipCount(toShipMsts(svdata, ship_ids), ids) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [674, 675, 485, 528, 484],
+        min: 3
+      }
+    ]
   }
 )
 
@@ -13690,6 +19295,17 @@ register(
       ].flat()
       return shipCount(ships, ids) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [981] },
+      { kind: 'specific-ship-count', baseShipIds: [69], min: 1 },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [674, 675, 528, 484],
+        min: 1
+      }
+    ]
   }
 )
 
@@ -13722,6 +19338,33 @@ register(
       }
       return shipCategoryCount(msts, [ApiShipCategory.norge]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '旗艦 Thonburi または Norge級2隻',
+        alternatives: [
+          [
+            {
+              kind: 'flagship-specific',
+              baseShipIds: [973]
+            }
+          ],
+          [
+            {
+              kind: 'flagship-category',
+              categories: [ApiShipCategory.norge]
+            },
+            {
+              kind: 'ship-category-count',
+              categories: [ApiShipCategory.norge],
+              min: 2
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -13746,6 +19389,16 @@ register(
       if (!shipCount([ships[0]], svdata.shipMstIds(986))) return false
       return shipCategoryCount(ships, [ApiShipCategory.fubuki]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [986] },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.fubuki],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -13779,6 +19432,15 @@ register(
       ].flat()
       return shipCount(msts, ids) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [114, 49, 18, 631, 15, 16, 41, 38, 40],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -13817,6 +19479,15 @@ register(
       ].flat()
       return shipCount(msts, ids) >= 5
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [64, 63, 100, 101, 114, 49, 18, 631, 15, 16, 41, 38, 40],
+        min: 5
+      }
+    ]
   }
 )
 
@@ -13843,6 +19514,29 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kei_kuubo]) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'any-of',
+        label: '旗艦 Langley または 軽空母2隻',
+        alternatives: [
+          [
+            {
+              kind: 'flagship-specific',
+              baseShipIds: [925]
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kei_kuubo],
+              min: 2
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -13876,6 +19570,16 @@ register(
       ].flat()
       return shipCount(msts, ids) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [983] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [674, 675, 485, 528, 425],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -13901,6 +19605,20 @@ register(
         shipCategoryCount(msts, [ApiShipCategory.northampton]) >= 1
       )
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.fletcher],
+        min: 2
+      },
+      {
+        kind: 'ship-category-count',
+        categories: [ApiShipCategory.northampton],
+        min: 1
+      }
+    ]
   }
 )
 
@@ -13939,6 +19657,20 @@ register(
       }
       return shipCount(msts.slice(1), ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [79, 544, 923, 115, 24, 528, 484, 631, 93, 973, 645]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [79, 544, 923, 115, 24, 528, 484, 631, 93, 973, 645],
+        min: 2,
+        excludePositions: [1]
+      }
+    ]
   }
 )
 
@@ -13969,6 +19701,28 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.kutikukan], max_lv) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: ApiShipTypeSenkanClasses,
+        min: 2,
+        minimumLevel: 88
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.keijyun],
+        min: 1,
+        minimumLevel: 88
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 2,
+        minimumLevel: 88
+      }
+    ]
   }
 )
 
@@ -13998,6 +19752,31 @@ register(
       }
       return shipTypeCount(msts, [ApiShipType.keijyun]) >= 1
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [945] },
+      {
+        kind: 'any-of',
+        label: '駆逐艦2隻 または 軽巡1隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 2
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.keijyun],
+              min: 1
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -14027,6 +19806,31 @@ register(
         return false
       return true
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [953] },
+      {
+        kind: 'any-of',
+        label: '駆逐艦3隻 または 海防艦1隻',
+        alternatives: [
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kutikukan],
+              min: 3
+            }
+          ],
+          [
+            {
+              kind: 'ship-type-count',
+              types: [ApiShipType.kaiboukan],
+              min: 1
+            }
+          ]
+        ]
+      }
+    ]
   }
 )
 
@@ -14056,6 +19860,12 @@ register(
       if (!shipCount([ships[0]], flagship_ids)) return false
       return shipTypeCount(ships, [ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [138, 597, 942] },
+      { kind: 'ship-type-count', types: [ApiShipType.kutikukan], min: 3 }
+    ]
   }
 )
 
@@ -14082,6 +19892,20 @@ register(
         shipTypeCount(ships, [ApiShipType.kaiboukan]) >= 2
       )
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.yourikukan, ApiShipType.hokyuukan],
+        min: 2
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kaiboukan],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -14113,6 +19937,11 @@ register(
 
       return !!shipCount([msts[0]], flagship_ids)
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [132, 625, 421, 445] }
+    ]
   }
 )
 
@@ -14148,6 +19977,15 @@ register(
       ].flat()
       return shipCount(msts, ids) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [114, 15, 95, 671, 484, 921, 922, 904, 637, 638, 898],
+        min: 4
+      }
+    ]
   }
 )
 
@@ -14178,6 +20016,20 @@ register(
       ].flat()
       return shipCount([msts[0]], ids) > 0 && shipCount(msts, ids) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [923, 93, 45, 415, 528, 943, 639]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [923, 93, 45, 415, 528, 943, 639],
+        min: 2,
+        excludePositions: [1]
+      }
+    ]
   }
 )
 
@@ -14211,6 +20063,20 @@ register(
       ].flat()
       return shipCount(msts, ids) >= 2
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [982],
+        exactMasterIds: true
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [674, 675, 485, 484],
+        min: 2
+      }
+    ]
   }
 )
 
@@ -14249,6 +20115,17 @@ register(
       ].flat()
       return shipCount(msts.slice(1), ids2) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [1031] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [674, 675, 453, 485, 528, 484],
+        min: 2,
+        excludePositions: [1]
+      }
+    ]
   }
 )
 
@@ -14286,6 +20163,20 @@ register(
       }
       return shipCount(msts.slice(1), ids) > 0
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-specific',
+        baseShipIds: [79, 521, 405, 473, 17, 181, 93, 15, 653]
+      },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [79, 521, 405, 473, 17, 181, 93, 15, 653],
+        min: 1,
+        excludePositions: [1]
+      }
+    ]
   }
 )
 
@@ -14319,6 +20210,17 @@ register(
       ].flat()
       return shipCount(msts.slice(1), ids2) > 0
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [1033] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [485],
+        min: 1,
+        excludePositions: [1]
+      }
+    ]
   }
 )
 
@@ -14353,6 +20255,17 @@ register(
       }
       return !!shipCategoryCount([msts[1]], [ApiShipCategory.fubuki])
     }
+  },
+  {
+    rules: [
+      { kind: 'ship-count', min: 2 },
+      { kind: 'flagship-specific', baseShipIds: [1035] },
+      {
+        kind: 'ship-position-category',
+        position: 2,
+        categories: [ApiShipCategory.fubuki]
+      }
+    ]
   }
 )
 
@@ -14387,6 +20300,23 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kaiboukan]) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [900, 637, 638] },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kutikukan],
+        min: 1,
+        excludePositions: [1]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kaiboukan],
+        min: 2,
+        excludePositions: [1]
+      }
+    ]
   }
 )
 
@@ -14425,6 +20355,17 @@ register(
       ].flat()
       return shipCount(msts.slice(1), ids2) >= 2
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [1034, 745] },
+      {
+        kind: 'specific-ship-count',
+        baseShipIds: [69, 124, 70, 138, 674, 485, 528],
+        min: 2,
+        excludePositions: [1]
+      }
+    ]
   }
 )
 
@@ -14453,6 +20394,25 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kaiboukan, ApiShipType.kutikukan]) >= 4
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [
+          ApiShipType.hokyuukan,
+          ApiShipType.yourikukan,
+          ApiShipType.suibo,
+          ApiShipType.koukuu_senkan
+        ]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kaiboukan, ApiShipType.kutikukan],
+        min: 4,
+        excludePositions: [1]
+      }
+    ]
   }
 )
 
@@ -14479,6 +20439,20 @@ register(
       }
       return shipTypeCount(msts.slice(1), [ApiShipType.kaiboukan, ApiShipType.kutikukan]) >= 3
     }
+  },
+  {
+    rules: [
+      {
+        kind: 'flagship-type',
+        types: [ApiShipType.hokyuukan, ApiShipType.yourikukan]
+      },
+      {
+        kind: 'ship-type-count',
+        types: [ApiShipType.kaiboukan, ApiShipType.kutikukan],
+        min: 3,
+        excludePositions: [1]
+      }
+    ]
   }
 )
 
@@ -14499,7 +20473,7 @@ register(
   }
 )
 
-// 1102: 海軍工廠の再整備
+// 1102: 工廠による装備兵装の強化準備
 register(
   1102,
   class {
@@ -14816,6 +20790,18 @@ register(
     static formatter(_quest: Quest): string {
       return ''
     }
+  },
+  {
+    rules: [
+      { kind: 'flagship-specific', baseShipIds: [920] },
+      {
+        kind: 'ship-position-slotitem-count',
+        position: 1,
+        itemId: 284,
+        slotPositions: [1],
+        exact: 1
+      }
+    ]
   }
 )
 
@@ -14840,7 +20826,7 @@ register(
   }
 )
 
-// 1120: 【工廠任務】新装備開発計画III
+// 1120: 【機種整理統合】新型戦闘機の量産計画
 register(
   1120,
   class {
@@ -15657,23 +21643,20 @@ register(1158, class {
     { id: 226 },
   ];
   static getCondition(svdata: SvData): DestroyItemCondition {
-    let deck_checked = false;
-    const deck = svdata.deckPort(ApiDeckPortId.deck1st);
-    if (deck) {
-      const msts = toShipMsts(svdata, deck.api_ship)
-      const ids = [
-        svdata.shipMstIds(674), // tamanami
-        svdata.shipMstIds(675), // suzunami
-        svdata.shipMstIds(485), // fujinami
-        svdata.shipMstIds(484) // hamanami
-      ].flat()
-      deck_checked = shipCount(msts, ids) >= 3
-    }
     return {
       flagship_ids: svdata.shipMstIds(528),
       flagship_slotitem_ids: [],
       flagship_slotitem_lvl: [],
-      deck_checked
+      deck_condition: {
+        rules: [
+          {
+            kind: 'specific-ship-count',
+            baseShipIds: [674, 675, 485, 484],
+            label: '玉波・涼波・藤波・浜波',
+            min: 3
+          }
+        ]
+      }
     }
   }
   static formatter(quest: Quest): string {
@@ -15714,23 +21697,21 @@ register(1160, class {
     { id: 55 },
   ];
   static getCondition(svdata: SvData): DestroyItemCondition {
-    let deck_checked = false;
-    const deck = svdata.deckPort(ApiDeckPortId.deck1st);
-    if (deck) {
-      const msts = toShipMsts(svdata, deck.api_ship)
-      const ids = [
-        svdata.shipMstIds(981), // fujinami kaini
-        svdata.shipMstIds(982), // hayanami kaini
-        svdata.shipMstIds(983), // hamanami kaini
-        svdata.shipMstIds(564) // kazagumo kaini
-      ].flat()
-      deck_checked = shipCount(msts.slice(1), ids) >= 3
-    }
     return {
       flagship_ids: svdata.shipMstIds(196), // hiryu kaini
       flagship_slotitem_ids: [],
       flagship_slotitem_lvl: [],
-      deck_checked
+      deck_condition: {
+        rules: [
+          {
+            kind: 'specific-ship-count',
+            baseShipIds: [981, 982, 983, 564],
+            label: '旗艦以外の藤波改二・早波改二・浜波改二・風雲改二',
+            min: 3,
+            excludePositions: [1]
+          }
+        ]
+      }
     }
   }
   static formatter(quest: Quest): string {
@@ -15812,22 +21793,21 @@ register(1164, class {
     { id: 10 },
   ];
   static getCondition(svdata: SvData): DestroyItemCondition {
-    let deck_checked = false;
-    const deck = svdata.deckPort(ApiDeckPortId.deck1st);
-    if (deck) {
-      const msts = toShipMsts(svdata, deck.api_ship)
-      const ids = [
-        svdata.shipMstIds(485), // fujinami
-        svdata.shipMstIds(25), // kitakami
-      ].flat()
-      deck_checked = shipCount(msts.slice(1), ids) >= 2
-    }
-
     return {
       flagship_ids: svdata.shipMstIds(674), // tamanami
       flagship_slotitem_ids: [],
       flagship_slotitem_lvl: [],
-      deck_checked
+      deck_condition: {
+        rules: [
+          {
+            kind: 'specific-ship-count',
+            baseShipIds: [485, 25],
+            label: '旗艦以外の藤波・北上',
+            min: 2,
+            excludePositions: [1]
+          }
+        ]
+      }
     }
   }
   static formatter(quest: Quest): string {
@@ -15844,36 +21824,31 @@ register(1165, class {
     { id: 11 },
   ];
   static getCondition(svdata: SvData): DestroyItemCondition {
-    let deck_checked = false;
-    const deck = svdata.deckPort(ApiDeckPortId.deck1st);
-    if (deck) {
-      if (deckShipCount(deck.api_ship) >= 6) {
-        const msts = toShipMsts(svdata, deck.api_ship)
-        const ids1 = [
-          svdata.shipMstIds(139), // yahagi
-        ].flat()
-        deck_checked = !!shipCount([msts[1]], ids1)
-        if (deck_checked) {
-          const ids2 = [
-            svdata.shipMstIds(167), // isokaze
-            svdata.shipMstIds(170), // hamakaze
-            svdata.shipMstIds(20), // yukikaze
-            svdata.shipMstIds(533), // fuyutuki
-            svdata.shipMstIds(532), // sudutuki
-            svdata.shipMstIds(49), // kasumi
-            svdata.shipMstIds(41), // hatusimo
-            svdata.shipMstIds(425), // asasimo
-          ].flat()
-          deck_checked = shipCount(msts.slice(2), ids2) === 4
-        } 
-      }
-    }
-
     return {
       flagship_ids: svdata.shipMstIds(131), // yamato
       flagship_slotitem_ids: [],
       flagship_slotitem_lvl: [],
-      deck_checked
+      deck_condition: {
+        rules: [
+          {
+            kind: 'ship-count',
+            min: 6
+          },
+          {
+            kind: 'ship-position-specific',
+            position: 2,
+            baseShipIds: [139],
+            label: '矢矧'
+          },
+          {
+            kind: 'specific-ship-count',
+            baseShipIds: [167, 170, 20, 533, 532, 49, 41, 425],
+            label: '第3艦以降の指定艦',
+            exact: 4,
+            excludePositions: [1, 2]
+          }
+        ]
+      }
     }
   }
   static formatter(quest: Quest): string {
@@ -15923,25 +21898,30 @@ register(
       }
     ];
     static getCondition(svdata: SvData): DestroyItemCondition {
-      let deck_checked = false;
-      const deck = svdata.deckPort(ApiDeckPortId.deck1st);
       const ids = [
         svdata.shipMstIds(717), // yamasiomaru kai
         svdata.shipMstIds(637), // dai4goukaiboukan
         svdata.shipMstIds(638), // dai30goukaiboukan
       ].flat()
-      if (deck) {
-        if (deckShipCount(deck.api_ship) >= 2) {
-          const msts = toShipMsts(svdata, deck.api_ship)
-          deck_checked = !!shipCount([msts[1]], ids)
-        }
-      }
 
       return {
         flagship_ids: ids,
         flagship_slotitem_ids: [],
         flagship_slotitem_lvl: [],
-        deck_checked
+        deck_condition: {
+          rules: [
+            {
+              kind: 'ship-count',
+              min: 2
+            },
+            {
+              kind: 'ship-position-specific',
+              position: 2,
+              baseShipIds: [717, 637, 638],
+              label: '山汐丸改・第四号海防艦・第三〇号海防艦'
+            }
+          ]
+        }
       }
     }
     static formatter(quest: Quest): string {
@@ -15966,25 +21946,30 @@ register(
       }
     ];
     static getCondition(svdata: SvData): DestroyItemCondition {
-      let deck_checked = false;
-      const deck = svdata.deckPort(ApiDeckPortId.deck1st);
       const ids = [
         svdata.shipMstIds(717), // yamasiomaru kai
         svdata.shipMstIds(637), // dai4goukaiboukan
         svdata.shipMstIds(638), // dai30goukaiboukan
       ].flat()
-      if (deck) {
-        if (deckShipCount(deck.api_ship) >= 2) {
-          const msts = toShipMsts(svdata, deck.api_ship)
-          deck_checked = !!shipCount([msts[1]], ids)
-        }
-      }
 
       return {
         flagship_ids: ids,
         flagship_slotitem_ids: [],
         flagship_slotitem_lvl: [],
-        deck_checked
+        deck_condition: {
+          rules: [
+            {
+              kind: 'ship-count',
+              min: 2
+            },
+            {
+              kind: 'ship-position-specific',
+              position: 2,
+              baseShipIds: [717, 637, 638],
+              label: '山汐丸改・第四号海防艦・第三〇号海防艦'
+            }
+          ]
+        }
       }
     }
     static formatter(quest: Quest): string {
@@ -16006,6 +21991,602 @@ export const questProgressDetailFormat = (quest: Quest): string => {
   }
 
   return ''
+}
+
+function questMapProgressLabel(
+  map: QuestMapOrCell,
+  kind: QuestProgressDetailKind,
+  translate: AppTranslator
+): string {
+  const mapText = `${map[0]}-${map[1]}${getMapSufix(map)}`
+  const rank = map[2]
+  switch (kind) {
+    case 'arrival':
+      return rank
+        ? translate('quest.progress.map.victory', {
+            params: { map: mapText, rank }
+          })
+        : translate('quest.progress.map.arrival', {
+            params: { map: mapText }
+          })
+    case 'gauge':
+      return translate('quest.progress.map.gauge', {
+        params: { map: mapText }
+      })
+    default:
+      return rank
+        ? translate('quest.progress.map.victory', {
+            params: { map: mapText, rank }
+          })
+        : translate('quest.progress.map.arrival', {
+            params: { map: mapText }
+          })
+  }
+}
+
+function questProgressDetailItemsFromLabels(
+  quest: Quest,
+  kind: QuestProgressDetailKind,
+  labels: readonly string[]
+): QuestProgressDetailItem[] | undefined {
+  if (!isQuestCounter(quest.state)) {
+    return undefined
+  }
+  const state = quest.state as QuestCounter
+  if (
+    state.count.length === 0 ||
+    labels.length !== state.count.length ||
+    state.count.some((value) => !Number.isFinite(value)) ||
+    state.countMax.some((value) => !Number.isFinite(value) || value <= 0)
+  ) {
+    return undefined
+  }
+
+  return labels.map((label, index) => ({
+    kind,
+    label,
+    current: Math.max(0, state.count[index]),
+    required: state.countMax[index],
+    completed: state.count[index] >= state.countMax[index]
+  }))
+}
+
+type QuestSlotitemTypeMessageKey = Extract<
+  AppMessageKey,
+  `quest.progress.slotitemType.${string}`
+>
+type QuestShipTypeMessageKey = Exclude<
+  Extract<AppMessageKey, `quest.progress.shipType.${string}`>,
+  'quest.progress.shipType.unknown'
+>
+type QuestShipCategoryMessageKey = Exclude<
+  Extract<AppMessageKey, `quest.progress.shipCategory.${string}`>,
+  'quest.progress.shipCategory.unknown'
+>
+
+const QuestSlotitemTypeMessageKeys: Readonly<
+  Partial<Record<number, QuestSlotitemTypeMessageKey>>
+> = {
+  [SlotitemType.SmallMainGun]: 'quest.progress.slotitemType.smallMainGun',
+  [SlotitemType.MediumMainGun]: 'quest.progress.slotitemType.mediumMainGun',
+  [SlotitemType.LargeMainGun]: 'quest.progress.slotitemType.largeMainGun',
+  [SlotitemType.SecondaryGun]: 'quest.progress.slotitemType.secondaryGun',
+  [SlotitemType.Torpedo]: 'quest.progress.slotitemType.torpedo',
+  [SlotitemType.Fighter]: 'quest.progress.slotitemType.fighter',
+  [SlotitemType.DiveBomber]: 'quest.progress.slotitemType.diveBomber',
+  [SlotitemType.TorpedoBomber]: 'quest.progress.slotitemType.torpedoBomber',
+  [SlotitemType.RecAircraft]: 'quest.progress.slotitemType.recAircraft',
+  [SlotitemType.RecSeaplane]: 'quest.progress.slotitemType.recSeaplane',
+  [SlotitemType.SeaplaneBomber]: 'quest.progress.slotitemType.seaplaneBomber',
+  [SlotitemType.AAGun]: 'quest.progress.slotitemType.aaGun',
+  [SlotitemType.SmallRadar]: 'quest.progress.slotitemType.smallRadar',
+  [SlotitemType.LargeRadar]: 'quest.progress.slotitemType.largeRadar',
+  [SlotitemType.DepthCharge]: 'quest.progress.slotitemType.depthCharge',
+  [SlotitemType.MediumExtraArmor]: 'quest.progress.slotitemType.mediumArmor',
+  [SlotitemType.LargeExtraArmor]: 'quest.progress.slotitemType.largeArmor',
+  [SlotitemType.EngineImp]: 'quest.progress.slotitemType.engine',
+  [SlotitemType.LandAttackAircraft]:
+    'quest.progress.slotitemType.landAttackAircraft',
+  [SlotitemType.STContainer]: 'quest.progress.slotitemType.transport'
+}
+
+export function questSlotitemTypeLabel(
+  type: number,
+  translate: AppTranslator = DefaultQuestTranslator
+): string {
+  const key = QuestSlotitemTypeMessageKeys[type]
+  return key
+    ? translate(key)
+    : translate('quest.progress.equipment.typeUnknown', {
+        params: { type }
+      })
+}
+
+const QuestShipTypeMessageKeys: Readonly<
+  Partial<Record<ApiShipType, QuestShipTypeMessageKey>>
+> = {
+  [ApiShipType.kaiboukan]: 'quest.progress.shipType.escort',
+  [ApiShipType.kutikukan]: 'quest.progress.shipType.destroyer',
+  [ApiShipType.keijyun]: 'quest.progress.shipType.lightCruiser',
+  [ApiShipType.raijyun]: 'quest.progress.shipType.torpedoCruiser',
+  [ApiShipType.jyuujyun]: 'quest.progress.shipType.heavyCruiser',
+  [ApiShipType.koujyun]: 'quest.progress.shipType.aviationCruiser',
+  [ApiShipType.kei_kuubo]: 'quest.progress.shipType.lightCarrier',
+  [ApiShipType.kousoku_senkan]: 'quest.progress.shipType.battleship',
+  [ApiShipType.teisoku_senkan]: 'quest.progress.shipType.battleship',
+  [ApiShipType.koukuu_senkan]: 'quest.progress.shipType.aviationBattleship',
+  [ApiShipType.seiki_kuubo]: 'quest.progress.shipType.carrier',
+  [ApiShipType.tyoudokyuu_senkan]: 'quest.progress.shipType.battleship',
+  [ApiShipType.sensuikan]: 'quest.progress.shipType.submarine',
+  [ApiShipType.sensui_kuubo]: 'quest.progress.shipType.submarineCarrier',
+  [ApiShipType.hokyuukan_enemy]: 'quest.progress.shipType.enemySupply',
+  [ApiShipType.suibo]: 'quest.progress.shipType.seaplaneTender',
+  [ApiShipType.yourikukan]: 'quest.progress.shipType.landingShip',
+  [ApiShipType.soukou_kuubo]: 'quest.progress.shipType.armoredCarrier',
+  [ApiShipType.kousakusen]: 'quest.progress.shipType.repairShip',
+  [ApiShipType.sensuibokan]: 'quest.progress.shipType.submarineTender',
+  [ApiShipType.renjyun]: 'quest.progress.shipType.trainingCruiser',
+  [ApiShipType.hokyuukan]: 'quest.progress.shipType.supplyShip'
+}
+
+function questShipTypeLabel(
+  type: ApiShipType | null,
+  translate: AppTranslator = DefaultQuestTranslator
+): string {
+  if (type === null) {
+    return translate('quest.progress.ship.specified')
+  }
+  const key = QuestShipTypeMessageKeys[type]
+  return key
+    ? translate(key)
+    : translate('quest.progress.shipType.unknown', {
+        params: { type }
+      })
+}
+
+function questShipTypesLabel(
+  types: readonly ApiShipType[],
+  translate: AppTranslator = DefaultQuestTranslator
+): string {
+  const uniqueTypes = [...new Set(types)]
+  const typeSet = new Set(uniqueTypes)
+  if (
+    uniqueTypes.length === 3 &&
+    [
+      ApiShipType.keijyun,
+      ApiShipType.renjyun,
+      ApiShipType.raijyun
+    ].every((type) => typeSet.has(type))
+  ) {
+    return translate('quest.progress.ship.lightCruiserClass')
+  }
+  if (
+    uniqueTypes.length === 2 &&
+    [ApiShipType.jyuujyun, ApiShipType.koujyun].every((type) =>
+      typeSet.has(type)
+    )
+  ) {
+    return translate('quest.progress.ship.heavyCruiserClass')
+  }
+  return [
+    ...new Set(uniqueTypes.map((type) => questShipTypeLabel(type, translate)))
+  ].join(' / ')
+}
+
+const QuestShipCategoryMessageKeys: Readonly<
+  Partial<Record<number, QuestShipCategoryMessageKey>>
+> = {
+  [ApiShipCategory.ayanami]: 'quest.progress.shipCategory.ayanami',
+  [ApiShipCategory.akatuki]: 'quest.progress.shipCategory.akatsuki',
+  [ApiShipCategory.fubuki]: 'quest.progress.shipCategory.fubuki',
+  [ApiShipCategory.sendai]: 'quest.progress.shipCategory.sendai',
+  [ApiShipCategory.yuugumo]: 'quest.progress.shipCategory.yugumo',
+  [ApiShipCategory.akizuki]: 'quest.progress.shipCategory.akizuki',
+  [ApiShipCategory.hiburi]: 'quest.progress.shipCategory.hiburi',
+  [ApiShipCategory.ukuru]: 'quest.progress.shipCategory.ukuru'
+}
+
+function questShipCategoriesLabel(
+  categories: readonly ApiShipCategory[],
+  translate: AppTranslator = DefaultQuestTranslator
+): string {
+  return categories
+    .map((category) => {
+      const key = QuestShipCategoryMessageKeys[category]
+      return key
+        ? translate(key)
+        : translate('quest.progress.shipCategory.unknown', {
+            params: { category }
+          })
+    })
+    .join(' / ')
+}
+
+function questBattleEnemyLabel(
+  types: readonly ApiShipType[],
+  translate: AppTranslator
+): string {
+  const typeSet = new Set(types)
+  const carrierTypes = new Set<ApiShipType>([
+    ApiShipType.kei_kuubo,
+    ApiShipType.seiki_kuubo
+  ])
+  const submarineTypes = new Set<ApiShipType>([
+    ApiShipType.sensuikan,
+    ApiShipType.sensui_kuubo
+  ])
+  if (
+    types.length > 0 &&
+    types.every((type) => carrierTypes.has(type))
+  ) {
+    return translate('quest.progress.enemy.carrier')
+  }
+  if (
+    typeSet.size === 1 &&
+    typeSet.has(ApiShipType.hokyuukan_enemy)
+  ) {
+    return translate('quest.progress.enemy.supply')
+  }
+  if (
+    types.length > 0 &&
+    types.every((type) => submarineTypes.has(type))
+  ) {
+    return translate('quest.progress.enemy.submarine')
+  }
+  const typeLabel = questShipTypesLabel(types, translate)
+  return typeLabel
+    ? translate('quest.progress.enemy.type', {
+        params: { type: typeLabel }
+      })
+    : translate('quest.progress.enemy.specified')
+}
+
+function questKaisouProgressLabel(
+  targetLabel: string,
+  materialLabel: string,
+  materialCount: number,
+  translate: AppTranslator
+): string {
+  return translate('quest.progress.modernization.useShips', {
+    params: {
+      target: targetLabel,
+      material: materialLabel,
+      count: materialCount
+    }
+  })
+}
+
+function questDestroyItemProgressLabel(
+  matcher: ItemIdOrType,
+  resolvers: QuestProgressDetailResolvers
+): string {
+  const translate = resolvers.translate ?? DefaultQuestTranslator
+  if (matcher.id !== undefined) {
+    const name =
+      resolvers.slotitemName?.(matcher.id) ??
+      translate('quest.progress.equipment.unknown', {
+        params: { id: matcher.id }
+      })
+    return translate('quest.progress.equipment.namedDiscard', {
+      params: { name }
+    })
+  }
+  if (matcher.type !== undefined) {
+    return translate('quest.progress.equipment.namedDiscard', {
+      params: {
+        name: questSlotitemTypeLabel(matcher.type, translate)
+      }
+    })
+  }
+  if (matcher.types?.length) {
+    return translate('quest.progress.equipment.namedDiscard', {
+      params: {
+        name: matcher.types
+          .map((type) => questSlotitemTypeLabel(type, translate))
+          .join(' / ')
+      }
+    })
+  }
+  if (matcher.id_with_alv) {
+    const { id, alv } = matcher.id_with_alv
+    const name =
+      resolvers.slotitemName?.(id) ??
+      translate('quest.progress.equipment.unknown', {
+        params: { id }
+      })
+    return translate('quest.progress.equipment.proficiencyDiscard', {
+      params: {
+        name,
+        proficiency:
+          alv === 7
+            ? translate('quest.progress.proficiency.max')
+            : alv
+      }
+    })
+  }
+  return translate('quest.progress.equipment.specifiedDiscard')
+}
+
+export function questEquipmentConditionProgressLabel(
+  condition: DestroyItemCondition,
+  resolvers: QuestProgressDetailResolvers = {}
+): string {
+  const translate = resolvers.translate ?? DefaultQuestTranslator
+  if (!condition.flagship_slotitem_ids.length) {
+    return translate('quest.progress.equipment.specifiedCondition')
+  }
+  const labels = condition.flagship_slotitem_ids.map((itemId, index) => {
+    const name =
+      resolvers.slotitemName?.(itemId) ??
+      translate('quest.progress.equipment.unknown', {
+        params: { id: itemId }
+      })
+    const level = condition.flagship_slotitem_lvl[index]
+    const levelText =
+      Number.isFinite(level) && level > 0 ? ` ★+${level}` : ''
+    const proficiencyText = condition.flagship_slotitem_alv_max
+      ? translate('quest.progress.proficiency.parenthesized', {
+          params: {
+            value: translate('quest.progress.proficiency.max')
+          }
+        })
+      : ''
+    return `${name}${levelText}${proficiencyText}`
+  })
+  return translate('quest.progress.equipment.flagship', {
+    params: { items: labels.join(' + ') }
+  })
+}
+
+export function questProgressDetailItems(
+  quest: Quest,
+  resolvers: QuestProgressDetailResolvers = {}
+): QuestProgressDetailItem[] | undefined {
+  const stuff = getQuestStuff(quest.no)
+  if (!stuff) {
+    return undefined
+  }
+  const translate = resolvers.translate ?? DefaultQuestTranslator
+
+  switch (stuff.questType) {
+    case QuestType.practice:
+    case QuestType.practiceDeck:
+      return questProgressDetailItemsFromLabels(quest, 'practice', [
+        stuff.need_win_rank
+          ? translate('quest.progress.practice.victory', {
+              params: { rank: stuff.need_win_rank }
+            })
+          : translate('quest.progress.practice.run')
+      ])
+    case QuestType.nyukyo:
+      return questProgressDetailItemsFromLabels(quest, 'maintenance', [
+        translate('quest.progress.repair')
+      ])
+    case QuestType.mapStart:
+    case QuestType.mapStartDeck:
+      return questProgressDetailItemsFromLabels(quest, 'sortie', [
+        stuff.area_id > 0 && stuff.area_no > 0
+          ? translate('quest.progress.sortieMap', {
+              params: { map: `${stuff.area_id}-${stuff.area_no}` }
+            })
+          : translate('quest.progress.sortie')
+      ])
+    case QuestType.battle:
+      return questProgressDetailItemsFromLabels(quest, 'battle', [
+        translate(
+          stuff.need_win
+            ? 'quest.progress.battleVictory'
+            : 'quest.progress.battle'
+        )
+      ])
+    case QuestType.battleEnemy:
+      return questProgressDetailItemsFromLabels(quest, 'battle', [
+        questBattleEnemyLabel(stuff.type, translate)
+      ])
+    case QuestType.battle214:
+      return questProgressDetailItemsFromLabels(quest, 'battle', [
+        translate('quest.progress.sortie'),
+        translate('quest.progress.battle.sVictory'),
+        translate('quest.progress.battle.bossArrival'),
+        translate('quest.progress.battle.bossVictory')
+      ])
+    case QuestType.battleMap:
+    case QuestType.battleMapDeck:
+      return questProgressDetailItemsFromLabels(
+        quest,
+        'battle',
+        stuff.maps.map((map) =>
+          questMapProgressLabel(map, 'battle', translate)
+        )
+      )
+    case QuestType.mapGoal:
+      return questProgressDetailItemsFromLabels(
+        quest,
+        'arrival',
+        stuff.maps.map((map) =>
+          questMapProgressLabel(map, 'arrival', translate)
+        )
+      )
+    case QuestType.gaugeClear:
+      return questProgressDetailItemsFromLabels(
+        quest,
+        'gauge',
+        stuff.maps.map((map) =>
+          questMapProgressLabel(map, 'gauge', translate)
+        )
+      )
+    case QuestType.missionStart:
+      return questProgressDetailItemsFromLabels(quest, 'expedition', [
+        translate('quest.progress.expedition.start')
+      ])
+    case QuestType.mission:
+      return questProgressDetailItemsFromLabels(quest, 'expedition', [
+        translate('quest.progress.expedition.success')
+      ])
+    case QuestType.missionSpecific:
+      return questProgressDetailItemsFromLabels(
+        quest,
+        'expedition',
+        stuff.names.map((names) =>
+          translate('quest.progress.expedition.namedSuccess', {
+            params: { names: names.join(' / ') }
+          })
+        )
+      )
+    case QuestType.kaisou:
+      return questProgressDetailItemsFromLabels(quest, 'maintenance', [
+        translate(
+          stuff.need_succeeded
+            ? 'quest.progress.modernization.success'
+            : 'quest.progress.modernization.run'
+        )
+      ])
+    case QuestType.kaisouUseType: {
+      if (!stuff.use_ship_type) {
+        return undefined
+      }
+      const [materialType, materialCount] = stuff.use_ship_type
+      return questProgressDetailItemsFromLabels(quest, 'maintenance', [
+        questKaisouProgressLabel(
+          stuff.progress_target_label ??
+            questShipTypeLabel(stuff.powerup_ship_type, translate),
+          stuff.progress_material_label ??
+            questShipTypeLabel(materialType, translate),
+          materialCount,
+          translate
+        )
+      ])
+    }
+    case QuestType.kaisouUseId:
+      return questProgressDetailItemsFromLabels(quest, 'maintenance', [
+        questKaisouProgressLabel(
+          stuff.progress_target_label ??
+            questShipTypeLabel(stuff.powerup_ship_type, translate),
+          stuff.progress_material_label ??
+            translate('quest.progress.ship.specified'),
+          stuff.use_ship_count,
+          translate
+        )
+      ])
+    case QuestType.kaisouUseIdToId:
+      return questProgressDetailItemsFromLabels(quest, 'maintenance', [
+        questKaisouProgressLabel(
+          stuff.progress_target_label ??
+            translate('quest.progress.ship.specified'),
+          stuff.progress_material_label ??
+            translate('quest.progress.ship.specified'),
+          stuff.use_ship_count,
+          translate
+        )
+      ])
+    case QuestType.kaisouUseTypeToId:
+      return questProgressDetailItemsFromLabels(quest, 'maintenance', [
+        questKaisouProgressLabel(
+          stuff.progress_target_label ??
+            translate('quest.progress.ship.specified'),
+          stuff.progress_material_label ??
+            questShipTypesLabel(
+              stuff.use_ship_type as ApiShipType[],
+              translate
+            ),
+          stuff.use_ship_count,
+          translate
+        )
+      ])
+    case QuestType.kaisouUseCategoryToCategory:
+      return questProgressDetailItemsFromLabels(quest, 'maintenance', [
+        questKaisouProgressLabel(
+          stuff.progress_target_label ??
+            questShipCategoriesLabel(stuff.powerup_ship_cats, translate),
+          stuff.progress_material_label ??
+            questShipCategoriesLabel(stuff.use_ship_cats, translate),
+          stuff.use_ship_count,
+          translate
+        )
+      ])
+    case QuestType.kaisouUseCategoryToType:
+      return questProgressDetailItemsFromLabels(quest, 'maintenance', [
+        questKaisouProgressLabel(
+          stuff.progress_target_label ??
+            questShipCategoriesLabel(stuff.powerup_ship_cats, translate),
+          stuff.progress_material_label ??
+            questShipTypesLabel(stuff.use_ship_types, translate),
+          stuff.use_ship_count,
+          translate
+        )
+      ])
+    case QuestType.hokyu:
+      return questProgressDetailItemsFromLabels(quest, 'maintenance', [
+        translate('quest.progress.supply')
+      ])
+    case QuestType.remodel:
+      return questProgressDetailItemsFromLabels(quest, 'development', [
+        translate('quest.progress.equipment.remodel')
+      ])
+    case QuestType.createItem:
+      return questProgressDetailItemsFromLabels(quest, 'development', [
+        translate('quest.progress.equipment.develop')
+      ])
+    case QuestType.createShip:
+      return questProgressDetailItemsFromLabels(quest, 'construction', [
+        translate('quest.progress.ship.construct')
+      ])
+    case QuestType.destroyItem:
+      return questProgressDetailItemsFromLabels(quest, 'disposal', [
+        translate('quest.progress.equipment.discard')
+      ])
+    case QuestType.destroyItemIdOrType:
+      if (stuff.id_or_types.length === 0) {
+        const condition = resolvers.equipmentCondition?.(quest.no)
+        return questProgressDetailItemsFromLabels(quest, 'equipment', [
+          condition
+            ? questEquipmentConditionProgressLabel(condition, resolvers)
+            : translate('quest.progress.equipment.specifiedCondition')
+        ])
+      }
+      return questProgressDetailItemsFromLabels(
+        quest,
+        'disposal',
+        stuff.id_or_types.map((matcher) =>
+          questDestroyItemProgressLabel(matcher, resolvers)
+        )
+      )
+    case QuestType.destroyShip:
+      return questProgressDetailItemsFromLabels(quest, 'disposal', [
+        translate('quest.progress.ship.scrap')
+      ])
+    case QuestType.hensei:
+      return questProgressDetailItemsFromLabels(quest, 'formation', [
+        translate('quest.progress.fleet.formation')
+      ])
+    case QuestType.slotitemCondition:
+      return questProgressDetailItemsFromLabels(
+        quest,
+        'equipment',
+        stuff.slotitem_ids.map(
+          (itemId) =>
+            translate('quest.progress.equipment.owned', {
+              params: {
+                name:
+                  resolvers.slotitemName?.(itemId) ??
+                  translate('quest.progress.equipment.unknown', {
+                    params: { id: itemId }
+                  })
+              }
+            })
+        )
+      )
+    case QuestType.collectItem:
+    case QuestType.collectItemCondition:
+      if (stuff.item_id !== ApiItemId.saury) {
+        return undefined
+      }
+      return questProgressDetailItemsFromLabels(quest, 'collection', [
+        translate('quest.progress.collection.saury')
+      ])
+    default:
+      return undefined
+  }
 }
 
 /**

@@ -1,8 +1,24 @@
 import { reactive, toRaw, watch, ref } from 'vue'
-import { defaultGlobalSetting, type GlobalSetting } from '@common/global_setting'
+import {
+  defaultGlobalSetting,
+  normalizeGlobalSetting,
+  type GlobalSetting
+} from '@common/global_setting'
+import {
+  createAppTranslator,
+  InternalPseudoLocale,
+  type LocalizationLocale
+} from '@common/localization'
+import { EnvRenderer } from '@renderer/common/env-renderer'
 export const globalSetting: GlobalSetting = reactive(
   defaultGlobalSetting()
 )
+
+export function activeLocalizationLocale(): LocalizationLocale {
+  return EnvRenderer.isPseudoLocale ? InternalPseudoLocale : globalSetting.locale
+}
+
+export const translateApp = createAppTranslator(activeLocalizationLocale)
 
 let preventSave = false;
 
@@ -28,7 +44,7 @@ export function setGlobalSettingWithPreventSave(setting: GlobalSetting) {
   preventSave = true;
   forWatchCall.value++;
   syncHandle.pause()
-  Object.assign(globalSetting, setting)
+  Object.assign(globalSetting, normalizeGlobalSetting(setting))
   syncHandle.resume()
   console.log('setGlobalSettingWithPreventSave << preventSave:', preventSave, setting)
 }

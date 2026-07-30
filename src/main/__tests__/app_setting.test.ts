@@ -12,6 +12,12 @@ const mockState = vi.hoisted(() => ({
         y: 0,
         width: 1920,
         height: 1080
+      },
+      workArea: {
+        x: 0,
+        y: 0,
+        width: 1920,
+        height: 1040
       }
     }
   ]
@@ -71,6 +77,12 @@ describe('app_setting', () => {
           y: 0,
           width: 1920,
           height: 1080
+        },
+        workArea: {
+          x: 0,
+          y: 0,
+          width: 1920,
+          height: 1040
         }
       }
     ]
@@ -83,6 +95,7 @@ describe('app_setting', () => {
   })
 
   afterEach(() => {
+    vi.unstubAllEnvs()
     fs.rmSync(mockState.userDataDir, { recursive: true, force: true })
   })
 
@@ -134,7 +147,7 @@ describe('app_setting', () => {
         height: 900
       },
       false,
-      false,
+      false
     )
 
     const saved = JSON.parse(
@@ -212,7 +225,8 @@ describe('app_setting', () => {
           y: 320,
           width: 1200,
           height: 900
-        })
+        }),
+        getContentSize: () => [1184, 861]
       } as Electron.BrowserWindow,
       false
     )
@@ -240,13 +254,19 @@ describe('app_setting', () => {
     )
     expect(saved.window.assistWindow).toEqual({
       x: 300,
-      y: 320
+      y: 320,
+      width: 1184,
+      height: 861
     })
     expect(appSetting.restoreAssistWindowState(false)).toEqual({
       display: mockState.displays[0],
       position: {
         x: 300,
         y: 320
+      },
+      size: {
+        width: 1184,
+        height: 861
       }
     })
   })
@@ -255,6 +275,12 @@ describe('app_setting', () => {
     mockState.displays = [
       {
         bounds: {
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 100
+        },
+        workArea: {
           x: 0,
           y: 0,
           width: 100,
@@ -268,5 +294,273 @@ describe('app_setting', () => {
     appSetting.loadAppJsonSetting()
 
     expect(appSetting.restoreAssistWindowState(true)).toBeUndefined()
+  })
+
+  it('uses isolated compact workspace bounds for the layout fixture', async () => {
+    vi.stubEnv('KOUBROWSER_LAYOUT_FIXTURE', '1')
+    const appSetting = await import('../app_setting')
+
+    appSetting.loadAppJsonSetting()
+
+    expect(appSetting.restoreLayoutMode()).toBe('workspace')
+    expect(appSetting.restoreMainWindowBounds(false, 'workspace')).toEqual({
+      x: 0,
+      y: 0,
+      width: 1316,
+      height: 632
+    })
+  })
+
+  it('restores isolated workspace bounds across a layout-fixture restart', async () => {
+    vi.stubEnv('KOUBROWSER_LAYOUT_FIXTURE', '1')
+    fs.writeFileSync(
+      path.join(mockState.userDataDir, 'koubrowser.json'),
+      JSON.stringify({
+        window: {
+          workspace: {
+            x: 100,
+            y: 60,
+            width: 1440,
+            height: 928
+          }
+        }
+      }),
+      'utf8'
+    )
+    const appSetting = await import('../app_setting')
+
+    appSetting.loadAppJsonSetting()
+
+    expect(appSetting.restoreMainWindowBounds(true, 'workspace')).toEqual({
+      x: 100,
+      y: 60,
+      width: 1440,
+      height: 928
+    })
+  })
+
+  it('persists versioned workspace mode and clamps restored bounds to the display work area', async () => {
+    const appSetting = await import('../app_setting')
+
+    expect(appSetting.restoreLayoutMode()).toBe('classic')
+
+    appSetting.saveAppState(
+      {
+        isDestroyed: () => false,
+        getNormalBounds: () => ({
+          x: -20,
+          y: -10,
+          width: 2560,
+          height: 1440
+        }),
+        isMaximized: () => true
+      } as Electron.BrowserWindow,
+      true,
+      {
+        width: 1200,
+        height: 752
+      },
+      false,
+      false,
+      'workspace'
+    )
+
+    const saved = JSON.parse(
+      fs.readFileSync(path.join(mockState.userDataDir, 'koubrowser.json'), 'utf8')
+    )
+    expect(saved.window.layout).toEqual({
+      version: 1,
+      mode: 'workspace'
+    })
+    expect(saved.window.workspace).toEqual({
+      x: -20,
+      y: -10,
+      width: 2560,
+      height: 1440,
+      maximized: true
+    })
+
+    expect(appSetting.restoreLayoutMode()).toBe('workspace')
+    expect(appSetting.restoreMainWindowBounds(true, 'workspace')).toEqual({
+      x: 0,
+      y: 0,
+      width: 1920,
+      height: 1040,
+      maximized: true
+    })
+  })
+
+  it('restores a spanning window to the display with the largest visible area', async () => {
+    mockState.displays = [
+      {
+        bounds: {
+          x: 0,
+          y: 0,
+          width: 1920,
+          height: 1080
+        },
+        workArea: {
+          x: 0,
+          y: 0,
+          width: 1920,
+          height: 1040
+        }
+      },
+      {
+        bounds: {
+          x: 1920,
+          y: 0,
+          width: 1920,
+          height: 1080
+        },
+        workArea: {
+          x: 1920,
+          y: 0,
+          width: 1920,
+          height: 1040
+        }
+      }
+    ]
+    fs.writeFileSync(
+      path.join(mockState.userDataDir, 'koubrowser.json'),
+      JSON.stringify({
+        window: {
+          main: {
+            x: 1800,
+            y: 100,
+            width: 1800,
+            height: 920
+          }
+        }
+      }),
+      'utf8'
+    )
+
+    const appSetting = await import('../app_setting')
+
+    expect(appSetting.restoreMainWindowBounds(true)).toEqual({
+      x: 1920,
+      y: 100,
+      width: 1800,
+      height: 920
+    })
+  })
+
+  it('uses the full saved assist bounds when choosing a restore display', async () => {
+    mockState.displays = [
+      {
+        bounds: {
+          x: 0,
+          y: 0,
+          width: 1920,
+          height: 1080
+        },
+        workArea: {
+          x: 0,
+          y: 0,
+          width: 1920,
+          height: 1040
+        }
+      },
+      {
+        bounds: {
+          x: 1920,
+          y: 0,
+          width: 1920,
+          height: 1080
+        },
+        workArea: {
+          x: 1920,
+          y: 0,
+          width: 1920,
+          height: 1040
+        }
+      }
+    ]
+    fs.writeFileSync(
+      path.join(mockState.userDataDir, 'koubrowser.json'),
+      JSON.stringify({
+        window: {
+          assistWindow: {
+            visible: true,
+            x: 1800,
+            y: 100,
+            width: 600,
+            height: 700
+          }
+        }
+      }),
+      'utf8'
+    )
+
+    const appSetting = await import('../app_setting')
+
+    expect(appSetting.restoreAssistWindowState(true)).toEqual({
+      display: mockState.displays[1],
+      position: {
+        x: 1800,
+        y: 100
+      },
+      size: {
+        width: 600,
+        height: 700
+      }
+    })
+  })
+
+  it('clamps restored bounds to a negative mixed-DPI work area', async () => {
+    mockState.displays = [
+      {
+        bounds: {
+          x: -1536,
+          y: -864,
+          width: 1536,
+          height: 864
+        },
+        workArea: {
+          x: -1536,
+          y: -824,
+          width: 1536,
+          height: 824
+        }
+      },
+      {
+        bounds: {
+          x: 0,
+          y: 0,
+          width: 1920,
+          height: 1080
+        },
+        workArea: {
+          x: 0,
+          y: 0,
+          width: 1920,
+          height: 1040
+        }
+      }
+    ]
+    fs.writeFileSync(
+      path.join(mockState.userDataDir, 'koubrowser.json'),
+      JSON.stringify({
+        window: {
+          workspace: {
+            x: -1700,
+            y: -1000,
+            width: 1700,
+            height: 1000
+          }
+        }
+      }),
+      'utf8'
+    )
+
+    const appSetting = await import('../app_setting')
+
+    expect(appSetting.restoreMainWindowBounds(true, 'workspace')).toEqual({
+      x: -1536,
+      y: -824,
+      width: 1536,
+      height: 824
+    })
   })
 })

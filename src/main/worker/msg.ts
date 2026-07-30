@@ -1,5 +1,6 @@
 import { AggregatedCellRank, AggregatedCellShipDrop } from "@common/calc_record";
 import type { DbName, Insert, Query, Update, Remove, UpdateRes, Operation, PortChartData } from "@common/record";
+import type { AccountBackupDatabasePreview } from '@common/account-backup'
 
 /**
  * Message types
@@ -16,6 +17,14 @@ export const Types = {
   dbQueryOne: 'db:queryOne',
   dbRemove: 'db:remove',
   dbOperation: 'db:operation',
+  dbSnapshotBegin: 'db:snapshotBegin',
+  dbSnapshotEnd: 'db:snapshotEnd',
+  dbAuditLoaded: 'db:auditLoaded',
+  dbAuditAccountDirectory: 'db:auditAccountDirectory',
+  dbPreviewBackup: 'db:previewBackup',
+  dbCreateMergeStage: 'db:createMergeStage',
+  dbValidateRestoreStage: 'db:validateRestoreStage',
+  dbInspectAccountDirectory: 'db:inspectAccountDirectory',
 
   // for process
   calcPortChartData: 'calc:portChartData',
@@ -92,6 +101,77 @@ export interface ReqDbOperation {
   operation: Operation
 }
 
+export interface ReqDbSnapshotBegin {
+  readonly type: typeof Types.dbSnapshotBegin
+}
+
+export interface ReqDbSnapshotEnd {
+  readonly type: typeof Types.dbSnapshotEnd
+}
+
+export interface DatabaseSnapshotInfo {
+  readonly dbName: DbName
+  readonly recordCount: number
+  readonly oldestRecordAt: string | null
+  readonly newestRecordAt: string | null
+}
+
+export interface DatabaseAuditInfo extends DatabaseSnapshotInfo {
+  readonly semanticSha256: string
+}
+
+export interface ReqDbAuditLoaded {
+  readonly type: typeof Types.dbAuditLoaded
+}
+
+export interface ReqDbAuditAccountDirectory {
+  readonly type: typeof Types.dbAuditAccountDirectory
+  readonly accountDirectory: string
+  readonly dbNames: DbName[]
+}
+
+export interface DatabaseBackupPreviewFile {
+  readonly dbName: DbName
+  readonly path: string
+  readonly size: number
+  readonly sha256: string
+  readonly recordCount: number
+}
+
+export interface ReqDbPreviewBackup {
+  readonly type: typeof Types.dbPreviewBackup
+  readonly bundleDirectory: string
+  readonly files: DatabaseBackupPreviewFile[]
+}
+
+export interface ReqDbCreateMergeStage {
+  readonly type: typeof Types.dbCreateMergeStage
+  readonly bundleDirectory: string
+  readonly stageDirectory: string
+  readonly files: DatabaseBackupPreviewFile[]
+  readonly expectedPreviews: AccountBackupDatabasePreview[]
+}
+
+export interface RestoreStageDatabaseFile {
+  readonly dbName: DbName
+  readonly filename: string
+  readonly size: number
+  readonly sha256: string
+  readonly recordCount: number
+}
+
+export interface ReqDbValidateRestoreStage {
+  readonly type: typeof Types.dbValidateRestoreStage
+  readonly accountDirectory: string
+  readonly files: RestoreStageDatabaseFile[]
+}
+
+export interface ReqDbInspectAccountDirectory {
+  readonly type: typeof Types.dbInspectAccountDirectory
+  readonly accountDirectory: string
+  readonly dbNames: DbName[]
+}
+
 /**
  * 
  */
@@ -114,6 +194,7 @@ export interface ReqAggregateRankByArea {
 export interface ReqAggregateShipDrop {
   readonly type: typeof Types.aggregateShipDrop
   ship_id: number
+  renderer_scope_id: number
 }
 
 /**
@@ -183,6 +264,53 @@ export interface ResDbRemove {
 export interface ResDbOperation {
   ok: true
   readonly type: typeof Types.dbOperation
+}
+
+export interface ResDbSnapshotBegin {
+  ok: true
+  readonly type: typeof Types.dbSnapshotBegin
+  databases: DatabaseSnapshotInfo[]
+}
+
+export interface ResDbSnapshotEnd {
+  ok: true
+  readonly type: typeof Types.dbSnapshotEnd
+}
+
+export interface ResDbAuditLoaded {
+  ok: true
+  readonly type: typeof Types.dbAuditLoaded
+  databases: DatabaseAuditInfo[]
+}
+
+export interface ResDbAuditAccountDirectory {
+  ok: true
+  readonly type: typeof Types.dbAuditAccountDirectory
+  databases: DatabaseAuditInfo[]
+}
+
+export interface ResDbPreviewBackup {
+  ok: true
+  readonly type: typeof Types.dbPreviewBackup
+  databases: AccountBackupDatabasePreview[]
+}
+
+export interface ResDbCreateMergeStage {
+  ok: true
+  readonly type: typeof Types.dbCreateMergeStage
+  readonly files: RestoreStageDatabaseFile[]
+}
+
+export interface ResDbValidateRestoreStage {
+  ok: true
+  readonly type: typeof Types.dbValidateRestoreStage
+  readonly databases: DbName[]
+}
+
+export interface ResDbInspectAccountDirectory {
+  ok: true
+  readonly type: typeof Types.dbInspectAccountDirectory
+  readonly files: RestoreStageDatabaseFile[]
 }
 
 /**
@@ -255,6 +383,20 @@ export type PairByType = {
   'db:update': [ReqDbUpdate, ResDbUpdate],
   'db:remove': [ReqDbRemove, ResDbRemove],
   'db:operation': [ReqDbOperation, ResDbOperation],
+  'db:snapshotBegin': [ReqDbSnapshotBegin, ResDbSnapshotBegin],
+  'db:snapshotEnd': [ReqDbSnapshotEnd, ResDbSnapshotEnd],
+  'db:auditLoaded': [ReqDbAuditLoaded, ResDbAuditLoaded],
+  'db:auditAccountDirectory': [
+    ReqDbAuditAccountDirectory,
+    ResDbAuditAccountDirectory
+  ],
+  'db:previewBackup': [ReqDbPreviewBackup, ResDbPreviewBackup],
+  'db:createMergeStage': [ReqDbCreateMergeStage, ResDbCreateMergeStage],
+  'db:validateRestoreStage': [ReqDbValidateRestoreStage, ResDbValidateRestoreStage],
+  'db:inspectAccountDirectory': [
+    ReqDbInspectAccountDirectory,
+    ResDbInspectAccountDirectory
+  ],
   'calc:portChartData': [ReqCalcPortChartData, ResCalcPortChartData],
   'aggregate:rankByArea': [ReqAggregateRankByArea, ResAggregateRankByArea],
   'aggregate:shipDrop': [ReqAggregateShipDrop, ResAggregateShipDrop],

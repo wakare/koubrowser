@@ -1,4 +1,5 @@
 import { SupportCodecs } from '@common/const'
+import type { LayoutMode } from '@common/layout'
 
 export class GameSetting {
   public zoom_factor: number = 1.0
@@ -15,6 +16,7 @@ export class GameSetting {
 
   private assist_in_game: boolean = true
   private assist_restricted: boolean = false
+  private layout_mode: LayoutMode = 'classic'
 
   public get isAssistInGame(): boolean {
     return !this.assist_restricted && this.assist_in_game
@@ -34,5 +36,13 @@ export class GameSetting {
   
   public setAssistRestricted(restricted: boolean): void {
     this.assist_restricted = restricted
+  }
+
+  public get layoutMode(): LayoutMode {
+    return this.layout_mode
+  }
+
+  public setLayoutMode(mode: LayoutMode): void {
+    this.layout_mode = mode
   }
 }

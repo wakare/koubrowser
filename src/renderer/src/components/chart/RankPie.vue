@@ -3,6 +3,8 @@ import { ref, watch, onMounted, onUnmounted } from 'vue';
 import Highcharts from 'highcharts';
 import * as chartStuff from '@renderer/components/chart/stuff'
 import { PieData } from './types';
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
+import { escapeHtmlText } from '@renderer/common/localized-html'
 
 const props = defineProps<{
   seriesData: PieData[]
@@ -28,8 +30,10 @@ function createChart() {
       headerFormat: '',
       formatter: function () {
         const p = this.point;
-        const name = p.name === '-' ? 'なし' : p.name;
-        return `<span>${name}: ${p.y}</span><br/><span>${Highcharts.numberFormat(p.percentage!,2)}%</span>`;
+        const name = p.name === '-'
+          ? translateApp('drop.common.none')
+          : p.name;
+        return `<span>${escapeHtmlText(name)}: ${p.y}</span><br/><span>${Highcharts.numberFormat(p.percentage!,2)}%</span>`;
       },
       padding: 4,
     },
@@ -53,7 +57,7 @@ function createChart() {
       }
     },
     series: [{
-      name: '割合',
+      name: translateApp('drop.common.ratio'),
       data: props.seriesData,
       type: 'pie'
     }],
@@ -69,6 +73,16 @@ watch(() => props.seriesData, (newVal) => {
     createChart();
   }
 }, { deep: true, immediate: true });
+
+watch(
+  () => globalSetting.locale,
+  () => {
+    chart?.series[0]?.update(
+      { name: translateApp('drop.common.ratio'), type: 'pie' },
+      true
+    )
+  }
+)
 
 onMounted(() => {
   chartStuff.initialize();

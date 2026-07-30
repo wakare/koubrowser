@@ -8,6 +8,7 @@ import * as mapInfoStore from '@renderer/store/mapinfo'
 import LockImage from '@renderer/assets/img/lock.svg'
 import { computed, onMounted, onUnmounted, ref, toRaw } from 'vue'
 import { Env } from '@common/env'
+import FixedCanvasViewport from './layout/FixedCanvasViewport.vue'
 
 /////////////////////////////////////////////////////////////////////////////////////
 // debug
@@ -151,12 +152,14 @@ function lockClick(event: Event): void {
       v-model="area_index"
     >
       <b-carousel-item v-for="(area_no, index) in areaNos" :key="index">
-        <Area
-          v-if="area_index === index"
-          :area_id="area_id"
-          :area_no="area_no"
-          v-model:selected_label="selected_label"
-        />
+        <FixedCanvasViewport :logical-width="600" :logical-height="360">
+          <Area
+            v-if="area_index === index"
+            :area_id="area_id"
+            :area_no="area_no"
+            v-model:selected_label="selected_label"
+          />
+        </FixedCanvasViewport>
       </b-carousel-item>
       <template #indicators="props">
         <span

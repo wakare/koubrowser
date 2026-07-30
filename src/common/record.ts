@@ -31,6 +31,20 @@ export const DbName = {
 } as const
 export type DbName = (typeof DbName)[keyof typeof DbName]
 
+export interface AccountRecordIdentity {
+  readonly schemaVersion: 1
+  readonly recordId: string
+  readonly index: number
+}
+
+interface AccountRecordWithIdentity {
+  /**
+   * Added to newly created append-history records. Legacy records do not have
+   * this field and remain readable.
+   */
+  readonly recordIdentity?: AccountRecordIdentity
+}
+
 interface InsertDocT<DbName, Record> {
   readonly dbName: DbName
   record: Record
@@ -94,7 +108,7 @@ interface RecordRemove<F> {
 }
 
 // port
-export interface PortRecord {
+export interface PortRecord extends AccountRecordWithIdentity {
   date: string
   [id: number]: number | undefined
 }
@@ -182,7 +196,7 @@ export function toRecordDate(localTime: Date): string {
 }
 
 // drop ship and item
-export interface DropRecord {
+export interface DropRecord extends AccountRecordWithIdentity {
   mapId: number
   cellId: number
   isBoss: boolean
@@ -243,7 +257,7 @@ export interface AreaItemGetInfo {
 }
 
 // build item
-export interface ItemRecord {
+export interface ItemRecord extends AccountRecordWithIdentity {
   items: number[]
   secretary: number
   itemId: number
@@ -254,7 +268,7 @@ export interface ItemRecord {
 }
 
 // build ship
-export interface ShipRecord {
+export interface ShipRecord extends AccountRecordWithIdentity {
   kdockId: number
   secretary: number
   shipId: number
@@ -267,7 +281,7 @@ export interface ShipRecord {
 }
 
 // remodel item
-export interface RemodelRecord {
+export interface RemodelRecord extends AccountRecordWithIdentity {
   successful: boolean
   itemId: number
   itemLevel: number
@@ -289,7 +303,7 @@ export interface GetItemInfo {
   count: number
 }
 
-export interface MissionRecord {
+export interface MissionRecord extends AccountRecordWithIdentity {
   clearResult: ApiMissionClearResult
   mapareaName: string
   questName: string
@@ -303,7 +317,7 @@ export interface MissionRecord {
 }
 
 // clearitemget
-export interface ClearItemGetRecord {
+export interface ClearItemGetRecord extends AccountRecordWithIdentity {
   questNo: number
   questName: string
   material?: number[]
@@ -354,7 +368,7 @@ export interface MissionRecordQuery
 //   param: EParam
 // }
 
-export interface BattleRecord {
+export interface BattleRecord extends AccountRecordWithIdentity {
   uuid: string
   index: number
   mapId: number

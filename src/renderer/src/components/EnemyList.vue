@@ -5,6 +5,7 @@ import { KcsUtil, ShipInfo, HoseiType, HoseiConst, ApiDeckPort } from '@common/k
 import { RUtil, EnemyInfo, EShipInfo } from '@renderer/util'
 import { EnemyEtc } from '@common/enemy_etc'
 import { computed } from 'vue'
+import { translateApp } from '@renderer/store/global_setting'
 
 interface Dmgs {
   [key: number]: Dmg
@@ -208,8 +209,12 @@ const ships = computed<ShipInfoDmg[]>(() => {
 function eshipTitle(info: EShipInfo): string {
   let ret = `${info.status.api_id}: ${info.status.api_name}`
   if (info.status.api_id) {
-    ret += ` 耐久: ${info.status.api_taik}`
-    ret += ` 回避: ${info.status.api_kaih}`
+    ret += ` ${translateApp('battleEquipment.enemy.hp', {
+      params: { value: info.status.api_taik }
+    })}`
+    ret += ` ${translateApp('battleEquipment.enemy.evasion', {
+      params: { value: info.status.api_kaih }
+    })}`
   }
   return ret
 }

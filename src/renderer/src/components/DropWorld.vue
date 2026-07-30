@@ -4,12 +4,18 @@ import { ApiMapAreaType } from '@common/kcs'
 import DropAreas from '@renderer/components/DropAreas.vue'
 import { svdata } from '@renderer/store/svdata'
 import { EventName, eventNames } from '@common/area_name'
+import {
+  getDropByMapViewState,
+  saveDropByMapWorldState
+} from '@renderer/store/panel_view_state'
+import { translateApp } from '@renderer/store/global_setting'
 
 type Props = { deck_index?: number }
 const props = withDefaults(defineProps<Props>(), { deck_index: 0 })
 
-const index = ref(0)
-const selectedAreaId = ref(0)
+const dropByMapViewState = getDropByMapViewState()
+const index = ref(dropByMapViewState.worldIndex)
+const selectedAreaId = ref(dropByMapViewState.eventAreaId)
 
 const onChange = (valueNew: number): void => {
   // debug log if needed
@@ -18,6 +24,7 @@ const onChange = (valueNew: number): void => {
     eventSelected(0);
     selectedAreaId.value = 0;
   }
+  saveDropByMapWorldState(valueNew, selectedAreaId.value)
 }
 
 const inEvent = (): boolean => {
@@ -54,6 +61,18 @@ function eventSelected(areaId: number) {
     }
     index.value = 7;
   }
+  saveDropByMapWorldState(index.value, selectedAreaId.value)
+}
+
+const restoredEvent = eventDropdownItems.find(
+  (item) => item.areaId === selectedAreaId.value
+)
+if (restoredEvent) {
+  restoredEvent.isSelected = true
+} else if (index.value === 7) {
+  index.value = 0
+  selectedAreaId.value = 0
+  saveDropByMapWorldState(0, 0)
 }
 
 const selectedEventPeriod = computed((): string => {
@@ -70,7 +89,7 @@ const selectedEventTitle = computed((): string => {
   if (selected) {
     return selected.title;
   } else {
-    return 'イベント海域を選択';
+    return translateApp('drop.world.selectEvent');
   }
 });
 

@@ -9,12 +9,16 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { Spot } from '@common/map'
 import { areaNames } from '@common/area_name'
 import { mapInfo as storeMapInfo } from '@renderer/store/mapinfo'
+import FixedCanvasViewport from './layout/FixedCanvasViewport.vue'
+import {
+  getDropByMapViewState,
+  saveDropByMapAreaIndex
+} from '@renderer/store/panel_view_state'
 
 const props = defineProps<{
   area_id: number
 }>()
 
-const area_index = ref(0)
 const selected_spot = ref<Spot | null>(null)
 
 const areaNos = computed<number[]>(() => {
@@ -23,6 +27,11 @@ const areaNos = computed<number[]>(() => {
   );
   return areas.map((el) => el.areaNo)
 })
+const restoredAreaIndex =
+  getDropByMapViewState().mapIndices[props.area_id.toString()] ?? 0
+const area_index = ref(
+  Math.min(restoredAreaIndex, Math.max(0, areaNos.value.length - 1))
+)
 const areaNo = computed<number>(() => areaNos.value[area_index.value])
 const isEventMap = computed<boolean>(() => KcsUtil.isEventAreaId(props.area_id))
 
@@ -44,6 +53,7 @@ function onChange(value: number) {
     isEventMap.value
   )
   selected_spot.value = null
+  saveDropByMapAreaIndex(props.area_id, value)
 }
 
 function areaNoText(index: number): string {
@@ -96,12 +106,14 @@ function lockClick(event: Event): void {
       v-model="area_index"
     >
       <b-carousel-item v-for="(area_no, index) in areaNos" :key="index">
-        <DropArea
-          v-if="area_index === index"
-          :area_id="area_id"
-          :area_no="area_no"
-          v-model:selected_spot="selected_spot"
-        />
+        <FixedCanvasViewport :logical-width="600" :logical-height="360">
+          <DropArea
+            v-if="area_index === index"
+            :area_id="area_id"
+            :area_no="area_no"
+            v-model:selected_spot="selected_spot"
+          />
+        </FixedCanvasViewport>
       </b-carousel-item>
       <template #indicators="props">
         <span

@@ -1,6 +1,10 @@
 import { EnvRenderer } from '@renderer/common/env-renderer'
 import { ref } from 'vue'
 import { getLocalStoragePrefixKey, LocalStorageKeyName } from '@renderer/store/storage_key';
+import {
+  getAssistPanelDefinitions,
+  type AssistPanelName
+} from '@renderer/common/assist-panel'
 
 /////////////////////////////////////////////////////////////////////////////////////
 // デバッグログ
@@ -12,16 +16,7 @@ const debug = (...args: any[]) => {
 
 /////////////////////////////////////////////////////////////////////////////////////
 // 
-export type AssistTabName =
-  | 'deckport'
-  | 'missioncheck'
-  | 'battletab'
-  | 'shipitems'
-  | 'dropbymap'
-  | 'dropbyship'
-  | 'dockquestlist'
-  | 'chart'
-  | 'about'
+export type AssistTabName = AssistPanelName
 
 export type BattleTabName =
   | 'score'
@@ -42,9 +37,26 @@ export type DropByShipTabName =
   | 'sensuikan'
   | 'hojo'
 
+const BattleTabNames: readonly BattleTabName[] = ['score', 'history']
+const ShipItemsTabNames: readonly ShipItemsTabName[] = [
+  'shiplist',
+  'slotitemlist',
+  'itemlist'
+]
+const DropByShipTabNames: readonly DropByShipTabName[] = [
+  'senkan',
+  'kubo',
+  'jyujyun',
+  'keijyun',
+  'kutikukan',
+  'kaiboukan',
+  'sensuikan',
+  'hojo'
+]
+
 /////////////////////////////////////////////////////////////////////////////////////
 // UI state
-interface UIState {
+export interface UIState {
   tabName : AssistTabName
 
   // battletab
@@ -63,6 +75,14 @@ interface UIState {
   }
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const isTabName = <T extends string>(
+  value: unknown,
+  names: readonly T[]
+): value is T => typeof value === 'string' && names.includes(value as T)
+
 const defaultUIState = (): UIState => {
   return {
     tabName: 'deckport',
@@ -78,6 +98,47 @@ const defaultUIState = (): UIState => {
   }
 }
 
+export function normalizeUIState(
+  value: unknown,
+  restoreOuterTab: boolean
+): UIState {
+  const result = defaultUIState()
+  if (!isRecord(value)) {
+    return result
+  }
+
+  const assistTabNames = getAssistPanelDefinitions(restoreOuterTab).map(
+    (panel) => panel.name
+  )
+  if (
+    restoreOuterTab &&
+    isTabName(value.tabName, assistTabNames)
+  ) {
+    result.tabName = value.tabName
+  }
+
+  if (
+    isRecord(value.battletab) &&
+    isTabName(value.battletab.tabName, BattleTabNames)
+  ) {
+    result.battletab.tabName = value.battletab.tabName
+  }
+  if (
+    isRecord(value.shipitems) &&
+    isTabName(value.shipitems.tabName, ShipItemsTabNames)
+  ) {
+    result.shipitems.tabName = value.shipitems.tabName
+  }
+  if (
+    isRecord(value.dropbyship) &&
+    isTabName(value.dropbyship.tabName, DropByShipTabNames)
+  ) {
+    result.dropbyship.tabName = value.dropbyship.tabName
+  }
+
+  return result
+}
+
 const LocalStorageKey = ((): string => 
   getLocalStoragePrefixKey(LocalStorageKeyName.prefix.uiStatePrefix)
 )();
@@ -85,12 +146,7 @@ const LocalStorageKey = ((): string =>
 function load(): UIState {
   debug('loading state')
 
-  // mainはロードしない、デフォルトを返却する
   const def = defaultUIState()
-  if (! EnvRenderer.isAssist) {
-    return def
-  }
-
   const json = localStorage.getItem(LocalStorageKey)
   if (! json) {
     return def
@@ -98,8 +154,9 @@ function load(): UIState {
   try {
     const obj = JSON.parse(json)
     debug('loaded ui state:', obj)
-    Object.assign(def, obj)
-    debug('state after assign:', def)
+    const normalized = normalizeUIState(obj, EnvRenderer.isAssist)
+    debug('normalized ui state:', normalized)
+    return normalized
   } catch {
   }
   return def
@@ -112,10 +169,8 @@ function delaySave() {
     delaySaveRequested = true
     setTimeout(() => {
       delaySaveRequested = false
-      if (EnvRenderer.isAssist) {
-        localStorage.setItem(LocalStorageKey, JSON.stringify(uiState))
-        debug('saved (delayed):', uiState)
-      }
+      localStorage.setItem(LocalStorageKey, JSON.stringify(uiState))
+      debug('saved (delayed):', uiState)
     }, 0)
   }
 }
@@ -125,19 +180,7 @@ function delaySave() {
 export namespace AssistUIState {
 
   export const tabOrder: AssistTabName[] = (() => {
-    const ret: AssistTabName[] = []
-    ret.push('deckport')
-    ret.push('missioncheck')
-    ret.push('battletab')
-    ret.push('shipitems')
-    ret.push('dropbymap')
-    ret.push('dropbyship')
-    if (EnvRenderer.isAssist) {
-      ret.push('dockquestlist')
-    }
-    ret.push('chart')
-    ret.push('about')
-    return ret
+    return getAssistPanelDefinitions(EnvRenderer.isAssist).map((panel) => panel.name)
   })()
 
   export const tabIndex = ref(getTabIndex(uiState.tabName))
@@ -175,10 +218,7 @@ export namespace AssistUIState {
 export namespace BattleTabUIState {
 
   export const tabOrder: BattleTabName[] = (() => {
-    const ret: BattleTabName[] = []
-    ret.push('score')
-    ret.push('history')
-    return ret
+    return [...BattleTabNames]
   })()
 
   export const tabIndex = ref(getTabIndex(uiState.battletab.tabName))
@@ -200,9 +240,7 @@ export namespace BattleTabUIState {
 
   export function saveTabName(tabName: BattleTabName): void {
     uiState.battletab.tabName = tabName
-    if (EnvRenderer.isAssist) {
-      delaySave()
-    }
+    delaySave()
   }
 }
 
@@ -211,11 +249,7 @@ export namespace BattleTabUIState {
 export namespace ShipItemsTabUIState {
 
   export const tabOrder: ShipItemsTabName[] = (() => {
-    const ret: ShipItemsTabName[] = []
-    ret.push('shiplist')
-    ret.push('slotitemlist')
-    ret.push('itemlist')
-    return ret
+    return [...ShipItemsTabNames]
   })()
 
   export const tabIndex = ref(getTabIndex(uiState.shipitems.tabName))
@@ -237,9 +271,7 @@ export namespace ShipItemsTabUIState {
 
   export function saveTabName(tabName: ShipItemsTabName): void {
     uiState.shipitems.tabName = tabName
-    if (EnvRenderer.isAssist) {
-      delaySave()
-    }
+    delaySave()
   }
 }
 
@@ -248,16 +280,7 @@ export namespace ShipItemsTabUIState {
 export namespace DropByShipTabUIState {
 
   export const tabOrder: DropByShipTabName[] = (() => {
-    const ret: DropByShipTabName[] = []
-    ret.push('senkan')
-    ret.push('kubo')
-    ret.push('jyujyun')
-    ret.push('keijyun')
-    ret.push('kutikukan')
-    ret.push('kaiboukan')
-    ret.push('sensuikan')
-    ret.push('hojo')
-    return ret
+    return [...DropByShipTabNames]
   })()
 
   export const tabIndex = ref(getTabIndex(uiState.dropbyship.tabName))
@@ -279,8 +302,6 @@ export namespace DropByShipTabUIState {
 
   export function saveTabName(tabName: DropByShipTabName): void {
     uiState.dropbyship.tabName = tabName
-    if (EnvRenderer.isAssist) {
-      delaySave()
-    }
+    delaySave()
   }
 }

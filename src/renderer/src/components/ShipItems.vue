@@ -3,6 +3,7 @@ import ShipList from '@renderer/components/ShipList.vue'
 import SlotitemList from '@renderer/components/SlotitemList.vue'
 import ItemList from '@renderer/components/ItemList.vue'
 import { ShipItemsTabUIState as us } from '@renderer/store/ui_state'
+import { translateApp } from '@renderer/store/global_setting'
 const index = us.tabIndex
 
 function onTabChange(valueNew: number): void {
@@ -22,13 +23,13 @@ function onTabChange(valueNew: number): void {
       v-model="index" 
       @update:modelValue="onTabChange"
       destroy-on-hide>
-      <b-tab-item label="艦船一覧">
+      <b-tab-item :label="translateApp('battleEquipment.tab.ships')">
         <ShipList />
       </b-tab-item>
-      <b-tab-item label="装備一覧">
+      <b-tab-item :label="translateApp('battleEquipment.tab.slotitems')">
         <SlotitemList />
       </b-tab-item>
-      <b-tab-item label="アイテム一覧">
+      <b-tab-item :label="translateApp('battleEquipment.tab.items')">
         <ItemList />
       </b-tab-item>
     </b-tabs>

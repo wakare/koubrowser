@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed, ref } from 'vue'
+import { onMounted, onUnmounted, computed, ref, watch } from 'vue'
 import type { MaterialChartData } from '@common/record'
 import ChartImage from '@assets/img/chart.svg'
 import moment from 'moment'
 import Highcharts from 'highcharts'
 import noDataToDisplay from 'highcharts/modules/no-data-to-display'
 import * as chartStuff from '@renderer/components/chart/stuff'
+import { useHighchartsResize } from '@renderer/components/chart/use-highcharts-resize'
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
 
 noDataToDisplay(Highcharts)
 
-// loadingはchart描画後に要素が削除されることから false に設定不要
-const isLoading = ref<boolean>(true);
+const chartEl = ref<HTMLElement | null>(null)
 
 const SeriesTypes = {
   fuel: 'fuel',
@@ -89,7 +90,38 @@ const series_state: SeriesStates = {
 let date_from = 0
 let date_to = 0
 
+const rangeSelectorButtons = (): Highcharts.RangeSelectorButtonsOptions[] => [
+  { type: 'hour', count: 6, text: '6H' },
+  { type: 'hour', count: 12, text: '12H' },
+  { type: 'day', count: 1, text: translateApp('operation.resource.range.day') },
+  { type: 'week', count: 1, text: translateApp('operation.resource.range.week') },
+  { type: 'month', count: 1, text: translateApp('operation.resource.range.month') },
+  {
+    type: 'month',
+    count: 3,
+    text: translateApp('operation.resource.range.threeMonths')
+  },
+  {
+    type: 'month',
+    count: 6,
+    text: translateApp('operation.resource.range.halfYear')
+  },
+  { type: 'ytd', text: translateApp('operation.resource.range.yearToDate') },
+  {
+    type: 'year',
+    count: 1,
+    text: translateApp('operation.resource.range.year')
+  },
+  { type: 'all', text: translateApp('operation.resource.range.all') }
+]
+
 function drawChart(datas: MaterialChartData): void {
+  if (!chartEl.value) {
+    return
+  }
+
+  chart?.destroy()
+  chart = undefined
   console.log('material record len', datas[0].length);
 
   function yAxisFormatter(this: any): string {
@@ -122,19 +154,6 @@ function drawChart(datas: MaterialChartData): void {
       formatter: xAxisFormatter,
     }
   };
-  const zoom_buttons: Highcharts.RangeSelectorButtonsOptions[] = [
-    { type: 'hour', count: 6, text: '6H' },
-    { type: 'hour', count: 12, text: '12H' },
-    { type: 'day', count: 1, text: '日' },
-    { type: 'week', count: 1, text: '週' },
-    { type: 'month', count: 1, text: '月' }, 
-    { type: 'month', count: 3, text: '3ヶ月' }, 
-    { type: 'month', count: 6, text: '半年' }, 
-    { type: 'ytd', text: '今年' }, 
-    { type: 'year', count: 1, text: '1年' }, 
-    { type: 'all', text: '全て' }
-  ];
-  
   function TooltipFormatter(this: Highcharts.TooltipFormatterContextObject,
     _tooltip: Highcharts.Tooltip): (false|string|Array<(string|null|undefined)>|null|undefined) {
 
@@ -182,14 +201,14 @@ function drawChart(datas: MaterialChartData): void {
 
   const options: Highcharts.Options = {
     chart: {
-      renderTo: 'chart-material',
+      renderTo: chartEl.value,
       backgroundColor: 'transparent',
       //height: 400,
       //marginTop: 100,
       spacingTop: 61,
     },
     lang: {
-      noData: '表示するデータがありません。',
+      noData: translateApp('common.noData'),
     },
     noData: {
       style: {
@@ -211,7 +230,7 @@ function drawChart(datas: MaterialChartData): void {
         //align: 'center',
         align: 'left',
       },
-      buttons: zoom_buttons,
+      buttons: rangeSelectorButtons(),
       labelStyle: {
         display: 'none',
       },
@@ -247,6 +266,20 @@ function drawChart(datas: MaterialChartData): void {
 
   chart = Highcharts.stockChart(options);
 }
+
+watch(
+  () => globalSetting.locale,
+  () => {
+    chart?.update({
+      lang: { noData: translateApp('common.noData') },
+      rangeSelector: {
+        buttons: rangeSelectorButtons()
+      }
+    })
+  }
+)
+
+useHighchartsResize(chartEl, () => chart)
 
 function toggleSeries(id: SeriesType): void {
     const series = chart?.get(id) as any;
@@ -360,13 +393,7 @@ defineExpose({
 <template>
   <div class="material-chart">
     <div class="chart-container">
-      <div class="chart-content" id="chart-material">
-        <b-loading
-          :is-full-page="false"
-          v-model="isLoading"
-          :can-cancel="false"
-        ></b-loading>
-      </div>
+      <div class="chart-content" ref="chartEl"></div>
       <div class="chart-material-buttons">
         <button @click="toggleSeries('fuel')" class="fuel" :class="{ 'is-visible': isSeriesFuelVisible}"><span class="s-icon titlebar-fuel"><span class="line-word"></span></span></button>
         <button @click="toggleSeries('bull')" class="bull" :class="{ 'is-visible': isSeriesBullVisible}"><span class="s-icon titlebar-bull"><span class="line-word"></span></span></button>
@@ -374,8 +401,11 @@ defineExpose({
         <button @click="toggleSeries('buxite')" class="buxite" :class="{ 'is-visible': isSeriesBuxiteVisible}"><span class="s-icon titlebar-buxite"><span class="line-word"></span></span></button>
       </div>
       <div v-if="isValidDateRange" class="chart-material-detail">
-        <ChartImage class="chart-image" /> 資源チャート: {{dateFrom}} ～ {{dateTo}}
-        <span :class="{ 'is-visible': isAnySeriesVisible}">増減 </span>
+        <ChartImage class="chart-image" />
+        {{ translateApp('operation.resource.chart.material') }} {{dateFrom}} ～ {{dateTo}}
+        <span :class="{ 'is-visible': isAnySeriesVisible}">{{
+          translateApp('operation.resource.diff')
+        }} </span>
         <span class="fuel mr-1" :class="diffFuelClass"><span class="s-icon titlebar-fuel">{{fuelDiff}}</span></span>
         <span class="bull mr-1" :class="diffBullClass"><span class="s-icon titlebar-bull">{{bullDiff}}</span></span>
         <span class="steel mr-1" :class="diffSteelClass"><span class="s-icon titlebar-steel">{{steelDiff}}</span></span>

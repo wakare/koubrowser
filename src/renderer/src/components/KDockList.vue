@@ -8,6 +8,7 @@ import DockTimer from '@renderer/components/DockTimer.vue'
 import DockStateTimer from '@renderer/components/DockStateTimer.vue'
 import ShipBanner from '@renderer/components/ShipBanner.vue'
 import { RUtil } from '@renderer/util'
+import { translateApp } from '@renderer/store/global_setting'
 
 interface KDockInfo {
   isUse: boolean
@@ -55,7 +56,7 @@ const kdocks = computed<KDockInfo[]>(() => {
 </script>
 <template>
   <section class="kdock-content">
-    <div class="kdock-title">建造ドック</div>
+    <div class="kdock-title">{{ translateApp('operation.dock.construction.title') }}</div>
     <div class="kdock-list">
       <div v-for="(info, index) in kdocks" :key="index" class="kdock">
         <div v-if="info.isUse">
@@ -65,16 +66,19 @@ const kdocks = computed<KDockInfo[]>(() => {
             <span class="kdock-img-help"
               ><DockStateTimer
                 :complete_time="info.kdock.api_complete_time"
-                :progress_text="'建造'"
-                :completed_text="'完了'"
+                :progress_text="translateApp('operation.dock.construction.progress')"
+                :completed_text="translateApp('operation.dock.completed')"
             /></span>
           </span>
           <span class="kdock-info">
             <span class="kdock-info-item"
-              ><span v-if="info.isLargeFlag">大型建造: </span>{{ info.mst?.api_name }}</span
+              ><span v-if="info.isLargeFlag">{{
+                translateApp('operation.dock.largeConstruction')
+              }} </span>{{ info.mst?.api_name }}</span
             >
             <span class="kdock-info-item"
-              >残り: <DockTimer :complete_time="info.kdock.api_complete_time" />
+              >{{ translateApp('operation.dock.remaining') }}
+              <DockTimer :complete_time="info.kdock.api_complete_time" />
               {{ info.completedTimeText }}</span
             >
           </span>
@@ -82,7 +86,9 @@ const kdocks = computed<KDockInfo[]>(() => {
         <div v-else-if="info.locked">
           <span class="kdock-locked"><LockImage /></span>
         </div>
-        <div v-else><span class="kdock-empty">Empty</span></div>
+        <div v-else>
+          <span class="kdock-empty">{{ translateApp('operation.dock.empty') }}</span>
+        </div>
       </div>
     </div>
   </section>

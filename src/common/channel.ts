@@ -5,12 +5,34 @@ export const MainChannel = {
   renderer_ready: 'renderer_ready',
   show_assist: 'show_assist',
   hide_assist: 'hide_assist',
+  toggle_layout_mode: 'toggle_layout_mode',
+  toggle_maximize: 'toggle_maximize',
   minimize: 'minimize',
   close: 'close',
   devtool: 'devtool',
   reload: 'reload',
   open_capture_folder: 'open_capture_folder',
+  open_data_folder: 'open_data_folder',
+  save_assist_panel_diagnostic: 'save_assist_panel_diagnostic',
+  create_local_account_backup: 'create_local_account_backup',
+  create_encrypted_account_transfer: 'create_encrypted_account_transfer',
+  inspect_encrypted_account_transfer: 'inspect_encrypted_account_transfer',
+  inspect_local_account_backup: 'inspect_local_account_backup',
+  save_account_inspection_report: 'save_account_inspection_report',
+  prepare_local_account_merge: 'prepare_local_account_merge',
+  get_available_account_merge_rollback: 'get_available_account_merge_rollback',
+  prepare_account_merge_rollback: 'prepare_account_merge_rollback',
+  get_available_account_merge_redo: 'get_available_account_merge_redo',
+  prepare_account_merge_redo: 'prepare_account_merge_redo',
+  prepare_local_account_restore: 'prepare_local_account_restore',
+  get_available_account_rollback: 'get_available_account_rollback',
+  prepare_account_rollback: 'prepare_account_rollback',
+  get_available_account_redo: 'get_available_account_redo',
+  prepare_account_redo: 'prepare_account_redo',
+  capture_account_audit_baseline: 'capture_account_audit_baseline',
+  compare_account_audit_baseline: 'compare_account_audit_baseline',
   save_capture: 'save_capture',
+  get_recording_source: 'get_recording_source',
   openOption: 'openOption',
   openAssist: 'openAssist',
   topmost: 'topmost',
@@ -38,7 +60,7 @@ export const MainChannel = {
   get_update_state: 'get_update_state',
   check_for_updates: 'check_for_updates',
   download_update: 'download_update',
-  restart_and_install_update: 'restart_and_install_update',
+  restart_and_install_update: 'restart_and_install_update'
 } as const
 export type MainChannel = (typeof MainChannel)[keyof typeof MainChannel]
 
@@ -49,7 +71,7 @@ export const MainMessage = {
   stream_port: 'stream_port',
   update_state_changed: 'update_state_changed',
   update_download_progress: 'update_download_progress',
-  startup_update_checked: 'startup_update_checked',
+  startup_update_checked: 'startup_update_checked'
 } as const
 export type MainMessage = (typeof MainMessage)[keyof typeof MainMessage]
 
@@ -57,7 +79,7 @@ export type MainMessage = (typeof MainMessage)[keyof typeof MainMessage]
  * from renderer to main
  */
 export const AssistMessage = {
-  get_sv_data: 'get_sv_data',
+  get_sv_data: 'get_sv_data'
 } as const
 export type AssistMessage = (typeof AssistMessage)[keyof typeof AssistMessage]
 
@@ -94,8 +116,9 @@ export type TimelineResult = [QuestContext, BattleRecord[]]
  */
 export const OptionChannel = {
   getCurrentSetting: 'option:get-current-setting',
+  localeChanged: 'option:locale-changed',
   readyToShow: 'option:ready-to-show',
-  selectCaptureSavePath: 'option:select-capture-save-path', 
+  selectCaptureSavePath: 'option:select-capture-save-path',
   selectExtensionPath: 'option:select-extension-path',
   minimize: 'option:minimize',
   close: 'option:close',

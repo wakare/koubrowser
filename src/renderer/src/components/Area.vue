@@ -28,7 +28,6 @@ import DoneImg from '@renderer/assets/img/done-outline.svg'
 import MapImg from '@renderer/components/MapImg.vue'
 import PassedCellImage from '@renderer/assets/img/passed-cell.svg'
 import { AirbaseSpot, AirbaseTargetSpots, MainChannel } from '@common/channel'
-import { getAirSearchResultText, MapLvText, StateText } from '@common/locale'
 import AirBase from '@renderer/components/AirBase.vue'
 import Line from '@renderer/components/area/Line.vue'
 import { RUtil, modSpotXY } from '@renderer/util'
@@ -38,6 +37,13 @@ import * as place from '@renderer/stuff/place'
 
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { mapInfoCache } from '@renderer/common/mapinfo'
+import { translateApp } from '@renderer/store/global_setting'
+import {
+  formatCombinedMapLineOfSightValues,
+  formatMapLineOfSightValues,
+  getBattleAirSearchText,
+  getBattleAirStateText
+} from '@renderer/common/battle-equipment-view'
 
 /////////////////////////////////////////////////////////////////////////////////////
 // デバッグログ
@@ -106,7 +112,19 @@ interface AirBaseInfo {
   airbase: ApiAirBase
 }
 
-const nos = ['第一', '第二', '第三'] as const
+const AirbaseBaseKeys = [
+  'battleEquipment.airbase.base.1',
+  'battleEquipment.airbase.base.2',
+  'battleEquipment.airbase.base.3'
+] as const
+
+const GaugeDifficultyKeys = [
+  undefined,
+  'battleEquipment.map.gauge.difficulty.1',
+  'battleEquipment.map.gauge.difficulty.2',
+  'battleEquipment.map.gauge.difficulty.3',
+  'battleEquipment.map.gauge.difficulty.4'
+] as const
 
 const style = ['kinkou', 'kakuho', 'yuusei', 'ressei', 'sousitu'] as const
 const seikuClass = (state: ApiDispSeiku, aa: number, hasAirbase: boolean): string => {
@@ -123,9 +141,9 @@ const seikuClass = (state: ApiDispSeiku, aa: number, hasAirbase: boolean): strin
 const seikuStateText = (state: ApiDispSeiku, deck_aa: number, enemy_aa: number, spot: Spot): string => {
   const distabce = spot.distance !== undefined ? `(${spot.distance})` : ''
   if (0 === enemy_aa) {
-    return StateText[ApiDispSeiku.kakuho]+distabce
+    return getBattleAirStateText(ApiDispSeiku.kakuho, translateApp) + distabce
   }
-  return `${StateText[state]}${distabce} ${deck_aa}:${enemy_aa}`
+  return `${getBattleAirStateText(state, translateApp)}${distabce} ${deck_aa}:${enemy_aa}`
 }
 
 const seikubarStyle = (deck_aa: number, enemy_aa: number): [string, string] => {
@@ -294,7 +312,11 @@ const airbaseSpots = computed<AirBaseSpotInfo[]>(() => {
   return bases.map((airbase, index) => {
     const range = airbase.api_distance.api_base + airbase.api_distance.api_bonus
     let spots: AirBaseSpot[] = [
-      { label: '-', txt: 'なし', disabled: target_spot_loaded.value ? false : true } as any
+      {
+        label: '-',
+        txt: translateApp('battleEquipment.map.airbase.none'),
+        disabled: target_spot_loaded.value ? false : true
+      } as any
     ]
     spots = spots.concat(
       enemy.map((spot) => ({
@@ -303,8 +325,12 @@ const airbaseSpots = computed<AirBaseSpotInfo[]>(() => {
         disabled: target_spot_loaded.value ? range < (spot.spot?.distance ?? 0) : true
       }))
     )
+    const baseKey = AirbaseBaseKeys[index]
+    const base = baseKey ? translateApp(baseKey) : '?'
     return {
-      txt: `${nos[index]}航空隊(半径:${range})`,
+      txt: translateApp('battleEquipment.map.airbase.label', {
+        params: { base, radius: range }
+      }),
       spots
     }
   })
@@ -750,9 +776,14 @@ function spotAirBase(spot: Spot): AirBaseSeiku[] | undefined {
           0
         )
         acc.push({
-          name: name_added ? '' : nos[airbase.api_rid - 1] + ' ',
+          name: name_added
+            ? ''
+            : `${translateApp(
+                AirbaseBaseKeys[airbase.api_rid - 1] ??
+                  'battleEquipment.airbase.base.1'
+              )} `,
           airbase,
-          seikuText: StateText[sstate],
+          seikuText: getBattleAirStateText(sstate, translateApp),
           afterAA: enemy_aa
         })
         name_added = true
@@ -791,7 +822,7 @@ function airsearchStateText(check: Check): string {
   let deckLos = 0
   if (deck) deckLos = svdata.deckGetItemLos(deck)
   return [
-    '偵察',
+    translateApp('battleEquipment.map.recon'),
     los,
     MathUtil.floor((los * 16) / 10, 2),
     MathUtil.floor((los * 22) / 10, 2),
@@ -803,9 +834,14 @@ function maplosStateText(check: Check): string {
   const deck = svdata.deckPort(ApiDeckPortId.deck1st)
   let maplos = 0
   if (deck) maplos = MathUtil.floor(svdata.deckMapLos(deck, check.info.value ?? 0), 2)
-  return [`係数:${check.info.value ?? 0}`, check.info.min ?? 0, check.info.max ?? 0, maplos].join(
-    ' / '
-  )
+  return [
+    translateApp('battleEquipment.map.coefficient', {
+      params: { value: check.info.value ?? 0 }
+    }),
+    check.info.min ?? 0,
+    check.info.max ?? 0,
+    maplos
+  ].join(' / ')
 }
 
 const decks = computed<ApiDeckPort[]>(() => svdata.deckPorts)
@@ -951,7 +987,7 @@ function seikubarText(spot: Spot): string {
 }
 
 function seikuText(spot: Spot): string {
-  if (!spot.maxAa) return 'なし'
+  if (!spot.maxAa) return translateApp('battleEquipment.map.airPower.none')
   return spot.maxAa.toString()
 }
 
@@ -1039,42 +1075,75 @@ const isCleared = computed<boolean>(() => {
 
 const mepGaugeText = computed<string>(() => {
   const mi = mapinfo.value
-  if (!mi) return 'ゲージ情報が未取得です。出撃画面を開いてください。'
+  if (!mi) return translateApp('battleEquipment.map.gauge.unavailable')
   if (mi.api_gauge_type === ApiGaugeType.bossHp || mi.api_gauge_type === ApiGaugeType.yusou) {
     const eventmap = mi.api_eventmap
     if (eventmap) {
-      let rank = '';
-      if (MapLvText[eventmap.api_selected_rank]) {
-        rank = MapLvText[eventmap.api_selected_rank] + ' ';
+      const rankKey = GaugeDifficultyKeys[eventmap.api_selected_rank]
+      const rank = rankKey ? translateApp(rankKey) : ''
+      if (0 === eventmap.api_now_maphp || mi.api_cleared) {
+        return rank
+          ? translateApp('battleEquipment.map.gauge.clearedWithRank', {
+              params: { rank }
+            })
+          : translateApp('battleEquipment.map.gauge.cleared')
       }
-      if (0 === eventmap.api_now_maphp || mi.api_cleared) return 'クリア ' + rank
       const isBossHp = mi.api_gauge_type === ApiGaugeType.bossHp
       const isYusou = mi.api_gauge_type === ApiGaugeType.yusou
       let gauge_name = '';
       if (isBossHp) {
-        gauge_name = '戦力'
+        gauge_name = translateApp('battleEquipment.map.gauge.combat')
       } else if (isYusou) {
-        gauge_name = '輸送'
+        gauge_name = translateApp('battleEquipment.map.gauge.transport')
       }
-      return `${rank}${gauge_name}: ${eventmap.api_now_maphp}/${eventmap.api_max_maphp}`
+      return translateApp('battleEquipment.map.gauge.value', {
+        params: {
+          rank: rank ? `${rank} ` : '',
+          name: gauge_name,
+          current: eventmap.api_now_maphp,
+          max: eventmap.api_max_maphp
+        }
+      })
     } else {
       // 5-6-1
       if (mi.api_gauge_type === ApiGaugeType.yusou && 
         (typeof mi.api_defeat_count === 'number' && typeof mi.api_required_defeat_count === 'number')) {
         const remainingLimit = 999999
-        const gauge_name = '輸送'
+        const gauge_name = translateApp('battleEquipment.map.gauge.transport')
         const remainingValue = mi.api_required_defeat_count - mi.api_defeat_count
-        const remainingValueText = remainingValue < remainingLimit ? ` 残: ${remainingValue} ` : ''
-        return `${gauge_name}: ${mi.api_defeat_count}/${mi.api_required_defeat_count}${remainingValueText}`
+        return remainingValue < remainingLimit
+          ? translateApp('battleEquipment.map.gauge.valueWithRemaining', {
+              params: {
+                name: gauge_name,
+                current: mi.api_defeat_count,
+                required: mi.api_required_defeat_count,
+                remaining: remainingValue
+              }
+            })
+          : translateApp('battleEquipment.map.gauge.value', {
+              params: {
+                rank: '',
+                name: gauge_name,
+                current: mi.api_defeat_count,
+                max: mi.api_required_defeat_count
+              }
+            })
       } else {
         return '';
       }
     }
   }
-  if (!mi.api_defeat_count && !mi.api_required_defeat_count && mi.api_cleared) return 'クリア'
+  if (!mi.api_defeat_count && !mi.api_required_defeat_count && mi.api_cleared) {
+    return translateApp('battleEquipment.map.gauge.cleared')
+  }
   if (mi.api_gauge_type === ApiGaugeType.counter)
-    return `${mi.api_defeat_count}/${mi.api_required_defeat_count} クリア`
-  return '未クリア'
+    return translateApp('battleEquipment.map.gauge.counterCleared', {
+      params: {
+        current: mi.api_defeat_count ?? 0,
+        required: mi.api_required_defeat_count ?? 0
+      }
+    })
+  return translateApp('battleEquipment.map.gauge.notCleared')
 })
 
 const mapAirBaseStyle = computed<string>(() => {
@@ -1093,15 +1162,15 @@ const isShowEventMapLos = computed<boolean>(() => {
   return isEventMap.value
 })
 
+const mapLosCoefficients = [1, 2, 3, 4] as const
+
 const getDeckMapLos = (deckId: ApiDeckPortId): string => {
   const deck = svdata.deckPort(deckId)
   if (!deck) return ''
 
-  const los1 = Math.trunc(svdata.deckMapLos(deck, 1))
-  const los2 = Math.trunc(svdata.deckMapLos(deck, 2))
-  const los3 = Math.trunc(svdata.deckMapLos(deck, 3))
-  const los4 = Math.trunc(svdata.deckMapLos(deck, 4))
-  return `${los1}/${los2}/${los3}/${los4}`
+  return formatMapLineOfSightValues(
+    svdata.deckMapLosValues(deck, mapLosCoefficients)
+  )
 }
 
 const deck1MapLos = computed<string>(() => {
@@ -1118,12 +1187,10 @@ const deckCombinedMapLos = computed<string>(() => {
   const deck1 = svdata.deckPort(ApiDeckPortId.deck1st)
   const deck2 = svdata.deckPort(ApiDeckPortId.deck2st)
   if (!deck1 || !deck2) return ''
-  
-  const los1 = Math.trunc(svdata.deckMapLos(deck1, 1) + svdata.deckMapLos(deck2, 1))
-  const los2 = Math.trunc(svdata.deckMapLos(deck1, 2) + svdata.deckMapLos(deck2, 2))
-  const los3 = Math.trunc(svdata.deckMapLos(deck1, 3) + svdata.deckMapLos(deck2, 3))
-  const los4 = Math.trunc(svdata.deckMapLos(deck1, 4) + svdata.deckMapLos(deck2, 4))
-  return `${los1}/${los2}/${los3}/${los4}`
+
+  const deck1Values = svdata.deckMapLosValues(deck1, mapLosCoefficients)
+  const deck2Values = svdata.deckMapLosValues(deck2, mapLosCoefficients)
+  return formatCombinedMapLineOfSightValues(deck1Values, deck2Values)
 })
 
 function onChangeAirbaseSpot(value: boolean): void {
@@ -1225,7 +1292,7 @@ function onChangeAirbaseSpot(value: boolean): void {
             'is-great-success': item.airsearchResult === 2
           }"
         >
-          {{ getAirSearchResultText(item.airsearchResult ?? -1) }}
+          {{ getBattleAirSearchText(item.airsearchResult, translateApp) }}
         </div>
         <div class="item-info">
           <img class="item-img" :src="itemSrc(item)" />
@@ -1233,7 +1300,11 @@ function onChangeAirbaseSpot(value: boolean): void {
         </div>
       </div>
       <div v-if="hasAirbase" class="map-airbase" :style="mapAirBaseStyle">
-        <div class="map-airbase-decks">出撃可能 x {{ airbaseDecks }} 飛行隊</div>
+        <div class="map-airbase-decks">{{
+          translateApp('battleEquipment.map.airbase.available', {
+            params: { count: airbaseDecks }
+          })
+        }}</div>
         <AirBase
           v-for="(airbase, index) in airbases"
           :key="`airbase${index}`"
@@ -1288,13 +1359,37 @@ function onChangeAirbaseSpot(value: boolean): void {
       />
       <div v-if="isShowEventMapLos" class="event-losinfo">
         <template v-if="isCombined">
-          <div>索敵値(連合)：{{ deckCombinedMapLos }}</div>
-          <div>索敵値(第三)：{{ deck3MapLos }}</div>
+          <div>{{
+            translateApp('battleEquipment.map.los', {
+              params: {
+                fleet: translateApp('battleEquipment.map.fleet.combined'),
+                value: deckCombinedMapLos
+              }
+            })
+          }}</div>
+          <div>{{
+            translateApp('battleEquipment.map.los', {
+              params: {
+                fleet: translateApp('battleEquipment.airbase.base.3'),
+                value: deck3MapLos
+              }
+            })
+          }}</div>
         </template>
         <template v-else>
-          <div>索敵値(第一)：{{ deck1MapLos }}</div>
-          <div>索敵値(第二)：{{ deck2MapLos }}</div>
-          <div>索敵値(第三)：{{ deck3MapLos }}</div>
+          <div
+            v-for="(value, index) in [deck1MapLos, deck2MapLos, deck3MapLos]"
+            :key="index"
+          >{{
+            translateApp('battleEquipment.map.los', {
+              params: {
+                fleet: translateApp(
+                  AirbaseBaseKeys[index] ?? 'battleEquipment.airbase.base.1'
+                ),
+                value
+              }
+            })
+          }}</div>
         </template>
       </div>
       <div v-if="isShowDebugCellInfo" class="debug-info">
@@ -1304,11 +1399,23 @@ function onChangeAirbaseSpot(value: boolean): void {
             <div>{{ index }}:{{ seiku }}</div>
           </div>
           <div v-if="isCombined">
-            <div>連合艦隊:{{ combinedFlag }}</div>
-            <div>連合艦隊制空値:{{ combinedSeiku }}</div>
+            <div>{{
+              translateApp('battleEquipment.map.debug.combinedFleet', {
+                params: { value: combinedFlag }
+              })
+            }}</div>
+            <div>{{
+              translateApp('battleEquipment.map.debug.combinedAirPower', {
+                params: { value: combinedSeiku }
+              })
+            }}</div>
           </div>
           <div v-if="mapinfo && mapinfo.api_air_base_decks">
-            <div>airbase有: {{ mapinfo.api_air_base_decks }}</div>
+            <div>{{
+              translateApp('battleEquipment.map.debug.hasAirbase', {
+                params: { value: mapinfo.api_air_base_decks }
+              })
+            }}</div>
           </div>
         </div>
       </div>

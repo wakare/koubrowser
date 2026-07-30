@@ -5,6 +5,7 @@ import DoneImg from '@renderer/assets/img/done.svg'
 import moment from 'moment'
 import { svdata } from '@renderer/store/svdata'
 import { IntervalOneSec } from '@renderer/common/interval'
+import { translateApp } from '@renderer/store/global_setting'
 
 type Props = { deck: ApiDeckPort }
 const props = defineProps<Props>()
@@ -67,9 +68,9 @@ watch(
 const stateLabel = computed(() => {
   const state = props.deck.api_mission[0]
   if (state === MissionState.stopped) {
-    return '帰還中'
+    return translateApp('operation.mission.badge.returning')
   }
-  return '遠征中'
+  return translateApp('operation.mission.badge.running')
 })
 
 const tagType = computed(() => {
@@ -88,7 +89,7 @@ const toStr = (v: number, prefix: string): string => {
 
 const stateText = computed((): string => {
   if (completed.value) {
-    return '完了'
+    return translateApp('operation.mission.badge.completed')
   }
   const d = moment.duration(Math.max(0, durMs.value))
   const hour = d.asHours()

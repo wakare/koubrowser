@@ -1,6 +1,13 @@
 
+import type { AppLocale } from '@common/localization'
+
 // electron default 'system'
 export type ProxyMode = 'direct' | 'auto_detect' | 'pac_script' | 'fixed_servers' | 'system';
+export type RecordingTarget = 'game' | 'window'
+
+export function normalizeRecordingTarget(value: unknown): RecordingTarget {
+  return value === 'game' ? 'game' : 'window'
+}
 
 /**
  * オプション画面で設定可能な項目
@@ -9,6 +16,9 @@ export interface OptionSetting {
 
   // capture save path (default: null). When null, use the app's default capture path.
   captureSavePath: string | null
+
+  // recording source (default: window, preserving the existing behavior).
+  recordingTarget: RecordingTarget
 
   // proxy mode, default 'system'
   proxyMode: ProxyMode
@@ -43,6 +53,7 @@ export interface OptionViewInfo {
  * オプション画面に渡す情報
  */
 export interface OptionData {
+  locale: AppLocale
   setting: OptionSetting
   viewInfo: OptionViewInfo
 }
@@ -51,6 +62,7 @@ export interface OptionData {
 export function defaultOptionSetting(): OptionSetting {
   return {
     captureSavePath: null,
+    recordingTarget: 'window',
     proxyMode: 'system',
     proxyPacScript: null,
     proxyFixedServers: null,

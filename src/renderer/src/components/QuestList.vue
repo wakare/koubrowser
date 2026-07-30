@@ -4,13 +4,20 @@ import { svdata } from '@renderer/store/svdata'
 import { quests as questsStore } from '@renderer/store/quests'
 import { Quest, QuestCounter, questProgress } from '@common/record'
 import { RUtil } from '@renderer/util'
-import { QuestCategoryText } from '@common/locale'
 import {
-  questProgressDetailFormat,
+  questProgressDetailItems,
   questIsDeckMatch,
 } from '@common/kcquest'
+import { questGuideProgressDetailText } from '@common/quest_guide'
 import { MathUtil } from '@common/math'
 import { computed, onMounted, toRaw } from 'vue'
+import { translateApp } from '@renderer/store/global_setting'
+import {
+  formatQuestProgressDetailsHtml,
+  getQuestCategoryText,
+  getQuestTypeText
+} from '@renderer/common/quest-view'
+import { escapeHtmlText } from '@renderer/common/localized-html'
 
 /////////////////////////////////////////////////////////////////////////////////////
 // デバッグログ
@@ -23,7 +30,22 @@ const debug = (...args: any[]) => {
 /////////////////////////////////////////////////////////////////////////////////////
 // 
 const questProgressDetail = (quest: Quest): string => {
-  return questProgressDetailFormat(quest)
+  const details = questProgressDetailItems(quest, {
+    translate: translateApp
+  })
+  if (details) {
+    return formatQuestProgressDetailsHtml(details)
+  }
+  if (quest.state === null) {
+    return ''
+  }
+  const state = quest.state as QuestCounter
+  const fallback = questGuideProgressDetailText(
+    state.count,
+    state.countMax,
+    translateApp
+  )
+  return fallback ? escapeHtmlText(fallback) : ''
 }
 
 interface QuestContent {
@@ -154,11 +176,17 @@ const quests = computed<QuestContent[]>(() => {
     const ret = {
       completed: progress >= 100,
       progress,
-      progressText: progress >= 100 ? '達成!' : progress + '%',
+      progressText:
+        progress >= 100
+          ? translateApp('quest.list.progress.completed')
+          : progress + '%',
       categoryClass: RUtil.questCategoryClass(el.quest),
-      categoryText: QuestCategoryText[el.quest.api_category] ?? '?',
+      categoryText: getQuestCategoryText(
+        el.quest.api_category,
+        translateApp
+      ),
       typeClass: RUtil.questTypeClass(el.quest),
-      typeText: RUtil.questTypeText(el.quest),
+      typeText: getQuestTypeText(el.quest, translateApp),
       record: el,
       tipDetail: el.quest.api_detail.replace(/<br>/g, ''),
       progressDetail,
@@ -184,7 +212,13 @@ onMounted(() => {
 
 <template>
   <section class="questlist">
-    <div class="questlist-title">任務情報 遂行中: {{ questLen }}/{{ maxQuest }}</div>
+    <div class="questlist-title">
+      {{
+        translateApp('quest.list.summary', {
+          params: { active: questLen, capacity: maxQuest }
+        })
+      }}
+    </div>
     <b-tooltip
       always2
       v-for="(quest, index) in quests"
@@ -200,7 +234,11 @@ onMounted(() => {
         <div class="quest-tip">
           <div class="tiptitle">
             <span>{{ quest.record.no }}: {{ quest.record.quest.api_title }}</span>
-            <span>達成度: {{ quest.progressText }}</span>
+            <span>{{
+              translateApp('quest.list.progress.label', {
+                params: { progress: quest.progressText }
+              })
+            }}</span>
           </div>
           <hr />
           <div class="tipdetail">{{ quest.tipDetail }}</div>
@@ -213,9 +251,15 @@ onMounted(() => {
           quest.progressText
         }}</span>
         <span class="quest-title">
-          <span v-if="quest.is_special" class="quest-category is-special pl-1 pr-1">限定</span>
+          <span v-if="quest.is_special" class="quest-category is-special pl-1 pr-1">{{
+            translateApp('quest.list.badge.limited')
+          }}</span>
           <span class="quest-category is-senka pl-1 pr-1" v-if="quest.senka > 0"
-            >戦果{{ quest.senka }}</span
+            >{{
+              translateApp('quest.list.badge.senka', {
+                params: { value: quest.senka }
+              })
+            }}</span
           >
           <span class="ml-1">{{ quest.record.quest.api_title }}</span>
         </span>
@@ -228,8 +272,12 @@ onMounted(() => {
               :class="state.className"
             />
             <span class="quest-progress-text" :class="{ 'stext': quest.is_stext}">
-              <span v-if="quest.deckOk == true" class="deckOk">編成:OK</span>
-              <span v-if="quest.deckOk == false" class="deckNg">編成:NG</span>
+              <span v-if="quest.deckOk == true" class="deckOk">{{
+                translateApp('quest.list.formation.ok')
+              }}</span>
+              <span v-if="quest.deckOk == false" class="deckNg">{{
+                translateApp('quest.list.formation.ng')
+              }}</span>
               <span v-if="quest.progressDetail" v-html="quest.progressDetail"></span>
             </span>
           </template>

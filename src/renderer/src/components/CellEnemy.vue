@@ -17,6 +17,7 @@ import {
   watch
 } from 'vue'
 import { mapInfoCache } from '@renderer/common/mapinfo'
+import { translateApp } from '@renderer/store/global_setting'
 
 /////////////////////////////////////////////////////////////////////////////////////
 // 
@@ -52,7 +53,9 @@ const isCellInfoOk = computed<boolean>(() => {
 })
 
 const prefixText = computed<string>(() => {
-  return items_.value.length < 9 ? '構成' : ''
+  return items_.value.length < 9
+    ? translateApp('battleEquipment.enemy.composition')
+    : ''
 })
 
 watch(

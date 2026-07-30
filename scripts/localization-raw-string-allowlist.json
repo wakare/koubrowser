@@ -1,0 +1,206 @@
+[
+  {
+    "file": "src/main/kcbrowser.ts",
+    "kind": "script",
+    "value": "合成任務進捗",
+    "reason": "Synthetic account-restore fixture task title; never shown outside the explicit production smoke fixture."
+  },
+  {
+    "file": "src/main/kcbrowser.ts",
+    "kind": "script",
+    "value": "production smoke 用の合成任務",
+    "reason": "Synthetic account-restore fixture task detail; never shown outside the explicit production smoke fixture."
+  },
+  {
+    "file": "src/renderer/src/components/About.vue",
+    "kind": "script",
+    "value": "艦ログ",
+    "reason": "External service brand; preserve the provider's original name."
+  },
+  {
+    "file": "src/renderer/src/components/About.vue",
+    "kind": "script",
+    "value": "艦これ",
+    "reason": "Game-owned product name."
+  },
+  {
+    "file": "src/renderer/src/components/BattleScore.vue",
+    "kind": "script",
+    "value": "7-2S(第1)",
+    "reason": "Game-owned map and route label."
+  },
+  {
+    "file": "src/renderer/src/components/BattleScore.vue",
+    "kind": "script",
+    "value": "7-2S(第2)",
+    "reason": "Game-owned map and route label."
+  },
+  {
+    "file": "src/renderer/src/components/DropByShip.vue",
+    "kind": "script",
+    "value": "3-5 北方AL海域 K(Boss)",
+    "reason": "Game-owned map and cell example."
+  },
+  {
+    "file": "src/renderer/src/components/DropWorld.vue",
+    "kind": "attribute:title",
+    "value": "1: 鎮守府海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/DropWorld.vue",
+    "kind": "attribute:title",
+    "value": "2: 南西諸島海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/DropWorld.vue",
+    "kind": "attribute:title",
+    "value": "3: 北方海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/DropWorld.vue",
+    "kind": "attribute:title",
+    "value": "7: 南西海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/DropWorld.vue",
+    "kind": "attribute:title",
+    "value": "4: 西方海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/DropWorld.vue",
+    "kind": "attribute:title",
+    "value": "5: 南方海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/DropWorld.vue",
+    "kind": "attribute:title",
+    "value": "6: 中部海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/LayoutHpGaugeFixture.vue",
+    "kind": "script",
+    "value": "健全艦",
+    "reason": "Synthetic layout-fixture ship name."
+  },
+  {
+    "file": "src/renderer/src/components/LayoutHpGaugeFixture.vue",
+    "kind": "script",
+    "value": "健全境界艦",
+    "reason": "Synthetic layout-fixture ship name."
+  },
+  {
+    "file": "src/renderer/src/components/LayoutHpGaugeFixture.vue",
+    "kind": "script",
+    "value": "小破艦",
+    "reason": "Synthetic layout-fixture ship name."
+  },
+  {
+    "file": "src/renderer/src/components/LayoutHpGaugeFixture.vue",
+    "kind": "script",
+    "value": "中破艦",
+    "reason": "Synthetic layout-fixture ship name."
+  },
+  {
+    "file": "src/renderer/src/components/LayoutHpGaugeFixture.vue",
+    "kind": "script",
+    "value": "大破境界艦",
+    "reason": "Synthetic layout-fixture ship name."
+  },
+  {
+    "file": "src/renderer/src/components/LayoutHpGaugeFixture.vue",
+    "kind": "script",
+    "value": "大破艦",
+    "reason": "Synthetic layout-fixture ship name."
+  },
+  {
+    "file": "src/renderer/src/components/LayoutHpGaugeFixture.vue",
+    "kind": "script",
+    "value": "第七艦",
+    "reason": "Synthetic layout-fixture ship name."
+  },
+  {
+    "file": "src/renderer/src/components/MissionCheck.vue",
+    "kind": "text",
+    "value": "鎮守府海域",
+    "reason": "Game-owned expedition area name."
+  },
+  {
+    "file": "src/renderer/src/components/MissionCheck.vue",
+    "kind": "text",
+    "value": "南西諸島海域",
+    "reason": "Game-owned expedition area name."
+  },
+  {
+    "file": "src/renderer/src/components/MissionCheck.vue",
+    "kind": "text",
+    "value": "北方海域",
+    "reason": "Game-owned expedition area name."
+  },
+  {
+    "file": "src/renderer/src/components/MissionCheck.vue",
+    "kind": "text",
+    "value": "南西海域",
+    "reason": "Game-owned expedition area name."
+  },
+  {
+    "file": "src/renderer/src/components/MissionCheck.vue",
+    "kind": "text",
+    "value": "西方海域",
+    "reason": "Game-owned expedition area name."
+  },
+  {
+    "file": "src/renderer/src/components/MissionCheck.vue",
+    "kind": "text",
+    "value": "南方海域",
+    "reason": "Game-owned expedition area name."
+  },
+  {
+    "file": "src/renderer/src/components/World.vue",
+    "kind": "attribute:title",
+    "value": "1: 鎮守府海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/World.vue",
+    "kind": "attribute:title",
+    "value": "2: 南西諸島海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/World.vue",
+    "kind": "attribute:title",
+    "value": "3: 北方海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/World.vue",
+    "kind": "attribute:title",
+    "value": "7: 南西海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/World.vue",
+    "kind": "attribute:title",
+    "value": "4: 西方海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/World.vue",
+    "kind": "attribute:title",
+    "value": "5: 南方海域",
+    "reason": "Game-owned map area name."
+  },
+  {
+    "file": "src/renderer/src/components/World.vue",
+    "kind": "attribute:title",
+    "value": "6: 中部海域",
+    "reason": "Game-owned map area name."
+  }
+]

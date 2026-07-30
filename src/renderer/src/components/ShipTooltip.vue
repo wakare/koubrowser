@@ -21,16 +21,18 @@ import {
 } from '@common/kcs'
 import { MathUtil } from '@common/math'
 import { RUtil } from '@renderer/util'
+import { isMaxYCutins } from '@common/locale'
+import { translateApp } from '@renderer/store/global_setting'
 import {
-  SokuText,
-  SyateiText,
-  FACutinText,
-  AACutinText,
-  SenseiTaisenText,
-  isMaxYCutins,
-  getYCutinText,
-  getYSCutinText
-} from '@common/locale'
+  escapeHtmlText,
+  getOperationAACutInText,
+  getOperationFACutInText,
+  getOperationNightAirCutInText,
+  getOperationNightCutInText,
+  getOperationRangeText,
+  getOperationSenseiTaisenText,
+  getOperationSpeedText
+} from '@renderer/common/operation-view'
 
 type Props = { ship_id: number }
 const props = defineProps<Props>()
@@ -63,8 +65,12 @@ const deckShipIds = computed<number[]>(() => {
 const shipSps = computed<ShipInfoSp[]>(() => svdata.shipInfoSps(deckShipIds.value))
 const shipSp = computed<ShipInfoSp | undefined>(() => shipSps.value.find((s) => s.api.api_id === props.ship_id))
 
-const sokuText = computed(() => SokuText[api.value.api_soku / 5] ?? '')
-const syateiText = computed(() => SyateiText[api.value.api_leng] ?? '')
+const sokuText = computed(() =>
+  getOperationSpeedText(api.value.api_soku / 5, translateApp)
+)
+const syateiText = computed(() =>
+  getOperationRangeText(api.value.api_leng, translateApp)
+)
 
 const remodelFire = computed(() => remodelText(slots.value, KcsUtil.fireFromLevel))
 const remodelTor = computed(() => remodelText(slots.value, KcsUtil.torFromLevel))
@@ -148,7 +154,11 @@ const toNaNTxt = (v: number): string => {
 
 const THCutinTag = (ships: ShipInfoSp[], st: THCutinState): string => {
   const kongos: THCutin[] = [THCutin.Kongou, THCutin.Hiei, THCutin.Haruna, THCutin.Kirisima]
-  const name = kongos.includes(st.type) ? '夜戦突撃' : '特殊砲撃'
+  const name = escapeHtmlText(
+    kongos.includes(st.type)
+      ? translateApp('operation.deck.specialAttack.night')
+      : translateApp('operation.deck.specialAttack')
+  )
   const rate = KcsUtil.rateTH(st, ships)
   const rateV = MathUtil.floor((rate?.rate ?? NaN) * 100.0, 1)
   return `<span class="sp"><span class="tag ${st.enable ? 'is-danger is-tokuhou' : 'is-disable'} ">${name}</span><span class="sp-rate">${toNaNTxt(rateV)}%</span></span>`
@@ -156,15 +166,20 @@ const THCutinTag = (ships: ShipInfoSp[], st: THCutinState): string => {
 
 const TKCutinTag = (tk: TKCutinState): string => {
   const rates = tk.type.map((el) => toNaNTxt(MathUtil.floor(KcsUtil.rateTK(el) * 100.0, 1)) + '%')
-  return `<span class="sp"><span class="tag is-info">${tk.type.join('/')}種 対空CI</span><span class="sp-rate">${rates.join(' ')}</span></span>`
+  const label = escapeHtmlText(
+    translateApp('operation.deck.antiAirCutIn.types', {
+      params: { types: tk.type.join('/') }
+    })
+  )
+  return `<span class="sp"><span class="tag is-info">${label}</span><span class="sp-rate">${rates.join(' ')}</span></span>`
 }
 
 const SenseiTaisenTag = (st: SenseiTaisenState): string => {
-  return `<span class="sp"><span class="tag ${st.enable ? 'is-info' : 'is-disable'}">${SenseiTaisenText[st.type]}</span></span>`
+  return `<span class="sp"><span class="tag ${st.enable ? 'is-info' : 'is-disable'}">${escapeHtmlText(getOperationSenseiTaisenText(st.type, translateApp))}</span></span>`
 }
 
 const SenseiRaigekiTag = (_st: SenseiRaigekiState): string => {
-  return '<span class="sp"><span class="tag is-info">先制雷撃</span></span>'
+  return `<span class="sp"><span class="tag is-info">${escapeHtmlText(translateApp('operation.deck.tag.openingTorpedo'))}</span></span>`
 }
 
 const FunsindanmakuTag = (ship: ShipInfoSp): string => {
@@ -173,7 +188,7 @@ const FunsindanmakuTag = (ship: ShipInfoSp): string => {
   if (fdrate) {
     rateTxt = toNaNTxt(MathUtil.floor(fdrate.rate * 100, 1))
   }
-  return `<span class="sp"><span class="tag is-primary">噴弾</span><span class="sp-rate">${rateTxt}%</span></span>`
+  return `<span class="sp"><span class="tag is-primary">${escapeHtmlText(translateApp('operation.deck.tag.antiAirRocket'))}</span><span class="sp-rate">${rateTxt}%</span></span>`
 }
 
 const YateiTag = (ship: ShipInfoSp): string => {
@@ -182,7 +197,7 @@ const YateiTag = (ship: ShipInfoSp): string => {
   if (rate) {
     rate_txt = toNaNTxt(MathUtil.floor(rate.rate * 100, 1))
   }
-  return `<span class="sp"><span class="tag is-dark">夜偵</span><span class="sp-rate">${rate_txt}%</span></span>`
+  return `<span class="sp"><span class="tag is-dark">${escapeHtmlText(translateApp('operation.deck.tag.nightScout'))}</span><span class="sp-rate">${rate_txt}%</span></span>`
 }
 
 const FACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[]): string => {
@@ -198,13 +213,13 @@ const FACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[]): string => {
     })
     const totalKakuho = MathUtil.floor(MathUtil.totalRate(calcRates[0]).total * 100, 1)
     const totalYuusei = MathUtil.floor(MathUtil.totalRate(calcRates[1]).total * 100, 1)
-    totalHtml = `<span class="sp"><span class="tag is-danger">合計</span><span class="sp-rate">${toNaNTxt(totalKakuho)}%/${toNaNTxt(totalYuusei)}%</span></span>`
+    totalHtml = `<span class="sp"><span class="tag is-danger">${escapeHtmlText(translateApp('operation.common.total'))}</span><span class="sp-rate">${toNaNTxt(totalKakuho)}%/${toNaNTxt(totalYuusei)}%</span></span>`
   }
 
   const html = rates.reduce((acc, rate) => {
     const rateKakuho = MathUtil.floor(rate.rate[0] * 100, 1)
     const rateYuusei = MathUtil.floor(rate.rate[1] * 100, 1)
-    acc += `<span class="sp"><span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${FACutinText[rate.type]}</span><span class="sp-rate">${toNaNTxt(rateKakuho)}%/${toNaNTxt(rateYuusei)}%</span></span>`
+    acc += `<span class="sp"><span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${escapeHtmlText(getOperationFACutInText(rate.type, translateApp))}</span><span class="sp-rate">${toNaNTxt(rateKakuho)}%/${toNaNTxt(rateYuusei)}%</span></span>`
     return acc
   }, '')
 
@@ -224,13 +239,13 @@ const AACutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[]): string => {
     })
     const totalKakuho = MathUtil.floor(MathUtil.totalRate(calcRates[0]).total * 100, 1)
     const totalYuusei = MathUtil.floor(MathUtil.totalRate(calcRates[1]).total * 100, 1)
-    totalHtml = `<span class="sp"><span class="tag is-danger">合計</span><span class="sp-rate">${toNaNTxt(totalKakuho)}%/${toNaNTxt(totalYuusei)}%</span></span>`
+    totalHtml = `<span class="sp"><span class="tag is-danger">${escapeHtmlText(translateApp('operation.common.total'))}</span><span class="sp-rate">${toNaNTxt(totalKakuho)}%/${toNaNTxt(totalYuusei)}%</span></span>`
   }
 
   const html = rates.reduce((acc, rate) => {
     const rateKakuho = MathUtil.floor(rate.rate[0] * 100, 1)
     const rateYuusei = MathUtil.floor(rate.rate[1] * 100, 1)
-    acc += `<span class="sp"><span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${AACutinText[rate.type]}</span><span class="sp-rate">${toNaNTxt(rateKakuho)}%/${toNaNTxt(rateYuusei)}%</span></span>`
+    acc += `<span class="sp"><span class="tag ${rate.enable ? 'is-danger' : 'is-disable'}">${escapeHtmlText(getOperationAACutInText(rate.type, translateApp))}</span><span class="sp-rate">${toNaNTxt(rateKakuho)}%/${toNaNTxt(rateYuusei)}%</span></span>`
     return acc
   }, '')
 
@@ -246,14 +261,14 @@ const YCutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[]): string => {
   if (multiCi.length > 1) {
     const calcRates: number[] = multiCi.map((rate) => rate.rate)
     const total = MathUtil.floor(MathUtil.totalRate(calcRates).total * 100, 1)
-    totalHtml = `<span class="sp"><span class="tag is-dark">合計</span><span class="sp-rate">${toNaNTxt(total)}%</span></span>`
+    totalHtml = `<span class="sp"><span class="tag is-dark">${escapeHtmlText(translateApp('operation.common.total'))}</span><span class="sp-rate">${toNaNTxt(total)}%</span></span>`
   }
 
 
   const html = rates.reduce((acc, rate) => {
     const isMaxClass = isMaxYCutins.includes(rate.type) ? ' is-max' : ''
     const rateTxt = MathUtil.floor(rate.rate * 100, 1)
-    acc += `<span class="sp"><span class="tag is-dark${isMaxClass}">${getYCutinText(rate.type, false)}</span><span class="sp-rate">${toNaNTxt(rateTxt)}%</span></span>`
+    acc += `<span class="sp"><span class="tag is-dark${isMaxClass}">${escapeHtmlText(getOperationNightCutInText(rate.type, false, translateApp))}</span><span class="sp-rate">${toNaNTxt(rateTxt)}%</span></span>`
     return acc
   }, '')
   return totalHtml + html
@@ -267,12 +282,12 @@ const YSCutinTag = (ship: ShipInfoSp, ships: ShipInfoSp[]): string => {
   if (rates.length > 1) {
     const calcRates: number[] = rates.map((rate) => rate.rate)
     const total = MathUtil.floor(MathUtil.totalRate(calcRates).total * 100, 1)
-    totalHtml = `<span class="sp"><span class="tag is-dark">合計</span><span class="sp-rate">${toNaNTxt(total)}%</span></span>`
+    totalHtml = `<span class="sp"><span class="tag is-dark">${escapeHtmlText(translateApp('operation.common.total'))}</span><span class="sp-rate">${toNaNTxt(total)}%</span></span>`
   }
 
   const html = rates.reduce((acc, rate) => {
     const rateTxt = MathUtil.floor(rate.rate * 100, 1)
-    acc += `<span class="sp"><span class="tag is-dark">${getYSCutinText(rate.type, false)}</span><span class="sp-rate">${toNaNTxt(rateTxt)}%</span></span>`
+    acc += `<span class="sp"><span class="tag is-dark">${escapeHtmlText(getOperationNightAirCutInText(rate.type, false, translateApp))}</span><span class="sp-rate">${toNaNTxt(rateTxt)}%</span></span>`
     return acc
   }, '')
   return totalHtml + html
@@ -387,45 +402,45 @@ onMounted(() => {
     <div>
       Lv. {{ api.api_lv }} <span class="name">{{ mst.api_name }}</span>
       <span class="exp"
-        ><span class="next-level-exp">次のレベルまで</span> {{ api.api_exp[1] }}
+        ><span class="next-level-exp">{{ translateApp('operation.deck.stat.nextLevel') }}</span> {{ api.api_exp[1] }}
         <span class="next-level-exp">exp</span></span
       >
     </div>
     <hr class="hr" />
     <div class="status">
-      <span class="s-icon fuel">燃料: {{ api.api_fuel }}</span>
-      <span class="s-icon bull">弾薬: {{ api.api_bull }}</span>
-      <span class="s-icon aa">加重対空: {{ kajuTaiku }}<span v-html="remodelKTHtml"></span></span>
-      <span class="s-icon aa">艦隊防空: {{ bouku }}<span v-html="remodelBoukuHtml"></span></span>
-      <span class="s-icon range">命中率 {{ hit }}% <span v-html="remodelHitHtml"></span></span>
-      <span class="s-icon ev">回避率 {{ kaihi }}% <span v-html="remodelKaihiHtml"></span></span>
+      <span class="s-icon fuel">{{ translateApp('operation.deck.stat.fuel') }}: {{ api.api_fuel }}</span>
+      <span class="s-icon bull">{{ translateApp('operation.deck.stat.ammunition') }}: {{ api.api_bull }}</span>
+      <span class="s-icon aa">{{ translateApp('operation.deck.stat.weightedAntiAir') }}: {{ kajuTaiku }}<span v-html="remodelKTHtml"></span></span>
+      <span class="s-icon aa">{{ translateApp('operation.deck.stat.fleetAntiAir') }}: {{ bouku }}<span v-html="remodelBoukuHtml"></span></span>
+      <span class="s-icon range">{{ translateApp('operation.deck.stat.hitRate') }} {{ hit }}% <span v-html="remodelHitHtml"></span></span>
+      <span class="s-icon ev">{{ translateApp('operation.deck.stat.evasionRate') }} {{ kaihi }}% <span v-html="remodelKaihiHtml"></span></span>
     </div>
     <hr class="hr" />
     <div class="status">
-      <span class="s-icon hp">耐久: {{ api.api_nowhp }}/{{ api.api_maxhp }}</span>
+      <span class="s-icon hp">{{ translateApp('operation.deck.stat.hp') }}: {{ api.api_nowhp }}/{{ api.api_maxhp }}</span>
       <span class="s-icon fire"
-        >火力: {{ api.api_karyoku[0] }}<span class="remodel">{{ remodelFire }}</span></span
+        >{{ translateApp('operation.deck.stat.firepower') }}: {{ api.api_karyoku[0] }}<span class="remodel">{{ remodelFire }}</span></span
       >
       <span class="s-icon armor"
-        >装甲: {{ api.api_soukou[0] }}<span class="remodel">{{ remodelArmor }}</span></span
+        >{{ translateApp('operation.deck.stat.armor') }}: {{ api.api_soukou[0] }}<span class="remodel">{{ remodelArmor }}</span></span
       >
       <span class="s-icon tor"
-        >雷装: {{ api.api_raisou[0] }}<span class="remodel">{{ remodelTor }}</span></span
+        >{{ translateApp('operation.deck.stat.torpedo') }}: {{ api.api_raisou[0] }}<span class="remodel">{{ remodelTor }}</span></span
       >
       <span class="s-icon ev"
-        >回避: {{ api.api_kaihi[0] }}<span class="remodel">{{ remodelEv }}</span></span
+        >{{ translateApp('operation.deck.stat.evasion') }}: {{ api.api_kaihi[0] }}<span class="remodel">{{ remodelEv }}</span></span
       >
-      <span class="s-icon aa">対空: {{ api.api_taiku[0] }}</span>
-      <span class="s-icon tousai">搭載: {{ tousai }}</span>
+      <span class="s-icon aa">{{ translateApp('operation.deck.stat.antiAir') }}: {{ api.api_taiku[0] }}</span>
+      <span class="s-icon tousai">{{ translateApp('operation.deck.stat.aircraft') }}: {{ tousai }}</span>
       <span class="s-icon asw"
-        >対潜: {{ api.api_taisen[0] }}<span class="remodel">{{ remodelAsw }}</span></span
+        >{{ translateApp('operation.deck.stat.antiSubmarine') }}: {{ api.api_taisen[0] }}<span class="remodel">{{ remodelAsw }}</span></span
       >
-      <span class="s-icon speed">速力: {{ sokuText }}</span>
+      <span class="s-icon speed">{{ translateApp('operation.deck.stat.speed') }}: {{ sokuText }}</span>
       <span class="s-icon los"
-        >索敵: {{ api.api_sakuteki[0] }}<span class="remodel">{{ remodelLos }}</span></span
+        >{{ translateApp('operation.deck.stat.search') }}: {{ api.api_sakuteki[0] }}<span class="remodel">{{ remodelLos }}</span></span
       >
-      <span class="s-icon range">射程: {{ syateiText }}</span>
-      <span class="s-icon luck">運: {{ api.api_lucky[0] }}</span>
+      <span class="s-icon range">{{ translateApp('operation.deck.stat.range') }}: {{ syateiText }}</span>
+      <span class="s-icon luck">{{ translateApp('operation.deck.stat.luck') }}: {{ api.api_lucky[0] }}</span>
     </div>
     <hr class="hr" />
     <div class="slot" v-for="(slot, index) in slots" :key="index">
@@ -440,43 +455,43 @@ onMounted(() => {
     <hr class="hr" v-if="hasSp"/>
     <div class="sp-parts" v-if="htmlTH">
       <div class="sp-container">
-        <div class="sp-title one-line">特殊砲撃</div>
+        <div class="sp-title one-line">{{ translateApp('operation.deck.section.specialAttack') }}</div>
         <div class="sp-content" v-html="htmlTH"></div>
       </div>
     </div>
     <div class="sp-parts" v-if="htmlFA">
       <div class="sp-container">
-        <div class="sp-title">弾着<br>観測射撃</div>
+        <div class="sp-title">{{ translateApp('operation.deck.section.dayObservation') }}</div>
         <div class="sp-content" v-html="htmlFA"></div>
       </div>
     </div>
     <div class="sp-parts" v-if="htmlAA">
       <div class="sp-container">
-        <div class="sp-title">空母<br>カットイン</div>
+        <div class="sp-title">{{ translateApp('operation.deck.section.carrierCutIn') }}</div>
         <div class="sp-content" v-html="htmlAA"></div>
       </div>
     </div>
     <div class="sp-parts" v-if="htmlTK">
       <div class="sp-container">
-        <div class="sp-title">対空<br>カットイン</div>
+        <div class="sp-title">{{ translateApp('operation.deck.section.antiAirCutIn') }}</div>
         <div class="sp-content" v-html="htmlTK"></div>
       </div>
     </div>
     <div class="sp-parts" v-if="htmlYC">
       <div class="sp-container">
-        <div class="sp-title">夜戦<br>カットイン</div>
+        <div class="sp-title">{{ translateApp('operation.deck.section.nightCutIn') }}</div>
         <div class="sp-content" v-html="htmlYC"></div>
       </div>
     </div>
     <div class="sp-parts" v-if="htmlYS">
       <div class="sp-container">
-        <div class="sp-title">夜襲<br>カットイン</div>
+        <div class="sp-title">{{ translateApp('operation.deck.section.nightAirCutIn') }}</div>
         <div class="sp-content" v-html="htmlYS"></div>
       </div>
     </div>
     <div class="sp-parts" v-if="htmlEtc">
       <div class="sp-container">
-        <div class="sp-title one-line">その他</div>
+        <div class="sp-title one-line">{{ translateApp('operation.deck.section.other') }}</div>
         <div class="sp-content" v-html="htmlEtc"></div>
       </div>
     </div>

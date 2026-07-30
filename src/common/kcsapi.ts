@@ -171,6 +171,8 @@ export const Api = {
   REQ_SORTIE_AIRBATTLE: '/api_req_sortie/airbattle',
   // 出撃 - 戦闘空襲2
   REQ_SORTIE_LD_AIRBATTLE: '/api_req_sortie/ld_airbattle',
+  // 出撃 - 夜戦から昼戦へ移行
+  REQ_SORTIE_NIGHT_TO_DAY: '/api_req_sortie/night_to_day',
   // 出撃 - 戦闘結果 艦隊状態更新
   GET_MEMBER_SHIP_DECK: '/api_get_member/ship_deck',
   // 出撃 - 進撃
@@ -192,12 +194,28 @@ export const Api = {
   REQ_COMBINED_BATTLE_BATTLERESULT: '/api_req_combined_battle/battleresult',
   // 出撃(通常-連合) - 戦闘開始
   REQ_COMBINED_BATTLE_EC_BATTLE: '/api_req_combined_battle/ec_battle',
+  // 出撃(遊撃-連合) - 夜戦から昼戦へ移行
+  REQ_COMBINED_BATTLE_EC_NIGHT_TO_DAY: '/api_req_combined_battle/ec_night_to_day',
+  // 出撃(連合-連合・水上) - 戦闘開始
+  // each_battle より前に置き、prefix が短い API への誤分類を防ぐ
+  REQ_COMBINED_BATTLE_EACH_BATTLE_WATER: '/api_req_combined_battle/each_battle_water',
   // 出撃(連合-連合) - 戦闘開始
   REQ_COMBINED_BATTLE_EACH_BATTLE: '/api_req_combined_battle/each_battle',
-  // 出撃(連合) - 夜戦開始
+  // 出撃(連合-連合) - 夜戦から昼戦へ移行
+  REQ_COMBINED_BATTLE_NIGHT_TO_DAY: '/api_req_combined_battle/night_to_day',
+  // 出撃(通常-連合) - 夜戦開始
   REQ_COMBINED_BATTLE_EC_MIDNIGHT_BATTLE: '/api_req_combined_battle/ec_midnight_battle',
+  // 出撃(連合) - 夜戦開始
+  REQ_COMBINED_BATTLE_MIDNIGHT_BATTLE: '/api_req_combined_battle/midnight_battle',
+  // 出撃(連合) - 特殊夜戦開始
+  REQ_COMBINED_BATTLE_SP_MIDNIGHT: '/api_req_combined_battle/sp_midnight',
+  // 出撃(連合-通常・水上) - 戦闘開始
+  // battle より前に置き、prefix が短い API への誤分類を防ぐ
+  REQ_COMBINED_BATTLE_BATTLE_WATER: '/api_req_combined_battle/battle_water',
   // 出撃(連合-通常) - 戦闘開始
   REQ_COMBINED_BATTLE_BATTLE: '/api_req_combined_battle/battle',
+  // 出撃(連合-通常航空戦) - 戦闘開始
+  REQ_COMBINED_BATTLE_AIRBATTLE: '/api_req_combined_battle/airbattle',
   // 出撃(連合-通常空襲) - 戦闘開始
   REQ_COMBINED_BATTLE_LD_AIRBATTLE: '/api_req_combined_battle/ld_airbattle',
   // 出撃(連合) - 護衛退避

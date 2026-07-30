@@ -62,6 +62,8 @@ import { nowString } from '@common/debug'
 import { isAlwaysDropCellNo } from '@common/map'
 import { Intaker } from './stuff/intaker'
 import { Env } from '@common/env'
+import { createAccountRecordIdentity } from '@main/account-record-identity'
+import { randomUUID } from 'node:crypto'
 type QuestUpdated = () => void
 
 /**
@@ -71,18 +73,22 @@ export class KcRecord {
   private port_api_id = 0
   private port_called = false
   private db_loaded = false
+  private readonly db_ready: Promise<void>
+  private readonly quest_db_ready: Promise<void>
   private quest_updaters: QuestUpdater[] = []
   private questlist_called: boolean = false
   private cbQuestUpdated: QuestUpdated
   private tmp_quests: Quest[] = []
 
   private port_report_last_uuid = ''
+  private port_report_timer: ReturnType<typeof setTimeout> | null = null
+  private disposed = false
 
   public constructor(user_dir: string, cbQuestUpdated: QuestUpdated, cbQuestLoaded: ()=> void) {
 
     // load db except quest db
     const dbs = Object.entries(DbName).filter(([_, value]) => value !== DbName.quest).map(([_, value]) => value)
-    getWorkerDriver().dbInit(user_dir, dbs).then(() => {
+    this.db_ready = getWorkerDriver().dbInit(user_dir, dbs).then(() => {
       console.log('dbs initialized:', dbs)
       this.db_loaded = true
 
@@ -91,20 +97,50 @@ export class KcRecord {
         this.portReport()
       }
     })
+    void this.db_ready.catch((error) => {
+      console.error('record databases failed to initialize:', error)
+    })
     
     // load db quest
     // set compactDatafile interval 10min
-    getWorkerDriverQuest().dbInit(user_dir, [DbName.quest]).then(() => {
+    this.quest_db_ready = getWorkerDriverQuest().dbInit(
+      user_dir,
+      [DbName.quest]
+    ).then(() => {
       console.log('quest db initialized')
-      getWorkerDriverQuest().dbOperation({ dbName: DbName.quest, autocompactionInterval: 10*60*1000 })
+      return getWorkerDriverQuest().dbOperation({
+        dbName: DbName.quest,
+        autocompactionInterval: 10 * 60 * 1000
+      })
+    }).then(() => {
       this.loadQuest(cbQuestLoaded)
+    }).catch((error) => {
+      console.error('quest database failed to initialize:', error)
+      throw error
     })
+    void this.quest_db_ready.catch(() => undefined)
 
     this.cbQuestUpdated = cbQuestUpdated
     this.regCallback();
   }
 
+  public whenDbReady(): Promise<void> {
+    return this.db_ready
+  }
+
+  public async whenAllDbReady(): Promise<void> {
+    await Promise.all([this.db_ready, this.quest_db_ready])
+  }
+
   public doDispose() {
+    if (this.disposed) {
+      return
+    }
+    this.disposed = true
+    if (this.port_report_timer) {
+      clearTimeout(this.port_report_timer)
+      this.port_report_timer = null
+    }
     if (svdata.isShipDataOk) {
       this.portRecord()
     }
@@ -193,13 +229,20 @@ export class KcRecord {
   }
 
   private portReportSet(): void {
+    if (this.disposed) {
+      return
+    }
     const reportMinutes = 30
     const now = new Date()
     const msecnext =
       (reportMinutes - (now.getMinutes() % reportMinutes)) * 60000 -
       now.getSeconds() * 1000 -
       now.getMilliseconds()
-    setTimeout(() => {
+    this.port_report_timer = setTimeout(() => {
+      this.port_report_timer = null
+      if (this.disposed) {
+        return
+      }
       this.portReport()
       this.portReportSet()
     }, msecnext)
@@ -602,7 +645,8 @@ export class RecordUtil {
     }
 
     const ret: PortRecord = {
-      date: currentRecordDate(false)
+      date: currentRecordDate(false),
+      recordIdentity: createAccountRecordIdentity()
     }
 
     ret[ApiItemId.fual] = svdata.fual
@@ -665,6 +709,7 @@ export class RecordUtil {
        info.midday ? info.midday.api_formation[1] :
        (info.midnight ? info.midnight.api_formation[1] : 0)
     return {
+      recordIdentity: createAccountRecordIdentity(),
       mapId,
       cellId: info.cell_no,
       isBoss: info.isBoss,
@@ -726,6 +771,8 @@ export class RecordUtil {
     const airsearchResult = arg.map.api_airsearch?.api_result ?? -1
     const fromCellId = arg.map['api_from_no']
     return {
+      recordIdentity:
+        drop.recordIdentity ?? createAccountRecordIdentity(),
       uuid: arg.uuid,
       index: svdata.battleMap.length-1,
       mapId: toRecordMapIdFromApi(arg.map),
@@ -786,6 +833,7 @@ export class RecordUtil {
     const fromCellId = map['api_from_no']
     const items = this.toAreaItemGetInfos(map)
     return {
+      recordIdentity: createAccountRecordIdentity(),
       uuid: info.uuid,
       index: svdata.battleMap.length-1,
       mapId: toRecordMapIdFromApi(map),
@@ -843,6 +891,7 @@ export class RecordUtil {
     }
 
     return {
+      recordIdentity: createAccountRecordIdentity(),
       uuid: info.uuid,
       index: svdata.battleMap.length,
       mapId: toRecordMapId(info.maparea_id, info.mapinfo_no),
@@ -935,8 +984,10 @@ export class RecordUtil {
     if (!ship || !basic.api_level) {
       return
     }
-    return arg.api_get_items.map((item) => {
+    const recordId = randomUUID()
+    return arg.api_get_items.map((item, index) => {
       return {
+        recordIdentity: createAccountRecordIdentity(index, recordId),
         items: arg.items,
         secretary: ship.api_ship_id,
         itemId: item?.api_slotitem_id ?? -1,
@@ -955,6 +1006,7 @@ export class RecordUtil {
       return
     }
     return {
+      recordIdentity: createAccountRecordIdentity(),
       kdockId: arg.api_kdock_id,
       secretary: ship.api_ship_id,
       shipId: arg.api_ship_id,
@@ -984,6 +1036,7 @@ export class RecordUtil {
     }
 
     return {
+      recordIdentity: createAccountRecordIdentity(),
       successful: arg.api_remodel_flag !== 0,
       itemId: arg.api_remodel_id[0],
       itemLevel: arg.api_level,
@@ -1007,6 +1060,7 @@ export class RecordUtil {
     }
 
     return {
+      recordIdentity: createAccountRecordIdentity(),
       clearResult: arg.api_clear_result,
       mapareaName: arg.api_maparea_name,
       questName: arg.api_quest_name,
@@ -1023,6 +1077,7 @@ export class RecordUtil {
     const questName = svdata.questlist?.api_list.find(
       (el) => el.api_no === arg.api_quest_id)?.api_title ?? ''
     return {
+      recordIdentity: createAccountRecordIdentity(),
       questNo: arg.api_quest_id,
       questName,
       material: arg.api_material,

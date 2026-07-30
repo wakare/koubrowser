@@ -6,7 +6,7 @@ import {
 } from '@common/kcs'
 import { svdata } from '@renderer/store/svdata'
 import MapImg from '@renderer/components/MapImg.vue'
-import { computed, onMounted, onUnmounted, ref, nextTick } from 'vue'
+import { computed, onMounted, onUnmounted, ref, nextTick, watch } from 'vue'
 import { mapInfoCache } from '@renderer/common/mapinfo'
 import { DbName, DropRecord, DropRecordQuery, toRecordMapId } from '@common/record'
 import { DropShipMapInfo } from '@renderer/common/drop-ship'
@@ -15,6 +15,8 @@ import { AggregatedShipDrop, RankDropCountIndex, RankDropCounts, RecordCalculato
 import { Spot } from '@common/map'
 import { MapLvText } from '@common/locale'
 import LocationImage from '@assets/img/location.svg'
+import { withPanelLoadTimeout } from '@renderer/common/panel-load'
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
 const isLocatonVisible = ref(false)
 
 // -----------------------------------------------------------------
@@ -39,7 +41,8 @@ const SPOT_PIE_SIZE = 30;
 
 const spot_info = ref<Spot | null>(null)
 let unmounted = false;
-const recordFetching = ref(false);
+let loadRequestId = 0
+const loadState = ref<'loading' | 'ready' | 'error'>('loading')
 const isSpotOk = computed<boolean>(() => {
   return spot_info.value !== null
 })
@@ -62,6 +65,7 @@ interface CellDropTableData {
   isHilight: boolean
 }
 const datas = ref<CellDropTableData[]>([])
+let aggregatedDrops: AggregatedShipDrop[] = []
 const totalRowId = -3;
 
 const getRankText = (counts: RankDropCounts): string => {
@@ -108,7 +112,9 @@ function updateTableDatas(drops: AggregatedShipDrop[]) {
   const totalCounts: RankDropCounts = [0, 0, 0];
   drops.forEach((drop) => {
     const mst = drop.shipId > 0 ? svdata.mstShip(drop.shipId) : null;
-    const shipName = drop.shipId > 0 ? (mst ? mst.api_name : '????') : 'ドロップ無し';    
+    const shipName = drop.shipId > 0
+      ? (mst ? mst.api_name : '????')
+      : translateApp('drop.common.noDrop');
     const count = drop.counts.reduce((acc, cur) => acc + cur, 0);
     drop.counts.forEach((c, idx) => {
       totalCounts[idx] += c;
@@ -139,7 +145,7 @@ function updateTableDatas(drops: AggregatedShipDrop[]) {
   // total row
   const totalRow: DataType = {
     shipId: totalRowId,
-    shipName: '合計',
+    shipName: translateApp('drop.common.total'),
     counts: totalCounts,
     rate: -1,
     count: totalCount,
@@ -173,7 +179,7 @@ function updateTableDatas(drops: AggregatedShipDrop[]) {
   })
 }
 
-function fetchRecord(): void {
+async function fetchRecord(): Promise<DropRecord[]> {
   const area_id = props.info.area_id;
   const area_no = props.info.area_no;
   const cell_no = props.info.cell_no
@@ -195,22 +201,60 @@ function fetchRecord(): void {
     }
   };
 
-  recordFetching.value = true;
-  //console.time('drop record for cellno query time');
-  window.api.queryDb(query).then((queryReturn) => {
-    //console.timeEnd('drop record for cellno query time');
-    const records = queryReturn as DropRecord[];
-    if (unmounted) {
-      console.log('drop record fetched but unmounted. ignore the result for mapId:', mapId);
-      return;
-    }
-    recordFetching.value = false;
-    console.log('drop record queried. record count:', records.length, 'for mapId:', mapId);
+  return await window.api.queryDb(query) as DropRecord[]
+}
 
-    // calc total drop count
-    const drops = RecordCalculator.aggregateShipDrop(records);
-    updateTableDatas(drops);
-  })
+function resetLoadResult(): void {
+  spot_info.value = null
+  datas.value = []
+  isTableOk.value = false
+  isLocatonVisible.value = false
+  spotTableVisibility.value = 'hidden'
+}
+
+async function loadDetails(): Promise<void> {
+  const requestId = ++loadRequestId
+  loadState.value = 'loading'
+  resetLoadResult()
+
+  try {
+    const result = await withPanelLoadTimeout(
+      mapInfoCache.get(props.info.area_id, props.info.area_no)
+        .then(async (cellInfo) => ({
+          cellInfo,
+          records: await fetchRecord()
+        })),
+      'Ship drop area detail request timed out'
+    )
+    if (unmounted || requestId !== loadRequestId) {
+      return
+    }
+
+    const spot = result.cellInfo.spots.find((item) => item.no === props.info.cell_no)
+    if (spot) {
+      spot_info.value = spot
+    }
+
+    console.log(
+      'drop record queried. record count:',
+      result.records.length,
+      'for mapId:',
+      toRecordMapId(props.info.area_id, props.info.area_no)
+    )
+    loadState.value = 'ready'
+    aggregatedDrops = RecordCalculator.aggregateShipDrop(result.records)
+    updateTableDatas(aggregatedDrops)
+  } catch (err) {
+    if (unmounted || requestId !== loadRequestId) {
+      return
+    }
+    console.error('failed to load ship drop area detail', err)
+    loadState.value = 'error'
+  }
+}
+
+function retryLoadDetails(): void {
+  void loadDetails()
 }
 
 onMounted(() => {
@@ -220,6 +264,7 @@ onMounted(() => {
 onUnmounted(() => {
   console.log('drop by ship area destroyed')
   unmounted = true;
+  loadRequestId += 1
 })
 
 const getMapTitle = (): string => {
@@ -295,30 +340,38 @@ const locationStyle = computed<string>(() => {
   return `left: ${left - 21}px; top:${top - 36}px;`
 });
 
-// -----------------------------------------------------------------
-// initialize
-(() => {
-  const info = props.info;
-  mapInfoCache.get(info.area_id, info.area_no)
-  .then((cellInfo) => {
-    console.log('cell info async returned', cellInfo)
+void loadDetails()
 
-    const spot = cellInfo.spots.find((s) => s.no === info.cell_no)
-    if (spot) {
-      console.log('spot found for cell_no:', info.cell_no, spot)
-      spot_info.value = spot
+watch(
+  () => globalSetting.locale,
+  () => {
+    if (isTableOk.value) {
+      updateTableDatas(aggregatedDrops)
     }
-
-    fetchRecord();
-  })
-  .catch((err) => console.log(err))
-})()
+  }
+)
 
 </script>
 <template>
   <div class="drop-by-ship-area-root">
     <div class="map-container">
       <MapImg :area_id="props.info.area_id" :area_no="props.info.area_no" />
+      <div
+        v-if="loadState !== 'ready'"
+        class="drop-area-load-state"
+        :class="{ 'is-error': loadState === 'error' }"
+        aria-live="polite"
+      >
+        <span v-if="loadState === 'loading'">
+          {{ translateApp('status.dropDetails.loading') }}
+        </span>
+        <template v-else>
+          <span>{{ translateApp('status.dropDetails.error') }}</span>
+          <button type="button" @click="retryLoadDetails">
+            {{ translateApp('common.retry') }}
+          </button>
+        </template>
+      </div>
       <div class="map-title"><span>{{ getMapTitle() }}</span></div>
       <div
           v-if="isSpotOk"
@@ -351,7 +404,7 @@ const locationStyle = computed<string>(() => {
 
           <b-table-column centered header-class="ship-name" cell-class="ship-name">
             <template #header>
-              <span>艦名</span>
+              <span>{{ translateApp('drop.column.shipName') }}</span>
             </template>
             <template #default="props">
               <span :class="{
@@ -365,7 +418,7 @@ const locationStyle = computed<string>(() => {
 
           <b-table-column centered header-class="drop-rate" cell-class="drop-rate">
             <template #header>
-              <span>確率</span>
+              <span>{{ translateApp('drop.column.rate') }}</span>
             </template>
             <template #default="props">
               <span v-if="props.row.rate >= 0">{{ props.row.rate }}%</span>
@@ -374,7 +427,7 @@ const locationStyle = computed<string>(() => {
 
           <b-table-column centered header-class="drop-count" cell-class="drop-count">
             <template #header>
-              <span>ドロップ数</span>
+              <span>{{ translateApp('drop.column.dropCount') }}</span>
             </template>
             <template #default="props">
               <span>S:{{ props.row.counts[RankDropCountIndex.S] }} A:{{ props.row.counts[RankDropCountIndex.A] }} B:{{ props.row.counts[RankDropCountIndex.B] }}</span>

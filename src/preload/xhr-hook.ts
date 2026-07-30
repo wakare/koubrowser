@@ -1,6 +1,9 @@
 import * as kcsapi from '@common/kcsapi'
 import * as kcsapi_hook from '@common/kcsapi_hook'
 import { Env } from '@common/env'
+import { installGamePageLayout } from './game-page-layout'
+
+installGamePageLayout()
 
 let serverId = kcsapi.getServerId(window.location.href);
 //console.log('xhr-hook >> contextIsolated:', process.contextIsolated, 'href:', window.location.href, 'serverId:', serverId);

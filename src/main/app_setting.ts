@@ -1,24 +1,44 @@
 import { app, BrowserWindow, Display, Rectangle, screen } from 'electron'
+import {
+  findBestIntersectingRectangleIndex,
+  fitRectangleToWorkArea,
+  isLayoutMode,
+  workspaceLayoutMetrics,
+  type LayoutMode
+} from '@common/layout'
 import * as fs from 'fs'
 import path from 'node:path'
+import { isLayoutFixtureEnabled } from '@main/layout-fixture-env'
 
 interface StoredMainWindowBounds {
   readonly x: number
   readonly y: number
   readonly width: number
   readonly height: number
+  readonly maximized?: true
+}
+
+interface StoredLayoutState {
+  readonly version: 1
+  readonly mode: LayoutMode
 }
 
 interface StoredAssistWindowState {
   readonly visible?: true
   readonly x: number
   readonly y: number
+  readonly width?: number
+  readonly height?: number
 }
 
 export interface RestoredAssistWindowState {
   readonly position?: {
     readonly x: number
     readonly y: number
+  }
+  readonly size?: {
+    readonly width: number
+    readonly height: number
   }
 }
 
@@ -31,7 +51,9 @@ interface AppJsonSetting {
     game_only_height?: number
     main?: StoredMainWindowBounds
     gameOnly?: StoredMainWindowBounds
+    workspace?: StoredMainWindowBounds
     assistWindow?: StoredAssistWindowState
+    layout?: StoredLayoutState
   }
 }
 
@@ -94,7 +116,8 @@ function isStoredMainWindowBounds(value: unknown): value is StoredMainWindowBoun
     isFiniteNumber(value.width) &&
     isFiniteNumber(value.height) &&
     value.width > 0 &&
-    value.height > 0
+    value.height > 0 &&
+    (value.maximized === undefined || value.maximized === true)
   )
 }
 
@@ -111,17 +134,32 @@ function isPositionInAnyDisplay(position: { x: number; y: number }): Display | u
   return screen.getAllDisplays().find((display) => isPositionInBounds(position, display.bounds))
 }
 
+function findDisplayIntersectingBounds(bounds: StoredMainWindowBounds): Display | undefined {
+  const displays = screen.getAllDisplays()
+  const index = findBestIntersectingRectangleIndex(
+    bounds,
+    displays.map((display) => display.bounds)
+  )
+  return index === undefined ? undefined : displays[index]
+}
+
 function restoreWindowBounds(savedBounds: unknown): StoredMainWindowBounds | undefined {
   if (!isStoredMainWindowBounds(savedBounds)) {
     return undefined
   }
 
-  if (!isPositionInAnyDisplay(savedBounds)) {
+  const display = findDisplayIntersectingBounds(savedBounds)
+  if (!display) {
     //console.warn('Saved main window position is out of display bounds. Using default position.')
     return undefined
   }
 
-  return savedBounds
+  const workArea = display.workArea ?? display.bounds
+  const fitted = fitRectangleToWorkArea(savedBounds, workArea)
+  return {
+    ...fitted,
+    ...(savedBounds.maximized ? { maximized: true as const } : {})
+  }
 }
 
 function getAssistWindowState(
@@ -130,10 +168,13 @@ function getAssistWindowState(
 ): StoredAssistWindowState | undefined {
   if (!window.isDestroyed()) {
     const normalBounds = window.getNormalBounds()
+    const [contentWidth, contentHeight] = window.getContentSize()
     return {
-      visible: isClosed ? undefined : (window.isVisible() ? true : undefined),
+      visible: isClosed ? undefined : window.isVisible() ? true : undefined,
       x: normalBounds.x,
-      y: normalBounds.y
+      y: normalBounds.y,
+      width: contentWidth,
+      height: contentHeight
     }
   }
   return undefined
@@ -154,9 +195,38 @@ export function restoreMuted(): boolean | undefined {
   return typeof muted === 'boolean' ? muted : undefined
 }
 
-export function restoreMainWindowBounds(assistInGame: boolean): StoredMainWindowBounds | undefined {
+export function restoreLayoutMode(): LayoutMode {
+  if (isLayoutFixtureEnabled()) {
+    return 'workspace'
+  }
+  const layout = getAppJsonSetting().window?.layout
+  if (isPlainObject(layout) && layout.version === 1 && isLayoutMode(layout.mode)) {
+    return layout.mode
+  }
+  return 'classic'
+}
+
+export function restoreMainWindowBounds(
+  assistInGame: boolean,
+  layoutMode: LayoutMode = 'classic'
+): StoredMainWindowBounds | undefined {
+  if (isLayoutFixtureEnabled() && layoutMode === 'workspace') {
+    return (
+      restoreWindowBounds(getAppJsonSetting().window?.workspace) ?? {
+        x: 0,
+        y: 0,
+        width: workspaceLayoutMetrics.minWindowWidth,
+        height: workspaceLayoutMetrics.minWindowHeight
+      }
+    )
+  }
   const windowSetting = getAppJsonSetting().window
-  const savedBounds = assistInGame ? windowSetting?.main : windowSetting?.gameOnly
+  const savedBounds =
+    layoutMode === 'workspace'
+      ? windowSetting?.workspace
+      : assistInGame
+        ? windowSetting?.main
+        : windowSetting?.gameOnly
   return restoreWindowBounds(savedBounds)
 }
 
@@ -171,7 +241,9 @@ export function restoreGameOnlySize(): { width: number; height: number } | undef
   return { width, height }
 }
 
-export function restoreAssistWindowState(visibleOnly: boolean): RestoredAssistWindowState & { display: Display} | undefined {
+export function restoreAssistWindowState(
+  visibleOnly: boolean
+): (RestoredAssistWindowState & { display: Display }) | undefined {
   const assistWindow = getAppJsonSetting().window?.assistWindow
   if (!isPlainObject(assistWindow)) {
     return undefined
@@ -185,15 +257,24 @@ export function restoreAssistWindowState(visibleOnly: boolean): RestoredAssistWi
     return undefined
   }
 
+  const hasValidSize =
+    isFiniteNumber(assistWindow.width) &&
+    isFiniteNumber(assistWindow.height) &&
+    assistWindow.width > 0 &&
+    assistWindow.height > 0
+  const size = hasValidSize ? { width: assistWindow.width, height: assistWindow.height } : undefined
   const position = { x: assistWindow.x, y: assistWindow.y }
-  const display = isPositionInAnyDisplay(position)
-  return display ? { position, display } : undefined
+  const display = size
+    ? findDisplayIntersectingBounds({ ...position, ...size })
+    : isPositionInAnyDisplay(position)
+  if (!display) {
+    return undefined
+  }
+
+  return { position, size, display }
 }
 
-export function updateAssistWindowState(
-  assistWindow: BrowserWindow,
-  isClosed: boolean
-): void {
+export function updateAssistWindowState(assistWindow: BrowserWindow, isClosed: boolean): void {
   const assistWindowState = getAssistWindowState(assistWindow, isClosed)
   if (!assistWindowState) {
     return
@@ -211,15 +292,18 @@ export function saveAppState(
   assistInGame: boolean,
   gameOnlySize: { width: number; height: number },
   topmost: boolean,
-  muted: boolean
+  muted: boolean,
+  layoutMode: LayoutMode = 'classic'
 ): void {
   if (window.isDestroyed()) {
     return
   }
 
-  const bounds = window.getBounds()
+  const bounds = layoutMode === 'workspace' ? window.getNormalBounds() : window.getBounds()
+  const isWorkspaceMaximized = layoutMode === 'workspace' && window.isMaximized()
   const setting = getAppJsonSetting()
   const windowSetting = isPlainObject(setting.window) ? setting.window : {}
+  const boundsKey = layoutMode === 'workspace' ? 'workspace' : assistInGame ? 'main' : 'gameOnly'
   setting.window = {
     ...windowSetting,
     assist_in_game: assistInGame,
@@ -227,11 +311,16 @@ export function saveAppState(
     muted,
     game_only_width: gameOnlySize.width,
     game_only_height: gameOnlySize.height,
-    [assistInGame ? 'main' : 'gameOnly']: {
+    layout: {
+      version: 1,
+      mode: layoutMode
+    },
+    [boundsKey]: {
       x: bounds.x,
       y: bounds.y,
       width: bounds.width,
-      height: bounds.height
+      height: bounds.height,
+      ...(isWorkspaceMaximized ? { maximized: true as const } : {})
     }
   }
 

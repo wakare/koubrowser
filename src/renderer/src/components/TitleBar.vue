@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onBeforeUnmount, computed, watch, toRaw, Ref } from 'vue'
 import { Const } from '@common/const'
-import { DispSeikuText, getFormationText, TacticsText } from '@common/locale'
 import { Env } from '@common/env'
 import { replaceArray } from '@common/ts'
 import { gameSetting } from '@renderer/store/gamesetting'
@@ -32,17 +31,35 @@ import {
   ApiTactics,
   KcsUtil,
   ApiEventId,
-  ShipHpState,
   ApiMissionId,
   AirBaseActionKind,
   ApiItemId
 } from '@common/kcs'
 import { Api } from '@common/kcsapi'
 import * as kcs_stuff from '@renderer/stuff/kcs_stuff'
-import { DbName, PortRecord, PortRecordQueryProjection, toRecordDate } from '@common/record'
 import { EnvRenderer } from '@renderer/common/env-renderer'
 import { hasStartupUpdateAvailable, startupUpdateVersion } from '@renderer/stuff/update'
 import { AssistUIState } from '@renderer/store/ui_state'
+import { TodayExpLoadController } from '@renderer/common/today-battle-score'
+import {
+  hasTaihaSortieShip,
+  taihaWarningTitle
+} from '@renderer/common/taiha-warning'
+import {
+  setTaihaWarning,
+  taihaProtectionState
+} from '@renderer/store/taiha_protection'
+import {
+  shipCapacityStatus,
+  slotitemCapacityStatus
+} from '@renderer/common/titlebar-capacity'
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
+import { normalizeTitlebarColor } from '@common/global_setting'
+import {
+  getBattleAirStateLongText,
+  getBattleFormationText,
+  getBattleTacticsText
+} from '@renderer/common/battle-equipment-view'
 
 /////////////////////////////////////////////////////////////////////////////////////
 // デバッグログ
@@ -75,7 +92,13 @@ let cb_port: number = 0
 let cb_map_start = 0
 let cb_map_next: number = 0
 let cb_battle_start = 0
-const taiha_singeki = ref(false)
+let cb_sortie_battle_result = 0
+let cb_combined_battle_result = 0
+const taiha_warning = computed(() => taihaProtectionState.warning)
+const taiha_singeki = computed(() => taiha_warning.value !== 'none')
+const titlebarColor = computed(() =>
+  normalizeTitlebarColor(globalSetting.titlebarColor)
+)
 const mapcell_labels = reactive<string[]>([])
 const inBattle = ref<boolean>(false)
 const disp_seiku = ref<ApiDispSeiku | null>(null)
@@ -84,12 +107,13 @@ const enemy_formation = ref<ApiFormation | null>(null)
 const tactics = ref<ApiTactics | null>(null)
 
 const title = computed((): string => {
-  if (taiha_singeki.value) {
-    return '！大破進撃です！'
+  const warningTitle = taihaWarningTitle(taiha_warning.value)
+  if (warningTitle) {
+    return warningTitle
   }
 
   if (gameSetting.assistInGame) {
-    return '甲ブラウザ'
+    return translateApp('app.name')
   }
   // 画面サイズにより表示しきれないことから空表示
   return ''
@@ -101,6 +125,10 @@ const isDevelopment = computed((): boolean => {
 
 const inAssistMain = computed((): boolean => {
   return gameSetting.assistInGame
+})
+
+const isWorkspaceLayout = computed((): boolean => {
+  return gameSetting.layoutMode === 'workspace'
 })
 
 const kouNum = computed((): string => {
@@ -146,29 +174,27 @@ const remodelKit = computed((): number => {
   return svdata.remodelKit
 })
 
-const ship_count = computed((): number => {
-  return svdata.ships.length
+const shipCapacity = computed(() => {
+  return shipCapacityStatus(svdata.ships.length, svdata.basic.api_max_chara)
 })
 
 const shipCountClass = computed((): object => {
   return {
-    'ship-count-over': svdata.basic.api_max_chara - 5 <= svdata.ship.length
+    'ship-count-over': shipCapacity.value.level === 'danger'
   }
 })
 
-const slotitemCount = computed((): number => {
-  return svdata.slotitemCountForTitle
+const slotitemCapacity = computed(() => {
+  return slotitemCapacityStatus(
+    svdata.slotitemCountForTitle,
+    svdata.basic.api_max_slotitem
+  )
 })
 
 const slotitemCountClass = computed((): object => {
-  const slotitem_count = svdata.slotitemCountForTitle
-  const max_count = svdata.basic.api_max_slotitem + 3
-  const over1 = max_count - 20 < slotitem_count
-  const over2 = max_count - 3 <= slotitem_count
-
   return {
-    'slotitem-count-over1': over1 && !over2,
-    'slotitem-count-over2': over2
+    'slotitem-count-over1': slotitemCapacity.value.level === 'warning',
+    'slotitem-count-over2': slotitemCapacity.value.level === 'danger'
   }
 })
 
@@ -196,11 +222,13 @@ const mapStartOnce = computed((): boolean => {
 const mapAreaText = computed((): string => {
   const mapinfo = svdata.mstBattleMapInfo
   if (!mapinfo) {
-    return '出撃情報がありません'
+    return translateApp('titlebar.status.sortieEmpty')
   }
 
   // mapinfo.api_nameは名前が長いことがあり表示しない
-  const s1 = svdata.inMap ? '出撃中' : '出撃帰'
+  const s1 = svdata.inMap
+    ? translateApp('titlebar.status.sortieInProgress')
+    : translateApp('titlebar.status.sortieReturning')
   return `${s1}: ${mapinfo.api_maparea_id > 10 ? 'E' : mapinfo.api_maparea_id}-${mapinfo.api_no}`
 })
 
@@ -215,7 +243,7 @@ const noBattleInfoText = computed((): string => {
   if (inBattle.value || ! mapStartOnce.value) {
     return ''
   }
-  return '戦闘情報がありません'
+  return translateApp('titlebar.status.battleEmpty')
 })
 
 const formationText = computed((): string => {
@@ -223,15 +251,15 @@ const formationText = computed((): string => {
     return ''
   }
 
-  const deck_txt = getFormationText(deck_formation.value, '?')
-  const enemy_txt = getFormationText(enemy_formation.value, '?')
+  const deck_txt = getBattleFormationText(deck_formation.value, translateApp) || '?'
+  const enemy_txt = getBattleFormationText(enemy_formation.value, translateApp) || '?'
   return deck_txt + '-' + enemy_txt
 })
 
 const dispSeikuText = computed((): string => {
   debug('dispSeikuText', disp_seiku.value)
   if (disp_seiku.value !== null) {
-    return DispSeikuText[disp_seiku.value] ?? ''
+    return getBattleAirStateLongText(disp_seiku.value, translateApp)
   }
   return ''
 })
@@ -239,7 +267,7 @@ const dispSeikuText = computed((): string => {
 const tacticsText = computed((): string => {
   debug('tacticsText', tactics.value)
   if (tactics.value !== null) {
-    return TacticsText[tactics.value] ?? ''
+    return getBattleTacticsText(tactics.value, translateApp)
   }
   return ''
 })
@@ -298,6 +326,14 @@ onMounted(() => {
     'battle-start',
     (arg: ApiBattleStartType) => onApiBattleStart(arg)
   ])
+  cb_sortie_battle_result = ApiCallback.set([
+    Api.REQ_SORTIE_BATTLERESULT,
+    () => onBattleResult()
+  ])
+  cb_combined_battle_result = ApiCallback.set([
+    Api.REQ_COMBINED_BATTLE_BATTLERESULT,
+    () => onBattleResult()
+  ])
 
   // initialize slide effect parameter
   setSlideEffectElementSize('.update-available-content', updateAvailableContentWidth);
@@ -314,7 +350,7 @@ onMounted(() => {
 
 function onPort(): void {
   inBattle.value = false
-  taiha_singeki.value = false
+  setTaihaWarning('none')
   disp_seiku.value = null
   deck_formation.value = null
   enemy_formation.value = null
@@ -329,18 +365,23 @@ function onPort(): void {
 
 function onMapStart(): void {
   replaceArray(mapcell_labels, [])
-  taiha_singeki.value = checkTaihaSingeki()
+  setTaihaWarning(hasTaihaSortieShip(svdata) ? 'advanced' : 'none')
   mapPushCell()
 }
 
 function onMapNext(): void {
-  taiha_singeki.value = checkTaihaSingeki()
+  setTaihaWarning(hasTaihaSortieShip(svdata) ? 'advanced' : 'none')
   inBattle.value = false
   disp_seiku.value = null
   deck_formation.value = null
   enemy_formation.value = null
   tactics.value = null
   mapPushCell()
+}
+
+function onBattleResult(): void {
+  inBattle.value = false
+  setTaihaWarning(hasTaihaSortieShip(svdata) ? 'battle-result' : 'none')
 }
 
 function onApiBattleStart(arg: ApiBattleStartType): void {
@@ -454,6 +495,17 @@ const onAssist = (): void => {
   }
 }
 
+const onToggleLayoutMode = (): void => {
+  if (gameSetting.assistRestricted) {
+    return
+  }
+  window.api.toggleLayoutMode()
+}
+
+const onToggleMaximize = (): void => {
+  window.api.toggleMaximize()
+}
+
 const isRecording = computed((): boolean => {
   if (gameState.record_ready === 'not_initialized') {
     return false
@@ -468,6 +520,15 @@ const isRecording = computed((): boolean => {
   }
   debug('isRecording', ret)
   return ret
+})
+
+const recordingTitle = computed((): string => {
+  if (gameState.record_ready === 'in_initialize') {
+    return translateApp('capture.recording.prepare')
+  }
+  return isRecording.value
+    ? translateApp('capture.recording.stop')
+    : translateApp('capture.recording.start')
 })
 
 const onRec = (): void => {
@@ -512,7 +573,9 @@ const isMute = computed((): boolean => {
 })
 
 const muteTitle = computed((): string => {
-  return gameState.muted ? 'サウンドはオフ状態' : 'サウンドはオン状態'
+  return gameState.muted
+    ? translateApp('titlebar.mute.off')
+    : translateApp('titlebar.mute.on')
 })
 
 const onOpenAssist = (): void => {
@@ -521,7 +584,11 @@ const onOpenAssist = (): void => {
 
 const updateAvailableTitle = computed((): string => {
   const version = startupUpdateVersion.value
-  return version ? `更新があります。バージョン ${version} が利用可能です。` : '更新があります。'
+  return version
+    ? translateApp('titlebar.update.versionAvailable', {
+        params: { version }
+      })
+    : translateApp('titlebar.update.available')
 })
 
 const onUpdateAvailableClick = (event: MouseEvent): void => {
@@ -551,58 +618,6 @@ const onMinimize = (): void => {
 
 const onClose = (): void => {
   window.api.close()
-}
-
-const checkTaihaSingeki = (): boolean => {
-  if (!svdata.inMap) {
-    return false
-  }
-
-  const battleDeck = svdata.battleDeck
-  if (!battleDeck) {
-    return false
-  }
-
-  if (
-    battleDeck.api_ship.some((el) => {
-      const ship = svdata.ship(el)
-      if (!ship) {
-        return false
-      }
-
-      return KcsUtil.shipHpState(ship) == ShipHpState.taiha
-    })
-  ) {
-    return true
-  }
-
-  if (!svdata.isCombined) {
-    return false
-  }
-
-  const deck2 = svdata.deckPort(ApiDeckPortId.deck2st)
-  if (!deck2) {
-    return false
-  }
-
-  if (
-    deck2.api_ship.some((el, index) => {
-      // 第2旗艦は判定しない
-      if (0 === index) {
-        return false
-      }
-
-      const ship = svdata.ship(el)
-      if (!ship) {
-        return false
-      }
-      return KcsUtil.shipHpState(ship) == ShipHpState.taiha
-    })
-  ) {
-    return true
-  }
-
-  return false
 }
 
 const isStartupUpdateAvailable = computed((): boolean => {
@@ -951,7 +966,7 @@ function animateTodayBattleScore(target: number): void {
 
 let v = 95;
 function updateTodayBattleScore() {
-  if (! todayExpFetched) {
+  if (!todayExpFetched.value) {
     debug('today exp updated before fetched')
     return
   }
@@ -971,62 +986,24 @@ function updateTodayBattleScore() {
   // }, 4000)
 }
 
-function fetchTodayExp() {
-  if (todayExpFetched.value) {
-    return
-  }
-
-  const fromDate = new Date();
-  if (fromDate.getHours() < 2) {
-    fromDate.setDate(fromDate.getDate() - 1);
-  }
-  fromDate.setHours(2, 0, 0, 0);
-
-  const projection: PortRecordQueryProjection = {};
-  projection.date = 1
-  projection[ApiItemId.teitoku_exp] = 1
-
-  const query = { 
-    dbName: DbName.port, 
-    find: { 
-      date: { 
-        $gte: toRecordDate(fromDate),
-      } 
-    },
-    sort: { date: 1 },
-    limit: 1,
-    projection
-  }
-  debug('fetching today exp with query', query)
-  window.api.queryDb(query).then((queryReturn) => {
-    const records = queryReturn as PortRecord[]
+const todayExpLoader = new TodayExpLoadController({
+  queryDb: (query) => window.api.queryDb(query),
+  currentExp: () => svdata.basic.api_experience,
+  onLoaded: (startExp) => {
     todayExpFetched.value = true
-    debug('fetched port records:', records.length);
-    debug(records);
-
-    if (records.length === 0) {
-      debug('no records found');
-      // レコード無しの場合は、現expを使用する
-     todayStartExp.value =  svdata.basic.api_experience
-    } else {
-      const exp = records[0][ApiItemId.teitoku_exp]
-      if (! exp) {
-        debug('exp not found in record', records[0]);
-        todayStartExp.value =  svdata.basic.api_experience
-      } else {
-        debug('today start exp', exp);
-        todayStartExp.value = exp
-      }
-    }
+    todayStartExp.value = startExp
+    debug('today start exp', startExp)
     updateTodayBattleScore()
-
-    // set battle score reset timer
     setDailyBattleScoreResetTimer()
-
-  }).catch((err) => {
-    console.error('failed to fetch today exp', err)
+  },
+  onError: (error) => {
+    console.error('failed to fetch today exp', error)
     clearTodayBattleScoreAnimTimer()
-  })
+  }
+})
+
+function fetchTodayExp(): void {
+  void todayExpLoader.load()
 }
 
 watch(
@@ -1038,6 +1015,13 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  ApiCallback.unset(cb_port)
+  ApiCallback.unset(cb_map_start)
+  ApiCallback.unset(cb_map_next)
+  ApiCallback.unset(cb_battle_start)
+  ApiCallback.unset(cb_sortie_battle_result)
+  ApiCallback.unset(cb_combined_battle_result)
+  todayExpLoader.dispose()
   clearTodayBattleScoreAnimTimer()
   clearDailyBattleScoreResetTimer()
 })
@@ -1080,7 +1064,12 @@ if (EnvRenderer.isTestMode) {
 </script>
 
 <template>
-  <div class="titlebar" :class="{ 'is-taiha-singeki': taiha_singeki }" ref="titlebarEl">
+  <div
+    class="titlebar"
+    :class="{ 'is-taiha-singeki': taiha_singeki }"
+    :data-titlebar-color="titlebarColor"
+    ref="titlebarEl"
+  >
     <div>
       <div class="icon-container" :style="iconContainerStyle">
         <img class="icon app" src="../assets/img/titlebar/app-icon.png" />
@@ -1093,7 +1082,7 @@ if (EnvRenderer.isTestMode) {
           v-if="isAssistControlOk"
           class="titlebar-button assist"
           :class="{ checked: isAssistShown, disabled: !isAssistOk }"
-          title="アシストを表示"
+          :title="translateApp('titlebar.assist.show')"
           @click="onAssist"
         >
           <ShowAssistImage />
@@ -1114,58 +1103,84 @@ if (EnvRenderer.isTestMode) {
         </button>
       </transition>
       <transition name="slide-effect" appear>
-        <span class="caption-content for-calc-size gimmick-clear-content" 
+        <span class="caption-content for-calc-size gimmick-clear-content"
           v-show="isGimmickClear"
-          :style="gimmickClearStyle">&nbsp;&nbsp;<span 
-            class="g">ギミック</span>解除音<span 
-              v-if="isGimmickFlagDetected" class="tag-circle yellow">有</span><span 
-              v-if="isMapChangeDetected" class="tag-circle yellow">有<span 
+          :style="gimmickClearStyle">&nbsp;&nbsp;<span
+            class="g">{{ translateApp('titlebar.status.gimmick') }}</span>{{
+              translateApp('titlebar.status.clearSound')
+            }}<span
+              v-if="isGimmickFlagDetected" class="tag-circle yellow">{{
+                translateApp('titlebar.status.detected')
+              }}</span><span
+              v-if="isMapChangeDetected" class="tag-circle yellow">{{
+                translateApp('titlebar.status.detected')
+              }}<span
                 class="is-map">MAP</span></span></span>
       </transition>
       <transition name="slide-effect" appear>
-        <span class="caption-content for-calc-size not-supply-content" 
+        <span class="caption-content for-calc-size not-supply-content"
           v-show="isNotSupplyDeck"
-          :style="notSupplyStyle">&nbsp;&nbsp;未補給</span>
+          :style="notSupplyStyle">&nbsp;&nbsp;{{
+            translateApp('titlebar.status.unsupplied')
+          }}</span>
       </transition>
       <transition name="slide-effect" appear>
          <span class="caption-content for-calc-size not-supply-deck1"
            v-show="isNotSupplyDeck1"
-           :style="notSupplyDeck1Style"><span class="tag-circle yellow deck">第一</span></span>
+           :style="notSupplyDeck1Style"><span class="tag-circle yellow deck">{{
+             translateApp('titlebar.status.fleet.1')
+           }}</span></span>
       </transition>
       <transition name="slide-effect" appear>
          <span class="caption-content for-calc-size not-supply-deck2"
            v-show="isNotSupplyDeck2"
-           :style="notSupplyDeck2Style"><span class="tag-circle yellow deck">第二</span></span>
+           :style="notSupplyDeck2Style"><span class="tag-circle yellow deck">{{
+             translateApp('titlebar.status.fleet.2')
+           }}</span></span>
       </transition>
       <transition name="slide-effect" appear>
          <span class="caption-content for-calc-size not-supply-deck3"
            v-show="isNotSupplyDeck3"
-           :style="notSupplyDeck3Style"><span class="tag-circle yellow deck">第三</span></span>
+           :style="notSupplyDeck3Style"><span class="tag-circle yellow deck">{{
+             translateApp('titlebar.status.fleet.3')
+           }}</span></span>
       </transition>
       <transition name="slide-effect" appear>
          <span class="caption-content for-calc-size not-supply-deck4"
            v-show="isNotSupplyDeck4"
-           :style="notSupplyDeck4Style"><span class="tag-circle yellow deck">第四</span></span>
+           :style="notSupplyDeck4Style"><span class="tag-circle yellow deck">{{
+             translateApp('titlebar.status.fleet.4')
+           }}</span></span>
       </transition>
       <transition name="slide-effect" appear>
-        <span class="caption-content for-calc-size not-supply-airbase-content" 
+        <span class="caption-content for-calc-size not-supply-airbase-content"
           v-show="isNotSupplyAirBaseExist"
-          :style="notSupplyAirBaseStyle">&nbsp;&nbsp;基地未補給<span 
-            v-if="isNotSupplyAirBase" class="tag-circle yellow">有</span><span 
-            v-if="isNotSupplyAirBaseEvent" class="tag-circle yellow">有<span class="is-event">E</span></span></span>
+          :style="notSupplyAirBaseStyle">&nbsp;&nbsp;{{
+            translateApp('titlebar.status.airbaseUnsupplied')
+          }}<span
+            v-if="isNotSupplyAirBase" class="tag-circle yellow">{{
+              translateApp('titlebar.status.detected')
+            }}</span><span
+            v-if="isNotSupplyAirBaseEvent" class="tag-circle yellow">{{
+              translateApp('titlebar.status.detected')
+            }}<span class="is-event">E</span></span></span>
       </transition>
       <transition name="slide-effect" appear>
-        <span class="caption-content for-calc-size way-support-content" 
+        <span class="caption-content for-calc-size way-support-content"
           v-show="isWaySupport"
-          :style="waySupportStyle">&nbsp;&nbsp;前衛支援<span 
-            class="tag-circle red">出<span 
+          :style="waySupportStyle">&nbsp;&nbsp;{{
+            translateApp('titlebar.status.waySupport')
+          }}<span
+            class="tag-circle red">{{ translateApp('titlebar.status.sortied') }}<span
             v-if="isEventWaySupport" class="is-event">E</span></span></span>
       </transition>
       <transition name="slide-effect" appear>
-        <span class="caption-content for-calc-size boss-support-content" 
+        <span class="caption-content for-calc-size boss-support-content"
           v-show="isBossSupport"
-          :style="bossSupportStyle">&nbsp;&nbsp;決戦支援<span 
-            class="tag-circle red">出<span 
+          :style="bossSupportStyle">&nbsp;&nbsp;{{
+            translateApp('titlebar.status.bossSupport')
+          }}<span
+            class="tag-circle red">{{ translateApp('titlebar.status.sortied') }}<span
           v-if="isEventBossSupport" class="is-event">E</span></span></span>
       </transition>
     </div>
@@ -1173,9 +1188,13 @@ if (EnvRenderer.isTestMode) {
       <div class="mapinfo-content">
         <div class="map-in-out-img" :class="{ 'in-map': inMap }"><MapInOutImage /></div>
         <div class="map-area-route" :class="{ 'no-map-start': !mapStartOnce }">{{ mapAreaText }}{{ mapCellText }}</div>
-        <div class="timeline-button" :class="{ press: timeline_pressed }" title="タイムライン">
+        <div
+          class="timeline-button"
+          :class="{ press: timeline_pressed }"
+          :title="translateApp('titlebar.timeline')"
+        >
           <div class="battle-score-text">
-            <div>戦果</div>
+            <div>{{ translateApp('titlebar.score') }}</div>
             <div class="score">
               <template v-if="isTodayBattleScoreCalced">
                 <span class="score-dial-digit" v-for="(offset, index) in todayBattleScoreDialOffsets" :key="todayBattleScoreDialOffsets.length - index - 1">
@@ -1207,8 +1226,13 @@ if (EnvRenderer.isTestMode) {
         <div class="s-icon titlebar-build-kit">
           <span>{{ buildKit }}</span>
         </div>
-        <div class="s-icon titlebar-ship" :class="shipCountClass">
-          <span>{{ ship_count }}</span>
+        <div
+          class="s-icon titlebar-ship"
+          :class="shipCountClass"
+          :title="shipCapacity.title"
+          :aria-label="shipCapacity.title"
+        >
+          <span>{{ shipCapacity.text }}</span>
         </div>
         <div class="s-icon titlebar-bull">
           <span>{{ bull }}</span>
@@ -1222,17 +1246,36 @@ if (EnvRenderer.isTestMode) {
         <div class="s-icon titlebar-remodel-kit">
           <span>{{ remodelKit }}</span>
         </div>
-        <div class="s-icon titlebar-slotitem" :class="slotitemCountClass">
-          <span>{{ slotitemCount }}</span>
+        <div
+          class="s-icon titlebar-slotitem"
+          :class="slotitemCountClass"
+          :title="slotitemCapacity.title"
+          :aria-label="slotitemCapacity.title"
+        >
+          <span>{{ slotitemCapacity.text }}</span>
         </div>
       </div>
     </div>
     <div class="titlebar-buttons" :class="{ dragable: isDragable, 'in-assist-main': inAssistMain }">
       <div>
         <div
+          v-if="isAssistControlOk"
+          class="titlebar-button workspace-layout"
+          :class="{ checked: isWorkspaceLayout }"
+          :title="isWorkspaceLayout
+            ? translateApp('titlebar.layout.classic')
+            : translateApp('titlebar.layout.workspace')"
+          :aria-label="isWorkspaceLayout
+            ? translateApp('titlebar.layout.classic')
+            : translateApp('titlebar.layout.workspace')"
+          @click="onToggleLayoutMode"
+        >
+          <span aria-hidden="true">&#x25A6;</span>
+        </div>
+        <div
           class="titlebar-button option"
-          title="設定"
-          aria-label="設定"
+          :title="translateApp('titlebar.option')"
+          :aria-label="translateApp('titlebar.option')"
           @click="onOpenOption"
         >
         <OptionImage />
@@ -1240,7 +1283,8 @@ if (EnvRenderer.isTestMode) {
         <div
           class="titlebar-button rec"
           :class="{ checked: isRecording }"
-          title="録画を開始"
+          :title="recordingTitle"
+          :aria-label="recordingTitle"
           @click="onRec"
         >
           <RecImage />
@@ -1251,49 +1295,79 @@ if (EnvRenderer.isTestMode) {
         </div> -->
         <div
           class="titlebar-button"
-          title="スクリーンショット・録画フォルダを開く"
+          :title="translateApp('capture.folder.open')"
           @click="onOpenCaptureFolder"
         >
           <OpenCaptureFolderImage />
         </div>
-        <div class="titlebar-button" title="スクリーンショット" @click="onScreenshot">
+        <div
+          class="titlebar-button screenshot"
+          :title="translateApp('capture.screenshot')"
+          :aria-label="translateApp('capture.screenshot')"
+          @click="onScreenshot"
+        >
           <CaptureImage />
         </div>
         <div class="titlebar-button soundonoff" :title="muteTitle" @click="onMute">
           <SoundOffImage v-if="isMute" /><SoundOnImage v-if="!isMute" />
         </div>
-        <div class="titlebar-button reload" title="ページを再読み込みします" @click="onReload">
+        <div
+          class="titlebar-button reload"
+          :title="translateApp('titlebar.reload')"
+          @click="onReload"
+        >
           <ReloadImage />
         </div>
         <div
           v-if="isDevelopment"
           class="titlebar-button devtool-button"
-          title="デベロッパー ツール"
+          :title="translateApp('titlebar.devtools.app')"
           @click="onDevTool"
         >
           <DevToolImage />
         </div>
         <div
           class="titlebar-button devtool-button"
-          title="Game側デベロッパー ツール"
+          :title="translateApp('titlebar.devtools.game')"
           @click="onGameDevTool"
         >
           <GameDevToolImage />
         </div>
-        <div class="titlebar-button" title="新しいアシストウインドウを表示" @click="onOpenAssist">
+        <div
+          class="titlebar-button"
+          :title="translateApp('titlebar.secondaryWindow.open')"
+          @click="onOpenAssist"
+        >
           <OpenAssistImage />
         </div>
         <div
           class="titlebar-button"
           :class="{ checked: isTopMost }"
-          title="常に最前面に表示する"
+          :title="translateApp('titlebar.topmost')"
           @click="onTopMost"
         >
           <TopMostImage />
         </div>
-        <div class="titlebar-button" title="最小化" @click="onMinimize"><span>&#x2014;</span></div>
+        <div
+          v-if="isWorkspaceLayout"
+          class="titlebar-button maximize"
+          :title="translateApp('titlebar.maximize.toggle')"
+          :aria-label="translateApp('titlebar.maximize.toggle')"
+          @click="onToggleMaximize"
+        >
+          <span aria-hidden="true">&#x25A1;</span>
+        </div>
+        <div
+          class="titlebar-button"
+          :title="translateApp('common.minimize')"
+          @click="onMinimize"
+        ><span>&#x2014;</span></div>
         <!--<div class="button" @click="onMaximize"><span>&#9744;</span></div>-->
-        <div class="titlebar-button close" title="閉じる" @click="onClose">
+        <div
+          class="titlebar-button close"
+          :title="translateApp('common.close')"
+          @click="onClose"
+        >
           <span>&#10005;</span>
         </div>
       </div>

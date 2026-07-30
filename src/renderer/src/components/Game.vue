@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { computed, ref, onMounted, watch, onUnmounted } from 'vue'
 // webview
 // https://www.electronjs.org/ja/docs/latest/api/webview-tag
-import { WebviewTag, DidFrameFinishLoadEvent, LoadCommitEvent, IpcRendererEvent } from 'electron'
+import { WebviewTag, IpcRendererEvent } from 'electron'
 import { gameSetting } from '@renderer/store/gamesetting'
 import { GameChannel } from '@common/channel'
 import { Const } from '@common/const'
 import { gameState } from '@renderer/store/gamestate'
 import { EnvRenderer } from '@renderer/common/env-renderer'
 import { MainRendererState } from '@renderer/store/renderer_state'
+import TaihaInputBlocker from '@renderer/components/TaihaInputBlocker.vue'
+import {
+  acknowledgeTaihaProtection,
+  isTaihaInputProtectionActive
+} from '@renderer/store/taiha_protection'
 const ipcRenderer = window.electron.ipcRenderer
 const el = ref<HTMLElement | null>(null)
+const taihaInputProtectionActive = computed(() =>
+  isTaihaInputProtectionActive()
+)
 
 /////////////////////////////////////////////////////////////////////////////////////
 // デバッグログ
@@ -25,14 +33,6 @@ const debug = (...args: any[]) => {
 
 // mute状態はDOM-READY後ではないと設定できないことに注意
 let mutedStateApplied = false
-
-const StageType = {
-  None: 0,
-  GameStartLoading: 1,
-} as const
-export type StageType = (typeof StageType)[keyof typeof StageType]
-
-const stage = ref<StageType>(StageType.None)
 
 watch(
   () => gameSetting.zoom_factor,
@@ -79,10 +79,8 @@ onMounted(() => {
   debug('game mounted >> webview', webview, 'appLaunchId:', EnvRenderer.appLaunchId)
   if (webview) {
     webview.addEventListener('dom-ready', domReady)
-    webview.addEventListener('load-commit', loadCommit)
     webview.addEventListener('did-start-loading', didStartLoading)
     webview.addEventListener('did-finish-loading', didFinishLoading)
-    webview.addEventListener('did-frame-finish-load', didFrameFinishLoad)
     webview.addEventListener('media-started-playing', mediaStartedPlaying)
     webview.addEventListener('media-paused', mediaPaused)
   }
@@ -97,10 +95,8 @@ onUnmounted(() => {
   debug('game unmounted >>')
   if (webview) {
     webview.removeEventListener('dom-ready', domReady)
-    webview.removeEventListener('load-commit', loadCommit)
     webview.removeEventListener('did-start-loading', didStartLoading)
     webview.removeEventListener('did-finish-loading', didFinishLoading)
-    webview.removeEventListener('did-frame-finish-load', didFrameFinishLoad)
     webview.removeEventListener('media-started-playing', mediaStartedPlaying)
     webview.removeEventListener('media-paused', mediaPaused)
   }
@@ -135,100 +131,12 @@ function domReady(_event: Event): void {
   getWebviewUnsafe().setZoomFactor(gameSetting.zoom_factor)
 }
 
-const isOrigin = (url: string, checkOrigin: string): boolean => {
-  try {
-    const u = new URL(url)
-    return u.origin === checkOrigin
-  } catch (e) {
-    console.error('invalid url', url, e)
-    return false
-  }
-}
-
-function loadCommit(event: LoadCommitEvent): void {
-  if (!event.isMainFrame) {
-    debug('loadCommit', 'mainframe:', event.isMainFrame, 'url:', event.url, event);
-  }
-  if (
-    isStage(StageType.GameStartLoading) &&
-    !event.isMainFrame &&
-    isOrigin(event.url, 'https://osapi.dmm.com')
-  ) {
-    debug('loadCommit: game start loading detected', event.url)
-    insertModCss()
-    gameFrameScrollOff()
-  }
-}
-
 function didStartLoading(_event: Event): void {
   debug('did-start-loading')
 }
 
 function didFinishLoading(_event: Event): void {
   debug('did-finish-loading')
-}
-
-function didFrameFinishLoad(event: DidFrameFinishLoadEvent): void {
-
-  if (event.isMainFrame) {
-    const url = getWebviewUnsafe().getURL()
-    debug('didFrameFinishLoad', event, url);
-    if (url !== Const.GamePageUrl) {
-      return 
-    }
-
-    debug('didFrameFinishLoad game top loaded, try click sortie button')
-    stage.value = StageType.GameStartLoading
-
-    const code = `(function(){
-      let a = document.querySelector('.fn-rollover.btn a');
-      if (a) {
-        a.click();
-        return true;
-      }
-      return false;
-    })()`
-    getWebviewUnsafe().executeJavaScript(code).then((any) => {
-      debug('clicked', any)
-    })
-  }
-}
-
-function insertModCss() {
-  const css = `
-body {
-overflow: hidden;
-}
-#root > div > main {
-padding-top: 0 !important;
-}
-#root > div.gamesResetStyle > header > nav > div:nth-of-type(1) {
-justify-content: flex-start !important;
-}
-#game_frame {
-height: 736px !important;
-width: 1200px !important;
-}
-`
-  getWebviewUnsafe().insertCSS(css).then((key) => {
-    debug('css inserted', key)
-  })
-}
-
-function gameFrameScrollOff() {
-  const code = `(function(){
-    let a = document.querySelector('#game_frame');
-    if (a) {
-      a.scrolling = 'no';
-      return true;
-    }
-      return false;
-  })()`
-  getWebviewUnsafe()
-    .executeJavaScript(code)
-    .then((any) => {
-      debug('scrolling set:', any)
-    })
 }
 
 function mediaStartedPlaying(_event: Event): void {
@@ -255,10 +163,6 @@ function setMute(mute: boolean, notifyCheck: boolean): void {
   }
 }
 
-function isStage(check: StageType): boolean {
-  return stage.value === check
-}
-
 // exports
 defineExpose({
   getWebview,
@@ -275,7 +179,11 @@ defineExpose({
       enableremotemodule="false"
       nodeintegration="false"
       nodeIntegrationInSubFrames="true"
-      webPreferences="contextIsolation=no, sandbox=no"
+      webPreferences="contextIsolation=no, sandbox=no, backgroundThrottling=no"
     ></webview>
+    <TaihaInputBlocker
+      v-if="taihaInputProtectionActive"
+      @acknowledge="acknowledgeTaihaProtection"
+    />
   </div>
 </template>

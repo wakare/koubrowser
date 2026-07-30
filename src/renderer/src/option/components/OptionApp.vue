@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import OptionTitleBar from './OptionTitleBar.vue'
-import { optionSetting, optionViewInfo } from '@option/store/optionSetting'
+import {
+  optionSetting,
+  optionViewInfo,
+  translateOption
+} from '@option/store/optionSetting'
 import type { NullableStringOptionKey } from '@common/option'
 
 // 何らかの要因で設定が読み取れないときはエラー状態とし閉じるのみ可能とする
@@ -21,22 +25,22 @@ interface CategoryInfo {
   readonly description: string
 }
 
-const categories: CategoryInfo[] = [
+const categories = computed<readonly CategoryInfo[]>(() => [
   {
     key: 'general',
-    title: '一般',
-    description: '基本的な動作に関する設定'
+    title: translateOption('option.category.general'),
+    description: translateOption('option.category.generalDescription')
   },
   {
     key: 'network',
-    title: '通信設定',
-    description: 'プロキシや通信動作に関する設定'
+    title: translateOption('option.category.network'),
+    description: translateOption('option.category.networkDescription')
   },
   {
     key: 'extension',
-    title: '拡張機能',
-    description: '拡張機能に関する設定'
-  },
+    title: translateOption('option.category.extension'),
+    description: translateOption('option.category.extensionDescription')
+  }
   // {
   //   key: 'assist',
   //   title: 'アシスト',
@@ -47,13 +51,15 @@ const categories: CategoryInfo[] = [
   //   title: '記録',
   //   description: 'スクリーンショット、録画、ローカル記録に関する設定'
   // }
-]
+])
 
 ///////////////////////////////////////////////////////////////
 // option stuff
 const selectedCategoryKey = ref<CategoryKey>('general')
 const currentCategory = computed(
-  () => categories.find((category) => category.key === selectedCategoryKey.value) ?? categories[0]
+  () =>
+    categories.value.find((category) => category.key === selectedCategoryKey.value) ??
+    categories.value[0]
 )
 
 const isCurrentCategory = (key: CategoryKey): boolean => {
@@ -160,20 +166,23 @@ const clearProxyFixedServersInput = (): void => {
 
     <div v-if="props.isError" class="option-error-overlay" role="alertdialog" aria-modal="true">
       <div class="option-error-dialog">
-        <div class="option-error-title">設定を読み込めませんでした</div>
+        <div class="option-error-title">{{ translateOption('option.loadError.title') }}</div>
         <div class="option-error-message">
-          設定情報の取得中にエラーが発生しました。設定画面を閉じてから、もう一度開いてください。
+          {{ translateOption('option.loadError.message') }}
         </div>
         <button class="option-error-close-button" type="button" @click="close">
-          閉じる
+          {{ translateOption('common.close') }}
         </button>
       </div>
     </div>
 
     <main class="option-shell" :class="{ 'is-error': props.isError }">
-      <aside class="option-sidebar" aria-label="設定カテゴリ">
+      <aside
+        class="option-sidebar"
+        :aria-label="translateOption('option.categoryLabel')"
+      >
         <div class="option-brand">
-          <div class="option-title">甲ブラウザ 設定</div>
+          <div class="option-title">{{ translateOption('option.title') }}</div>
         </div>
         <nav class="option-categories">
           <button
@@ -201,13 +210,18 @@ const clearProxyFixedServersInput = (): void => {
 
           <!-- 一般 -->
           <section v-if="isCurrentCategory('general')" class="option-section">
-            <div class="section-title">保存パス</div>
+            <div class="section-title">{{ translateOption('option.savePath.section') }}</div>
             <div class="option-row option-row-vertical">
               <span>
-                <span class="option-row-title">スクリーンショット・録画保存フォルダ</span>
-                <span class="option-row-description">スクリーンショットと録画の保存先フォルダを指定します。</span>
+                <span class="option-row-title">{{
+                  translateOption('option.captureFolder.title')
+                }}</span>
+                <span class="option-row-description">{{
+                  translateOption('option.captureFolder.description')
+                }}</span>
                 <span class="option-row-subdescription">
-                  既定値: <span class="selectable">{{ optionViewInfo.defaultCaptureSavePath }}</span>
+                  {{ translateOption('option.defaultValueLabel') }}
+                  <span class="selectable">{{ optionViewInfo.defaultCaptureSavePath }}</span>
                 </span>
               </span>
               <div class="option-path-control">
@@ -216,63 +230,129 @@ const clearProxyFixedServersInput = (): void => {
                   type="text"
                   :value="optionSetting.captureSavePath ?? ''"
                   readonly
-                  aria-label="スクリーンショットと録画の保存先フォルダ"
-                  placeholder="保存先フォルダを選択"
+                  :aria-label="translateOption('option.captureFolder.ariaLabel')"
+                  :placeholder="translateOption('option.captureFolder.placeholder')"
                 />
                 <button class="option-path-button" type="button" @click="selectCaptureSavePath">
-                  参照
+                  {{ translateOption('common.browse') }}
                 </button>
                 <button class="option-path-button secondary" 
                   type="button" 
                   :disabled="isCaptureSavePathDefault"
                   @click="resetCaptureSavePath">
-                  既定値に戻す
+                  {{ translateOption('common.resetDefault') }}
                 </button>
+              </div>
+            </div>
+
+            <div class="section-title">{{ translateOption('option.recording.section') }}</div>
+            <div class="option-row option-row-vertical">
+              <div>
+                <div class="option-row-title">
+                  {{ translateOption('option.recording.targetTitle') }}
+                </div>
+                <div class="option-row-description">
+                  {{ translateOption('option.recording.description') }}
+                </div>
+              </div>
+              <div class="option-radio-group">
+                <label class="option-radio option-radio-with-description">
+                  <input
+                    v-model="optionSetting.recordingTarget"
+                    type="radio"
+                    value="game"
+                  />
+                  <span class="option-radio-body">
+                    <span class="option-radio-title">{{
+                      translateOption('option.recording.gameTitle')
+                    }}</span>
+                    <span class="option-radio-description">
+                      {{ translateOption('option.recording.gameDescription') }}
+                    </span>
+                  </span>
+                </label>
+                <label class="option-radio option-radio-with-description">
+                  <input
+                    v-model="optionSetting.recordingTarget"
+                    type="radio"
+                    value="window"
+                  />
+                  <span class="option-radio-body">
+                    <span class="option-radio-title">{{
+                      translateOption('option.recording.windowTitle')
+                    }}</span>
+                    <span class="option-radio-description">
+                      {{ translateOption('option.recording.windowDescription') }}
+                    </span>
+                  </span>
+                </label>
               </div>
             </div>
           </section>
 
           <!-- 通信設定 -->
           <section v-if="isCurrentCategory('network')" class="option-section">
-            <div class="section-title">プロキシ設定</div>
+            <div class="section-title">
+              {{ translateOption('option.network.proxy.section') }}
+            </div>
 
             <div class="option-row option-row-vertical">
               <div>
-                <div class="option-row-title">プロキシの使用方法</div>
+                <div class="option-row-title">
+                  {{ translateOption('option.network.proxy.title') }}
+                </div>
                 <div class="option-row-description">
-                  アプリ内通信に使用するプロキシ設定を指定します。変更は甲ブラウザ再起動後に反映されます。
+                  {{ translateOption('option.network.proxy.description') }}
+                </div>
+                <div class="option-row-description">
+                  {{
+                    translateOption('option.network.proxy.externalToolDescription', {
+                      params: { tool: '74EO' }
+                    })
+                  }}
                 </div>
               </div>
 
               <div class="option-radio-group">
                 <label class="option-radio">
                   <input v-model="optionSetting.proxyMode" type="radio" value="system" />
-                  <span>システム設定を使用 (規定値)</span>
+                  <span>{{ translateOption('option.network.proxy.system') }}</span>
                 </label>
 
                 <label class="option-radio">
                   <input v-model="optionSetting.proxyMode" type="radio" value="direct" />
-                  <span>プロキシを使用しない</span>
+                  <span>{{ translateOption('option.network.proxy.direct') }}</span>
                 </label>
 
                 <label class="option-radio">
                   <input v-model="optionSetting.proxyMode" type="radio" value="auto_detect" />
-                  <span>自動検出</span>
+                  <span>{{ translateOption('option.network.proxy.autoDetect') }}</span>
                 </label>
 
                 <label class="option-radio option-radio-with-description">
                   <input v-model="optionSetting.proxyMode" type="radio" value="pac_script" />
 
                   <span class="option-radio-body">
-                    <span class="option-radio-title">PAC スクリプトを使用</span>
+                    <span class="option-radio-title">{{
+                      translateOption('option.network.proxy.pacTitle')
+                    }}</span>
                     <span class="option-radio-description">
-                      <span>サポートプロトコル: http, https, data 未サポートプロトコル: file</span>
+                      <span>{{
+                        translateOption('option.network.proxy.pacProtocols', {
+                          params: {
+                            supported: 'http, https, data',
+                            unsupported: 'file'
+                          }
+                        })
+                      }}</span>
                     </span>
                     <span class="option-radio-description">
-                      設定例(http): <span class="selectable">http://localhost:8080/proxy.pac</span>
+                      {{ translateOption('option.network.proxy.pacHttpExampleLabel') }}
+                      <span class="selectable">http://localhost:8080/proxy.pac</span>
                     </span>
                     <span class="option-radio-description">
-                      設定例(data): <span class="selectable">data:application/x-ns-proxy-autoconfig,xxxxx</span>
+                      {{ translateOption('option.network.proxy.pacDataExampleLabel') }}
+                      <span class="selectable">data:application/x-ns-proxy-autoconfig,xxxxx</span>
                     </span>
                   </span>
 
@@ -284,8 +364,8 @@ const clearProxyFixedServersInput = (): void => {
                     v-model.lazy="proxyPacScriptInput"
                     class="option-text-input"
                     type="url"
-                    placeholder="例: http://localhost:8080/proxy.pac"
-                    aria-label="PAC スクリプト URL"
+                    :placeholder="translateOption('option.network.proxy.pacPlaceholder')"
+                    :aria-label="translateOption('option.network.proxy.pacAriaLabel')"
                     :disabled="optionSetting.proxyMode !== 'pac_script'"
                     @input="onProxyPacScriptInput"
                   />
@@ -293,7 +373,7 @@ const clearProxyFixedServersInput = (): void => {
                     v-if="hasProxyPacScriptInput"
                     class="option-input-clear-button"
                     type="button"
-                    aria-label="PAC スクリプト URL をクリア"
+                    :aria-label="translateOption('option.network.proxy.pacClearAriaLabel')"
                     @click="clearProxyPacScriptInput"
                   >&#10005;</button>
                 </div>
@@ -302,9 +382,12 @@ const clearProxyFixedServersInput = (): void => {
                   <input v-model="optionSetting.proxyMode" type="radio" value="fixed_servers" />
 
                   <span class="option-radio-body">
-                    <span class="option-radio-title">固定プロキシサーバーを使用</span>
+                    <span class="option-radio-title">{{
+                      translateOption('option.network.proxy.fixedTitle')
+                    }}</span>
                     <span class="option-radio-description">
-                      設定例: <span class="selectable">http=localhost:40620;https=localhost:40620</span>
+                      {{ translateOption('option.network.proxy.fixedExampleLabel') }}
+                      <span class="selectable">http=localhost:40620;https=localhost:40620</span>
                     </span>
                   </span>
                 </label>
@@ -315,8 +398,8 @@ const clearProxyFixedServersInput = (): void => {
                     v-model.lazy="proxyFixedServersInput"
                     class="option-text-input"
                     type="text"
-                    placeholder="例: http=localhost:40620;https=localhost:40620"
-                    aria-label="固定プロキシサーバー"
+                    :placeholder="translateOption('option.network.proxy.fixedPlaceholder')"
+                    :aria-label="translateOption('option.network.proxy.fixedAriaLabel')"
                     :disabled="optionSetting.proxyMode !== 'fixed_servers'"
                     @input="onProxyFixedServersInput"
                   />
@@ -324,7 +407,7 @@ const clearProxyFixedServersInput = (): void => {
                     v-if="hasProxyFixedServersInput"
                     class="option-input-clear-button"
                     type="button"
-                    aria-label="固定プロキシサーバーをクリア"
+                    :aria-label="translateOption('option.network.proxy.fixedClearAriaLabel')"
                     @click="clearProxyFixedServersInput"
                   >&#10005;</button>
                 </div>
@@ -334,15 +417,19 @@ const clearProxyFixedServersInput = (): void => {
 
           <!-- 拡張機能 -->
           <section v-if="isCurrentCategory('extension')" class="option-section">
-            <div class="section-title">読み込み設定</div>
+            <div class="section-title">
+              {{ translateOption('option.extension.section') }}
+            </div>
             <div class="option-row option-row-vertical">
               <span>
-                <span class="option-row-title">拡張機能フォルダ</span>
+                <span class="option-row-title">{{
+                  translateOption('option.extension.folderTitle')
+                }}</span>
                 <span class="option-row-description">
-                  読み込むパッケージ化されていない拡張機能のフォルダを指定します。変更は甲ブラウザ再起動後に反映されます。
+                  {{ translateOption('option.extension.description') }}
                 </span>
                 <span class="option-row-description">
-                  信頼できる拡張機能のみを指定してください。拡張機能によってはWeb表示や通信内容を監視・変更できる可能性があるため、ゲーム通信へ影響する拡張機能は使用しないでください。
+                  {{ translateOption('option.extension.security') }}
                 </span>
               </span>
               <div class="option-path-control">
@@ -351,17 +438,17 @@ const clearProxyFixedServersInput = (): void => {
                   type="text"
                   :value="extensionPath"
                   readonly
-                  aria-label="読み込む拡張機能フォルダ"
-                  placeholder="拡張機能フォルダを選択"
+                  :aria-label="translateOption('option.extension.folderAriaLabel')"
+                  :placeholder="translateOption('option.extension.folderPlaceholder')"
                 />
                 <button class="option-path-button" type="button" @click="selectExtensionPath">
-                  参照
+                  {{ translateOption('common.browse') }}
                 </button>
                 <button class="option-path-button secondary"
                   type="button"
                   :disabled="isExtensionPathDefault"
                   @click="resetExtensionPath">
-                  クリア
+                  {{ translateOption('common.clear') }}
                 </button>
               </div>
             </div>

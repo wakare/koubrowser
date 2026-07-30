@@ -9,6 +9,14 @@ import {
   type ReqDbQueryOne,
   type ReqDbUpdate,
   type ReqDbRemove,
+  type ReqDbSnapshotBegin,
+  type ReqDbSnapshotEnd,
+  type ReqDbAuditLoaded,
+  type ReqDbAuditAccountDirectory,
+  type ReqDbPreviewBackup,
+  type ReqDbCreateMergeStage,
+  type ReqDbValidateRestoreStage,
+  type ReqDbInspectAccountDirectory,
   type ResError,
   type ReqMsg, 
   type ResMsg,
@@ -24,17 +32,21 @@ import { ApiItemId } from '@common/kcs'
 import moment from 'moment'
 import { MapStuff } from '@main/map'
 import { getMainDir, setMainDir } from '@main/path'
+import { setActiveDataDirectory } from '@main/data-path'
 import { AggregatedCellShipDrop, RecordCalculator } from '@common/calc_record'
+import { LatestRequestScopes } from '@main/worker/latest-request-scopes'
 
 if (!parentPort) {
   throw new Error('Must be run as a worker thread')
 }
 console.log('worker thread started, threadId:', threadId, 'workerData:', workerData)
 setMainDir(workerData.appDir);
+setActiveDataDirectory(workerData.activeDataDirectory ?? null);
 
 // -----------------------------------------------------------------
-// for aggregateShipDrop proc cancel
-let processingAggregateShipDropId = 0;
+// Cancel only an older aggregate request from the same renderer. The main
+// workspace and a separately opened assist window must not cancel each other.
+const processingAggregateShipDropIds = new LatestRequestScopes();
 
 /**
  * 
@@ -62,7 +74,7 @@ let dbStuff: DbStuff | null = null
  * @param value 
  */
 function checkDbStuff(value: DbStuff | null): asserts value is DbStuff {
-  if (! dbStuff) {
+  if (! value) {
     throw new Error('DB not initialized')
   }
 }
@@ -86,13 +98,25 @@ function shutdown(id: number, req: ReqShutdown) {
 function dbInit(id: number, req: ReqDbInit) {
   if (! dbStuff) {
     dbStuff = createDbStuff()
-    dbStuff.load(req.userDir, req.dbs, (results) => {
-      console.log('worker dbInit loaded:', JSON.stringify(results))
-      reply(id, { ok: true, type: req.type })
-    });
-    return
   }
-  reply(id, { ok: true, type: req.type })
+  dbStuff.load(req.userDir, req.dbs, (results) => {
+    const failed = results.filter((result) => result.err)
+    if (failed.length > 0) {
+      replyError(
+        { id, req },
+        new Error(
+          `Failed to initialize databases: ${failed
+            .map((result) => {
+              const detail = result.err?.message
+              return detail ? `${result.name} (${detail})` : result.name
+            })
+            .join(', ')}`
+        )
+      )
+    } else {
+      reply(id, { ok: true, type: req.type })
+    }
+  })
 }
 
 /**
@@ -178,6 +202,103 @@ function dbOperation(id: number, req: ReqDbOperation) {
   } catch (e) {
     replyError({ id, req }, e) 
   }
+}
+
+function dbSnapshotBegin(id: number, req: ReqDbSnapshotBegin) {
+  checkDbStuff(dbStuff)
+  dbStuff.beginSnapshot().then((databases) => {
+    reply(id, { ok: true, type: req.type, databases })
+  }).catch((e) => {
+    replyError({ id, req }, e)
+  })
+}
+
+function dbSnapshotEnd(id: number, req: ReqDbSnapshotEnd) {
+  checkDbStuff(dbStuff)
+  try {
+    dbStuff.endSnapshot()
+    reply(id, { ok: true, type: req.type })
+  } catch (e) {
+    replyError({ id, req }, e)
+  }
+}
+
+function dbAuditLoaded(id: number, req: ReqDbAuditLoaded) {
+  checkDbStuff(dbStuff)
+  try {
+    reply(id, {
+      ok: true,
+      type: req.type,
+      databases: dbStuff.auditLoadedDatabases()
+    })
+  } catch (e) {
+    replyError({ id, req }, e)
+  }
+}
+
+function dbAuditAccountDirectory(
+  id: number,
+  req: ReqDbAuditAccountDirectory
+) {
+  const inspector = createDbStuff()
+  inspector.auditAccountDirectory(req.accountDirectory, req.dbNames)
+    .then((databases) => {
+      reply(id, { ok: true, type: req.type, databases })
+    })
+    .catch((e) => {
+      replyError({ id, req }, e)
+    })
+}
+
+function dbPreviewBackup(id: number, req: ReqDbPreviewBackup) {
+  checkDbStuff(dbStuff)
+  dbStuff.previewBackup(req.bundleDirectory, req.files).then((databases) => {
+    reply(id, { ok: true, type: req.type, databases })
+  }).catch((e) => {
+    replyError({ id, req }, e)
+  })
+}
+
+function dbCreateMergeStage(id: number, req: ReqDbCreateMergeStage) {
+  checkDbStuff(dbStuff)
+  dbStuff.createMergeStage(
+    req.bundleDirectory,
+    req.stageDirectory,
+    req.files,
+    req.expectedPreviews
+  ).then((files) => {
+    reply(id, { ok: true, type: req.type, files })
+  }).catch((e) => {
+    replyError({ id, req }, e)
+  })
+}
+
+function dbValidateRestoreStage(
+  id: number,
+  req: ReqDbValidateRestoreStage
+) {
+  const inspector = createDbStuff()
+  inspector.validateRestoreStage(req.accountDirectory, req.files)
+    .then((databases) => {
+      reply(id, { ok: true, type: req.type, databases })
+    })
+    .catch((e) => {
+      replyError({ id, req }, e)
+    })
+}
+
+function dbInspectAccountDirectory(
+  id: number,
+  req: ReqDbInspectAccountDirectory
+) {
+  const inspector = createDbStuff()
+  inspector.inspectAccountDirectory(req.accountDirectory, req.dbNames)
+    .then((files) => {
+      reply(id, { ok: true, type: req.type, files })
+    })
+    .catch((e) => {
+      replyError({ id, req }, e)
+    })
 }
 
 function calcPortChartData(id: number, req: ReqCalcPortChartData) {
@@ -273,9 +394,15 @@ function aggregateRankByArea(id: number, req: ReqAggregateRankByArea) {
 
 function aggregateShipDrop(id: number, req: ReqAggregateShipDrop) {
   checkDbStuff(dbStuff)
+  const scopeId = req.renderer_scope_id
+  const isCurrentRequest = (): boolean =>
+    processingAggregateShipDropIds.isCurrent(scopeId, id)
+  const clearProcessingId = (): void => {
+    processingAggregateShipDropIds.finish(scopeId, id)
+  }
   console.log('aggregateShipDrop threadId:', threadId, 'id:', id, 
-    'currentProcessingId:', processingAggregateShipDropId, 'req:', req)
-  processingAggregateShipDropId = id;
+    'rendererScopeId:', scopeId, 'req:', req)
+  processingAggregateShipDropIds.start(scopeId, id);
 
   async function fetchByMapId(shipId: number, mapId: number): Promise<AggregatedCellShipDrop[]> {
 
@@ -300,9 +427,9 @@ function aggregateShipDrop(id: number, req: ReqAggregateShipDrop) {
       };
       dbStuff.query(query).then((records: DropRecord[]) => {
 
-        if (processingAggregateShipDropId !== id) {
+        if (!isCurrentRequest()) {
           console.log('aggregateShipDrop cancelled(by mapid). threadId:', threadId, 'id:', id, 
-            'currentProcessingId:', processingAggregateShipDropId);
+            'rendererScopeId:', scopeId);
           resolve([]);
           return;
         }
@@ -342,9 +469,9 @@ function aggregateShipDrop(id: number, req: ReqAggregateShipDrop) {
     // return new Promise<AggregatedCellShipDrop[]>((resolve, reject) => {
     //   Promise.all(tasks).then((results) => {
 
-    //     if (processingAggregateShipDropId !== id) {
+    //     if (!isCurrentRequest()) {
     //       console.log('aggregateShipDrop cancelled(by mapids). threadId:', threadId, 'id:', id, 
-    //         'currentProcessingId:', processingAggregateShipDropId);
+    //         'rendererScopeId:', scopeId);
     //       resolve([]);
     //       return;
     //     }
@@ -370,9 +497,9 @@ function aggregateShipDrop(id: number, req: ReqAggregateShipDrop) {
           console.log('>> aggregateShipDrop processing map index:', index, 'of', mapIds.length, 'shipId:', shipId);
           const datas =  await fetchByMapId(shipId, mapIds[index++]);
           console.log('<< aggregateShipDrop processing map index:', index, 'of', mapIds.length, 'shipId:', shipId);
-          if (processingAggregateShipDropId !== id) {
+          if (!isCurrentRequest()) {
             console.log('aggregateShipDrop cancelled(by mapids). threadId:', threadId, 'id:', id, 
-              'currentProcessingId:', processingAggregateShipDropId);
+              'rendererScopeId:', scopeId);
             resolve([]);
             return;
           }
@@ -423,9 +550,9 @@ function aggregateShipDrop(id: number, req: ReqAggregateShipDrop) {
   fetchDropMapIds(req.ship_id).then((mapIds) => {
     console.log('drop ship map ids fetched for ship id:', req.ship_id, 'mapIds:', mapIds);
 
-    if (processingAggregateShipDropId !== id) {
+    if (!isCurrentRequest()) {
       console.log('aggregateShipDrop cancelled(mapids return). threadId:', threadId, 'id:', id, 
-        'currentProcessingId:', processingAggregateShipDropId);
+        'rendererScopeId:', scopeId);
       reply(id, { ok: true, type: req.type, datas: [] });
       return;
     }
@@ -434,18 +561,21 @@ function aggregateShipDrop(id: number, req: ReqAggregateShipDrop) {
     fetchByMapIds(req.ship_id, mapIds).then((datas) => {
       console.log('drop ship records fetched. count:', datas.length, 'for ship id:', req.ship_id);
 
-      if (processingAggregateShipDropId !== id) {
+      if (!isCurrentRequest()) {
         console.log('aggregateShipDrop cancelled(drops return). threadId:', threadId, 'id:', id, 
-          'currentProcessingId:', processingAggregateShipDropId);
+          'rendererScopeId:', scopeId);
         reply(id, { ok: true, type: req.type, datas: [] });
         return;
       }
 
+      clearProcessingId()
       reply(id, { ok: true, type: req.type, datas });
     }).catch((err) => {
+      clearProcessingId()
       replyError({ id, req }, err)
     });
   }).catch((err) => {
+    clearProcessingId()
     replyError({ id, req }, err)
   });
 }
@@ -466,6 +596,14 @@ parentPort.on('message', async (msg: ReqMsg) => {
       case 'db:update': dbUpdate(msg.id, req); break      
       case 'db:remove': dbRemove(msg.id, req); break
       case 'db:operation': dbOperation(msg.id, req); break
+      case 'db:snapshotBegin': dbSnapshotBegin(msg.id, req); break
+      case 'db:snapshotEnd': dbSnapshotEnd(msg.id, req); break
+      case 'db:auditLoaded': dbAuditLoaded(msg.id, req); break
+      case 'db:auditAccountDirectory': dbAuditAccountDirectory(msg.id, req); break
+      case 'db:previewBackup': dbPreviewBackup(msg.id, req); break
+      case 'db:createMergeStage': dbCreateMergeStage(msg.id, req); break
+      case 'db:validateRestoreStage': dbValidateRestoreStage(msg.id, req); break
+      case 'db:inspectAccountDirectory': dbInspectAccountDirectory(msg.id, req); break
       case 'calc:portChartData': calcPortChartData(msg.id, req); break
       case 'aggregate:rankByArea': aggregateRankByArea(msg.id, req); break
       case 'aggregate:shipDrop': aggregateShipDrop(msg.id, req); break

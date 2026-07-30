@@ -4,9 +4,19 @@ import { svdata } from '@renderer/store/svdata'
 import StarImage from '@renderer/assets/img/star.svg'
 import LockImage from '@renderer/assets/img/lock.svg'
 import { ApiRange, ApiShip, type ApiSlotitem, KcsUtil, type MstSlotitem, SlotitemImgType, SlotitemType } from '@common/kcs'
-import { SlotitemRareTextMap, SyateiText } from '@common/locale'
 import { RUtil } from '@renderer/util'
 import { SlotImg } from '@renderer/stuff/imgs/slot'
+import { useResponsiveTablePageSize } from './table/use-responsive-table-page-size'
+import {
+  getSlotitemListViewState,
+  saveSlotitemListViewState
+} from '@renderer/store/panel_view_state'
+import { translateApp } from '@renderer/store/global_setting'
+import {
+  getBattleSlotitemRangeText,
+  getBattleSlotitemRareText
+} from '@renderer/common/battle-equipment-view'
+import { escapeHtmlText } from '@renderer/common/localized-html'
 
 /////////////////////////////////////////////////////////////////////////////////////
 // デバッグログ
@@ -85,25 +95,30 @@ type FilterKey = (typeof FilterKey)[keyof typeof FilterKey]
 // -----------------------------------------------------------------
 
 const currentPage = ref<number>(1);
-const slotitemNameFilter = ref<string>('');
-const filterGroup = ref<Array<FilterKey>>([
-  // for test
-  //FilterKey.fighter,
-  //FilterKey.seaplaneBomber
-  //FilterKey.aviationPersonnel
-  //FilterKey.secondaryGun
-  //FilterKey.sonar
-  //FilterKey.landBasedAttackAircraft
-  //FilterKey.largeGun
-]);
+const savedViewState = getSlotitemListViewState()
+const validFilterKeys = Object.values(FilterKey) as FilterKey[]
+const slotitemNameFilter = ref<string>(savedViewState.nameFilter);
+const filterGroup = ref<Array<FilterKey>>(
+  savedViewState.filterKeys.filter((key): key is FilterKey =>
+    validFilterKeys.includes(key as FilterKey)
+  )
+);
 watch(filterGroup, () => {
   currentPage.value = 1;
+  saveSlotitemListViewState({
+    filterKeys: filterGroup.value,
+    nameFilter: slotitemNameFilter.value
+  })
 }, { 
   immediate: false, 
-  deep: false
+  deep: true
 });
 watch(slotitemNameFilter, () => {
   currentPage.value = 1;
+  saveSlotitemListViewState({
+    filterKeys: filterGroup.value,
+    nameFilter: slotitemNameFilter.value
+  })
 }, {
   immediate: false,
   deep: false,
@@ -141,11 +156,11 @@ function getLevelText(data: SlotItemData): string {
 }
 
 function getRareText(data: SlotItemData): string {
-  return SlotitemRareTextMap[data.mst.api_rare] || ''
+  return getBattleSlotitemRareText(data.mst.api_rare, translateApp)
 }
 
 const getRangeText = (leng: ApiRange): string => {
-  return SyateiText[leng] || ''
+  return getBattleSlotitemRangeText(leng, translateApp)
 }
 
 const RangeClassMap: { [key: number]: string } = {
@@ -185,78 +200,78 @@ interface HtmlParts {
 }
 
 const buildHtmlMap: { [key: string]: {
-  displayName: string
+  displayName: () => string
   className: string
   levelFunc: (mst: MstSlotitem, level: number | undefined) => number
  } } = {
   'houg': {
-    displayName: '火力',
+    displayName: () => translateApp('battleEquipment.slotitem.param.firepower'),
     className: 'fire',
     levelFunc: KcsUtil.fireFromLevel,
   },
   'houm': {
-    displayName: '命中',
+    displayName: () => translateApp('battleEquipment.slotitem.param.accuracy'),
     className: 'hit',
     levelFunc: KcsUtil.hitFromLevel,
   },
   'raig': {
-    displayName: '雷装',
+    displayName: () => translateApp('battleEquipment.slotitem.param.torpedo'),
     className: 'tor',
     levelFunc: KcsUtil.torFromLevel,
   },
   'raim': {
-    displayName: '雷命',
+    displayName: () => translateApp('battleEquipment.slotitem.param.torpedoAccuracy'),
     className: 'torHit',
     levelFunc: KcsUtil.torHitFromLevel,
   },
   'baku': {
-    displayName: '爆装',
+    displayName: () => translateApp('battleEquipment.slotitem.param.bombing'),
     className: 'bom',
     levelFunc: KcsUtil.bomFromLevel,
   },
   'tyku': {
-    displayName: '対空',
+    displayName: () => translateApp('battleEquipment.slotitem.param.antiAir'),
     className: 'aa',
     levelFunc: KcsUtil.aaFromLevel,
   },
   'kb': {
-    displayName: '艦防',
+    displayName: () => translateApp('battleEquipment.slotitem.param.fleetDefense'),
     className: 'kb',
     levelFunc: KcsUtil.kbFromLevel,
   },
   'kt': {
-    displayName: '加重',
+    displayName: () => translateApp('battleEquipment.slotitem.param.weightedAntiAir'),
     className: 'kt',
     levelFunc: KcsUtil.ktFromLevel,
   },
   'tais': {
-    displayName: '対潜',
+    displayName: () => translateApp('battleEquipment.slotitem.param.antiSubmarine'),
     className: 'asw',
     levelFunc: KcsUtil.aswFromLevel,
   },
   'asw_hit': {
-    displayName: '対命',
+    displayName: () => translateApp('battleEquipment.slotitem.param.antiSubmarineAccuracy'),
     className: 'asw_hit',
     levelFunc: KcsUtil.hitAswFromLevel,
   },
 
   'houk': {
-    displayName: '回避',
+    displayName: () => translateApp('battleEquipment.slotitem.param.evasion'),
     className: 'ev',
     levelFunc: KcsUtil.evFromLevel,
   },
   'raik': {
-    displayName: '雷回',
+    displayName: () => translateApp('battleEquipment.slotitem.param.torpedoEvasion'),
     className: 'raik',
     levelFunc: KcsUtil.evTorFromLevel,
   },
   'saku': {
-    displayName: '索敵',
+    displayName: () => translateApp('battleEquipment.slotitem.param.lineOfSight'),
     className: 'los',
     levelFunc: KcsUtil.losFromLevel,
   },
   'souk': {
-    displayName: '装甲',
+    displayName: () => translateApp('battleEquipment.slotitem.param.armor'),
     className: 'armor',
     levelFunc: KcsUtil.armorFromLevel,
   }
@@ -296,7 +311,7 @@ const buildParamHtml = (
 
   const className = add ? 'nowrap-text plus-color' : 'nowrap-text'
   const plus_minus = value < 0 ? '' : '+'
-  const html = `<span class="${stuff.className} ${className}">${stuff.displayName}<span>${plus_minus}${value}</span></span>`
+  const html = `<span class="${stuff.className} ${className}">${escapeHtmlText(stuff.displayName())}<span>${plus_minus}${value}</span></span>`
   const isRemodelName = remodelNames.includes(name)
   if (isRemodelName) {
     parts.remodels.push(html)
@@ -312,7 +327,7 @@ const buildRangeHtml = (data: SlotItemData, parts: HtmlParts): void => {
   }
   const className = RangeClassMap[mst.api_leng] || ''
   const rangeText = getRangeText(mst.api_leng)
-  const html = `<span class="range nowrap-text">射程 <span class="${className}">${rangeText}</span></span>`
+  const html = `<span class="range nowrap-text">${escapeHtmlText(translateApp('battleEquipment.slotitem.rangeLabel'))} <span class="${className}">${escapeHtmlText(rangeText)}</span></span>`
   parts.basics.push(html)
 }
 
@@ -523,7 +538,9 @@ function getEquipShipDeckNo(data: SlotItemData): string {
   if (deckNo < 0) {
     return ''
   }
-  return `第${deckNo + 1}艦隊`
+  return translateApp('battleEquipment.slotitem.deck', {
+    params: { number: deckNo + 1 }
+  })
 }
 
 function getEquipShipLv(data: SlotItemData): string {
@@ -534,10 +551,13 @@ function getEquipShipLv(data: SlotItemData): string {
   return api.api_lv.toString()
 }
 
-const listHeight = computed<number>(() => {
-  return 745;
+const listRoot = ref<HTMLElement | null>(null)
+const perPage = useResponsiveTablePageSize(listRoot, {
+  fallback: 26,
+  min: 8,
+  max: 40,
+  rowHeight: 26
 })
-const perPage = ref<number>(26);
 
 // -----------------------------------------------------------------
 // counter
@@ -589,9 +609,9 @@ function getOrderText(): string {
 
 const emptyText = computed<string>(() => {
   if (filterGroup.value.length === 0) {
-    return '表示する装備種別を選択してください';
+    return translateApp('status.list.slotitem.selectType');
   }
-  return '該当する装備が見つかりません';
+  return translateApp('status.list.slotitem.empty');
 })
 
 interface FilterCheckboxInfo {
@@ -668,7 +688,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 小口径主砲
     {
       key: FilterKey.smallGun,
-      title: '小口径主砲',
+      title: translateApp('battleEquipment.slotitem.filter.smallGun'),
       checkboxImgType: SlotitemImgType.syuhou_syou,
       types: [
         SlotitemType.SmallMainGun,
@@ -681,7 +701,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 小口径主砲(高角砲)
     {
       key: FilterKey.smallAaGun,
-      title: '小口径主砲(高角砲)',
+      title: translateApp('battleEquipment.slotitem.filter.smallAaGun'),
       checkboxImgType: SlotitemImgType.koukakuhou,
       types: [
         SlotitemType.SmallMainGun,
@@ -694,7 +714,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 中口径主砲
     {
       key: FilterKey.mediumGun,
-      title: '中口径主砲',
+      title: translateApp('battleEquipment.slotitem.filter.mediumGun'),
       checkboxImgType: SlotitemImgType.syuhou_tyuu,
       types: [
         SlotitemType.MediumMainGun,
@@ -707,7 +727,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 中口径主砲(高角砲)
     {
       key: FilterKey.mediumAaGun,
-      title: '中口径主砲(高角砲)',
+      title: translateApp('battleEquipment.slotitem.filter.mediumAaGun'),
       checkboxImgType: SlotitemImgType.koukakuhou,
       types: [
         SlotitemType.MediumMainGun,
@@ -720,7 +740,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 大口径主砲
     {
       key: FilterKey.largeGun,
-      title: '大口径主砲',
+      title: translateApp('battleEquipment.slotitem.filter.largeGun'),
       checkboxImgType: SlotitemImgType.syuhou_dai,
       types: [
         SlotitemType.LargeMainGun,
@@ -730,7 +750,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 副砲
     {
       key: FilterKey.secondaryGun,
-      title: '副砲',
+      title: translateApp('battleEquipment.slotitem.filter.secondaryGun'),
       checkboxImgType: SlotitemImgType.fukuhou,
       types: [
         SlotitemType.SecondaryGun,
@@ -743,7 +763,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 副砲(高角砲)
     {
       key: FilterKey.secondaryAaGun,
-      title: '副砲(高角砲)',
+      title: translateApp('battleEquipment.slotitem.filter.secondaryAaGun'),
       checkboxImgType: SlotitemImgType.koukakuhou,
       types: [
         SlotitemType.SecondaryGun,
@@ -756,7 +776,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 魚雷
     {
       key: FilterKey.torpedo,
-      title: '魚雷/甲標的/潜水艦魚雷',
+      title: translateApp('battleEquipment.slotitem.filter.torpedo'),
       checkboxImgType: SlotitemImgType.gyorai,
       types: [
         SlotitemType.Torpedo,
@@ -768,7 +788,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 艦上戦闘機
     {
       key: FilterKey.fighter,
-      title: '艦上戦闘機',
+      title: translateApp('battleEquipment.slotitem.filter.fighter'),
       checkboxImgType: SlotitemImgType.kanjyou_sentouki,
       types: [
         SlotitemType.Fighter,
@@ -778,7 +798,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 艦上爆撃機
     {
       key: FilterKey.diveBomber,
-      title: '艦上爆撃機',
+      title: translateApp('battleEquipment.slotitem.filter.diveBomber'),
       checkboxImgType: SlotitemImgType.kanjyou_bakugekiki,
       types: [
         SlotitemType.DiveBomber,
@@ -788,7 +808,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 艦上攻撃機
     {
       key: FilterKey.torpedoBomber,
-      title: '艦上攻撃機',
+      title: translateApp('battleEquipment.slotitem.filter.torpedoBomber'),
       checkboxImgType: SlotitemImgType.kanjyou_kougekiki,
       types: [
         SlotitemType.TorpedoBomber,
@@ -798,7 +818,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 艦上偵察機
     {
       key: FilterKey.recAircraft,
-      title: '艦上偵察機', 
+      title: translateApp('battleEquipment.slotitem.filter.recAircraft'),
       checkboxImgType: SlotitemImgType.kanjyou_teisatuki,
       types: [
         SlotitemType.RecAircraft,
@@ -808,7 +828,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 水上偵察機
     {
       key: FilterKey.recSeaplane,
-      title: '水上偵察機',
+      title: translateApp('battleEquipment.slotitem.filter.recSeaplane'),
       checkboxImgType: SlotitemImgType.suitei,
       types: [
         SlotitemType.RecSeaplane,
@@ -818,7 +838,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 水上戦闘機
     {
       key: FilterKey.seaplaneFighter,
-      title: '水上戦闘機',
+      title: translateApp('battleEquipment.slotitem.filter.seaplaneFighter'),
       checkboxImgType: SlotitemImgType.suijyou_sentouki,
       types: [
         SlotitemType.SeaplaneFighter,
@@ -828,7 +848,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 水上爆撃機
     {
       key: FilterKey.seaplaneBomber,
-      title: '水上爆撃機',
+      title: translateApp('battleEquipment.slotitem.filter.seaplaneBomber'),
       checkboxImgType: SlotitemImgType.suitei,
       types: [
         SlotitemType.SeaplaneBomber,
@@ -838,7 +858,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 電探
     {
       key: FilterKey.radar,
-      title: '電探',
+      title: translateApp('battleEquipment.slotitem.filter.radar'),
       checkboxImgType: SlotitemImgType.dentan,
       types: [
         SlotitemType.SmallRadar,
@@ -849,7 +869,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 対空強化弾
     {
       key: FilterKey.aaShell,
-      title: '対空強化弾',
+      title: translateApp('battleEquipment.slotitem.filter.aaShell'),
       checkboxImgType: SlotitemImgType.sansikidan,
       types: [
         SlotitemType.AAShell,
@@ -859,7 +879,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 対艦強化弾
     {
       key: FilterKey.apShell,
-      title: '対艦強化弾',
+      title: translateApp('battleEquipment.slotitem.filter.apShell'),
       checkboxImgType: SlotitemImgType.tekoudan,
       types: [
         SlotitemType.APShell,
@@ -869,7 +889,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // ダメコン
     {
       key: FilterKey.emergencyRepair,
-      title: 'ダメコン',
+      title: translateApp('battleEquipment.slotitem.filter.emergencyRepair'),
       checkboxImgType: SlotitemImgType.damekon,
       types: [
         SlotitemType.EmergencyRepair,
@@ -878,7 +898,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 機銃
     {
       key: FilterKey.aaGun,
-      title: '機銃',
+      title: translateApp('battleEquipment.slotitem.filter.aaGun'),
       checkboxImgType: SlotitemImgType.kijyu,
       types: [
         SlotitemType.AAGun,
@@ -888,7 +908,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // ソナー
     {
       key: FilterKey.sonar,
-      title: 'ソナー',
+      title: translateApp('battleEquipment.slotitem.filter.sonar'),
       checkboxImgType: SlotitemImgType.sonar,
       types: [
         SlotitemType.Sonar,
@@ -899,7 +919,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 爆雷
     {
       key: FilterKey.depthCharge,
-      title: '爆雷',
+      title: translateApp('battleEquipment.slotitem.filter.depthCharge'),
       checkboxImgType: SlotitemImgType.bakurai,
       types: [
         SlotitemType.DepthCharge,
@@ -909,7 +929,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 機関部強化
     {
       key: FilterKey.engineImp,
-      title: '機関部強化',
+      title: translateApp('battleEquipment.slotitem.filter.engineImp'),
       checkboxImgType: SlotitemImgType.engine,
       types: [
         SlotitemType.EngineImp,
@@ -919,7 +939,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 上陸用舟艇
     {
       key: FilterKey.landingCraft,
-      title: '上陸用舟艇',
+      title: translateApp('battleEquipment.slotitem.filter.landingCraft'),
       checkboxImgType: SlotitemImgType.daihatu,
       types: [
         SlotitemType.LandingCraft,
@@ -931,7 +951,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // オートジャイロ
     {
       key: FilterKey.autogyro,
-      title: 'オートジャイロ',  
+      title: translateApp('battleEquipment.slotitem.filter.autogyro'),
       checkboxImgType: SlotitemImgType.heri,
       types: [
         SlotitemType.Autogyro,
@@ -941,7 +961,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 対潜哨戒機
     {
       key: FilterKey.aswAircraft,
-      title: '対潜哨戒機',
+      title: translateApp('battleEquipment.slotitem.filter.aswAircraft'),
       checkboxImgType: SlotitemImgType.taisensyoukaiki,
       types: [
         SlotitemType.ASBAircraft,
@@ -951,7 +971,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // バルジ
     {
       key: FilterKey.bulge,
-      title: 'バルジ',
+      title: translateApp('battleEquipment.slotitem.filter.bulge'),
       checkboxImgType: SlotitemImgType.bulge,
       types: [
         SlotitemType.ExtraArmor,
@@ -963,7 +983,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 探照灯
     {
       key: FilterKey.searchlight,
-      title: '探照灯',
+      title: translateApp('battleEquipment.slotitem.filter.searchlight'),
       checkboxImgType: SlotitemImgType.tansyoutou,
       types: [
         SlotitemType.Searchlight,
@@ -974,7 +994,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // ドラム缶
     {
       key: FilterKey.drumcan,
-      title: 'ドラム缶',
+      title: translateApp('battleEquipment.slotitem.filter.drumcan'),
       checkboxImgType: SlotitemImgType.drumcan,
       types: [
         SlotitemType.STContainer,
@@ -983,7 +1003,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 艦艇修理施設
     {
       key: FilterKey.repairFacility,
-      title: '艦艇修理施設',
+      title: translateApp('battleEquipment.slotitem.filter.repairFacility'),
       checkboxImgType: SlotitemImgType.syuurisisetu,
       types: [
         SlotitemType.RepairFacility,
@@ -992,7 +1012,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 照明弾
     {
       key: FilterKey.starShell,
-      title: '照明弾',
+      title: translateApp('battleEquipment.slotitem.filter.starShell'),
       checkboxImgType: SlotitemImgType.syoumeidan,
       types: [
         SlotitemType.StarShell,
@@ -1001,7 +1021,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 司令部施設
     {
       key: FilterKey.commandFacility,
-      title: '司令部施設',
+      title: translateApp('battleEquipment.slotitem.filter.commandFacility'),
       checkboxImgType: SlotitemImgType.sireibu,
       types: [
         SlotitemType.CommandFacility,
@@ -1011,7 +1031,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 航空要員
     {
       key: FilterKey.aviationPersonnel,
-      title: '航空要員',
+      title: translateApp('battleEquipment.slotitem.filter.aviationPersonnel'),
       checkboxImgType: SlotitemImgType.supana,
       types: [
         SlotitemType.AviationPersonnel,
@@ -1021,7 +1041,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 高射装置
     {
       key: FilterKey.aaDirector,
-      title: '高射装置',
+      title: translateApp('battleEquipment.slotitem.filter.aaDirector'),
       checkboxImgType: SlotitemImgType.kousyasouti,
       types: [
         SlotitemType.AADirector,
@@ -1031,7 +1051,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 対地装備
     {
       key: FilterKey.antiGroundEquipment,
-      title: '対地装備',
+      title: translateApp('battleEquipment.slotitem.filter.antiGroundEquipment'),
       checkboxImgType: SlotitemImgType.taiti,
       types: [
         SlotitemType.AntiGroundEquipment,
@@ -1041,7 +1061,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 水上艦要員
     {
       key: FilterKey.shipPersonnel,
-      title: '水上艦要員',
+      title: translateApp('battleEquipment.slotitem.filter.shipPersonnel'),
       checkboxImgType: SlotitemImgType.mihariin,
       types: [
         SlotitemType.ShipPersonnel,
@@ -1051,7 +1071,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 大型飛行艇
     {
       key: FilterKey.largeFlyingBoat,
-      title: '大型飛行艇',
+      title: translateApp('battleEquipment.slotitem.filter.largeFlyingBoat'),
       checkboxImgType: SlotitemImgType.oogata_hikoutei,
       types: [
         SlotitemType.LargeFlyingBoat,
@@ -1061,7 +1081,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 戦闘糧食
     {
       key: FilterKey.combatRation,
-      title: '戦闘糧食',
+      title: translateApp('battleEquipment.slotitem.filter.combatRation'),
       checkboxImgType: SlotitemImgType.sentouryousyoku,
       types: [
         SlotitemType.CombatRation,
@@ -1070,7 +1090,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 補給物資
     {
       key: FilterKey.supplies,
-      title: '補給物資',
+      title: translateApp('battleEquipment.slotitem.filter.supplies'),
       checkboxImgType: SlotitemImgType.hokyuubussi,
       types: [
         SlotitemType.Supplies,
@@ -1079,7 +1099,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 陸戦
     {
       key: FilterKey.landBasedFighter,
-      title: '陸上戦闘機',
+      title: translateApp('battleEquipment.slotitem.filter.landBasedFighter'),
       checkboxImgType: SlotitemImgType.rikusen,
       types: [
         SlotitemType.LandFighter,
@@ -1090,7 +1110,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 陸攻
     {
       key: FilterKey.landBasedAttackAircraft,
-      title: '陸上攻撃機',
+      title: translateApp('battleEquipment.slotitem.filter.landBasedAttackAircraft'),
       checkboxImgType: SlotitemImgType.rikukou,
       types: [
         SlotitemType.LandAttackAircraft,
@@ -1103,7 +1123,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 噴式戦闘爆撃機
     {
       key: FilterKey.landBasedRecAircraft,
-      title: '噴式戦闘爆撃機',
+      title: translateApp('battleEquipment.slotitem.filter.landBasedRecAircraft'),
       checkboxImgType: SlotitemImgType.funsiki1,
       types: [
         SlotitemType.JetFighter,
@@ -1129,7 +1149,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 潜水艦装備
     {
       key: FilterKey.submarineEquipment,
-      title: '潜水艦装備',
+      title: translateApp('battleEquipment.slotitem.filter.submarineEquipment'),
       checkboxImgType: SlotitemImgType.sensui_soubi,
       types: [
         SlotitemType.SubmarineEquipment,
@@ -1147,7 +1167,7 @@ function filterCheckboxInfos(): FilterCheckboxInfo[] {
     // 発煙装置(気球込み)
     {
       key: FilterKey.smokeScreen,
-      title: '発煙装置/防空気球',
+      title: translateApp('battleEquipment.slotitem.filter.smokeScreen'),
       checkboxImgType: SlotitemImgType.hatuensouti,
       types: [
         SlotitemType.SurfaceShipEquipment,
@@ -2076,7 +2096,7 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
 
 </script>
 <template>
-  <section class="slotitem-list-root">
+  <section ref="listRoot" class="slotitem-list-root">
     <div class="filter-content">
       <div class="inputs">
         <label v-for="(info, index) in filterCheckboxInfos()" :key="index" 
@@ -2084,10 +2104,10 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
           <b-checkbox v-model="filterGroup" :native-value="info.key" size="is-small" /><img class="type-img"
             :src="getTypeImgSrc(info.checkboxImgType)" />
         </label>
-        <div class="input-buttons" title="フィルタをクリア">
+        <div class="input-buttons" :title="translateApp('battleEquipment.slotitem.filter.clearTitle')">
           <div class="this-buttons">
-            <b-button size="is-small" @click="checkAllFilters">全チェック</b-button>
-            <b-button size="is-small" @click="clearFilters">クリア</b-button>
+            <b-button size="is-small" @click="checkAllFilters">{{ translateApp('battleEquipment.slotitem.filter.checkAll') }}</b-button>
+            <b-button size="is-small" @click="clearFilters">{{ translateApp('battleEquipment.slotitem.filter.clear') }}</b-button>
           </div>
         </div>
       </div>
@@ -2115,7 +2135,6 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
       aria-previous-label="Previous page"
       aria-page-label="Page"
       aria-current-label="Current page"
-      :height="listHeight"
       @sort="onSort"
     >
       <b-table-column centered sortable field="mst.api_id"
@@ -2126,7 +2145,7 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
           <span>ID<span v-if="isSortedField('mst.api_id')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
-          <span :title="'内部ID: '+props.row.api.api_id">{{ props.row.mst.api_id }}</span>
+          <span :title="translateApp('battleEquipment.slotitem.internalId', { params: { id: props.row.api.api_id } })">{{ props.row.mst.api_id }}</span>
         </template>
       </b-table-column>
 
@@ -2159,7 +2178,7 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
         >
         <template #header>
           <div class="name-header" @click.stop>
-            <span>装備名<span v-if="isSortedField('mst.api_name')" class="order-text">{{ getOrderText() }}</span></span>
+            <span>{{ translateApp('battleEquipment.slotitem.column.name') }}<span v-if="isSortedField('mst.api_name')" class="order-text">{{ getOrderText() }}</span></span>
             <b-autocomplete
               v-model="slotitemNameFilter"
               size="is-small"
@@ -2168,7 +2187,7 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
               open-on-focus
               clearable
               icon-pack="fa"
-              placeholder="装備名で絞り込み"
+              :placeholder="translateApp('battleEquipment.slotitem.namePlaceholder')"
               @click.stop
               @select="onSelectSlotitemNameCandidate"
             >
@@ -2177,7 +2196,7 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
                   <span class="type-img-content"><img 
                     class="type-img" 
                       :src="getTypeImgSrcFromMst(props.option.mst)" /></span><span>{{ props.option.mst.api_name }}</span><span 
-                      class="slotitem-count">装備数：{{ props.option.count }}</span>
+                      class="slotitem-count">{{ translateApp('battleEquipment.slotitem.count', { params: { count: props.option.count } }) }}</span>
                 </div>
               </template>
             </b-autocomplete>
@@ -2196,7 +2215,7 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
         cell-class="slotitem-rare"
         >
         <template #header>
-          <span>レア<span v-if="isSortedField('mst.api_rare')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.slotitem.column.rare') }}<span v-if="isSortedField('mst.api_rare')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <span>{{ getRareText(props.row) }}</span>
@@ -2208,7 +2227,7 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
         cell-class="slotitem-detail"
         >
         <template #header>
-          <span>アイテム詳細<span v-if="isSortedField('internalDetail')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.slotitem.column.detail') }}<span v-if="isSortedField('internalDetail')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <div class="detail-content"><span 
@@ -2218,7 +2237,7 @@ function getRemodelNames(data: SlotItemData): BuildHtmlName[] {
 
       <b-table-column header-class="slotitem-equiped" cell-class="slotitem-equiped">
         <template #header>
-          <span>装備艦</span>
+          <span>{{ translateApp('battleEquipment.slotitem.column.equippedShip') }}</span>
         </template>
         <template #default="props">
           <div class="equiped" v-if="getEquipShipExists(props.row)" 

@@ -1,42 +1,18 @@
-import { appState } from '@global/appstate'
 import { gameSetting } from '@renderer/store/gamesetting'
 import { gameState } from '@renderer/store/gamestate'
-
-const userMediaOptions = (sourceId: string): MediaStreamConstraints => {
-  const width = gameSetting.assistInGame
-    ? gameSetting.capture_assist_width
-    : gameSetting.capture_min_width
-  const height = gameSetting.assistInGame
-    ? gameSetting.capture_assist_height
-    : gameSetting.capture_min_height
-  return {
-    preferCurrentTab: true,
-    audio: {
-      mandatory: {
-        chromeMediaSource: 'desktop',
-        chromeMediaSourceId: sourceId
-      }
-    },
-    video: {
-      mandatory: {
-        chromeMediaSource: 'desktop',
-        chromeMediaSourceId: sourceId,
-        minWidth: width,
-        maxWidth: width,
-        minHeight: height,
-        maxHeight: height
-      }
-    }
-  } as MediaStreamConstraints
-}
+import type { RecordingTarget } from '@common/option'
+import type { RecordingSource } from '@common/recording'
+import { recordingMediaConstraints } from '@renderer/common/recording'
 
 const RecoringPerMSec = 2000
 
 class Recorder {
   private recorder: MediaRecorder
   private isEnd: boolean = false
+  public readonly target: RecordingTarget
 
-  constructor(stream: MediaStream) {
+  constructor(stream: MediaStream, target: RecordingTarget) {
+    this.target = target
     const options: MediaRecorderOptions = {
       mimeType: gameSetting.capture_codec
     }
@@ -85,49 +61,76 @@ class Recorder {
       this.recorder.stop()
     }
   }
+
+  public get isStreamActive(): boolean {
+    return this.recorder.stream.active
+  }
+
+  public dispose(): void {
+    if (this.recorder.state === 'recording') {
+      return
+    }
+    for (const track of this.recorder.stream.getTracks()) {
+      track.stop()
+    }
+  }
 }
 
 class RecorderStuffRenderer {
   private recorder: Recorder | undefined
+  private startRequestId = 0
 
-  constructor() {
-  }
-
-  private setSource(sourceId: string): void {
-    console.log('recorder renderer stuff set source id', sourceId)
-    try {
-      gameState.record_ready = 'in_initialize'
-      navigator.mediaDevices
-        .getUserMedia(userMediaOptions(sourceId))
-        .then((stream: MediaStream) => {
-          console.log('get user media ready', sourceId, stream)
-          this.recorder = new Recorder(stream)
-          this.recorder.start()
-        })
-        .catch((err) => {
-          console.log('set source in get user media', err)
-          gameState.record_ready = 'not_initialized'
-        })
-    } catch (err) {
-      console.log('set source', err)
-      gameState.record_ready = 'not_initialized'
-    }
-  }
-
-  public start(): void {
-    if (gameState.record_ready === 'initialized') {
-      if (gameState.recording_state !== 'recording') {
-        this.recorder!.start()
+  private async replaceSource(source: RecordingSource, requestId: number): Promise<void> {
+    const stream = await navigator.mediaDevices.getUserMedia(
+      recordingMediaConstraints(source)
+    )
+    if (requestId !== this.startRequestId) {
+      for (const track of stream.getTracks()) {
+        track.stop()
       }
-    } else {
-      this.setSource(appState.media_source_id)
+      throw new Error('Recording initialization was superseded')
+    }
+
+    this.recorder?.dispose()
+    this.recorder = new Recorder(stream, source.target)
+    this.recorder.start()
+  }
+
+  public async start(): Promise<RecordingTarget> {
+    if (gameState.recording_state === 'recording' && this.recorder) {
+      return this.recorder.target
+    }
+
+    const requestId = ++this.startRequestId
+    gameState.record_ready = 'in_initialize'
+    try {
+      const source = await window.api.getRecordingSource()
+      if (
+        this.recorder?.target === source.target &&
+        this.recorder.isStreamActive
+      ) {
+        this.recorder.start()
+      } else {
+        await this.replaceSource(source, requestId)
+      }
+      gameState.record_ready = 'initialized'
+      return source.target
+    } catch (error) {
+      if (requestId === this.startRequestId) {
+        gameState.record_ready = 'not_initialized'
+        gameState.recording_state = 'inactive'
+      }
+      console.error('recording source initialization failed', error)
+      throw error
     }
   }
 
-  public stop(): void {
+  public stop(): boolean {
     if (gameState.recording_state === 'recording') {
       this.recorder?.stop()
+      return true
     }
+    return false
   }
 }
 

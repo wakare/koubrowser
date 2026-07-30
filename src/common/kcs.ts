@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { ShipEtcs } from '@common/kcsetc'
 import { assignSafeE, replaceArray, replaceArraySafe, toNumberSafe } from '@common/ts'
 import * as KcsApi from '@common/kcsapi'
-import { calcEnemyHps } from '@common/kcsbattle'
+import { calcEnemyHps, calcFriendlyHps } from '@common/kcsbattle'
 import { MathUtil } from './math'
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -7886,7 +7886,15 @@ export const BattleType = {
   combined_each: 7, // combined each_battle
   combined_ec_midnight: 8, // combined ec midnight
   combined: 9, // combined
-  combined_ld_air: 10 // combined ld airbattle
+  combined_ld_air: 10, // combined ld airbattle
+  night_to_day: 11, // sortie night to day
+  combined_air: 12, // combined airbattle
+  combined_water: 13, // combined water battle
+  combined_each_water: 14, // combined each water battle
+  combined_midnight: 15, // combined midnight
+  combined_sp_midnight: 16, // combined special midnight
+  combined_night_to_day: 17, // combined night to day
+  combined_ec_night_to_day: 18 // normal/striking force vs combined night to day
 } as const
 export type BattleType = (typeof BattleType)[keyof typeof BattleType]
 
@@ -8874,6 +8882,10 @@ export class SvData {
           this.reqSortieLdAirBattle(api_data as ApiSortieLdAirBattle, data)
           break
 
+        case KcsApi.Api.REQ_SORTIE_NIGHT_TO_DAY:
+          this.reqSortieNightToDay(api_data as ApiSortieBattle, data)
+          break
+
         case KcsApi.Api.REQ_BATTLE_MIDNIGHT_BATTLE:
           this.reqMidnightBattle(api_data as ApiMidnightBattle, data)
           break
@@ -8902,6 +8914,10 @@ export class SvData {
           this.reqCombinedEachBattle(api_data as ApiCombinedVsCombinedBattle, data)
           break
 
+        case KcsApi.Api.REQ_COMBINED_BATTLE_EACH_BATTLE_WATER:
+          this.reqCombinedEachBattleWater(api_data as ApiCombinedVsCombinedBattle, data)
+          break
+
         case KcsApi.Api.REQ_COMBINED_BATTLE_EC_BATTLE:
           this.reqCombinedEcBattle(api_data as ApiNormalVsCombinedBattle, data)
           break
@@ -8910,8 +8926,32 @@ export class SvData {
           this.reqCombinedBattleLdAirBattle(api_data as ApiCombinedVsNormalBattle, data)
           break
 
+        case KcsApi.Api.REQ_COMBINED_BATTLE_AIRBATTLE:
+          this.reqCombinedBattleAirBattle(api_data as ApiCombinedVsNormalBattle, data)
+          break
+
+        case KcsApi.Api.REQ_COMBINED_BATTLE_BATTLE_WATER:
+          this.reqCombinedBattleWater(api_data as ApiCombinedVsNormalBattle, data)
+          break
+
         case KcsApi.Api.REQ_COMBINED_BATTLE_EC_MIDNIGHT_BATTLE:
           this.reqCombinedEcMidnightBattle(api_data as ApiEcMidnightBattle, data)
+          break
+
+        case KcsApi.Api.REQ_COMBINED_BATTLE_MIDNIGHT_BATTLE:
+          this.reqCombinedMidnightBattle(api_data as ApiMidnightBattle, data)
+          break
+
+        case KcsApi.Api.REQ_COMBINED_BATTLE_SP_MIDNIGHT:
+          this.reqCombinedSpMidnightBattle(api_data as ApiMidnightSpBattle, data)
+          break
+
+        case KcsApi.Api.REQ_COMBINED_BATTLE_NIGHT_TO_DAY:
+          this.reqCombinedNightToDay(api_data as ApiCombinedVsCombinedBattle, data)
+          break
+
+        case KcsApi.Api.REQ_COMBINED_BATTLE_EC_NIGHT_TO_DAY:
+          this.reqCombinedEcNightToDay(api_data as ApiNormalVsCombinedBattle, data)
           break
 
         case KcsApi.Api.REQ_COMBINED_BATTLE_BATTLERESULT:
@@ -10205,6 +10245,34 @@ export class SvData {
     return
   }
 
+  private updateBattleFleetHps(info: PrvBattleInfo): void {
+    const fleet = calcFriendlyHps(info)
+    const updateDeck = (
+      deck: ApiDeckPort | undefined,
+      hps: (number | undefined)[]
+    ): void => {
+      if (!deck) {
+        return
+      }
+
+      hps.forEach((hp, index) => {
+        if (hp === undefined || this.isShipEscaped(deck, index)) {
+          return
+        }
+
+        const ship = this.ship(deck.api_ship[index])
+        if (ship) {
+          Object.assign(ship, { api_nowhp: hp })
+        }
+      })
+    }
+
+    updateDeck(this.battleDeck, fleet.main)
+    if (fleet.escort.length > 0) {
+      updateDeck(this.deckPort(ApiDeckPortId.deck2st), fleet.escort)
+    }
+  }
+
   private reqSortieBattle(api_data: ApiSortieBattle, json: string): void {
     this.pushMiddayBattle(BattleType.midday, api_data, json)
   }
@@ -10215,6 +10283,10 @@ export class SvData {
 
   private reqSortieLdAirBattle(api_data: ApiSortieLdAirBattle, json: string): void {
     this.pushMiddayBattle(BattleType.ld_air, api_data, json)
+  }
+
+  private reqSortieNightToDay(api_data: ApiSortieBattle, json: string): void {
+    this.pushMiddayBattle(BattleType.night_to_day, api_data, json)
   }
 
   private reqMidnightBattle(api_data: ApiMidnightBattle, json: string): void {
@@ -10228,6 +10300,7 @@ export class SvData {
   private reqSortieBattleResult(api_data: ApiSortieBattleResult): void {
     const battle_info = this.setBattleResult(api_data)
     if (battle_info) {
+      this.updateBattleFleetHps(battle_info)
       this.updateGaugeCount(battle_info)
       ApiCallback.call(KcsApi.Api.REQ_SORTIE_BATTLERESULT, battle_info)
     }
@@ -10241,6 +10314,13 @@ export class SvData {
     this.pushMiddayBattle(BattleType.combined_each, api_data, json)
   }
 
+  private reqCombinedEachBattleWater(
+    api_data: ApiCombinedVsCombinedBattle,
+    json: string
+  ): void {
+    this.pushMiddayBattle(BattleType.combined_each_water, api_data, json)
+  }
+
   private reqCombinedEcBattle(api_data: ApiNormalVsCombinedBattle, json: string): void {
     this.pushMiddayBattle(BattleType.combined_ec, api_data, json)
   }
@@ -10249,13 +10329,50 @@ export class SvData {
     this.pushMiddayBattle(BattleType.combined_ld_air, api_data, json)
   }
 
+  private reqCombinedBattleAirBattle(
+    api_data: ApiCombinedVsNormalBattle,
+    json: string
+  ): void {
+    this.pushMiddayBattle(BattleType.combined_air, api_data, json)
+  }
+
+  private reqCombinedBattleWater(
+    api_data: ApiCombinedVsNormalBattle,
+    json: string
+  ): void {
+    this.pushMiddayBattle(BattleType.combined_water, api_data, json)
+  }
+
   private reqCombinedEcMidnightBattle(api_data: ApiEcMidnightBattle, json: string): void {
     this.pushMidnightBattle(BattleType.combined_ec_midnight, api_data, json)
+  }
+
+  private reqCombinedMidnightBattle(api_data: ApiMidnightBattle, json: string): void {
+    this.pushMidnightBattle(BattleType.combined_midnight, api_data, json)
+  }
+
+  private reqCombinedSpMidnightBattle(api_data: ApiMidnightSpBattle, json: string): void {
+    this.pushMidnightBattle(BattleType.combined_sp_midnight, api_data, json)
+  }
+
+  private reqCombinedNightToDay(
+    api_data: ApiCombinedVsCombinedBattle,
+    json: string
+  ): void {
+    this.pushMiddayBattle(BattleType.combined_night_to_day, api_data, json)
+  }
+
+  private reqCombinedEcNightToDay(
+    api_data: ApiNormalVsCombinedBattle,
+    json: string
+  ): void {
+    this.pushMiddayBattle(BattleType.combined_ec_night_to_day, api_data, json)
   }
 
   private reqCombinedBattleResult(api_data: ApiCombinedBattleResult): void {
     const battle_info = this.setBattleResult(api_data)
     if (battle_info) {
+      this.updateBattleFleetHps(battle_info)
       this.updateGaugeCount(battle_info)
       ApiCallback.call(KcsApi.Api.REQ_COMBINED_BATTLE_BATTLERESULT, battle_info)
     }
@@ -10993,12 +11110,16 @@ export class SvData {
     return InvalidMapLosValue()
   }
 
-  /**
-   * todo
-   * 指定した係数の配列で計算結果を返すように
-   */
-  public deckMapLos(deck: ApiDeckPort, maplos: number): number {
-    const ship_los = deck.api_ship.reduce((los, ship_id) => {
+  public deckMapLosValues(
+    deck: ApiDeckPort,
+    maplosValues: readonly number[]
+  ): number[] {
+    if (maplosValues.length === 0) {
+      return []
+    }
+
+    const shipLosValues = maplosValues.map(() => 0)
+    deck.api_ship.forEach((ship_id) => {
       const ship = this.ship(ship_id)
       if (ship) {
         const calc = InvalidMapLosValue()
@@ -11018,18 +11139,21 @@ export class SvData {
           calc.base += ex_los.base
         }
 
-        los += calc.map * maplos
-        los += Math.sqrt(ship.api_sakuteki[0] - calc.base)
-
-        //console.log('equip', this.calcc2(ship.api_slot, ship.api_slot_ex));
+        const baseLos = Math.sqrt(ship.api_sakuteki[0] - calc.base)
+        maplosValues.forEach((maplos, index) => {
+          shipLosValues[index] += calc.map * maplos
+          shipLosValues[index] += baseLos
+        })
       }
-      return los
-    }, 0)
+    })
 
     const c3 = this.basic.api_level * 0.4
     const c4 = 2 * (6 - KcsUtil.deckShipCount(deck))
-    //console.log('ship_los', ship_los, 'c3', c3, 'c4', c4);
-    return ship_los - c3 + c4
+    return shipLosValues.map((shipLos) => shipLos - c3 + c4)
+  }
+
+  public deckMapLos(deck: ApiDeckPort, maplos: number): number {
+    return this.deckMapLosValues(deck, [maplos])[0]
   }
 
   public slotitemGetItemLos(slotitem_id: number, slotnum: number): number {

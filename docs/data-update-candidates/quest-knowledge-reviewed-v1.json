@@ -1,0 +1,5517 @@
+{
+  "schemaVersion": 1,
+  "claims": [
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 203,
+      "questTitle": "鎮守府正面海域を護れ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 202,
+              "title": "はじめての「出撃」！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 203,
+      "questTitle": "鎮守府正面海域を護れ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 202,
+              "title": "はじめての「出撃」！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 204,
+      "questTitle": "南西諸島沖に出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 203,
+              "title": "鎮守府正面海域を護れ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 204,
+      "questTitle": "南西諸島沖に出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 203,
+              "title": "鎮守府正面海域を護れ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 205,
+      "questTitle": "接近する「敵前衛艦隊」を迎撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 204,
+              "title": "南西諸島沖に出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 205,
+      "questTitle": "接近する「敵前衛艦隊」を迎撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 204,
+              "title": "南西諸島沖に出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 206,
+      "questTitle": "「水雷戦隊」で出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 205,
+              "title": "接近する「敵前衛艦隊」を迎撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 206,
+      "questTitle": "「水雷戦隊」で出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 205,
+              "title": "接近する「敵前衛艦隊」を迎撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 207,
+      "questTitle": "「重巡洋艦」を出撃させよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 206,
+              "title": "「水雷戦隊」で出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 207,
+      "questTitle": "「重巡洋艦」を出撃させよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 206,
+              "title": "「水雷戦隊」で出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 208,
+      "questTitle": "「戦艦」を出撃させよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 207,
+              "title": "「重巡洋艦」を出撃させよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 208,
+      "questTitle": "「戦艦」を出撃させよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 207,
+              "title": "「重巡洋艦」を出撃させよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 209,
+      "questTitle": "「空母機動部隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 208,
+              "title": "「戦艦」を出撃させよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 209,
+      "questTitle": "「空母機動部隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 208,
+              "title": "「戦艦」を出撃させよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 210,
+      "questTitle": "敵艦隊を10回邀撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 210,
+      "questTitle": "敵艦隊を10回邀撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 211,
+      "questTitle": "敵空母を３隻撃沈せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 201,
+              "title": "敵艦隊を撃破せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 211,
+      "questTitle": "敵空母を３隻撃沈せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 201,
+              "title": "敵艦隊を撃破せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 212,
+      "questTitle": "敵輸送船団を叩け！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 201,
+              "title": "敵艦隊を撃破せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 212,
+      "questTitle": "敵輸送船団を叩け！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 201,
+              "title": "敵艦隊を撃破せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 213,
+      "questTitle": "海上通商破壊作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 213,
+      "questTitle": "海上通商破壊作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 214,
+      "questTitle": "あ号作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 214,
+      "questTitle": "あ号作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 215,
+      "questTitle": "第２艦隊、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 115,
+              "title": "第２艦隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 215,
+      "questTitle": "第２艦隊、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 115,
+              "title": "第２艦隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 216,
+      "questTitle": "敵艦隊主力を撃滅せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 201,
+              "title": "敵艦隊を撃破せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 216,
+      "questTitle": "敵艦隊主力を撃滅せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 201,
+              "title": "敵艦隊を撃破せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 217,
+      "questTitle": "敵空母を撃沈せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 117,
+              "title": "第２艦隊で空母機動部隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 217,
+      "questTitle": "敵空母を撃沈せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 117,
+              "title": "第２艦隊で空母機動部隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 218,
+      "questTitle": "敵補給艦を3隻撃沈せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 218,
+      "questTitle": "敵補給艦を3隻撃沈せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 219,
+      "questTitle": "「三川艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 119,
+              "title": "「三川艦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 219,
+      "questTitle": "「三川艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 119,
+              "title": "「三川艦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 220,
+      "questTitle": "い号作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 218,
+              "title": "敵補給艦を3隻撃沈せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 220,
+      "questTitle": "い号作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 218,
+              "title": "敵補給艦を3隻撃沈せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 221,
+      "questTitle": "ろ号作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 214,
+              "title": "あ号作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 221,
+      "questTitle": "ろ号作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 214,
+              "title": "あ号作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 223,
+      "questTitle": "「第四戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 121,
+              "title": "「第四戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 223,
+      "questTitle": "「第四戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 121,
+              "title": "「第四戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 224,
+      "questTitle": "「西村艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 122,
+              "title": "「西村艦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 224,
+      "questTitle": "「西村艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 122,
+              "title": "「西村艦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 225,
+      "questTitle": "「第五航空戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 123,
+              "title": "「第五航空戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 225,
+      "questTitle": "「第五航空戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 123,
+              "title": "「第五航空戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 226,
+      "questTitle": "南西諸島海域の制海権を握れ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 218,
+              "title": "敵補給艦を3隻撃沈せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 226,
+      "questTitle": "南西諸島海域の制海権を握れ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 218,
+              "title": "敵補給艦を3隻撃沈せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 227,
+      "questTitle": "新「三川艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 124,
+              "title": "新「三川艦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 227,
+      "questTitle": "新「三川艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 124,
+              "title": "新「三川艦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 228,
+      "questTitle": "海上護衛戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 220,
+              "title": "い号作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 228,
+      "questTitle": "海上護衛戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 220,
+              "title": "い号作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 229,
+      "questTitle": "敵東方艦隊を撃滅せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 228,
+              "title": "海上護衛戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 229,
+      "questTitle": "敵東方艦隊を撃滅せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 228,
+              "title": "海上護衛戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 230,
+      "questTitle": "敵潜水艦を制圧せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 226,
+              "title": "南西諸島海域の制海権を握れ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 230,
+      "questTitle": "敵潜水艦を制圧せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 226,
+              "title": "南西諸島海域の制海権を握れ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 231,
+      "questTitle": "「潜水艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 125,
+              "title": "潜水艦隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 231,
+      "questTitle": "「潜水艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 125,
+              "title": "潜水艦隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 232,
+      "questTitle": "「航空水上打撃艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 126,
+              "title": "航空水上打撃艦隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 232,
+      "questTitle": "「航空水上打撃艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 126,
+              "title": "航空水上打撃艦隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 233,
+      "questTitle": "「第六戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 128,
+              "title": "「第六戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 233,
+      "questTitle": "「第六戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 128,
+              "title": "「第六戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 239,
+      "questTitle": "「第八駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 131,
+              "title": "「第八駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 239,
+      "questTitle": "「第八駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 131,
+              "title": "「第八駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 240,
+      "questTitle": "「第十八駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 132,
+              "title": "「第十八駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 240,
+      "questTitle": "「第十八駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 132,
+              "title": "「第十八駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 242,
+      "questTitle": "敵東方中枢艦隊を撃破せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 229,
+              "title": "敵東方艦隊を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 242,
+      "questTitle": "敵東方中枢艦隊を撃破せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 229,
+              "title": "敵東方艦隊を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 243,
+      "questTitle": "南方海域珊瑚諸島沖の制空権を握れ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 242,
+              "title": "敵東方中枢艦隊を撃破せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 243,
+      "questTitle": "南方海域珊瑚諸島沖の制空権を握れ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 242,
+              "title": "敵東方中枢艦隊を撃破せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 244,
+      "questTitle": "「第三十駆逐隊(第一次)」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 133,
+              "title": "「第三十駆逐隊(第一次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 244,
+      "questTitle": "「第三十駆逐隊(第一次)」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 133,
+              "title": "「第三十駆逐隊(第一次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 247,
+      "questTitle": "「航空戦艦」抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 412,
+              "title": "航空火力艦の運用を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 247,
+      "questTitle": "「航空戦艦」抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 412,
+              "title": "航空火力艦の運用を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 248,
+      "questTitle": "「第三十駆逐隊」対潜哨戒！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 136,
+              "title": "「第三十駆逐隊(第二次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 248,
+      "questTitle": "「第三十駆逐隊」対潜哨戒！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 136,
+              "title": "「第三十駆逐隊(第二次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 249,
+      "questTitle": "「第五戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 137,
+              "title": "「第五戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 249,
+      "questTitle": "「第五戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 137,
+              "title": "「第五戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 250,
+      "questTitle": "新編「第二航空戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 138,
+              "title": "新編「第二航空戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 250,
+      "questTitle": "新編「第二航空戦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 138,
+              "title": "新編「第二航空戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 251,
+      "questTitle": "精鋭「第二航空戦隊」抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 141,
+              "title": "再編成「第二航空戦隊」を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 251,
+      "questTitle": "精鋭「第二航空戦隊」抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 141,
+              "title": "再編成「第二航空戦隊」を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 252,
+      "questTitle": "戦艦「榛名」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 248,
+              "title": "「第三十駆逐隊」対潜哨戒！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 252,
+      "questTitle": "戦艦「榛名」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 248,
+              "title": "「第三十駆逐隊」対潜哨戒！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 253,
+      "questTitle": "「第六〇一航空隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 143,
+              "title": "「新型正規空母」を配備せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 253,
+      "questTitle": "「第六〇一航空隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 143,
+              "title": "「新型正規空母」を配備せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 254,
+      "questTitle": "「軽空母」戦隊、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 105,
+              "title": "軽巡２隻を擁する隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 254,
+      "questTitle": "「軽空母」戦隊、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 105,
+              "title": "軽巡２隻を擁する隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 255,
+      "questTitle": "「水雷戦隊」バシー島沖緊急展開",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 206,
+              "title": "「水雷戦隊」で出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 255,
+      "questTitle": "「水雷戦隊」バシー島沖緊急展開",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 206,
+              "title": "「水雷戦隊」で出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 256,
+      "questTitle": "「潜水艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 255,
+              "title": "「水雷戦隊」バシー島沖緊急展開"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 256,
+      "questTitle": "「潜水艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 255,
+              "title": "「水雷戦隊」バシー島沖緊急展開"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 258,
+      "questTitle": "「第二戦隊」抜錨！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 144,
+              "title": "主力戦艦部隊「第二戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 258,
+      "questTitle": "「第二戦隊」抜錨！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 144,
+              "title": "主力戦艦部隊「第二戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 259,
+      "questTitle": "「水上打撃部隊」南方へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 145,
+              "title": "戦艦を主力とした水上打撃部隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 259,
+      "questTitle": "「水上打撃部隊」南方へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 145,
+              "title": "戦艦を主力とした水上打撃部隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 262,
+      "questTitle": "「西村艦隊」南方海域へ進出せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 147,
+              "title": "「西村艦隊」を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 262,
+      "questTitle": "「西村艦隊」南方海域へ進出せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 147,
+              "title": "「西村艦隊」を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 263,
+      "questTitle": "「第六戦隊」南西海域へ出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 233,
+              "title": "「第六戦隊」出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 263,
+      "questTitle": "「第六戦隊」南西海域へ出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 233,
+              "title": "「第六戦隊」出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 264,
+      "questTitle": "「空母機動部隊」西へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 239,
+              "title": "「第八駆逐隊」出撃せよ！"
+            },
+            {
+              "questId": 221,
+              "title": "ろ号作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 264,
+      "questTitle": "「空母機動部隊」西へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 239,
+              "title": "「第八駆逐隊」出撃せよ！"
+            },
+            {
+              "questId": 221,
+              "title": "ろ号作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 265,
+      "questTitle": "海上護衛強化月間",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 249,
+              "title": "「第五戦隊」出撃せよ！"
+            },
+            {
+              "questId": 240,
+              "title": "「第十八駆逐隊」出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 265,
+      "questTitle": "海上護衛強化月間",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 249,
+              "title": "「第五戦隊」出撃せよ！"
+            },
+            {
+              "questId": 240,
+              "title": "「第十八駆逐隊」出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 266,
+      "questTitle": "「水上反撃部隊」突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 264,
+              "title": "「空母機動部隊」西へ！"
+            },
+            {
+              "questId": 148,
+              "title": "軽快な「水上反撃部隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 266,
+      "questTitle": "「水上反撃部隊」突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 264,
+              "title": "「空母機動部隊」西へ！"
+            },
+            {
+              "questId": 148,
+              "title": "軽快な「水上反撃部隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 267,
+      "questTitle": "「第十一駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 149,
+              "title": "「第十一駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 267,
+      "questTitle": "「第十一駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 149,
+              "title": "「第十一駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 268,
+      "questTitle": "「第十一駆逐隊」対潜哨戒！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 149,
+              "title": "「第十一駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 268,
+      "questTitle": "「第十一駆逐隊」対潜哨戒！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 149,
+              "title": "「第十一駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 269,
+      "questTitle": "「第二一駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 150,
+              "title": "「第二一駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 269,
+      "questTitle": "「第二一駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 150,
+              "title": "「第二一駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 270,
+      "questTitle": "「第二二駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 151,
+              "title": "「第二二駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 270,
+      "questTitle": "「第二二駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 151,
+              "title": "「第二二駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 271,
+      "questTitle": "「那智戦隊」抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 269,
+              "title": "「第二一駆逐隊」出撃せよ！"
+            },
+            {
+              "questId": 249,
+              "title": "「第五戦隊」出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 271,
+      "questTitle": "「那智戦隊」抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 269,
+              "title": "「第二一駆逐隊」出撃せよ！"
+            },
+            {
+              "questId": 249,
+              "title": "「第五戦隊」出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 272,
+      "questTitle": "「改装防空重巡」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 416,
+              "title": "防空射撃演習を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 272,
+      "questTitle": "「改装防空重巡」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 416,
+              "title": "防空射撃演習を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 273,
+      "questTitle": "新編「三川艦隊」ソロモン方面へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 307,
+              "title": "艦隊の練度向上に努めよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 273,
+      "questTitle": "新編「三川艦隊」ソロモン方面へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 307,
+              "title": "艦隊の練度向上に努めよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 274,
+      "questTitle": "「第六駆逐隊」対潜哨戒なのです！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 120,
+              "title": "「第六駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 274,
+      "questTitle": "「第六駆逐隊」対潜哨戒なのです！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 120,
+              "title": "「第六駆逐隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 275,
+      "questTitle": "抜錨！「第十八戦隊」",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 153,
+              "title": "「第十八戦隊」を新編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 275,
+      "questTitle": "抜錨！「第十八戦隊」",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 153,
+              "title": "「第十八戦隊」を新編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 276,
+      "questTitle": "海上突入部隊、進発せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 154,
+              "title": "海上突入部隊を編成せよ！"
+            },
+            {
+              "questId": 243,
+              "title": "南方海域珊瑚諸島沖の制空権を握れ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 276,
+      "questTitle": "海上突入部隊、進発せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 154,
+              "title": "海上突入部隊を編成せよ！"
+            },
+            {
+              "questId": 243,
+              "title": "南方海域珊瑚諸島沖の制空権を握れ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 277,
+      "questTitle": "「第六駆逐隊」対潜哨戒を徹底なのです！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 155,
+              "title": "新編「第六駆逐隊」を編成せよ！"
+            },
+            {
+              "questId": 274,
+              "title": "「第六駆逐隊」対潜哨戒なのです！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 277,
+      "questTitle": "「第六駆逐隊」対潜哨戒を徹底なのです！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 155,
+              "title": "新編「第六駆逐隊」を編成せよ！"
+            },
+            {
+              "questId": 274,
+              "title": "「第六駆逐隊」対潜哨戒なのです！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 278,
+      "questTitle": "「第一水雷戦隊」ケ号作戦、突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 156,
+              "title": "「第一水雷戦隊」北方突入準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 278,
+      "questTitle": "「第一水雷戦隊」ケ号作戦、突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 156,
+              "title": "「第一水雷戦隊」北方突入準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 279,
+      "questTitle": "「第一水雷戦隊」北方ケ号作戦、再突入！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 157,
+              "title": "「第一水雷戦隊」北方再突入準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 279,
+      "questTitle": "「第一水雷戦隊」北方ケ号作戦、再突入！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 157,
+              "title": "「第一水雷戦隊」北方再突入準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 280,
+      "questTitle": "兵站線確保！海上警備を強化実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 311,
+              "title": "精鋭艦隊演習"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 280,
+      "questTitle": "兵站線確保！海上警備を強化実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 311,
+              "title": "精鋭艦隊演習"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 287,
+      "questTitle": "「第五航空戦隊」珊瑚諸島沖に出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 161,
+              "title": "「第五航空戦隊」を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 287,
+      "questTitle": "「第五航空戦隊」珊瑚諸島沖に出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 161,
+              "title": "「第五航空戦隊」を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 288,
+      "questTitle": "新編「第二一戦隊」北方へ出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 162,
+              "title": "新編「第二一戦隊」出撃準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 288,
+      "questTitle": "新編「第二一戦隊」北方へ出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 162,
+              "title": "新編「第二一戦隊」出撃準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 289,
+      "questTitle": "「第十六戦隊(第一次)」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 163,
+              "title": "「第十六戦隊(第一次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 289,
+      "questTitle": "「第十六戦隊(第一次)」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 163,
+              "title": "「第十六戦隊(第一次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 292,
+      "questTitle": "重改装高速戦艦「金剛改二丙」、南方突入！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 290,
+              "title": "「比叡」の出撃"
+            },
+            {
+              "questId": 303,
+              "title": "「演習」で練度向上！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 292,
+      "questTitle": "重改装高速戦艦「金剛改二丙」、南方突入！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 290,
+              "title": "「比叡」の出撃"
+            },
+            {
+              "questId": 303,
+              "title": "「演習」で練度向上！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 293,
+      "questTitle": "「第三航空戦隊」南西諸島防衛線に出撃！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 164,
+              "title": "「第三航空戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 293,
+      "questTitle": "「第三航空戦隊」南西諸島防衛線に出撃！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 164,
+              "title": "「第三航空戦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 294,
+      "questTitle": "「小沢艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 166,
+              "title": "「小沢艦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 294,
+      "questTitle": "「小沢艦隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 166,
+              "title": "「小沢艦隊」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 295,
+      "questTitle": "「第十六戦隊(第二次)」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 168,
+              "title": "「第十六戦隊(第二次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 295,
+      "questTitle": "「第十六戦隊(第二次)」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 168,
+              "title": "「第十六戦隊(第二次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 297,
+      "questTitle": "「礼号作戦」実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 170,
+              "title": "精強な「水上反撃部隊」を再編成せよ！"
+            },
+            {
+              "questId": 265,
+              "title": "海上護衛強化月間"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 297,
+      "questTitle": "「礼号作戦」実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 170,
+              "title": "精強な「水上反撃部隊」を再編成せよ！"
+            },
+            {
+              "questId": 265,
+              "title": "海上護衛強化月間"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 354,
+      "questTitle": "「改装特務空母」任務部隊演習！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 343,
+              "title": "航空母艦演習"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/演習任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-08",
+      "questId": 354,
+      "questTitle": "「改装特務空母」任務部隊演習！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 343,
+              "title": "航空母艦演習"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 428,
+      "questTitle": "近海に侵入する敵潜を制圧せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 426,
+              "title": "海上通商航路の警戒を厳とせよ！"
+            },
+            {
+              "questId": 427,
+              "title": "遠征「補給」支援体制を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/遠征任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2025-06-14",
+      "questId": 428,
+      "questTitle": "近海に侵入する敵潜を制圧せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 426,
+              "title": "海上通商航路の警戒を厳とせよ！"
+            },
+            {
+              "questId": 427,
+              "title": "遠征「補給」支援体制を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 436,
+      "questTitle": "練習航海及び警備任務を実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 432,
+              "title": "警備及び哨戒偵察を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/遠征任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2025-06-14",
+      "questId": 436,
+      "questTitle": "練習航海及び警備任務を実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 432,
+              "title": "警備及び哨戒偵察を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 437,
+      "questTitle": "小笠原沖哨戒線の強化を実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 425,
+              "title": "海上護衛総隊、遠征開始！"
+            },
+            {
+              "questId": 432,
+              "title": "警備及び哨戒偵察を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/遠征任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2025-06-14",
+      "questId": 437,
+      "questTitle": "小笠原沖哨戒線の強化を実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 425,
+              "title": "海上護衛総隊、遠征開始！"
+            },
+            {
+              "questId": 432,
+              "title": "警備及び哨戒偵察を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 440,
+      "questTitle": "兵站強化遠征任務【拡張作戦】",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 433,
+              "title": "南方戦線遠征を実施せよ！"
+            },
+            {
+              "questId": 439,
+              "title": "兵站強化遠征任務【基本作戦】"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/遠征任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2025-06-14",
+      "questId": 440,
+      "questTitle": "兵站強化遠征任務【拡張作戦】",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 433,
+              "title": "南方戦線遠征を実施せよ！"
+            },
+            {
+              "questId": 439,
+              "title": "兵站強化遠征任務【基本作戦】"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 626,
+      "questTitle": "精鋭「艦戦」隊の新編成",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 114,
+              "title": "「南雲機動部隊」を編成せよ！"
+            },
+            {
+              "questId": 264,
+              "title": "「空母機動部隊」西へ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/工廠任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-26",
+      "questId": 626,
+      "questTitle": "精鋭「艦戦」隊の新編成",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 114,
+              "title": "「南雲機動部隊」を編成せよ！"
+            },
+            {
+              "questId": 264,
+              "title": "「空母機動部隊」西へ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 643,
+      "questTitle": "主力「陸攻」の調達",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 642,
+              "title": "「陸攻」隊の増勢"
+            },
+            {
+              "questId": 410,
+              "title": "南方への輸送作戦を成功させよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/工廠任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-26",
+      "questId": 643,
+      "questTitle": "主力「陸攻」の調達",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 642,
+              "title": "「陸攻」隊の増勢"
+            },
+            {
+              "questId": 410,
+              "title": "南方への輸送作戦を成功させよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 645,
+      "questTitle": "「洋上補給」物資の調達",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 294,
+              "title": "「小沢艦隊」出撃せよ！"
+            },
+            {
+              "questId": 228,
+              "title": "海上護衛戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/工廠任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-26",
+      "questId": 645,
+      "questTitle": "「洋上補給」物資の調達",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 294,
+              "title": "「小沢艦隊」出撃せよ！"
+            },
+            {
+              "questId": 228,
+              "title": "海上護衛戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 663,
+      "questTitle": "新型艤装の継続研究",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 425,
+              "title": "海上護衛総隊、遠征開始！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/工廠任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-26",
+      "questId": 663,
+      "questTitle": "新型艤装の継続研究",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 425,
+              "title": "海上護衛総隊、遠征開始！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 675,
+      "questTitle": "運用装備の統合整備",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 617,
+              "title": "「伊良湖」の準備"
+            },
+            {
+              "questId": 674,
+              "title": "工廠環境の整備"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/工廠任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-26",
+      "questId": 675,
+      "questTitle": "運用装備の統合整備",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 617,
+              "title": "「伊良湖」の準備"
+            },
+            {
+              "questId": 674,
+              "title": "工廠環境の整備"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 680,
+      "questTitle": "対空兵装の整備拡充",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 679,
+              "title": "対空兵装の拡充"
+            },
+            {
+              "questId": 605,
+              "title": "新装備「開発」指令"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/工廠任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-26",
+      "questId": 680,
+      "questTitle": "対空兵装の整備拡充",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 679,
+              "title": "対空兵装の拡充"
+            },
+            {
+              "questId": 605,
+              "title": "新装備「開発」指令"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 812,
+      "questTitle": "オリョール海の制海権を確保せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 811,
+              "title": "南西諸島防衛線を強化せよ！"
+            },
+            {
+              "questId": 239,
+              "title": "「第八駆逐隊」出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 812,
+      "questTitle": "オリョール海の制海権を確保せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 811,
+              "title": "南西諸島防衛線を強化せよ！"
+            },
+            {
+              "questId": 239,
+              "title": "「第八駆逐隊」出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 813,
+      "questTitle": "旗艦「大潮」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 812,
+              "title": "オリョール海の制海権を確保せよ！"
+            },
+            {
+              "questId": 806,
+              "title": "旗艦「霞」出撃！敵艦隊を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 813,
+      "questTitle": "旗艦「大潮」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 812,
+              "title": "オリョール海の制海権を確保せよ！"
+            },
+            {
+              "questId": 806,
+              "title": "旗艦「霞」出撃！敵艦隊を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 814,
+      "questTitle": "強行高速輸送部隊、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 173,
+              "title": "強行高速輸送部隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 814,
+      "questTitle": "強行高速輸送部隊、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 173,
+              "title": "強行高速輸送部隊を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 815,
+      "questTitle": "「第一航空戦隊」西へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 814,
+              "title": "強行高速輸送部隊、出撃せよ！"
+            },
+            {
+              "questId": 636,
+              "title": "上陸戦用新装備の調達"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 815,
+      "questTitle": "「第一航空戦隊」西へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 814,
+              "title": "強行高速輸送部隊、出撃せよ！"
+            },
+            {
+              "questId": 636,
+              "title": "上陸戦用新装備の調達"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 817,
+      "questTitle": "新編艦隊、南西諸島防衛線へ急行せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 174,
+              "title": "新編「水雷戦隊」を含む艦隊を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 817,
+      "questTitle": "新編艦隊、南西諸島防衛線へ急行せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 174,
+              "title": "新編「水雷戦隊」を含む艦隊を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 818,
+      "questTitle": "鎮守府近海航路の安全確保を強化せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 817,
+              "title": "新編艦隊、南西諸島防衛線へ急行せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 818,
+      "questTitle": "鎮守府近海航路の安全確保を強化せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 817,
+              "title": "新編艦隊、南西諸島防衛線へ急行せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 819,
+      "questTitle": "「第三十一戦隊」敵潜を制圧せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 171,
+              "title": "「第三十一戦隊(第一次)」を編成せよ！"
+            },
+            {
+              "questId": 228,
+              "title": "海上護衛戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 819,
+      "questTitle": "「第三十一戦隊」敵潜を制圧せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 171,
+              "title": "「第三十一戦隊(第一次)」を編成せよ！"
+            },
+            {
+              "questId": 228,
+              "title": "海上護衛戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 820,
+      "questTitle": "新編「第八駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 175,
+              "title": "新編「第八駆逐隊」を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 820,
+      "questTitle": "新編「第八駆逐隊」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 175,
+              "title": "新編「第八駆逐隊」を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 835,
+      "questTitle": "「第十六戦隊(第三次)」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 178,
+              "title": "「第十六戦隊(第三次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 835,
+      "questTitle": "「第十六戦隊(第三次)」出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 178,
+              "title": "「第十六戦隊(第三次)」を編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 836,
+      "questTitle": "精鋭「第十六戦隊」突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 179,
+              "title": "精鋭「第十六戦隊」を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 836,
+      "questTitle": "精鋭「第十六戦隊」突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 179,
+              "title": "精鋭「第十六戦隊」を再編成せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 844,
+      "questTitle": "精鋭「第八駆逐隊」突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 820,
+              "title": "新編「第八駆逐隊」出撃せよ！"
+            },
+            {
+              "questId": 829,
+              "title": "夜間突入！敵上陸部隊を叩け！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 844,
+      "questTitle": "精鋭「第八駆逐隊」突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 820,
+              "title": "新編「第八駆逐隊」出撃せよ！"
+            },
+            {
+              "questId": 829,
+              "title": "夜間突入！敵上陸部隊を叩け！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 846,
+      "questTitle": "潜水艦隊、中部海域の哨戒を実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 815,
+              "title": "「第一航空戦隊」西へ！"
+            },
+            {
+              "questId": 218,
+              "title": "敵補給艦を 3 隻撃沈せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 846,
+      "questTitle": "潜水艦隊、中部海域の哨戒を実施せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 815,
+              "title": "「第一航空戦隊」西へ！"
+            },
+            {
+              "questId": 218,
+              "title": "敵補給艦を 3 隻撃沈せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 847,
+      "questTitle": "球磨型軽巡一番艦、出撃だクマ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 298,
+              "title": "「第七駆逐隊」、南西諸島を駆ける！"
+            },
+            {
+              "questId": 299,
+              "title": "近海の警戒監視と哨戒活動を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 847,
+      "questTitle": "球磨型軽巡一番艦、出撃だクマ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 298,
+              "title": "「第七駆逐隊」、南西諸島を駆ける！"
+            },
+            {
+              "questId": 299,
+              "title": "近海の警戒監視と哨戒活動を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 848,
+      "questTitle": "重装甲巡洋艦、鉄底海峡に突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 846,
+              "title": "潜水艦隊、中部海域の哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 848,
+      "questTitle": "重装甲巡洋艦、鉄底海峡に突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 846,
+              "title": "潜水艦隊、中部海域の哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 851,
+      "questTitle": "改装航空巡洋艦、出撃！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 838,
+              "title": "重巡戦隊、抜錨せよ！"
+            },
+            {
+              "questId": 287,
+              "title": "「第五航空戦隊」珊瑚諸島沖に出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 851,
+      "questTitle": "改装航空巡洋艦、出撃！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 838,
+              "title": "重巡戦隊、抜錨せよ！"
+            },
+            {
+              "questId": 287,
+              "title": "「第五航空戦隊」珊瑚諸島沖に出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 854,
+      "questTitle": "戦果拡張任務！「Z作戦」前段作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 846,
+              "title": "潜水艦隊、中部海域の哨戒を実施せよ！"
+            },
+            {
+              "questId": 220,
+              "title": "い号作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 854,
+      "questTitle": "戦果拡張任務！「Z作戦」前段作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 846,
+              "title": "潜水艦隊、中部海域の哨戒を実施せよ！"
+            },
+            {
+              "questId": 220,
+              "title": "い号作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 864,
+      "questTitle": "精強大型航空母艦、抜錨！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 185,
+              "title": "精強「任務部隊」を編成せよ！"
+            },
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 864,
+      "questTitle": "精強大型航空母艦、抜錨！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 185,
+              "title": "精強「任務部隊」を編成せよ！"
+            },
+            {
+              "questId": 216,
+              "title": "敵艦隊主力を撃滅せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 871,
+      "questTitle": "最精鋭「第八駆逐隊」、全力出撃！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 186,
+              "title": "最精鋭「第八駆逐隊」を編成せよ！"
+            },
+            {
+              "questId": 429,
+              "title": "「捷一号作戦」、発動準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 871,
+      "questTitle": "最精鋭「第八駆逐隊」、全力出撃！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 186,
+              "title": "最精鋭「第八駆逐隊」を編成せよ！"
+            },
+            {
+              "questId": 429,
+              "title": "「捷一号作戦」、発動準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 872,
+      "questTitle": "戦果拡張任務！「Z作戦」後段作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 854,
+              "title": "戦果拡張任務！「Z作戦」前段作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 872,
+      "questTitle": "戦果拡張任務！「Z作戦」後段作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 854,
+              "title": "戦果拡張任務！「Z作戦」前段作戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 875,
+      "questTitle": "精鋭「三一駆」、鉄底海域に突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 873,
+              "title": "北方海域警備を実施せよ！"
+            },
+            {
+              "questId": 188,
+              "title": "精鋭「三一駆」第一小隊、抜錨準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 875,
+      "questTitle": "精鋭「三一駆」、鉄底海域に突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 873,
+              "title": "北方海域警備を実施せよ！"
+            },
+            {
+              "questId": 188,
+              "title": "精鋭「三一駆」第一小隊、抜錨準備！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 877,
+      "questTitle": "精鋭「四水戦」、南方海域に展開せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 189,
+              "title": "精鋭「四水戦」抜錨準備！"
+            },
+            {
+              "questId": 860,
+              "title": "旗艦「由良」、抜錨！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 877,
+      "questTitle": "精鋭「四水戦」、南方海域に展開せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 189,
+              "title": "精鋭「四水戦」抜錨準備！"
+            },
+            {
+              "questId": 860,
+              "title": "旗艦「由良」、抜錨！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 880,
+      "questTitle": "精鋭駆逐隊、獅子奮迅！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 320,
+              "title": "駆逐隊、特訓始め！"
+            },
+            {
+              "questId": 680,
+              "title": "対空兵装の整備拡充"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 880,
+      "questTitle": "精鋭駆逐隊、獅子奮迅！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 320,
+              "title": "駆逐隊、特訓始め！"
+            },
+            {
+              "questId": 680,
+              "title": "対空兵装の整備拡充"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 881,
+      "questTitle": "「十八駆」、北方海域キス島へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 192,
+              "title": "精鋭「第十八駆逐隊」を編成せよ！"
+            },
+            {
+              "questId": 230,
+              "title": "敵潜水艦を制圧せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 881,
+      "questTitle": "「十八駆」、北方海域キス島へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 192,
+              "title": "精鋭「第十八駆逐隊」を編成せよ！"
+            },
+            {
+              "questId": 230,
+              "title": "敵潜水艦を制圧せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 888,
+      "questTitle": "新編成「三川艦隊」、鉄底海峡に突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 273,
+              "title": "新編「三川艦隊」ソロモン方面へ！"
+            },
+            {
+              "questId": 243,
+              "title": "南方海域珊瑚諸島沖の制空権を握れ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 888,
+      "questTitle": "新編成「三川艦隊」、鉄底海峡に突入せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 273,
+              "title": "新編「三川艦隊」ソロモン方面へ！"
+            },
+            {
+              "questId": 243,
+              "title": "南方海域珊瑚諸島沖の制空権を握れ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 902,
+      "questTitle": "新編「六水戦」出撃！後で感想、聞かせてね！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 901,
+              "title": "「夕張改二」試してみてもいいかしら？"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 902,
+      "questTitle": "新編「六水戦」出撃！後で感想、聞かせてね！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 901,
+              "title": "「夕張改二」試してみてもいいかしら？"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 903,
+      "questTitle": "拡張「六水戦」、最前線へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 902,
+              "title": "新編「六水戦」出撃！後で感想、聞かせてね！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 903,
+      "questTitle": "拡張「六水戦」、最前線へ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 902,
+              "title": "新編「六水戦」出撃！後で感想、聞かせてね！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 928,
+      "questTitle": "歴戦「第十方面艦隊」、全力出撃！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 237,
+              "title": "「羽黒」「神風」、出撃せよ！"
+            },
+            {
+              "questId": 927,
+              "title": "重巡「羽黒」、出撃！ペナン沖海戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 928,
+      "questTitle": "歴戦「第十方面艦隊」、全力出撃！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 237,
+              "title": "「羽黒」「神風」、出撃せよ！"
+            },
+            {
+              "questId": 927,
+              "title": "重巡「羽黒」、出撃！ペナン沖海戦"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 929,
+      "questTitle": "静かな海を護る「鯨」、動き出す！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 231,
+              "title": "「潜水艦隊」出撃せよ！"
+            },
+            {
+              "questId": 235,
+              "title": "近海哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 929,
+      "questTitle": "静かな海を護る「鯨」、動き出す！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 231,
+              "title": "「潜水艦隊」出撃せよ！"
+            },
+            {
+              "questId": 235,
+              "title": "近海哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 937,
+      "questTitle": "精鋭「第七駆逐隊」、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 298,
+              "title": "「第七駆逐隊」、南西諸島を駆ける！"
+            },
+            {
+              "questId": 235,
+              "title": "近海哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 937,
+      "questTitle": "精鋭「第七駆逐隊」、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 298,
+              "title": "「第七駆逐隊」、南西諸島を駆ける！"
+            },
+            {
+              "questId": 235,
+              "title": "近海哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 943,
+      "questTitle": "新しき翼。改装航空母艦「龍鳳」、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 279,
+              "title": "「第一水雷戦隊」北方ケ号作戦、再突入！"
+            },
+            {
+              "questId": 420,
+              "title": "機動部隊の運用を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 943,
+      "questTitle": "新しき翼。改装航空母艦「龍鳳」、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 279,
+              "title": "「第一水雷戦隊」北方ケ号作戦、再突入！"
+            },
+            {
+              "questId": 420,
+              "title": "機動部隊の運用を強化せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 945,
+      "questTitle": "南西方面の兵站航路の安全を図れ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 944,
+              "title": "鎮守府近海海域の哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 945,
+      "questTitle": "南西方面の兵站航路の安全を図れ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 944,
+              "title": "鎮守府近海海域の哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 946,
+      "questTitle": "空母機動部隊、出撃！敵艦隊を迎撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 944,
+              "title": "鎮守府近海海域の哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 946,
+      "questTitle": "空母機動部隊、出撃！敵艦隊を迎撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 944,
+              "title": "鎮守府近海海域の哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 947,
+      "questTitle": "AL作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 291,
+              "title": "艦隊司令部の強化 【実施段階】"
+            },
+            {
+              "questId": 946,
+              "title": "空母機動部隊、出撃！敵艦隊を迎撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-04",
+      "questId": 947,
+      "questTitle": "AL作戦",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 291,
+              "title": "艦隊司令部の強化 【実施段階】"
+            },
+            {
+              "questId": 946,
+              "title": "空母機動部隊、出撃！敵艦隊を迎撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 949,
+      "questTitle": "改装特務空母「Gambier Bay Mk.II」抜錨！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 923,
+              "title": "合同艦隊機動部隊、出撃せよ！"
+            },
+            {
+              "questId": 933,
+              "title": "【艦隊司令部強化】艦隊旗艦、出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 949,
+      "questTitle": "改装特務空母「Gambier Bay Mk.II」抜錨！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 923,
+              "title": "合同艦隊機動部隊、出撃せよ！"
+            },
+            {
+              "questId": 933,
+              "title": "【艦隊司令部強化】艦隊旗艦、出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 957,
+      "questTitle": "「山風改二」、抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 235,
+              "title": "近海哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 957,
+      "questTitle": "「山風改二」、抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 235,
+              "title": "近海哨戒を実施せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 958,
+      "questTitle": "改白露型駆逐艦「山風改二」、奮戦す！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 236,
+              "title": "精鋭「二四駆逐隊」出撃せよ！"
+            },
+            {
+              "questId": 957,
+              "title": "「山風改二」、抜錨せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 958,
+      "questTitle": "改白露型駆逐艦「山風改二」、奮戦す！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 236,
+              "title": "精鋭「二四駆逐隊」出撃せよ！"
+            },
+            {
+              "questId": 957,
+              "title": "「山風改二」、抜錨せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 967,
+      "questTitle": "海上護衛！ヒ船団を護り抜け！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 966,
+              "title": "南西海域「基地航空隊」開設！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 967,
+      "questTitle": "海上護衛！ヒ船団を護り抜け！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 966,
+              "title": "南西海域「基地航空隊」開設！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 968,
+      "questTitle": "航空母艦「雲鷹」、抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 967,
+              "title": "海上護衛！ヒ船団を護り抜け！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 968,
+      "questTitle": "航空母艦「雲鷹」、抜錨せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 967,
+              "title": "海上護衛！ヒ船団を護り抜け！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 969,
+      "questTitle": "改特型駆逐艦「天霧改二」、出撃す！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 844,
+              "title": "精鋭「第八駆逐隊」突入せよ！"
+            },
+            {
+              "questId": 967,
+              "title": "海上護衛！ヒ船団を護り抜け！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 969,
+      "questTitle": "改特型駆逐艦「天霧改二」、出撃す！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 844,
+              "title": "精鋭「第八駆逐隊」突入せよ！"
+            },
+            {
+              "questId": 967,
+              "title": "海上護衛！ヒ船団を護り抜け！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 996,
+      "questTitle": "改金剛型高速戦艦「榛名改二乙/丙」、抜錨！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 292,
+              "title": "「比叡改二丙」見参！第三戦隊、南方突入！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 996,
+      "questTitle": "改金剛型高速戦艦「榛名改二乙/丙」、抜錨！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 292,
+              "title": "「比叡改二丙」見参！第三戦隊、南方突入！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 1001,
+      "questTitle": "主力オブ主力「清霜改二」、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 806,
+              "title": "旗艦「霞」出撃！敵艦隊を撃滅せよ！"
+            },
+            {
+              "questId": 970,
+              "title": "第十六戦隊、改装「浦波改二」出撃します！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 1001,
+      "questTitle": "主力オブ主力「清霜改二」、出撃せよ！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 806,
+              "title": "旗艦「霞」出撃！敵艦隊を撃滅せよ！"
+            },
+            {
+              "questId": 970,
+              "title": "第十六戦隊、改装「浦波改二」出撃します！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 1007,
+      "questTitle": "改装白露型「春雨改二」出撃です！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 290,
+              "title": "「比叡」の出撃"
+            },
+            {
+              "questId": 1006,
+              "title": "「第二駆逐隊」抜錨！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 1007,
+      "questTitle": "改装白露型「春雨改二」出撃です！",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 290,
+              "title": "「比叡」の出撃"
+            },
+            {
+              "questId": 1006,
+              "title": "「第二駆逐隊」抜錨！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 1033,
+      "questTitle": "二等輸送艦の積極運用",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 636,
+              "title": "上陸戦用新装備の調達"
+            },
+            {
+              "questId": 933,
+              "title": "【艦隊司令部強化】艦隊旗艦、出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-06",
+      "questId": 1033,
+      "questTitle": "二等輸送艦の積極運用",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 636,
+              "title": "上陸戦用新装備の調達"
+            },
+            {
+              "questId": 933,
+              "title": "【艦隊司令部強化】艦隊旗艦、出撃せよ！"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "kcwiki",
+      "sourceLabel": "中文KCWiki",
+      "url": "https://zh.kcwiki.cn/wiki/任务分类",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ確認 2026-07-26",
+      "questId": 1103,
+      "questTitle": "潜水艦強化兵装の量産",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 658,
+              "title": "潜水艦武装の強化"
+            },
+            {
+              "questId": 1101,
+              "title": "海軍工廠の再整備"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "wikiwiki",
+      "sourceLabel": "日本語攻略Wiki",
+      "url": "https://wikiwiki.jp/kancolle/任務/工廠任務",
+      "lastVerifiedAt": "2026-07-26",
+      "dataVersion": "ページ更新 2026-07-26",
+      "questId": 1103,
+      "questTitle": "潜水艦強化兵装の量産",
+      "prerequisites": [
+        {
+          "mode": "all",
+          "quests": [
+            {
+              "questId": 658,
+              "title": "潜水艦武装の強化"
+            },
+            {
+              "questId": 1101,
+              "title": "海軍工廠の再整備"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

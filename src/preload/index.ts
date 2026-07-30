@@ -10,6 +10,25 @@ import type { Query, QueryReturn, PortChartData } from '@common/record'
 import type { AggregatedCellRank, AggregatedCellShipDrop } from '@common/calc_record'
 import type { AppSetting, InheritScoreList } from '@common/store'
 import type { GlobalSetting } from '@common/global_setting'
+import type { RecordingSource } from '@common/recording'
+import type {
+  AssistPanelDiagnosticInput,
+  AssistPanelDiagnosticSaveResult
+} from '@common/assist-diagnostic'
+import type {
+  EncryptedAccountTransferResult,
+  LocalAccountBackupInspectionResult,
+  LocalAccountBackupResult,
+  LocalAccountInspectionReportResult,
+  LocalAccountAuditCaptureResult,
+  LocalAccountAuditComparisonResult,
+  LocalAccountMergePreparationResult,
+  LocalAccountRedoAvailability,
+  LocalAccountRedoPreparationResult,
+  LocalAccountRollbackAvailability,
+  LocalAccountRollbackPreparationResult,
+  LocalAccountRestorePreparationResult
+} from '@common/account-backup'
 
 // Custom APIs for renderer
 const api: Api = {
@@ -23,6 +42,14 @@ const api: Api = {
 
   hideAssist(): void {
     ipcRenderer.invoke(MainChannel.hide_assist)
+  },
+
+  toggleLayoutMode(): void {
+    ipcRenderer.invoke(MainChannel.toggle_layout_mode)
+  },
+
+  toggleMaximize(): void {
+    ipcRenderer.invoke(MainChannel.toggle_maximize)
   },
 
   minimize(): void {
@@ -45,8 +72,90 @@ const api: Api = {
     ipcRenderer.invoke(MainChannel.open_capture_folder)
   },
 
-  saveCapture(date: Date, buffer: Buffer) {
-    ipcRenderer.invoke(MainChannel.save_capture, date, buffer)
+  openDataFolder(): Promise<void> {
+    return ipcRenderer.invoke(MainChannel.open_data_folder)
+  },
+
+  saveAssistPanelDiagnostic(
+    diagnostic: AssistPanelDiagnosticInput
+  ): Promise<AssistPanelDiagnosticSaveResult> {
+    return ipcRenderer.invoke(MainChannel.save_assist_panel_diagnostic, diagnostic)
+  },
+
+  createLocalAccountBackup(): Promise<LocalAccountBackupResult> {
+    return ipcRenderer.invoke(MainChannel.create_local_account_backup)
+  },
+
+  createEncryptedAccountTransfer(passphrase: string): Promise<EncryptedAccountTransferResult> {
+    return ipcRenderer.invoke(MainChannel.create_encrypted_account_transfer, passphrase)
+  },
+
+  inspectEncryptedAccountTransfer(passphrase: string): Promise<LocalAccountBackupInspectionResult> {
+    return ipcRenderer.invoke(MainChannel.inspect_encrypted_account_transfer, passphrase)
+  },
+
+  inspectLocalAccountBackup(): Promise<LocalAccountBackupInspectionResult> {
+    return ipcRenderer.invoke(MainChannel.inspect_local_account_backup)
+  },
+
+  saveAccountInspectionReport(): Promise<LocalAccountInspectionReportResult> {
+    return ipcRenderer.invoke(MainChannel.save_account_inspection_report)
+  },
+
+  prepareLocalAccountMerge(): Promise<LocalAccountMergePreparationResult> {
+    return ipcRenderer.invoke(MainChannel.prepare_local_account_merge)
+  },
+
+  getAvailableAccountMergeRollback(): Promise<LocalAccountRollbackAvailability> {
+    return ipcRenderer.invoke(MainChannel.get_available_account_merge_rollback)
+  },
+
+  prepareAccountMergeRollback(): Promise<LocalAccountRollbackPreparationResult> {
+    return ipcRenderer.invoke(MainChannel.prepare_account_merge_rollback)
+  },
+
+  getAvailableAccountMergeRedo(): Promise<LocalAccountRedoAvailability> {
+    return ipcRenderer.invoke(MainChannel.get_available_account_merge_redo)
+  },
+
+  prepareAccountMergeRedo(): Promise<LocalAccountRedoPreparationResult> {
+    return ipcRenderer.invoke(MainChannel.prepare_account_merge_redo)
+  },
+
+  prepareLocalAccountRestore(): Promise<LocalAccountRestorePreparationResult> {
+    return ipcRenderer.invoke(MainChannel.prepare_local_account_restore)
+  },
+
+  getAvailableAccountRollback(): Promise<LocalAccountRollbackAvailability> {
+    return ipcRenderer.invoke(MainChannel.get_available_account_rollback)
+  },
+
+  prepareAccountRollback(): Promise<LocalAccountRollbackPreparationResult> {
+    return ipcRenderer.invoke(MainChannel.prepare_account_rollback)
+  },
+
+  getAvailableAccountRedo(): Promise<LocalAccountRedoAvailability> {
+    return ipcRenderer.invoke(MainChannel.get_available_account_redo)
+  },
+
+  prepareAccountRedo(): Promise<LocalAccountRedoPreparationResult> {
+    return ipcRenderer.invoke(MainChannel.prepare_account_redo)
+  },
+
+  captureAccountAuditBaseline(): Promise<LocalAccountAuditCaptureResult> {
+    return ipcRenderer.invoke(MainChannel.capture_account_audit_baseline)
+  },
+
+  compareAccountAuditBaseline(): Promise<LocalAccountAuditComparisonResult> {
+    return ipcRenderer.invoke(MainChannel.compare_account_audit_baseline)
+  },
+
+  saveCapture(date: Date, buffer: Buffer): Promise<string> {
+    return ipcRenderer.invoke(MainChannel.save_capture, date, buffer)
+  },
+
+  getRecordingSource(): Promise<RecordingSource> {
+    return ipcRenderer.invoke(MainChannel.get_recording_source)
   },
 
   openOption(): void {
@@ -93,8 +202,8 @@ const api: Api = {
     ipcRenderer.invoke(MainChannel.set_airbase_spots, spot)
   },
 
-  openExternalUrl(url: string): void {
-    ipcRenderer.invoke(MainChannel.open_external_url, url)
+  openExternalUrl(url: string): Promise<boolean> {
+    return ipcRenderer.invoke(MainChannel.open_external_url, url)
   },
 
   queryDb(query: Query): Promise<QueryReturn> {
@@ -149,7 +258,7 @@ const api: Api = {
   getInheritScoreList(): Promise<InheritScoreList> {
     return ipcRenderer.invoke(MainChannel.get_inherit_score_list)
   },
-  
+
   saveInheritScoreList(list: InheritScoreList): void {
     ipcRenderer.invoke(MainChannel.save_inherit_score_list, list)
   },
@@ -187,7 +296,6 @@ const api: Api = {
     ipcRenderer.on(MainMessage.startup_update_checked, handler)
     return () => ipcRenderer.removeListener(MainMessage.startup_update_checked, handler)
   }
-
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

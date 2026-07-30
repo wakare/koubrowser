@@ -7,14 +7,26 @@ import {
   SlotInfo,
   SlotitemType
 } from '@common/kcs'
-import { AirbaseActionKindText } from '@common/locale'
 import { svdata } from '@renderer/store/svdata'
 import { RUtil } from '@renderer/util'
 // import SlotItemImage from '@renderer/components/SlotItemImage.vue'
 import { MathUtil } from '@common/math'
 import { computed, onMounted, onUnmounted } from 'vue'
+import { translateApp } from '@renderer/store/global_setting'
 
-const nos = ['一', '二', '三'] as const
+const AirbaseBaseKeys = [
+  'battleEquipment.airbase.base.1',
+  'battleEquipment.airbase.base.2',
+  'battleEquipment.airbase.base.3'
+] as const
+
+const AirbaseActionKeys = [
+  'battleEquipment.airbase.action.wait',
+  'battleEquipment.airbase.action.sortie',
+  'battleEquipment.airbase.action.defense',
+  'battleEquipment.airbase.action.evacuate',
+  'battleEquipment.airbase.action.rest'
+] as const
 
 interface ActionClass {
   'is-taiki'?: boolean
@@ -80,57 +92,90 @@ const planeStatus = (slot: SlotInfo): Status[] => {
   const type = KcsUtil.slotitemType(mst)
 
   if (mst.api_houg) {
-    ret.push({ name: '火力', status: mst.api_houg.toString() })
+    ret.push({
+      name: translateApp('battleEquipment.airbase.stat.firepower'),
+      status: mst.api_houg.toString()
+    })
   }
 
   if (mst.api_raig) {
-    ret.push({ name: '雷撃', status: mst.api_raig.toString() })
+    ret.push({
+      name: translateApp('battleEquipment.airbase.stat.torpedo'),
+      status: mst.api_raig.toString()
+    })
   }
 
   if (mst.api_baku) {
-    ret.push({ name: '爆装', status: mst.api_baku.toString() })
+    ret.push({
+      name: translateApp('battleEquipment.airbase.stat.bombing'),
+      status: mst.api_baku.toString()
+    })
   }
 
   if (mst.api_tyku) {
-    ret.push({ name: '対空', status: mst.api_tyku.toString() })
+    ret.push({
+      name: translateApp('battleEquipment.airbase.stat.antiAir'),
+      status: mst.api_tyku.toString()
+    })
   }
 
   if (mst.api_tais) {
-    ret.push({ name: '対潜', status: mst.api_tais.toString() })
+    ret.push({
+      name: translateApp('battleEquipment.airbase.stat.antiSubmarine'),
+      status: mst.api_tais.toString()
+    })
   }
 
   if (mst.api_houm) {
     ret.push({
-      name: type === SlotitemType.LandFighter ? '対爆' : '命中',
+      name:
+        type === SlotitemType.LandFighter
+          ? translateApp('battleEquipment.airbase.stat.antiBomber')
+          : translateApp('battleEquipment.airbase.stat.accuracy'),
       status: mst.api_houm.toString()
     })
   }
 
   if (mst.api_houk) {
     ret.push({
-      name: type === SlotitemType.LandFighter ? '追撃' : '回避',
+      name:
+        type === SlotitemType.LandFighter
+          ? translateApp('battleEquipment.airbase.stat.interception')
+          : translateApp('battleEquipment.airbase.stat.evasion'),
       status: mst.api_houk.toString()
     })
   }
 
   if (type === SlotitemType.LandFighter) {
     ret.push({
-      name: '出撃',
+      name: translateApp('battleEquipment.airbase.stat.sortie'),
       status: MathUtil.floor(mst.api_tyku + mst.api_houk * 1.5, 1).toString()
     })
-    ret.push({ name: '防空', status: (mst.api_tyku + mst.api_houk + mst.api_houm * 2).toString() })
+    ret.push({
+      name: translateApp('battleEquipment.airbase.stat.defense'),
+      status: (mst.api_tyku + mst.api_houk + mst.api_houm * 2).toString()
+    })
   }
 
   if (mst.api_saku) {
-    ret.push({ name: '索敵', status: mst.api_saku.toString() })
+    ret.push({
+      name: translateApp('battleEquipment.airbase.stat.lineOfSight'),
+      status: mst.api_saku.toString()
+    })
   }
 
   if (mst.api_souk) {
-    ret.push({ name: '装甲', status: mst.api_souk.toString() })
+    ret.push({
+      name: translateApp('battleEquipment.airbase.stat.armor'),
+      status: mst.api_souk.toString()
+    })
   }
 
   if (mst.api_distance) {
-    ret.push({ name: '半径', status: mst.api_distance.toString() })
+    ret.push({
+      name: translateApp('battleEquipment.airbase.stat.radius'),
+      status: mst.api_distance.toString()
+    })
   }
 
   return ret
@@ -239,9 +284,15 @@ const slots = computed<(AirBaseSlot | undefined)[]>(() => {
 })
 
 const nameText = computed<string>(() => props.airbase.api_name)
-const noText = computed<string>(() => `第${nos[props.index]}`)
+const noText = computed<string>(() => {
+  const key = AirbaseBaseKeys[props.index]
+  return key ? translateApp(key) : '?'
+})
 const actionText = computed<string>(
-  () => AirbaseActionKindText[props.airbase.api_action_kind] ?? '?'
+  () => {
+    const key = AirbaseActionKeys[props.airbase.api_action_kind]
+    return key ? translateApp(key) : '?'
+  }
 )
 
 const distanceBaseText = computed<string>(() => {
@@ -279,8 +330,16 @@ const targetLabelText2 = computed<string>(() => {
     <div class="airbase-info">
       <!--<span class="airbase-no">{{noText}}</span>-->
       <span class="airbase-action" :class="actionClass">{{ actionText }}</span>
-      <span class="airbase-range">半:{{ distanceBaseText }}{{ distanceBonusText }}</span>
-      <span class="airbase-aa">制空:{{ seikuText }}</span>
+      <span class="airbase-range">{{
+        translateApp('battleEquipment.airbase.rangeShort', {
+          params: { value: distanceBaseText + distanceBonusText }
+        })
+      }}</span>
+      <span class="airbase-aa">{{
+        translateApp('battleEquipment.airbase.airPower', {
+          params: { value: seikuText }
+        })
+      }}</span>
       <span class="airbase-spot">{{ targetLabelText1 }}</span>
       <span class="airbase-spot">{{ targetLabelText2 }}</span>
     </div>
@@ -303,7 +362,11 @@ const targetLabelText2 = computed<string>(() => {
             <div class="slot-tip-status">
               <!-- <div><SlotItemImage :mst_id="slot!.slot.mst.api_id" /></div> -->
               <div>
-                <div v-if="slot!.seiku > 0">制空: {{ slot!.seiku }}</div>
+                <div v-if="slot!.seiku > 0">{{
+                  translateApp('battleEquipment.airbase.slotAirPower', {
+                    params: { value: slot!.seiku }
+                  })
+                }}</div>
                 <div class="slot-tip-grid">
                   <div v-for="(status, index) in slot!.statuses" :key="index">
                     {{ status.name }}: {{ status.status }}

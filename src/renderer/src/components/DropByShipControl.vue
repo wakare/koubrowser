@@ -4,10 +4,11 @@ import { svdata } from '@renderer/store/svdata';
 import { onMounted, onUnmounted, computed, ref, toRaw, nextTick } from 'vue';
 import ShipBanner from '@renderer/components/ShipBanner.vue';
 import { DropByShipTabUIState as us } from '@renderer/store/ui_state'
+import { translateApp } from '@renderer/store/global_setting'
+import type { AppMessageKey } from '@common/localization'
 
 const tabIndex = us.tabIndex
 const el = ref<HTMLElement | null>(null);
-let selectedId = 0;
 
 // -----------------------------------------------------------------
 //
@@ -23,22 +24,23 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: 'update:selected_ship_id', v: number): void
 }>()
+let selectedId = props.selected_ship_id;
 
 // -----------------------------------------------------------------
 //
 interface TabInfo {
-  name: string;
+  nameKey: Extract<AppMessageKey, `drop.shipCategory.${string}`>;
   types: ApiShipType[];
 }
 const tabNames: TabInfo[] = [
-  { name: '戦艦級', types: ApiShipTypeSenkanClasses },
-  { name: '航空母艦', types: ApiShipTypeKuboClasses },  
-  { name: '重巡級', types: ApiShipTypeJyujyunClasses },
-  { name: '軽巡級', types: ApiShipTypeKeijyunClasses },
-  { name: '駆逐艦', types: ApiShipTypeKutikukanClasses },
-  { name: '海防艦', types: ApiShipTypeKaiboukanClasses },
-  { name: '潜水艦', types: ApiShipTypeSensuikanClasses },
-  { name: '補助艦艇', types: ApiShipTypeHojoClasses },
+  { nameKey: 'drop.shipCategory.battleship', types: ApiShipTypeSenkanClasses },
+  { nameKey: 'drop.shipCategory.carrier', types: ApiShipTypeKuboClasses },
+  { nameKey: 'drop.shipCategory.heavyCruiser', types: ApiShipTypeJyujyunClasses },
+  { nameKey: 'drop.shipCategory.lightCruiser', types: ApiShipTypeKeijyunClasses },
+  { nameKey: 'drop.shipCategory.destroyer', types: ApiShipTypeKutikukanClasses },
+  { nameKey: 'drop.shipCategory.escort', types: ApiShipTypeKaiboukanClasses },
+  { nameKey: 'drop.shipCategory.submarine', types: ApiShipTypeSensuikanClasses },
+  { nameKey: 'drop.shipCategory.auxiliary', types: ApiShipTypeHojoClasses },
 ];
 
 // -----------------------------------------------------------------
@@ -151,6 +153,11 @@ const shipsByType = computed(() : ShipInfo[] => {
 
 onMounted(() => {
   console.log('DropByShipControl mounted');
+  nextTick(() => {
+    if (selectedId > 0) {
+      setSelectedStyle(selectedId, true)
+    }
+  })
 });
 
 onUnmounted(() => {
@@ -221,7 +228,7 @@ function onTabChange(valueNew: number): void {
     <b-tabs type="is-toggle" size="is-small" class="ship-type-tabs" :animated="false" destroy-on-hide
       expanded v-model="tabIndex" @update:modelValue="onTabChange">
       <b-tab-item v-for="(tab, tabIndex) in tabNames" :key="tabIndex"
-        :label="tab.name">
+        :label="translateApp(tab.nameKey)">
         <div class="ship-selector-container">
           <span v-for="(ship) in shipsByType" :key="ship.mst.api_id">
             <span class="ship-selector"

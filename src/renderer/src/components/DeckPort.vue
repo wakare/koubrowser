@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { svdata } from '@renderer/store/svdata'
 import { RUtil, DeckInfo } from '@renderer/util'
 import Deck from '@renderer/components/Deck.vue'
@@ -9,11 +9,22 @@ import MissionBadge from '@renderer/components/MissionBadge.vue'
 import LockImage from '@renderer/assets/img/lock.svg'
 import { ApiGaugeType } from '@common/kcs'
 import { mapInfo as storeMapInfo } from '@renderer/store/mapinfo'
+import FixedCanvasViewport from './layout/FixedCanvasViewport.vue'
+import {
+  getDeckPortViewState,
+  saveDeckPortViewState
+} from '@renderer/store/panel_view_state'
+import {
+  BASE_DECK_PORT_LOGICAL_HEIGHT,
+  deckPortLogicalHeight
+} from '@renderer/common/deck-port-layout'
+import { getOperationDeckName } from '@renderer/common/operation-view'
+import { translateApp } from '@renderer/store/global_setting'
 
 type Props = { show_rate?: boolean }
 withDefaults(defineProps<Props>(), { show_rate: true })
 
-const index = ref(0)
+const index = ref(getDeckPortViewState().deckIndex)
 const tooltip_ship_id = ref(0)
 const tooltip_ship_show = ref(false)
 
@@ -23,6 +34,19 @@ const decks = computed<DeckInfo[]>(() => {
   //console.log('DeckPort: update decks decks called', ret[0])
   return ret;
 });
+const deckLogicalHeight = computed(() => {
+  const selectedDeck = decks.value[index.value]
+  return selectedDeck
+    ? deckPortLogicalHeight(selectedDeck.deck.api_ship)
+    : BASE_DECK_PORT_LOGICAL_HEIGHT
+})
+const deckTabsStyle = computed(() => ({
+  height: `${deckLogicalHeight.value}px`
+}))
+
+watch(index, (deckIndex) => {
+  saveDeckPortViewState({ deckIndex })
+})
 
 const tooltipShipId = computed(() => tooltip_ship_id.value)
 const isShowShipTooltip = computed(() => tooltip_ship_show.value)
@@ -54,7 +78,7 @@ const isShowYusou = computed(() => {
 
 </script>
 <template>
-  <div v-if="isDeckOk">
+  <div v-if="isDeckOk" class="deck-port-root">
     <b-tooltip
       :square="true"
       :animated="false"
@@ -67,42 +91,64 @@ const isShowYusou = computed(() => {
       <template #content>
         <ShipTooltip v-if="isShowShipTooltip" :ship_id="tooltipShipId" />
       </template>
-      <b-tabs size="is-small" expanded class="deck-tabs" v-model="index">
-        <b-tab-item v-for="(deck, deck_index) in decks" :key="deck.deck.api_id"
-          :disabled="deck.isLock" :headerClass="`for-update-${deck.deck.api_id}_${deck.isLock}_${deck.seiku}_${deck.inMission}`">
-          <template #header>
-            <LockImage v-if="deck.isLock" class="is-lock"/>
-            {{ deck.name }}
-            <MissionBadge v-if="deck.inMission" :deck="deck.deck" />
-            <template v-else>
-              <div v-if="deck.seiku > 0" title="制空値" class="seiku-wrapper ml-1">
-                <div class="seiku">
-                  <span class="s-icon seiku"></span>
-                  <div class="txt">{{deck.seiku}}</div>
-                </div>
+      <div class="deck-port-stack">
+        <FixedCanvasViewport :logical-width="600" :logical-height="deckLogicalHeight">
+          <b-tabs
+            size="is-small"
+            expanded
+            class="deck-tabs"
+            v-model="index"
+            :style="deckTabsStyle"
+          >
+            <b-tab-item v-for="(deck, deck_index) in decks" :key="deck.deck.api_id"
+              :disabled="deck.isLock" :headerClass="`for-update-${deck.deck.api_id}_${deck.isLock}_${deck.seiku}_${deck.inMission}`">
+              <template #header>
+                <LockImage v-if="deck.isLock" class="is-lock"/>
+                {{ getOperationDeckName(deck_index, translateApp) }}
+                <MissionBadge v-if="deck.inMission" :deck="deck.deck" />
+                <template v-else>
+                  <div
+                    v-if="deck.seiku > 0"
+                    :title="translateApp('operation.deckPort.airControl')"
+                    class="seiku-wrapper ml-1"
+                  >
+                    <div class="seiku">
+                      <span class="s-icon seiku"></span>
+                      <div class="txt">{{deck.seiku}}</div>
+                    </div>
+                  </div>
+                  <div
+                    v-if="isShowYusou && (deck.yusou > 0)"
+                    :title="translateApp('operation.deckPort.transportValue')"
+                    class="seiku-wrapper ml-1"
+                  >
+                    <div class="seiku">
+                      <span class="yusou-value">{{
+                        translateApp('operation.deckPort.transport')
+                      }}</span>
+                      <div class="txt">{{ deck.yusou }}/{{ Math.floor(deck.yusou * 0.7) }}</div>
+                    </div>
+                  </div>
+                </template>
+              </template>
+              <div class="deckport">
+                <Deck
+                  v-if="index === deck_index"
+                  :show_rate="show_rate"
+                  :deck="deck.deck"
+                  v-model:tooltip_ship_id="tooltip_ship_id"
+                  v-model:tooltip_ship_show="tooltip_ship_show"
+                />
               </div>
-              <div v-if="isShowYusou && (deck.yusou > 0)" title="輸送値" class="seiku-wrapper ml-1">
-                <div class="seiku">
-                  <span class="yusou-value">輸送</span>
-                  <div class="txt">{{ deck.yusou }}/{{ Math.floor(deck.yusou * 0.7) }}</div>
-                </div>
-              </div>
-            </template>
-          </template>
-          <div class="deckport">
-            <Deck
-              v-if="index === deck_index"
-              :show_rate="show_rate"
-              :deck="deck.deck"
-              v-model:tooltip_ship_id="tooltip_ship_id"
-              v-model:tooltip_ship_show="tooltip_ship_show"
-            />
-          </div>
-        </b-tab-item>
-      </b-tabs>
-      <section class="deck-world">
-        <World :deck_index="index" />
-      </section>
+            </b-tab-item>
+          </b-tabs>
+        </FixedCanvasViewport>
+        <FixedCanvasViewport :logical-width="600" :logical-height="660">
+          <section class="deck-world">
+            <World :deck_index="index" />
+          </section>
+        </FixedCanvasViewport>
+      </div>
     </b-tooltip>
   </div>
 </template>

@@ -3,6 +3,7 @@ import type { ApiMapInfoList, ApiMissionList, ApiQuestList, SvDataRaw } from '@c
 import type { Api } from '@common/kcsapi'
 import { AppSetting } from '@common/store'
 import { GlobalSetting } from '@common/global_setting'
+import type { QuestKnowledgeUpdate } from '@common/quest_knowledge_update'
 
 /**
  * message type
@@ -29,6 +30,7 @@ export interface RequiredMessage{
   readonly mapInfo: ApiMapInfoList;
   readonly missionList: ApiMissionList;
   readonly questList: ApiQuestList;
+  readonly questKnowledgeUpdate: QuestKnowledgeUpdate | null;
 }
 
 /**

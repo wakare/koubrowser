@@ -1,6 +1,7 @@
 import { computed, ref, toRaw } from 'vue'
 import type { UpdateCheckResult, UpdateStateSnapshot, UpdateStateStatus } from '@common/type'
-import { globalSetting } from '@renderer/store/global_setting'
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
+import { resolveUpdateViewText } from '@renderer/common/update-view'
 
 const updateState = ref<UpdateStateStatus>('idle')
 const updateAvailableVersion = ref('')
@@ -98,7 +99,7 @@ export async function clickUpdateButton(): Promise<void> {
       applyUpdateState({
         status: 'error',
         availableVersion: '',
-        errorMessage: error instanceof Error ? error.message : '再起動に失敗しました',
+        errorMessage: translateApp('update.error.restartFailed'),
         downloadPercent: null,
       })
     }
@@ -113,7 +114,7 @@ export async function clickUpdateButton(): Promise<void> {
       applyUpdateState({
         status: 'error',
         availableVersion: '',
-        errorMessage: error instanceof Error ? error.message : '更新に失敗しました',
+        errorMessage: translateApp('update.error.downloadFailed'),
         downloadPercent: null,
       })
     }
@@ -138,51 +139,33 @@ export async function checkForUpdates(): Promise<void> {
     applyUpdateState({
       status: 'error',
       availableVersion: '',
-      errorMessage: error instanceof Error ? error.message : '更新チェックに失敗しました',
+      errorMessage: translateApp('update.error.checkFailed'),
       downloadPercent: null,
     })
   }
 }
 
-export const updateButtonText = computed(() =>
-  updateState.value === 'available'
-    ? '更新をダウンロード'
-    : updateState.value === 'ready'
-      ? '再起動'
-      : '更新をチェック'
+const updateViewText = computed(() =>
+  resolveUpdateViewText(
+    {
+      status: updateState.value,
+      availableVersion: updateAvailableVersion.value,
+      errorMessage: updateErrorMessage.value,
+      downloadPercent: updateDownloadPercent.value
+    },
+    translateApp,
+    globalSetting.locale
+  )
 )
+
+export const updateButtonText = computed(() => updateViewText.value.buttonText)
 
 export const updateButtonDisable = computed(() =>
   updateState.value === 'checking' || updateState.value === 'updating'
 )
 
-export const updateStateText = computed(() => {
-  switch (updateState.value) {
-    case 'idle':
-      return ''
-    case 'checking':
-      return '更新をチェック中...'
-    case 'available':
-      return `更新が見つかりました。バージョン ${updateAvailableVersion.value} が利用可能です。`
-    case 'latest':
-      return '最新バージョンを使用中です。'
-    case 'updating':
-      return updateDownloadPercent.value === null
-        ? '更新をダウンロード中...'
-        : `更新をダウンロード中... ${updateDownloadPercent.value}%`
-    case 'ready':
-      return '更新の準備が整いました。再起動すると更新が適用されます。'
-    case 'error':
-      return `更新チェックエラー(${updateErrorMessage.value})`
-  }
-  return ''
-})
-
-export const updateStateSubText = computed(() =>
-  updateState.value === 'ready'
-    ? 'または、アプリケーション終了時に更新が適用されます。'
-    : ''
-)
+export const updateStateText = computed(() => updateViewText.value.stateText)
+export const updateStateSubText = computed(() => updateViewText.value.stateSubText)
 export const isUadeteIdle = computed(() => updateState.value === 'idle')
 export const isUadeteChecking = computed(() => updateState.value === 'checking')
 export const isUadeteAvailable = computed(() => updateState.value === 'available')

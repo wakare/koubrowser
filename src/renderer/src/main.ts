@@ -41,9 +41,11 @@ streamInitialize(async () => {
   // initialized svdata. start vue app.
   const app = createApp(App)
 
-  // prevent vue warning/error in production
+  // Keep production warnings quiet, but never discard unexpected renderer errors.
   if (Env.isProduction) {
-    app.config.errorHandler = (_err, _vm, _info) => {}
+    app.config.errorHandler = (err, _vm, info) => {
+      console.error('Unhandled renderer error:', info, err)
+    }
     app.config.warnHandler = (_msg, _vm, _info) => {}
   }
   app.config.performance = Env.isDevelopment

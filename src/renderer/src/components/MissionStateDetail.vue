@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUpdated, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { MissionStuff, MissionDetail, DeckInfo, MissionCheckResult, MissionChecked, MissionResult } from '@common/mission'
 import { svdata } from '@renderer/store/svdata'
 import { KcsUtil, SlotWithOnSlot, ApiShipType, ApiShip, ApiMissionState, ApiDeckPort } from '@common/kcs'
@@ -15,17 +15,14 @@ import Duration40Image from '@assets/img/duration40.svg'
 import Duration60Image from '@assets/img/duration60.svg'
 import Duration80Image from '@assets/img/duration80.svg'
 import CheckOnlyImage from '@assets/img/check-only.svg'
+import { translateApp } from '@renderer/store/global_setting'
+import { getOperationMissionResultText } from '@renderer/common/operation-view'
 
 type Props = { 
   mission: MissionDetail; 
-  deckInfo: ApiDeckPort,
-  contentHeight: number
+  deckInfo: ApiDeckPort
 }
 const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:contentHeight', value: number): void
-}>()
 
 
 const remodelToText = (remodel: number): string => {
@@ -148,16 +145,22 @@ const itemGetCount = computed(() => {
   if (!props.mission.kitNormal) {
     return ''
   }
-  return props.mission.kitNormal.count + '(50%)'
+  return translateApp('operation.mission.reward.probability', {
+    params: { count: props.mission.kitNormal.count, probability: 50 }
+  })
 })
 const itemGetCount2 = computed(() => {
   if (!props.mission.kitSucceeded2) {
     return ''
   }
   if (1 === props.mission.kitSucceeded2.count) {
-    return props.mission.kitSucceeded2.count + '(確定)'
+    return translateApp('operation.mission.reward.confirmed', {
+      params: { count: props.mission.kitSucceeded2.count }
+    })
   }
-  return '1～'+props.mission.kitSucceeded2.count + '(確定)'
+  return translateApp('operation.mission.reward.confirmedRange', {
+    params: { count: props.mission.kitSucceeded2.count }
+  })
 })
 
 const missionTime = computed((): string => {
@@ -169,7 +172,6 @@ const missionTime = computed((): string => {
   return hStr + ':' + mStr
 })
 
-const elRoot = ref<HTMLElement | null>(null)
 const isCleared = computed(() => {
   if (! props.mission.isMonthly) {
     return false
@@ -189,7 +191,9 @@ const isFailed = computed(() => result.value.result === MissionResult.failed)
 const isSucceeded = computed(() => result.value.result === MissionResult.succeeded)
 const isSucceeded2 = computed(() => result.value.result === MissionResult.succeeded2)
 const isMonthly = computed(() => props.mission.isMonthly ?? false)
-const missionCheckResult = computed(() => MissionStuff.getMissionResultText(result.value.result))
+const missionCheckResult = computed(() =>
+  getOperationMissionResultText(result.value.result, translateApp)
+)
 const isShowCheckBox = computed(() => {
   return isSucceeded.value || isSucceeded2.value
 })
@@ -343,25 +347,17 @@ const getSlots = (ship: ShipInfoMission): SlotWithOnSlot[] => {
   return KcsUtil.getSlotsWithOnSlot(ship)
 }
 
-function emitContentHeight() {
-  const rect = elRoot.value?.getBoundingClientRect()
-  emit('update:contentHeight', rect?.height ?? 0)
-}
-
-onMounted(() => {
-  emitContentHeight()
-})
-
-onUpdated(() => {
-  emitContentHeight()
-})
 </script>
 <template>
-  <div class="mission-state-detail" ref="elRoot">
+  <div class="mission-state-detail">
     <div class="mission-title-content">
       <div class="mission-state-title">
-        <span v-if="isCleared" class="tag state-text">済</span>
-        <span v-if="isMonthly" class="tag state-monthly">月</span>
+        <span v-if="isCleared" class="tag state-text">{{
+          translateApp('operation.mission.tag.cleared')
+        }}</span>
+        <span v-if="isMonthly" class="tag state-monthly">{{
+          translateApp('operation.mission.tag.monthly')
+        }}</span>
         <span class="mission-title" :title="missionName">{{missionName}}</span>
         <span :class="{
           'result-text': true,
@@ -388,40 +384,40 @@ onUpdated(() => {
     <div class="mission-check">
       <span :class="[ isFlagshipLvClear ? 'is-clear' : 'not-clear' ]">
         <check-circle-img v-if="isFlagshipLvClear" />
-        <check-error-img class="error" v-if="!isFlagshipLvClear" />旗艦Lv:{{deckFlagshipLv}}({{reqFlagshipLv}})</span>
+        <check-error-img class="error" v-if="!isFlagshipLvClear" />{{ translateApp('operation.mission.requirement.flagshipLevel') }}:{{deckFlagshipLv}}({{reqFlagshipLv}})</span>
       <span v-if="isReqTotalLv" :class="[ isTotalLvClear ? 'is-clear' : 'not-clear']">
         <check-circle-img v-if="isTotalLvClear" />
-        <check-error-img class="error" v-if="!isTotalLvClear" />合計Lv:{{deckTotalLv}}({{reqTotalLv}})</span>
+        <check-error-img class="error" v-if="!isTotalLvClear" />{{ translateApp('operation.mission.requirement.totalLevel') }}:{{deckTotalLv}}({{reqTotalLv}})</span>
       <span v-if="isReqFlagshipType" :class="[ isFlagshipTypeClear ? 'is-clear' : 'not-clear' ]">
         <check-circle-img v-if="isFlagshipTypeClear" />
-        <check-error-img class="error" v-if="!isFlagshipTypeClear" />旗艦艦種:{{reqFlagshipType}}</span>
+        <check-error-img class="error" v-if="!isFlagshipTypeClear" />{{ translateApp('operation.mission.requirement.flagshipType') }}:{{reqFlagshipType}}</span>
       <span v-if="isReqShipType" :class="[ isShipTypeClear ? 'is-clear' : 'not-clear' ]">
         <check-circle-img v-if="isShipTypeClear" />
-        <check-error-img class="error" v-if="!isShipTypeClear" />艦種:{{reqShipType}}</span>
+        <check-error-img class="error" v-if="!isShipTypeClear" />{{ translateApp('operation.mission.requirement.shipType') }}:{{reqShipType}}</span>
       <span v-if="isReqDrumShipCount" :class="[ isDrumShipCountClear ? 'is-clear' : 'not-clear' ]">
         <check-circle-img v-if="isDrumShipCountClear" />
-        <check-error-img class="error" v-if="!isDrumShipCountClear" />ドラム缶搭載隻数:{{deckDrumShipCount}}({{reqDrumShipCount}})</span>
+        <check-error-img class="error" v-if="!isDrumShipCountClear" />{{ translateApp('operation.mission.requirement.drumShips') }}:{{deckDrumShipCount}}({{reqDrumShipCount}})</span>
       <span v-if="isReqDrumSlotCount" :class="[ isDrumSlotCountClear ? 'is-clear' : 'not-clear' ]">
         <check-circle-img v-if="isDrumSlotCountClear" />
-        <check-error-img class="error" v-if="!isDrumSlotCountClear" />ドラム缶数:{{deckDrumSlotCount}}({{reqDrumSlotCount}})</span>
+        <check-error-img class="error" v-if="!isDrumSlotCountClear" />{{ translateApp('operation.mission.requirement.drums') }}:{{deckDrumSlotCount}}({{reqDrumSlotCount}})</span>
       <span :class="[ isShipCountClear ? 'is-clear' : 'not-clear' ]">
         <check-circle-img v-if="isShipCountClear" />
-        <check-error-img class="error" v-if="!isShipCountClear" />隻数:{{deckShipCount}}({{reqShipCount}})</span>
+        <check-error-img class="error" v-if="!isShipCountClear" />{{ translateApp('operation.mission.requirement.shipCount') }}:{{deckShipCount}}({{reqShipCount}})</span>
       <span v-if="isReqTotalFire" :class="[ isTotalFireClear ? 'is-clear' : 'not-clear']">
         <check-circle-img v-if="isTotalFireClear" />
-        <check-error-img class="error" v-if="!isTotalFireClear" />火力:{{deckTotalFire}}<span v-if="deckTotalRemodelFire!='0'" class="remodel-text">+{{deckTotalRemodelFire}}</span>({{reqTotalFire}})</span>
+        <check-error-img class="error" v-if="!isTotalFireClear" />{{ translateApp('operation.mission.requirement.firepower') }}:{{deckTotalFire}}<span v-if="deckTotalRemodelFire!='0'" class="remodel-text">+{{deckTotalRemodelFire}}</span>({{reqTotalFire}})</span>
       <span v-if="isReqTotalTor" :class="[ isTotalTorClear ? 'is-clear' : 'not-clear']">
         <check-circle-img v-if="isTotalTorClear" />
-        <check-error-img class="error" v-if="!isTotalTorClear" />雷撃:{{deckTotalTor}}({{reqTotalTor}})</span>
+        <check-error-img class="error" v-if="!isTotalTorClear" />{{ translateApp('operation.mission.requirement.torpedo') }}:{{deckTotalTor}}({{reqTotalTor}})</span>
       <span v-if="isReqTotalAa"  :class="[ isTotalAaClear ? 'is-clear' : 'not-clear']">
         <check-circle-img v-if="isTotalAaClear" />
-        <check-error-img class="error" v-if="!isTotalAaClear" />対空:{{deckTotalAa}}<span v-if="deckTotalRemodelAa!='0'" class="remodel-text">+{{deckTotalRemodelAa}}</span>({{reqTotalAa}})</span>
+        <check-error-img class="error" v-if="!isTotalAaClear" />{{ translateApp('operation.mission.requirement.antiAir') }}:{{deckTotalAa}}<span v-if="deckTotalRemodelAa!='0'" class="remodel-text">+{{deckTotalRemodelAa}}</span>({{reqTotalAa}})</span>
       <span v-if="isReqTotalAsw"  :class="[ isTotalAswClear ? 'is-clear' : 'not-clear']">
         <check-circle-img v-if="isTotalAswClear" />
-        <check-error-img class="error" v-if="!isTotalAswClear" />対潜:{{deckTotalAsw}}<span v-if="deckTotalRemodelAsw!='0'" class="remodel-text">+{{deckTotalRemodelAsw}}</span>({{reqTotalAsw}})</span>
+        <check-error-img class="error" v-if="!isTotalAswClear" />{{ translateApp('operation.mission.requirement.antiSubmarine') }}:{{deckTotalAsw}}<span v-if="deckTotalRemodelAsw!='0'" class="remodel-text">+{{deckTotalRemodelAsw}}</span>({{reqTotalAsw}})</span>
       <span v-if="isReqTotalLos" :class="[ isTotalLosClear ? 'is-clear' : 'not-clear']">
         <check-circle-img v-if="isTotalLosClear" />
-        <check-error-img class="error" v-if="!isTotalLosClear" />索敵:{{deckTotalLos}}<span v-if="deckTotalRemodelLos!='0'" class="remodel-text">+{{deckTotalRemodelLos}}</span>({{reqTotalLos}})</span>
+        <check-error-img class="error" v-if="!isTotalLosClear" />{{ translateApp('operation.mission.requirement.search') }}:{{deckTotalLos}}<span v-if="deckTotalRemodelLos!='0'" class="remodel-text">+{{deckTotalRemodelLos}}</span>({{reqTotalLos}})</span>
     </div>
     <div class="ships">
       <div class="ship" v-for="(ship, ship_index) in ships" :key="ship_index">

@@ -9,6 +9,9 @@ export const LocalStorageKeyName = {
 
     // renderer state
     rendererStatePrefix: 'rendererState:',
+
+    // workspace and dense-panel view state
+    panelViewStatePrefix: 'panelViewState:',
   }
 
 } as const

@@ -2641,15 +2641,15 @@ const calcDaihatuBonus = (daihatuCount: SlotitemCount): number => {
     if (tokuSlots.length <= 2) {
       tokuBonus = 2.0 * tokuSlots.length
     } else {
-       const daihatuSlots = daihatuCount.daihatus[68]
+       const standardDaihatuCount = daihatuCount.daihatus[68]?.length ?? 0
        if (tokuSlots.length === 3) {
-          tokuBonus = (daihatuSlots.length <= 1 ? 5.0 : 
-            (daihatuSlots.length <= 2 ? 5.2 : 5.4))
+          tokuBonus = standardDaihatuCount <= 1 ? 5.0 :
+            (standardDaihatuCount <= 2 ? 5.2 : 5.4)
        } else {
-          tokuBonus = (daihatuSlots.length <= 0 ? 5.4 : 
-            (daihatuSlots.length <= 1 ? 5.6 : 
-              (daihatuSlots.length <= 2 ? 5.8 : 
-                daihatuSlots.length <= 3 ? 5.9 : 6.0)))
+          tokuBonus = standardDaihatuCount <= 0 ? 5.4 :
+            (standardDaihatuCount <= 1 ? 5.6 :
+              (standardDaihatuCount <= 2 ? 5.8 :
+                standardDaihatuCount <= 3 ? 5.9 : 6.0))
        }
     }
   }

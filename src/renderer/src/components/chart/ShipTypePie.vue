@@ -5,6 +5,9 @@ import * as chartStuff from '@renderer/components/chart/stuff'
 import { ShipTypePieData } from './types';
 import { AggregateShipType } from '@common/calc_record';
 import CheckOnlyImage from '@assets/img/check-only.svg'
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
+import { getDropShipTypeText } from '@renderer/common/drop-view'
+import { escapeHtmlText } from '@renderer/common/localized-html'
 
 // -----------------------------------------------------------------
 // 親へ通知するための emit 定義
@@ -28,6 +31,13 @@ const props = defineProps<{
 const chartEl = ref<HTMLElement | null>(null);
 console.log('ShipTypePie chartEl:', !!chartEl.value, props);
 let chart: Highcharts.Chart | null = null;
+
+function localizedSeriesData(): ShipTypePieData[] {
+  return props.seriesData.map((data) => ({
+    ...data,
+    name: getDropShipTypeText(data.type, translateApp)
+  }))
+}
 
 function handlePointSelect(pt: Highcharts.Point, selected: boolean) {
   console.log('handlePointSelect:', pt, selected);
@@ -62,8 +72,10 @@ function createChart() {
       headerFormat: '',
       formatter: function () {
         const p = this.point;
-        const name = p.name === '-' ? 'なし' : p.name;
-        return `<span>${name}: ${p.y}</span><br/><span>${Highcharts.numberFormat(p.percentage!,1)}%</span>`;
+        const name = p.name === '-'
+          ? translateApp('drop.common.none')
+          : p.name;
+        return `<span>${escapeHtmlText(name)}: ${p.y}</span><br/><span>${Highcharts.numberFormat(p.percentage!,1)}%</span>`;
       },
       padding: 4,
     },
@@ -109,7 +121,7 @@ function createChart() {
           overflow: 'allow',  // はみ出しを許可
           distance: -33,
           formatter: function() {
-            return `<div class="ship-type-pie-label"><b>${this.point.name}</b><br/>${Highcharts.numberFormat(this.percentage,1)}%</div>`;
+            return `<div class="ship-type-pie-label"><b>${escapeHtmlText(this.point.name)}</b><br/>${Highcharts.numberFormat(this.percentage,1)}%</div>`;
           },
           style: {
             fontSize: '12px',
@@ -120,8 +132,8 @@ function createChart() {
       }
     },
     series: [{
-      name: '割合',
-      data: props.seriesData ?? [],
+      name: translateApp('drop.common.ratio'),
+      data: localizedSeriesData(),
       type: 'pie',
     }],
     credits: { enabled: false }
@@ -173,7 +185,7 @@ function getLegendColorboxStyle(legend: LegendInfo): string {
 
 function getLegendText(legend: LegendInfo): string {
   const pt = legend.pt;
-  const name = pt.name === '-' ? 'なし' : pt.name;
+  const name = pt.name === '-' ? translateApp('drop.common.none') : pt.name;
   const percentage = getPercentage(pt);
   const percentageText = percentage ? ' (' + percentage + ')' : ''
   return `${name} ${pt.y}${percentageText}`;
@@ -188,7 +200,6 @@ function onLegendClick(legend: LegendInfo, index: number): void {
   }
 }
 
-// 追加: props.seriesData が変わったらチャートと凡例を更新する
 watch(
   () => props.seriesData,
   () => {
@@ -197,13 +208,36 @@ watch(
     }
     console.log('ShipTypePie watch seriesData changed');
     chart.update({ series: [{
-      data: props.seriesData ?? [],
+      name: translateApp('drop.common.ratio'),
+      data: localizedSeriesData(),
       type: 'pie',
     }]}, true);
     updateChartLegends();
   },
   { deep: true }
 );
+
+watch(
+  () => globalSetting.locale,
+  () => {
+    if (!chart?.series[0]) {
+      return
+    }
+    chart.series[0].update(
+      { name: translateApp('drop.common.ratio'), type: 'pie' },
+      false
+    )
+    chart.series[0].points.forEach((point) => {
+      const type = (point as any).type as AggregateShipType
+      point.update(
+        { name: getDropShipTypeText(type, translateApp) },
+        false
+      )
+    })
+    chart.redraw()
+    updateChartLegends()
+  }
+)
 
 </script>
 

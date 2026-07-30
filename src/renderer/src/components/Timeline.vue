@@ -12,14 +12,6 @@ import {
   type PortRecordQueryProjection
 } from '@common/record'
 import {
-  DispSeikuText,
-  getAirSearchResultText,
-  QuestCategoryText,
-  QuestTypeText,
-  QuestTypeTextYear,
-  TacticsText
-} from '@common/locale'
-import {
   ApiEventId,
   ApiEventKind,
   ApiItemBonusType,
@@ -27,7 +19,6 @@ import {
   ApiProgressFlag,
   type ApiQuest,
   ApiQuestState,
-  ApiQuestType,
   KcsUtil
 } from '@common/kcs'
 import InfoImg from '@assets/img/titlebar/info.svg'
@@ -40,6 +31,19 @@ import * as bs from '@renderer/common/battle-score'
 import { gameSetting } from '@renderer/store/gamesetting'
 import { ShipImg } from '@renderer/stuff/imgs/ship'
 import { RUtil } from '@renderer/util'
+import { withPanelLoadTimeout } from '@renderer/common/panel-load'
+import { globalSetting, translateApp } from '@renderer/store/global_setting'
+import { getBattleAirSearchText, getBattleTacticsText } from '@renderer/common/battle-equipment-view'
+import { getQuestCategoryText, getQuestTypeText } from '@renderer/common/quest-view'
+import { escapeHtmlText } from '@renderer/common/localized-html'
+
+const TimelineAirStateKeys = [
+  'timeline.airState.0',
+  'timeline.airState.1',
+  'timeline.airState.2',
+  'timeline.airState.3',
+  'timeline.airState.4'
+] as const
 
 const props = defineProps<{
   show: boolean
@@ -88,11 +92,17 @@ const battleRecords = computed<TimelineBattleRecord[]>(() => {
 })
 
 const questCountText = computed(
-  () => ` 遂行中: ${quests.value.length} 受託可能: ${props.data[0].quest_max}`
+  () =>
+    translateApp('timeline.quest.summary', {
+      params: {
+        active: quests.value.length,
+        capacity: props.data[0].quest_max
+      }
+    })
 )
 
 function questCategoryText(quest: ApiQuest): string {
-  return QuestCategoryText[quest.api_category] ?? '?'
+  return getQuestCategoryText(quest.api_category, translateApp)
 }
 
 function questCategoryClass(quest: ApiQuest): object {
@@ -101,12 +111,7 @@ function questCategoryClass(quest: ApiQuest): object {
 }
 
 function questTypeText(quest: ApiQuest): string {
-  const t = QuestTypeText[quest.api_type] ?? ''
-  // Quarterly sometimes labeled with year
-  if (quest.api_type === ApiQuestType.quarterly) {
-    return `${t}${QuestTypeTextYear}`
-  }
-  return t
+  return getQuestTypeText(quest, translateApp)
 }
 
 function questTypeClass(quest: ApiQuest): object {
@@ -121,7 +126,7 @@ function isQuestStateVisible(quest: ApiQuest): boolean {
 
 function questStateText(quest: ApiQuest): string {
   if (quest.api_state === ApiQuestState.completed) {
-    return '達成'
+    return translateApp('timeline.quest.completed')
   }
   const text = ['', '50%', '80%'] as const
   return text[quest.api_progress_flag] ?? ''
@@ -165,18 +170,18 @@ function toLocalDateText(date: string): string {
 }
 
 function battleFormationText(record: BattleRecord): string {
-  return TacticsText[record.formations?.[2] ?? 0] ?? ''
+  return getBattleTacticsText(record.formations?.[2], translateApp)
 }
 
 function airSearchResultText(record: TimelineBattleRecord): string {
   if (! record.showAirSearchResult) {
     return ''
   }
-  const ret = getAirSearchResultText(record.airsearchResult)
+  const ret = getBattleAirSearchText(record.airsearchResult, translateApp)
   if (! ret) {
     return ''
   }
-  return `航空偵察：${ret}`
+  return translateApp('timeline.airSearch', { params: { result: ret } })
 }
 
 function getNoBattleText(record: TimelineBattleRecord): string {
@@ -184,7 +189,7 @@ function getNoBattleText(record: TimelineBattleRecord): string {
   if (! isNobattle) {
     return ''
   }
-  return '戦闘なし'
+  return translateApp('timeline.noBattle')
 }
 
 function getInfoText(record: TimelineBattleRecord): string {
@@ -197,7 +202,8 @@ function getInfoText(record: TimelineBattleRecord): string {
 
 
 function battleSeikuText(record: BattleRecord): string {
-  return DispSeikuText[record?.seiku ?? 0] ?? ''
+  const key = TimelineAirStateKeys[record?.seiku ?? -1]
+  return key ? translateApp(key) : ''
 }
 
 const isShow = computed(() => {
@@ -241,6 +247,11 @@ interface QuestClearRecord {
 const dailyScoreChartEl = ref<HTMLElement | null>(null)
 const hasDailyScore = ref(false)
 let dailyScoreChart: Highcharts.Chart | undefined
+let scoreChartRequestId = 0
+let timelineUnmounted = false
+const scoreChartLoadState = ref<'waiting' | 'loading' | 'ready' | 'empty' | 'error'>(
+  svdata.isShipDataOk ? 'loading' : 'waiting'
+)
 
 function toExpRecord(r: PortRecord): ExpRecord | null {
   if (!r?.date || r[ApiItemId.teitoku_exp] === undefined) {
@@ -471,7 +482,9 @@ async function fetchCurrentMonthDailyScores(): Promise<{
     const date = new Date(year, month - 1, day)
     const dayTxt = `${date.getMonth() + 1}/${date.getDate()}`
     categories.push(dayTxt)
-    tooltipCategories.push(dayTxt+'('+date.toLocaleString(undefined, { weekday: 'short' })+')')
+    tooltipCategories.push(
+      `${dayTxt}(${date.toLocaleString(globalSetting.locale, { weekday: 'short' })})`
+    )
     const exp = dailyExpMap.get(day) ?? 0
     const score = Math.floor(Math.round((exp * 7 / 10000) * 100) / 100)
     scores.push(score)
@@ -569,7 +582,7 @@ function drawDailyScoreChart(
         points.forEach((p) => {
           //console.log('tooltip point', p)
           const color = typeof p.color === 'string' ? p.color : '#5897ff'
-          html += `<span style="color:${color}">\u25cf</span> ${p.series.name}: ${Math.trunc(p.y)}<br/>`
+          html += `<span style="color:${color}">\u25cf</span> ${escapeHtmlText(p.series.name)}: ${Math.trunc(p.y)}<br/>`
         })
         return html
       }
@@ -613,13 +626,13 @@ function drawDailyScoreChart(
     series: [
       {
         type: 'column',
-        name: '当日戦果',
+        name: translateApp('timeline.score.today'),
         data: scores,
         color: '#60fa4b'
       },
       {
         type: 'spline',
-        name: '累積戦果',
+        name: translateApp('timeline.score.total'),
         data: cumulativeScores,
         yAxis: 1,
         color: grad,
@@ -641,33 +654,82 @@ function drawDailyScoreChart(
   dailyScoreChart.update(options, true, true)
 }
 
-const scoreChartStateText = ref(svdata.isShipDataOk ? '当月戦果データを取得中...' : 'GAME開始前により戦果チャートが表示できません');
+const scoreChartStateText = computed(() => {
+  switch (scoreChartLoadState.value) {
+    case 'waiting':
+      return translateApp('status.timelineScore.beforeGame')
+    case 'loading':
+      return translateApp('status.timelineScore.loading')
+    case 'empty':
+      return translateApp('status.timelineScore.empty')
+    case 'error':
+      return translateApp('status.timelineScore.error')
+    default:
+      return ''
+  }
+})
 async function fetchAndDrawDailyScoreChart(): Promise<void> {
+  const requestId = ++scoreChartRequestId
+  scoreChartLoadState.value = 'loading'
+  hasDailyScore.value = false
+
   try {
-    const { categories, tooltipCategories, scores, cumulativeScores } = await fetchCurrentMonthDailyScores()
+    const { categories, tooltipCategories, scores, cumulativeScores } =
+      await withPanelLoadTimeout(
+        fetchCurrentMonthDailyScores(),
+        'Timeline score request timed out'
+      )
+    if (timelineUnmounted || requestId !== scoreChartRequestId) {
+      return
+    }
+
     // クエリできればデータなしでも成功
     // データなしの場合はチャートに「NO DATA」テキストが出る
     hasDailyScore.value = categories.length > 0
+    scoreChartLoadState.value = hasDailyScore.value ? 'ready' : 'empty'
     console.log('fetched daily score data', { categories, tooltipCategories, scores, cumulativeScores })
     await nextTick()
+    if (timelineUnmounted || requestId !== scoreChartRequestId) {
+      return
+    }
     drawDailyScoreChart(categories, tooltipCategories, scores, cumulativeScores)
   } catch (err) {
+    if (timelineUnmounted || requestId !== scoreChartRequestId) {
+      return
+    }
     console.error('timeline fetchCurrentMonthDailyScores error:', err)
-    scoreChartStateText.value = '当月戦果データの取得に失敗しました。'
+    scoreChartLoadState.value = 'error'
     hasDailyScore.value = false
   }
+}
+
+function retryDailyScoreChart(): void {
+  void fetchAndDrawDailyScoreChart()
 }
 
 watch(
   () => props.show,
   (show) => {
     if (show) {
-      fetchAndDrawDailyScoreChart()
+      void fetchAndDrawDailyScoreChart()
+    } else {
+      scoreChartRequestId += 1
+    }
+  }
+)
+
+watch(
+  () => globalSetting.locale,
+  () => {
+    if (props.show) {
+      void fetchAndDrawDailyScoreChart()
     }
   }
 )
 
 onBeforeUnmount(() => {
+  timelineUnmounted = true
+  scoreChartRequestId += 1
   if (dailyScoreChart) {
     dailyScoreChart.destroy()
     dailyScoreChart = undefined
@@ -688,7 +750,7 @@ const isNoAssist = computed(() => !gameSetting.assistInGame)
   >
     <section v-if="isShowQuestList">
       <div class="timeline-title px-1">
-        <div>遂行中任務</div>
+        <div>{{ translateApp('timeline.quest.title') }}</div>
         <div v-if="isQuestsValid">{{ questCountText }}</div>
       </div>
       <div class="px-2 py-1">
@@ -711,35 +773,51 @@ const isNoAssist = computed(() => !gameSetting.assistInGame)
         </div>
         <div v-else class="quest-content">
           <div class="quest-help help-text">
-            <span class="img mr-2"><InfoImg /></span>クエスト情報が未取得です。任務(クエスト)画面を開いてください。
+            <span class="img mr-2"><InfoImg /></span>{{
+              translateApp('timeline.quest.unavailable')
+            }}
           </div>
         </div>
       </div>
     </section>
     <section v-if="isGimmickFlagDetected">
-      <div class="timeline-title px-1">ギミック</div>
-      <div>ギミック解除音を検知しました。</div>
-      <div>直近戦闘 {{ lastBattleInfo }}</div>
+      <div class="timeline-title px-1">{{ translateApp('timeline.gimmick.title') }}</div>
+      <div>{{ translateApp('timeline.gimmick.soundDetected') }}</div>
+      <div>{{ translateApp('timeline.lastBattle', { params: { battle: lastBattleInfo } }) }}</div>
     </section>
     <section v-if="isMapChangeDetected">
-      <div class="timeline-title px-1">海域変化ギミック</div>
-      <div>海域変化を検知しました。</div>
-      <div>直近戦闘 {{ lastBattleInfo }}</div>
+      <div class="timeline-title px-1">{{
+        translateApp('timeline.gimmick.mapChangeTitle')
+      }}</div>
+      <div>{{ translateApp('timeline.gimmick.mapChangeDetected') }}</div>
+      <div>{{ translateApp('timeline.lastBattle', { params: { battle: lastBattleInfo } }) }}</div>
     </section>
     <section>
       <div class="timeline-title px-1">
-        <span>当日戦果</span>
-        <span class="is-right">累積戦果</span>
+        <span>{{ translateApp('timeline.score.today') }}</span>
+        <span class="is-right">{{ translateApp('timeline.score.total') }}</span>
       </div>
       <div class="px-2 py-0 daily-score-chart-container">
         <div ref="dailyScoreChartEl" class="daily-score-chart"></div>
-        <div v-if="!hasDailyScore" class="daily-score-help">
-          {{ scoreChartStateText }}
+        <div
+          v-if="!hasDailyScore"
+          class="daily-score-help"
+          :class="{ 'is-error': scoreChartLoadState === 'error' }"
+          aria-live="polite"
+        >
+          <span>{{ scoreChartStateText }}</span>
+          <button
+            v-if="scoreChartLoadState === 'error'"
+            type="button"
+            @click="retryDailyScoreChart"
+          >
+            {{ translateApp('common.retry') }}
+          </button>
         </div>
       </div>
     </section>
     <section>
-      <div class="timeline-title px-1">出撃履歴</div>
+      <div class="timeline-title px-1">{{ translateApp('timeline.sortieHistory') }}</div>
       <div v-if="isBattleRecordsValid">
         <div class="card" v-for="(record, b_index) in battleRecords" :key="b_index">
           <div class="card-content">
@@ -752,7 +830,9 @@ const isNoAssist = computed(() => !gameSetting.assistInGame)
               <div class="media-content is-overflow-hidden">
                 <p class="subtitle is-7">
                   {{ toLocalDateText(record.date) }}
-                  <span v-if="record.drop && record.drop.shipId === -2">母港FULL</span>
+                  <span v-if="record.drop && record.drop.shipId === -2">{{
+                    translateApp('timeline.motherPortFull')
+                  }}</span>
                   <span v-if="record.drop && record.drop.shipId > 0"
                     >Drop: {{ record.drop.shipName }}</span
                   >
@@ -786,7 +866,8 @@ const isNoAssist = computed(() => !gameSetting.assistInGame)
       </div>
       <div v-else>
         <div class="mx-2 my-2 timeline-battle help-text">
-          <span class="img mr-2"><InfoImg /></span>出撃履歴がありません。
+          <span class="img mr-2"><InfoImg /></span>
+          {{ translateApp('status.battleHistory.empty') }}
         </div>
       </div>
     </section>

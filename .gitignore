@@ -11,6 +11,8 @@ test-data*/**
 coverage
 **/__snapshots__
 src/main/debug-data.ts
+.playwright-cli/
+output/
 
 # auto gen
 src/renderer/src/generated/bundled-licenses.ts

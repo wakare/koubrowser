@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch} from 'vue'
+import { computed, ref, watch} from 'vue'
 import { 
   AreaName, 
   AreaMissionMap, 
@@ -19,26 +19,62 @@ import {
 } from '@common/kcs'
 import { svdata } from '@renderer/store/svdata'
 import MissionStateDetail from '@renderer/components/MissionStateDetail.vue'
+import { useResponsiveTablePageSize } from './table/use-responsive-table-page-size'
 import KeepImg from '@assets/img/keep.svg'
 import { itemIdClassMap, itemIdTitleMap } from '@renderer/util'
 import { appSetting } from '@renderer/store/app_setting'
 import LockImage from '@renderer/assets/img/lock.svg'
 import { missionList } from '@renderer/store/missionList'
 import moment from 'moment'
+import {
+  getMissionCheckViewState,
+  saveMissionCheckViewState,
+  type MissionAreaFilterName
+} from '@renderer/store/panel_view_state'
+import { translateApp } from '@renderer/store/global_setting'
 
-const filterArea1 = ref<boolean>(false)
-const filterArea2 = ref<boolean>(false)
-const filterArea3 = ref<boolean>(false)
-const filterArea4 = ref<boolean>(false)
-const filterArea5 = ref<boolean>(false)
-const filterArea6 = ref<boolean>(false)
-const filterMonthly = ref<boolean>(true)
+const missionCheckViewState = getMissionCheckViewState()
+const hasAreaFilter = (filter: MissionAreaFilterName): boolean =>
+  missionCheckViewState.areaFilters.includes(filter)
+const filterArea1 = ref<boolean>(hasAreaFilter('area1'))
+const filterArea2 = ref<boolean>(hasAreaFilter('area2'))
+const filterArea3 = ref<boolean>(hasAreaFilter('area3'))
+const filterArea4 = ref<boolean>(hasAreaFilter('area4'))
+const filterArea5 = ref<boolean>(hasAreaFilter('area5'))
+const filterArea6 = ref<boolean>(hasAreaFilter('area6'))
+const filterMonthly = ref<boolean>(missionCheckViewState.showMonthly)
 const filterClearedMonthlyUnDisplay = ref<boolean>(appSetting.mission.filterClearedMonthlyUnDisplay)
+const filterExpanded = ref(false)
 
 watch(filterClearedMonthlyUnDisplay,
  (newVal) => {
   appSetting.mission.filterClearedMonthlyUnDisplay = newVal
 })
+
+watch(
+  [
+    filterArea1,
+    filterArea2,
+    filterArea3,
+    filterArea4,
+    filterArea5,
+    filterArea6,
+    filterMonthly
+  ],
+  () => {
+    const areaFilters: MissionAreaFilterName[] = []
+    if (filterArea1.value) areaFilters.push('area1')
+    if (filterArea2.value) areaFilters.push('area2')
+    if (filterArea3.value) areaFilters.push('area3')
+    if (filterArea4.value) areaFilters.push('area4')
+    if (filterArea5.value) areaFilters.push('area5')
+    if (filterArea6.value) areaFilters.push('area6')
+    saveMissionCheckViewState({
+      areaFilters,
+      showMonthly: filterMonthly.value
+    })
+  }
+)
 
 function isKeeped(missionId: MissionId): boolean {
   return appSetting.mission.keepMissionIds.includes(missionId)
@@ -110,8 +146,6 @@ type MissionData = {
   isCleared: boolean
   durationText: string
 }
-
-const detailContentHeight = ref<number>(0)
 
 const isShowDetailed = ref<boolean>(false)
 const detailedMission = ref<MissionDetail | null>(null)
@@ -330,7 +364,7 @@ const isDetailed = (deckIndex: number, data: MissionData): boolean => {
 }
 
 const onClickMission = (rowIndex: number, deckIndex: number, data: MissionData): void => {
-  console.log('onClickMission rowIndex:', rowIndex, 'deckIndex:', deckIndex, data, detailContentHeight.value)
+  console.log('onClickMission rowIndex:', rowIndex, 'deckIndex:', deckIndex, data)
   if (data.missionResult[deckIndex] === MissionResult.invalid) {
     return
   }
@@ -339,23 +373,12 @@ const onClickMission = (rowIndex: number, deckIndex: number, data: MissionData):
   detailedDeckInfo.value = svdata.deckPorts[deckIndex+1] // 0 deckInfo index is deck port index of 2
   detailedDeckIndex.value = deckIndex
   isShowDetailed.value = true
-  console.log('listHeight detailContentHeight:', detailContentHeight.value,)
 }
 
 const detailMission = computed<MissionDetail>(() => detailedMission.value!)
 const detailDeckInfo = computed<ApiDeckPort>(() => {
   console.log('MissionCheck detailDeckInfo computed called', detailedDeckInfo.value)
   return detailedDeckInfo.value!
-})
-
-const listHeight = computed<number>(() => {
-  return 846 - detailContentHeight.value;
-})
-
-onMounted(() => {
-})
-
-onUnmounted(() => {
 })
 
 const isLock2stDeck = computed(() => {
@@ -371,12 +394,37 @@ const isLock4stDeck = computed(() => {
 })
 
 // Keep empty text for table when no data
-const emptyText = '該当する遠征が見つかりません。'
+const emptyText = computed(() => translateApp('status.list.mission.empty'))
+const missionRoot = ref<HTMLElement | null>(null)
+const currentPage = ref(1)
+const perPage = useResponsiveTablePageSize(missionRoot, {
+  fallback: 18,
+  min: 8,
+  max: 32,
+  rowHeight: 28.5
+})
 </script>
 <template>
-  <div class="mission-state-content">
-    <div class="filter-content" position="is-centered" multiline>
-      <b-field class="inputs" position="is-centered" multiline>
+  <div ref="missionRoot" class="mission-state-content">
+    <button
+      type="button"
+      class="mission-filter-toggle"
+      :aria-expanded="filterExpanded"
+      aria-controls="mission-filter-content"
+      @click="filterExpanded = !filterExpanded"
+    >
+      {{
+        filterExpanded
+          ? translateApp('operation.mission.filter.back')
+          : translateApp('operation.mission.filter.conditions')
+      }}
+    </button>
+    <div
+      id="mission-filter-content"
+      class="filter-content"
+      :class="{ 'is-expanded': filterExpanded }"
+    >
+      <b-field class="inputs" grouped group-multiline position="is-centered">
         <label class="input-checkbox">
           <b-checkbox size="is-small" v-model="filterArea1" /><span 
             class="filter-label">鎮守府海域</span>
@@ -403,13 +451,19 @@ const emptyText = '該当する遠征が見つかりません。'
         </label>
         <div class="sep-vertical"></div>
         <div class="monthly-block">
-          <div class="monthly-title">マンスリー</div>
+          <div class="monthly-title">{{
+            translateApp('operation.mission.filter.monthly')
+          }}</div>
           <div class="monthly-controls">
             <label class="input-checkbox">
-              <b-checkbox size="is-small" v-model="filterMonthly" /><span class="filter-label">表示</span>
+              <b-checkbox size="is-small" v-model="filterMonthly" /><span class="filter-label">{{
+                translateApp('operation.mission.filter.show')
+              }}</span>
             </label>
             <label class="input-checkbox">
-              <b-checkbox size="is-small" v-model="filterClearedMonthlyUnDisplay" /><span class="filter-label">クリア済非表示</span>
+              <b-checkbox size="is-small" v-model="filterClearedMonthlyUnDisplay" /><span class="filter-label">{{
+                translateApp('operation.mission.filter.hideCleared')
+              }}</span>
             </label>
           </div>
         </div>      
@@ -418,6 +472,13 @@ const emptyText = '該当する遠征が見つかりません。'
     <section class="mission-state">
       <b-table
         :data="datas"
+        :paginated="true"
+        :per-page="perPage"
+        v-model:current-page="currentPage"
+        :pagination-simple="false"
+        pagination-position="bottom"
+        :pagination-rounded="false"
+        :page-input="false"
         :show-detail-icon="false"
         :bordered="false"
         :striped="false"
@@ -426,41 +487,46 @@ const emptyText = '該当する遠征が見つかりません。'
         :mobile-cards="false"
         :sticky-header="true"
         default-sort-direction="desc"
-        :height="listHeight"
         @sort="onSort"
       >
         <b-table-column centered header-class="keep">
           <template #header>
-            <div title="常に表示する"><KeepImg /></div>
+            <div :title="translateApp('operation.mission.keep')"><KeepImg /></div>
           </template>
           <template #default="props">
-            <span class="mission-keep-content" title="常に表示する" @click="toggleKeep(props.row.detail.id)" ><span :class="{
+            <span class="mission-keep-content" :title="translateApp('operation.mission.keep')" @click="toggleKeep(props.row.detail.id)" ><span :class="{
               'is-keep': isKeeped(props.row.detail.id)}"><KeepImg /></span></span>
           </template>
         </b-table-column>
 
         <b-table-column centered header-class="kind">
           <template #header>
-            <span>種別</span>
+            <span>{{ translateApp('operation.mission.table.kind') }}</span>
           </template>
           <template #default="props">
             <span class="mission-kind-content">
-              <span v-if="props.row.isCleared && props.row.detail.isMonthly" class="tag state-text">済</span>
-              <span v-if="props.row.detail.isMonthly" class="tag state-monthly">月</span>
+              <span v-if="props.row.isCleared && props.row.detail.isMonthly" class="tag state-text">{{
+                translateApp('operation.mission.tag.cleared')
+              }}</span>
+              <span v-if="props.row.detail.isMonthly" class="tag state-monthly">{{
+                translateApp('operation.mission.tag.monthly')
+              }}</span>
             </span>
           </template>
         </b-table-column>
 
-        <b-table-column header-class="name">
+        <b-table-column header-class="name" cell-class="name">
           <template #header>
-            <span>遠征名</span>
+            <span>{{ translateApp('operation.mission.table.mission') }}</span>
           </template>
           <template #default="props">
             <span class="mission-name-content">
               <span class="mission-name">
                 {{ props.row.detail.id + ': ' + props.row.detail.name }}
               </span>
-              <span v-if="props.row.detail.isCombat" class="tag mission-fight">交</span>
+              <span v-if="props.row.detail.isCombat" class="tag mission-fight">{{
+                translateApp('operation.mission.tag.combat')
+              }}</span>
             </span>
           </template>
         </b-table-column>
@@ -511,8 +577,10 @@ const emptyText = '該当する遠征が見つかりません。'
 
         <b-table-column centered header-class="kit">
           <template #header>
-            <div class="header-text">獲得資材</div>
-            <div class="sub">成功/大成功</div>
+            <div class="header-text">{{
+              translateApp('operation.mission.table.material')
+            }}</div>
+            <div class="sub">{{ translateApp('operation.mission.table.result') }}</div>
           </template>
           <template #default="props">
             <div v-if="isGetKit(props.row)" class="mission-kit-content">
@@ -526,7 +594,7 @@ const emptyText = '該当する遠征が見つかりません。'
 
         <b-table-column centered header-class="time" sortable field="detail.durationMinute">
           <template #header>
-            <span>時間<span v-if="isSortedField('detail.durationMinute')" class="order-text">{{ getOrderText() }}</span></span>
+            <span>{{ translateApp('operation.mission.table.time') }}<span v-if="isSortedField('detail.durationMinute')" class="order-text">{{ getOrderText() }}</span></span>
           </template>
           <template #default="props">
             <span class="mission-time-content">
@@ -537,15 +605,21 @@ const emptyText = '該当する遠征が見つかりません。'
         
         <b-table-column centered header-class="result">
           <template #header>
-            <div :class="{hasBonus: hasBonus(0)}"><LockImage v-if="isLock2stDeck" /><span v-else>第二艦隊</span></div>
-            <div v-if="hasBonus(0)" class="bonusText">報酬+{{getBonus(0)}}%</div>
+            <div :class="{hasBonus: hasBonus(0)}"><LockImage v-if="isLock2stDeck" /><span v-else>{{ translateApp('operation.mission.fleet.2') }}</span></div>
+            <div v-if="hasBonus(0)" class="bonusText">{{
+              translateApp('operation.mission.rewardBonus', {
+                params: { percent: getBonus(0) }
+              })
+            }}</div>
           </template>
           <template #default="props">
             <div
               :class="['mission-result', { 'in-mission': props.row.inMission[0] }]"
               @click="onClickMission(props.index, 0, props.row)"
             >
-              <div v-if="props.row.inMission[0]" class="mission-running">遠征中</div>
+              <div v-if="props.row.inMission[0]" class="mission-running">{{
+                translateApp('operation.mission.running')
+              }}</div>
               <div
                 :class="[
                   'text',
@@ -559,15 +633,21 @@ const emptyText = '該当する遠征が見つかりません。'
 
         <b-table-column centered header-class="result">
           <template #header>
-            <div :class="{hasBonus: hasBonus(1)}"><LockImage v-if="isLock3stDeck" /><span v-else>第三艦隊</span></div>
-            <div v-if="hasBonus(1)" class="bonusText">報酬+{{getBonus(1)}}%</div>
+            <div :class="{hasBonus: hasBonus(1)}"><LockImage v-if="isLock3stDeck" /><span v-else>{{ translateApp('operation.mission.fleet.3') }}</span></div>
+            <div v-if="hasBonus(1)" class="bonusText">{{
+              translateApp('operation.mission.rewardBonus', {
+                params: { percent: getBonus(1) }
+              })
+            }}</div>
           </template>
           <template #default="props">
             <div
               :class="['mission-result', { 'in-mission': props.row.inMission[1] }]"
               @click="onClickMission(props.index, 1, props.row)"
             >
-              <div v-if="props.row.inMission[1]" class="mission-running">遠征中</div>
+              <div v-if="props.row.inMission[1]" class="mission-running">{{
+                translateApp('operation.mission.running')
+              }}</div>
               <div
                 :class="[
                   'text',
@@ -581,15 +661,21 @@ const emptyText = '該当する遠征が見つかりません。'
 
         <b-table-column centered header-class="result">
           <template #header>
-            <div :class="{hasBonus: hasBonus(2)}"><LockImage v-if="isLock4stDeck" /><span v-else>第四艦隊</span></div>
-            <div v-if="hasBonus(2)" class="bonusText">報酬+{{getBonus(2)}}%</div>
+            <div :class="{hasBonus: hasBonus(2)}"><LockImage v-if="isLock4stDeck" /><span v-else>{{ translateApp('operation.mission.fleet.4') }}</span></div>
+            <div v-if="hasBonus(2)" class="bonusText">{{
+              translateApp('operation.mission.rewardBonus', {
+                params: { percent: getBonus(2) }
+              })
+            }}</div>
           </template>
           <template #default="props">
             <div
               :class="['mission-result', { 'in-mission': props.row.inMission[2] }]"
               @click="onClickMission(props.index, 2, props.row)"
             >
-              <div v-if="props.row.inMission[2]" class="mission-running">遠征中</div>
+              <div v-if="props.row.inMission[2]" class="mission-running">{{
+                translateApp('operation.mission.running')
+              }}</div>
               <div
                 :class="[
                   'text',
@@ -607,7 +693,7 @@ const emptyText = '該当する遠征が見つかりません。'
 
       </b-table>
     </section>
-    <MissionStateDetail v-if="isShowDetailed" 
-      :mission="detailMission" :deckInfo="detailDeckInfo" v-model:contentHeight="detailContentHeight" />
+    <MissionStateDetail v-if="isShowDetailed"
+      :mission="detailMission" :deckInfo="detailDeckInfo" />
   </div>
 </template>

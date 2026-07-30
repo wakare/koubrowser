@@ -8,6 +8,14 @@ import { DropShipMapInfo } from '@renderer/common/drop-ship';
 import DropByShipControl from './DropByShipControl.vue';
 import { svdata } from '@renderer/store/svdata';
 import { MapLvText } from '@common/locale';
+import { useObservedElementHeight } from './table/use-observed-element-height';
+import FixedCanvasViewport from './layout/FixedCanvasViewport.vue';
+import {
+  getDropByShipId,
+  saveDropByShipId
+} from '@renderer/store/panel_view_state'
+import { withPanelLoadTimeout } from '@renderer/common/panel-load'
+import { translateApp } from '@renderer/store/global_setting'
 
 // -----------------------------------------------------------------
 // ref elem
@@ -15,7 +23,7 @@ const tableEl = ref<HTMLElement | null>(null);
 
 // -----------------------------------------------------------------
 // show drop ship id
-const dropShipId = ref(0);
+const dropShipId = ref(getDropByShipId());
 
 // -----------------------------------------------------------------
 // table header ship text
@@ -116,7 +124,9 @@ const getRankOrder = (counts: RankDropCounts): number => {
 // main state
 let currentFetchShipId = 0
 const recordFetching = ref(false);
-const listHeight = ref<number>(0);
+const hasRecordError = ref(false)
+let shipDropRequestId = 0
+const listHeight = useObservedElementHeight(tableEl, 294);
 let _selectionObserver: MutationObserver | null = null;
 let _tableHeaderHeight = 0;
 
@@ -162,102 +172,133 @@ function scrollSelectedIntoView(): void {
   }
 }
 
-watch(dropShipId, (newShipId) => {
-  console.log('showDropShipId changed:', newShipId);
-  if (newShipId > 0) {
+async function fetchShipDropRecords(
+  newShipId: number,
+  force = false
+): Promise<void> {
+  if (newShipId <= 0) {
+    return
+  }
+  if (
+    !force &&
+    currentFetchShipId === newShipId &&
+    !hasRecordError.value
+  ) {
+    console.log('ship drop records already fetched for ship id:', newShipId);
+    return;
+  }
 
-    if (currentFetchShipId  === newShipId) {
-      console.log('ship drop records already fetched for ship id:', newShipId);
+  const requestId = ++shipDropRequestId
+  currentFetchShipId = newShipId;
+  recordFetching.value = true;
+  hasRecordError.value = false
+
+  try {
+    // The worker cancels an older aggregation only within this renderer. A
+    // separately opened assist window has its own request scope.
+    const calced = await withPanelLoadTimeout(
+      window.api.aggregateShipDrop(newShipId),
+      'Ship drop query timed out'
+    )
+    console.log('drop ship records fetched. count:', calced.length, 'for ship id:', newShipId);
+    if (
+      requestId !== shipDropRequestId ||
+      currentFetchShipId !== newShipId
+    ) {
+      console.log('ship drop records fetch aborted for ship id:', newShipId,
+        'currentFetchShipId changed to:', currentFetchShipId);
       return;
     }
-    currentFetchShipId = newShipId;
-    recordFetching.value = true;
-
-    // todo: 複数画面からの多重呼び出しではキャンセルにならない対応が必要
-    // 画面1：aggregate1呼び出し -> aggregate2呼び出し
-    //       ->1呼び出しはキャンセルされ、キャンセル動作は正しい
-    // 画面1,2：画面1aggregate1呼び出し -> 画面2aggregate1呼び出し
-    //       ->1呼び出しはキャンセルされ、キャンセル動作は正しくない
-    // 呼び出しidに画面が区別できる情報を持たせる案がある
-    console.time('aggregateShipDrop time for ship id:'+newShipId);
-    window.api.aggregateShipDrop(newShipId).then((calced) => {
-    console.timeEnd('aggregateShipDrop time for ship id:'+newShipId);
-      console.log('drop ship records fetched. count:', calced.length, 'for ship id:', newShipId);
-      if (currentFetchShipId !== newShipId) {
-        console.log('ship drop records fetch aborted for ship id:', newShipId,
-          'currentFetchShipId changed to:', currentFetchShipId);
-        return;
+    const localDatas: ShipDropTableData[] = calced.map((data) => {
+      const dropCount = data.counts.reduce((a, b) => a + b, 0);
+      const rate = calcPercent(dropCount, data.totalCount);
+      return {
+        ...data,
+        rate,
+        dropCount,
+        rankDropCount: getRankDropOrder(data.counts),
+        rankOrder: getRankOrder(data.counts),
       }
-      const localDatas: ShipDropTableData[] = calced.map((data) => {
-        const dropCount = data.counts.reduce((a, b) => a + b, 0);
-        const rate = calcPercent(dropCount, data.totalCount);
-        return {
-          ...data,
-          rate,
-          dropCount,
-          rankDropCount: getRankDropOrder(data.counts),
-          rankOrder: getRankOrder(data.counts),
+    });
+    shipHeaderText.value = svdata.mstShip(newShipId)?.api_name || '';
+
+    // 頭行選択の為、テーブルではなくこちらでソートする
+    if (currentSortField.value) {
+      console.log('applying current sort to fetched data:', currentSortField.value, currentSortOrder.value);
+      localDatas.sort((a, b) => {
+        const valA: number = (a as any)[currentSortField.value];
+        const valB: number = (b as any)[currentSortField.value];
+        // number 比較
+        if (currentSortOrder.value === 'asc') {
+          return valA - valB;
+        } else {
+          return valB - valA;
         }
       });
+    }
+
+    datas.value = localDatas;
+    if (localDatas.length > 0) {
+      const data0 = datas.value[0];
+      dropShipMapInfo.value = {
+        area_id: data0.areaId,
+        area_no: data0.areaNo,
+        map_lv: data0.mapLv,
+        cell_label: data0.cellLabel,
+        cell_no: data0.cellNo,
+        is_boss: data0.isBoss,
+        hilight_ship_id: dropShipId.value,
+      };
+      totalDropCount.value = localDatas.reduce((sum, data) => sum + data.dropCount, 0);
+      selectedData.value = data0;
+      dropByShipAreaKey.value += 1;
+    } else {
+      totalDropCount.value = 0;
+      dropShipMapInfo.value = null;
+      selectedData.value = null;
+    }
+  } catch (err) {
+    if (
+      requestId !== shipDropRequestId ||
+      currentFetchShipId !== newShipId
+    ) {
+      return
+    }
+    console.error('error fetching drop ship records for ship id:', newShipId, err);
+    hasRecordError.value = true
+  } finally {
+    if (
+      requestId === shipDropRequestId &&
+      currentFetchShipId === newShipId
+    ) {
       recordFetching.value = false;
-      shipHeaderText.value = svdata.mstShip(newShipId)?.api_name || '';
-
-      // 頭行選択の為、テーブルではなくこちらでソートする
-      if (currentSortField.value) {
-        console.log('applying current sort to fetched data:', currentSortField.value, currentSortOrder.value);
-        localDatas.sort((a, b) => {
-          const valA: number = (a as any)[currentSortField.value];
-          const valB: number = (b as any)[currentSortField.value];
-          // number 比較
-          if (currentSortOrder.value === 'asc') {
-            return valA - valB;
-          } else {
-            return valB - valA;
-          }
-        });
-      }
-
-      datas.value = localDatas;
-      if (localDatas.length > 0) {
-        const data0 = datas.value[0];
-        dropShipMapInfo.value = {
-          area_id: data0.areaId,
-          area_no: data0.areaNo,
-          map_lv: data0.mapLv,
-          cell_label: data0.cellLabel,
-          cell_no: data0.cellNo,
-          is_boss: data0.isBoss,
-          hilight_ship_id: dropShipId.value,
-        };
-        totalDropCount.value = localDatas.reduce((sum, data) => sum + data.dropCount, 0);
-        selectedData.value = data0;
-        dropByShipAreaKey.value += 1;
-      } else {
-        totalDropCount.value = 0;
-        dropShipMapInfo.value = null;
-        selectedData.value = null;
-      }
-
-    }).catch((err) => {
-      console.error('error fetching drop ship records for ship id:', newShipId, err);
-      recordFetching.value = false;
-    });
+    }
   }
-});
+}
+
+watch(dropShipId, (newShipId) => {
+  saveDropByShipId(newShipId)
+  console.log('showDropShipId changed:', newShipId);
+  if (newShipId > 0) {
+    void fetchShipDropRecords(newShipId)
+  } else {
+    shipDropRequestId += 1
+    currentFetchShipId = 0
+    recordFetching.value = false
+    hasRecordError.value = false
+  }
+}, { immediate: true });
+
+function retryShipDropRecords(): void {
+  void fetchShipDropRecords(dropShipId.value, true)
+}
 
 onMounted(() => {
   console.log('drop ship history mounted');
-  nextTick(() => {
-    if (tableEl.value) {
-      const rect = tableEl.value.getBoundingClientRect();
-      console.log('drop ship table element rect:', rect);
-      listHeight.value = rect.height;
-    }
-  });
 
   // 既存のマウント処理の後にテーブルラッパーを監視して選択変化でスクロール
   nextTick(() => {
-    const wrapper = document.querySelector('.drop-history-ship-root .b-table .table-wrapper') as HTMLElement | null;
+    const wrapper = tableEl.value?.querySelector('.b-table .table-wrapper') as HTMLElement | null;
     if (wrapper) {
       console.log('setting up selection observer for drop ship history table');
       _selectionObserver = new MutationObserver(() => {
@@ -274,13 +315,13 @@ onMounted(() => {
 
 onUnmounted(() => {
   console.log('drop ship history destroyed')
+  shipDropRequestId += 1
+  _selectionObserver?.disconnect()
+  _selectionObserver = null
 })
 
-const HELP_TEXT_PLEASE_SELECT_SHIP = '艦名を選択するとドロップ履歴が表示されます';
-const HELP_TEXT_NO_RECORD = '該当するドロップ履歴が見つかりません';
-const HELP_TEXT_FETCHING = 'ドロップ履歴を取得中です...';
 const emptyText = computed<string>(() => {
-  return '該当レコード無し';
+  return translateApp('status.dropShip.recordEmpty');
 })
 
 // -----------------------------------------------------------------
@@ -326,14 +367,20 @@ const getAreaCellText = (data: ShipDropTableData): string => {
 
 const helpText = computed<string>(() => {
   if (! dropShipId.value) {
-    return HELP_TEXT_PLEASE_SELECT_SHIP;
+    return translateApp('status.dropShip.select');
   }
   if (recordFetching.value) {
     const mst = svdata.mstShip(dropShipId.value);
-    const shipName = mst ? '「'+mst.api_name+'」の' : '';
-    return shipName + HELP_TEXT_FETCHING;
+    return mst
+      ? translateApp('status.dropShip.loadingForShip', {
+          params: { shipName: mst.api_name }
+        })
+      : translateApp('status.dropShip.loading');
   }
-  return HELP_TEXT_NO_RECORD;
+  if (hasRecordError.value) {
+    return translateApp('status.dropShip.error');
+  }
+  return translateApp('status.dropShip.empty');
 });
 
 const noMapInfoTitle = computed<string>(() => {
@@ -341,7 +388,7 @@ const noMapInfoTitle = computed<string>(() => {
 });
 
 const isOverlayHelpVisible = computed<boolean>(() => {
-  if(!dropShipId.value || recordFetching.value) {
+  if(!dropShipId.value || recordFetching.value || hasRecordError.value) {
     return true;
   }
   if (datas.value.length === 0) {
@@ -362,7 +409,20 @@ const isInitialState = computed<boolean>(() => {
       <DropByShipControl v-model:selected_ship_id="dropShipId"/>
     </div>
     <div v-if="isOverlayHelpVisible" class="overlay-background"></div>
-    <div v-if="isOverlayHelpVisible" class="overlay-help">{{ helpText }}</div>
+    <div
+      v-if="isOverlayHelpVisible"
+      class="overlay-help"
+      :class="{ 'is-error': hasRecordError }"
+    >
+      <span>{{ helpText }}</span>
+      <button
+        v-if="hasRecordError"
+        type="button"
+        @click="retryShipDropRecords"
+      >
+        {{ translateApp('common.retry') }}
+      </button>
+    </div>
     <div class="ship-drop-table" ref="tableEl">
       <b-table
         :data="datas"
@@ -383,7 +443,7 @@ const isInitialState = computed<boolean>(() => {
       >
         <b-table-column centered header-class="drop-area" sortable field="areaId" cell-class="drop-area">
           <template #header>
-            <span>{{ shipHeaderText }} ドロップ海域<span v-if="isSortedField('areaId')" class="order-text">{{ getOrderText() }}</span></span>
+            <span>{{ translateApp('drop.byShip.areaColumn', { params: { shipName: shipHeaderText } }) }}<span v-if="isSortedField('areaId')" class="order-text">{{ getOrderText() }}</span></span>
           </template>
           <template #default="props">
             <div class="area-content"><div 
@@ -394,7 +454,7 @@ const isInitialState = computed<boolean>(() => {
 
         <b-table-column centered header-class="drop-rate" sortable field="rate" cell-class="drop-rate">
           <template #header>
-            <span>確率<span v-if="isSortedField('rate')" class="order-text">{{ getOrderText() }}</span></span>
+            <span>{{ translateApp('drop.column.rate') }}<span v-if="isSortedField('rate')" class="order-text">{{ getOrderText() }}</span></span>
           </template>
           <template #default="props">
             <span>{{ props.row.rate }}%</span>
@@ -403,7 +463,7 @@ const isInitialState = computed<boolean>(() => {
 
         <b-table-column centered header-class="drop-count" sortable field="dropCount" cell-class="drop-count">
           <template #header>
-            <span>ドロップ数<span v-if="totalDropCount >= 0">({{ totalDropCount }})</span><span v-if="isSortedField('dropCount')" class="order-text">{{ getOrderText() }}</span></span>
+            <span>{{ translateApp('drop.column.dropCount') }}<span v-if="totalDropCount >= 0">({{ totalDropCount }})</span><span v-if="isSortedField('dropCount')" class="order-text">{{ getOrderText() }}</span></span>
           </template>
           <template #default="props">
             <span>{{ props.row.dropCount }}</span>
@@ -412,7 +472,7 @@ const isInitialState = computed<boolean>(() => {
 
         <b-table-column centered header-class="rank-drop-count" sortable field="rankDropCount" cell-class="rank-drop-count">
           <template #header>
-            <span>ランク別ドロップ数<span v-if="isSortedField('rankDropCount')" class="order-text">{{ getOrderText() }}</span></span>
+            <span>{{ translateApp('drop.column.rankDropCount') }}<span v-if="isSortedField('rankDropCount')" class="order-text">{{ getOrderText() }}</span></span>
           </template>
           <template #default="props">
             <span>{{ getRankDropCountText(props.row) }}</span>
@@ -421,7 +481,7 @@ const isInitialState = computed<boolean>(() => {
 
         <b-table-column centered header-class="drop-rank" sortable field="rankOrder" cell-class="drop-rank">
           <template #header>
-            <span>勝利ランク<span v-if="isSortedField('rankOrder')" class="order-text">{{ getOrderText() }}</span></span>
+            <span>{{ translateApp('drop.column.winRank') }}<span v-if="isSortedField('rankOrder')" class="order-text">{{ getOrderText() }}</span></span>
           </template>
           <template #default="props">
             <span v-html="buildRankHtml(props.row)"></span>
@@ -436,14 +496,17 @@ const isInitialState = computed<boolean>(() => {
       </b-table>
     </div>
     <div class="drop-ship-map-content">
-      <DropByShipArea 
-        v-if="dropShipMapInfo"
-        :key="dropByShipAreaKey" 
-        :info="dropShipMapInfo"/>
-      <div v-else class="map-container no-map-info">
-        <img src="../assets/img/app/drop-ship-map.png" />
-        <div class="map-title blur"><span>{{ noMapInfoTitle }}</span></div>
-      </div>
+      <FixedCanvasViewport :logical-width="600" :logical-height="360">
+        <DropByShipArea
+          v-if="dropShipMapInfo"
+          :key="dropByShipAreaKey"
+          :info="dropShipMapInfo"
+        />
+        <div v-else class="map-container no-map-info">
+          <img src="../assets/img/app/drop-ship-map.png" />
+          <div class="map-title blur"><span>{{ noMapInfoTitle }}</span></div>
+        </div>
+      </FixedCanvasViewport>
     </div>
   </section>
 </template>

@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { ApiKyoukaIndex, ApiShip, ApiShipType, ApiShipTypeHojoClasses, ApiShipTypeJyujyunClasses, ApiShipTypeKaiboukanClasses, ApiShipTypeKeijyunClasses, ApiShipTypeKuboClasses, ApiShipTypeKutikukanClasses, ApiShipTypeSenkanClasses, ApiShipTypeSensuikanClasses, ApiSpEffectItemKind, KcsConst, KcsUtil, MstShip, SlotWithOnSlot } from '@common/kcs'
 import { svdata } from '@renderer/store/svdata'
 import SlotItem from '@renderer/components/SlotItem.vue'
 import RibbonImg from '@assets/img/ribbon.svg'
+import { useResponsiveTablePageSize } from './table/use-responsive-table-page-size'
+import {
+  getShipListViewState,
+  saveShipListViewState,
+  type ShipListFilterName
+} from '@renderer/store/panel_view_state'
+import { translateApp } from '@renderer/store/global_setting'
 
 const inEvent = (): boolean => {
   return svdata.inEvent
@@ -27,7 +34,11 @@ interface ShipInfoData  {
 }
 
 const getSallyAreaText = (data: ShipInfoData): string => {
-  return data.api.api_sally_area ? '札'+data.api.api_sally_area : '-'
+  return data.api.api_sally_area
+    ? translateApp('battleEquipment.shipList.sallyArea', {
+        params: { area: data.api.api_sally_area }
+      })
+    : '-'
 }
 
 const getTypeName = (data: ShipInfoData): string => {
@@ -125,18 +136,23 @@ function getOrderText(): string {
 
 const currentPage = ref<number>(1);
 
-const filterSenkan = ref<boolean>(false);
-const filterKuubo = ref<boolean>(false);
-const filterJyujyun = ref<boolean>(false);
-const filterKeijyun = ref<boolean>(false);
-const filterKutikukan = ref<boolean>(false);
-const filterKaiboukan = ref<boolean>(false);
-const filterSensuikan = ref<boolean>(false);
-const filterHojyo = ref<boolean>(false);
-const filterKeyword = ref<string>('');
+const savedViewState = getShipListViewState()
+const hasSavedFilter = (name: ShipListFilterName): boolean =>
+  savedViewState.filters.includes(name)
+const filterSenkan = ref<boolean>(hasSavedFilter('senkan'));
+const filterKuubo = ref<boolean>(hasSavedFilter('kubo'));
+const filterJyujyun = ref<boolean>(hasSavedFilter('jyujyun'));
+const filterKeijyun = ref<boolean>(hasSavedFilter('keijyun'));
+const filterKutikukan = ref<boolean>(hasSavedFilter('kutikukan'));
+const filterKaiboukan = ref<boolean>(hasSavedFilter('kaiboukan'));
+const filterSensuikan = ref<boolean>(hasSavedFilter('sensuikan'));
+const filterHojyo = ref<boolean>(hasSavedFilter('hojo'));
+const filterKeyword = ref<string>(savedViewState.keyword);
 
 // debounce 用
-const debouncedKeyword = ref<string>('')
+const debouncedKeyword = ref<string>(
+  savedViewState.keyword.trim().toLowerCase()
+)
 const debounceMs = 300
 let debounceTimer: number | null = null
 function onInputKeyword(input) {
@@ -153,6 +169,36 @@ onUnmounted(() => {
   if (debounceTimer !== null) clearTimeout(debounceTimer)
 })
 
+watch(
+  [
+    filterSenkan,
+    filterKuubo,
+    filterJyujyun,
+    filterKeijyun,
+    filterKutikukan,
+    filterKaiboukan,
+    filterSensuikan,
+    filterHojyo,
+    filterKeyword
+  ],
+  () => {
+    currentPage.value = 1
+    const filters: ShipListFilterName[] = []
+    if (filterSenkan.value) filters.push('senkan')
+    if (filterKuubo.value) filters.push('kubo')
+    if (filterJyujyun.value) filters.push('jyujyun')
+    if (filterKeijyun.value) filters.push('keijyun')
+    if (filterKutikukan.value) filters.push('kutikukan')
+    if (filterKaiboukan.value) filters.push('kaiboukan')
+    if (filterSensuikan.value) filters.push('sensuikan')
+    if (filterHojyo.value) filters.push('hojo')
+    saveShipListViewState({
+      filters,
+      keyword: filterKeyword.value
+    })
+  }
+)
+
 function onFilterClear() {
   filterSenkan.value = false
   filterKuubo.value = false
@@ -166,7 +212,7 @@ function onFilterClear() {
   debouncedKeyword.value = ''
 }
 
-const emptyText = '該当する艦船が見つかりません';
+const emptyText = computed(() => translateApp('status.list.ship.empty'));
 
 const getFilterType = (): ApiShipType[] => {
   const types: ApiShipType[] = []
@@ -332,35 +378,62 @@ const filteredByTypeCount = computed<string>(() => {
   })
 
   if (filterTypes.length === 0) {
-    return `戦:${counts.sen} 空:${counts.kuubo} 重:${counts.jyujyun} 軽:${counts.keijyun} 駆:${counts.kutikukan} 海防:${counts.kaiboukan} 潜:${counts.sensuikan} 補:${counts.hojyo}`
+    return translateApp('battleEquipment.shipList.summary', {
+      params: {
+        battleship: counts.sen,
+        carrier: counts.kuubo,
+        heavyCruiser: counts.jyujyun,
+        lightCruiser: counts.keijyun,
+        destroyer: counts.kutikukan,
+        escort: counts.kaiboukan,
+        submarine: counts.sensuikan,
+        auxiliary: counts.hojyo
+      }
+    })
   }
 
-  let ret = ''
+  const summaries: string[] = []
   if (filterSenkan.value) {
-    ret += `戦:${counts.sen} `
+    summaries.push(translateApp('battleEquipment.shipList.summary.battleship', {
+      params: { count: counts.sen }
+    }))
   }
   if (filterKuubo.value) {
-    ret += `空:${counts.kuubo} `
+    summaries.push(translateApp('battleEquipment.shipList.summary.carrier', {
+      params: { count: counts.kuubo }
+    }))
   }
   if (filterJyujyun.value) {
-    ret += `重:${counts.jyujyun} `
+    summaries.push(translateApp('battleEquipment.shipList.summary.heavyCruiser', {
+      params: { count: counts.jyujyun }
+    }))
   }
   if (filterKeijyun.value) {
-    ret += `軽:${counts.keijyun} `
+    summaries.push(translateApp('battleEquipment.shipList.summary.lightCruiser', {
+      params: { count: counts.keijyun }
+    }))
   }
   if (filterKutikukan.value) {
-    ret += `駆:${counts.kutikukan} `
+    summaries.push(translateApp('battleEquipment.shipList.summary.destroyer', {
+      params: { count: counts.kutikukan }
+    }))
   }
   if (filterKaiboukan.value) {
-    ret += `海防:${counts.kaiboukan} `
+    summaries.push(translateApp('battleEquipment.shipList.summary.escort', {
+      params: { count: counts.kaiboukan }
+    }))
   }
   if (filterSensuikan.value) {
-    ret += `潜:${counts.sensuikan} `
+    summaries.push(translateApp('battleEquipment.shipList.summary.submarine', {
+      params: { count: counts.sensuikan }
+    }))
   }
   if (filterHojyo.value) {
-    ret += `補:${counts.hojyo} `
+    summaries.push(translateApp('battleEquipment.shipList.summary.auxiliary', {
+      params: { count: counts.hojyo }
+    }))
   }
-  return ret.trim()
+  return summaries.join(' ')
 })
 
 // const saveAsCsv = (): void => {
@@ -372,47 +445,50 @@ const filteredByTypeCount = computed<string>(() => {
 //   window.api.shipCsv(lines.join('\r\n'))
 // }
 
-const listHeight = computed<number>(() => {
-  return 781;
+const listRoot = ref<HTMLElement | null>(null)
+const perPage = useResponsiveTablePageSize(listRoot, {
+  fallback: 28,
+  min: 8,
+  max: 40,
+  rowHeight: 27
 })
-const perPage = ref<number>(28);
 
 </script>
 <template>
-  <section class="ship-list-root">
+  <section ref="listRoot" class="ship-list-root">
     <div class="filter-content">
-      <b-field class="inputs" position="is-centered" multiline>
+      <b-field class="inputs" grouped group-multiline position="is-centered">
         <label class="input-checkbox">
-          <b-checkbox v-model="filterSenkan" size="is-small" /><span class="filter-label">戦艦級</span>
+          <b-checkbox v-model="filterSenkan" size="is-small" /><span class="filter-label">{{ translateApp('battleEquipment.shipList.filter.battleship') }}</span>
         </label>
         <label class="input-checkbox">
-          <b-checkbox v-model="filterKuubo" size="is-small" /><span class="filter-label">航空母艦</span>
+          <b-checkbox v-model="filterKuubo" size="is-small" /><span class="filter-label">{{ translateApp('battleEquipment.shipList.filter.carrier') }}</span>
         </label>
         <label class="input-checkbox">
-          <b-checkbox v-model="filterJyujyun" size="is-small" /><span class="filter-label">重巡級</span>
+          <b-checkbox v-model="filterJyujyun" size="is-small" /><span class="filter-label">{{ translateApp('battleEquipment.shipList.filter.heavyCruiser') }}</span>
         </label>
         <label class="input-checkbox">
-          <b-checkbox v-model="filterKeijyun" size="is-small" /><span class="filter-label">軽巡級</span>
+          <b-checkbox v-model="filterKeijyun" size="is-small" /><span class="filter-label">{{ translateApp('battleEquipment.shipList.filter.lightCruiser') }}</span>
         </label>
         <label class="input-checkbox">
-          <b-checkbox v-model="filterKutikukan" size="is-small" /><span class="filter-label">駆逐艦</span>
+          <b-checkbox v-model="filterKutikukan" size="is-small" /><span class="filter-label">{{ translateApp('battleEquipment.shipList.filter.destroyer') }}</span>
         </label>
         <label class="input-checkbox">
-          <b-checkbox v-model="filterKaiboukan" size="is-small" /><span class="filter-label">海防艦</span>
+          <b-checkbox v-model="filterKaiboukan" size="is-small" /><span class="filter-label">{{ translateApp('battleEquipment.shipList.filter.escort') }}</span>
         </label>
         <label class="input-checkbox">
-          <b-checkbox v-model="filterSensuikan" size="is-small" /><span class="filter-label">潜水艦</span>
+          <b-checkbox v-model="filterSensuikan" size="is-small" /><span class="filter-label">{{ translateApp('battleEquipment.shipList.filter.submarine') }}</span>
         </label>
         <label class="input-checkbox">
-          <b-checkbox v-model="filterHojyo" size="is-small" /><span class="filter-label">補助艦艇</span>
+          <b-checkbox v-model="filterHojyo" size="is-small" /><span class="filter-label">{{ translateApp('battleEquipment.shipList.filter.auxiliary') }}</span>
         </label>
         <label class="input-keyword">
-          <b-input v-model="filterKeyword" placeholder="艦名・装備を入力"  size="is-small" 
+          <b-input v-model="filterKeyword" :placeholder="translateApp('battleEquipment.shipList.filter.placeholder')" size="is-small"
           @input="onInputKeyword"
           />
         </label>
         <label class="input-clear">
-          <b-button size="is-small" @click="onFilterClear">条件クリア</b-button>
+          <b-button size="is-small" @click="onFilterClear">{{ translateApp('battleEquipment.shipList.filter.clear') }}</b-button>
         </label>
       </b-field>
     </div>
@@ -438,7 +514,6 @@ const perPage = ref<number>(28);
       aria-previous-label="Previous page"
       aria-page-label="Page"
       aria-current-label="Current page"
-      :height="listHeight"
       @sort="onSort"
     >
 
@@ -452,7 +527,7 @@ const perPage = ref<number>(28);
         <template #default="props">
           <span 
             class="ship-id" 
-            :title="'内部ID: '+props.row.api.api_id">{{ props.row.mst.api_id }}</span>
+            :title="translateApp('battleEquipment.shipList.internalId', { params: { id: props.row.api.api_id } })">{{ props.row.mst.api_id }}</span>
         </template>
       </b-table-column>
 
@@ -461,7 +536,7 @@ const perPage = ref<number>(28);
         cell-class="ship-base-param"
         >
         <template #header>
-          <span>札<span v-if="isSortedField('api.api_sally_area')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.shipList.column.sallyArea') }}<span v-if="isSortedField('api.api_sally_area')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <span class="ship-sally-area">{{ getSallyAreaText(props.row) }}</span>
@@ -472,7 +547,7 @@ const perPage = ref<number>(28);
         :header-class="shipNameClassName" sortable field="mst.api_name"
         :cell-class="shipNameClassName">
         <template #header>
-          <div>艦名<span v-if="isSortedField('mst.api_name')" class="order-text">{{ getOrderText() }}</span></div>
+          <div>{{ translateApp('battleEquipment.shipList.column.name') }}<span v-if="isSortedField('mst.api_name')" class="order-text">{{ getOrderText() }}</span></div>
         </template>
         <template #default="props">
           <div class="name-content" :class="{ 'in-event': inEvent() }" :title="props.row.mst.api_name"><div 
@@ -545,7 +620,7 @@ const perPage = ref<number>(28);
         cell-class="ship-base-param"
         >
         <template #header>
-          <span>火力<span v-if="isSortedField('ship_fire')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.shipList.column.firepower') }}<span v-if="isSortedField('ship_fire')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <div class="ship-fire"><div class="value" :class="{
@@ -560,7 +635,7 @@ const perPage = ref<number>(28);
         cell-class="ship-base-param"
         >
         <template #header>
-          <span>装甲<span v-if="isSortedField('ship_armor')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.shipList.column.armor') }}<span v-if="isSortedField('ship_armor')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <div class="ship-armor"><div class="value" :class="{
@@ -575,7 +650,7 @@ const perPage = ref<number>(28);
         cell-class="ship-base-param"
         >
         <template #header>
-          <span>雷装<span v-if="isSortedField('ship_tor')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.shipList.column.torpedo') }}<span v-if="isSortedField('ship_tor')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <div class="ship-tor"><div class="value" :class="{
@@ -590,7 +665,7 @@ const perPage = ref<number>(28);
         cell-class="ship-base-param"
         >
         <template #header>
-          <span>回避<span v-if="isSortedField('ship_ev')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.shipList.column.evasion') }}<span v-if="isSortedField('ship_ev')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <div class="ship-ev"><div class="value" :class="{
@@ -605,7 +680,7 @@ const perPage = ref<number>(28);
         cell-class="ship-base-param"
         >
         <template #header>
-          <span>対空<span v-if="isSortedField('ship_aa')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.shipList.column.antiAir') }}<span v-if="isSortedField('ship_aa')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <span class="ship-aa">{{ props.row.ship_aa}}</span>
@@ -617,7 +692,7 @@ const perPage = ref<number>(28);
         cell-class="ship-base-param"
         >
         <template #header>
-          <span>対潜<span v-if="isSortedField('ship_asw')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.shipList.column.antiSubmarine') }}<span v-if="isSortedField('ship_asw')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <div class="ship-asw"><div class="value" :class="{
@@ -645,7 +720,7 @@ const perPage = ref<number>(28);
         cell-class="ship-base-param"
         >
         <template #header>
-          <span>索敵<span v-if="isSortedField('ship_los')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.shipList.column.lineOfSight') }}<span v-if="isSortedField('ship_los')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <span class="ship-los">{{ props.row.ship_los }}</span>
@@ -667,7 +742,7 @@ const perPage = ref<number>(28);
         cell-class="ship-base-param"
         >
         <template #header>
-          <span>運<span v-if="isSortedField('ship_luck')" class="order-text">{{ getOrderText() }}</span></span>
+          <span>{{ translateApp('battleEquipment.shipList.column.luck') }}<span v-if="isSortedField('ship_luck')" class="order-text">{{ getOrderText() }}</span></span>
         </template>
         <template #default="props">
           <div class="ship-luck"><div class="value" :class="{
@@ -681,7 +756,7 @@ const perPage = ref<number>(28);
 
       <b-table-column centered header-class="ship-slots" cell-class="ship-slots">
         <template #header>
-          <span>装備</span>
+          <span>{{ translateApp('battleEquipment.shipList.column.equipment') }}</span>
         </template>
         <template #default="props">
           <span class="slots-content"><span 
@@ -692,7 +767,7 @@ const perPage = ref<number>(28);
       </b-table-column>
 
       <div class="counter">
-        <div>艦船数：{{ datas.length }}</div>
+        <div>{{ translateApp('battleEquipment.shipList.count', { params: { count: datas.length } }) }}</div>
         <div class="byType">{{ filteredByTypeCount }}</div>
       </div>
 

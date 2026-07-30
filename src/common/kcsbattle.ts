@@ -1,8 +1,225 @@
-import { ApiBattle, ApiHougeki, ApiHougekiMidnight, ApiMidnightBattleType, ApiMidnightSpBattle, KcsUtil, PrvBattleInfo } from "./kcs"
+import {
+  ApiBattle,
+  ApiHougeki,
+  ApiHougekiMidnight,
+  ApiMidnightBattleType,
+  ApiMidnightSpBattle,
+  KcsUtil,
+  PrvBattleInfo
+} from './kcs'
 
 export interface EnemyState {
   id: number
   hp: number
+}
+
+export interface FriendlyFleetState {
+  main: (number | undefined)[]
+  escort: (number | undefined)[]
+}
+
+interface FriendlyHpAccumulator {
+  main: (number | undefined)[]
+  escort: (number | undefined)[]
+}
+
+interface FriendlyDamageStage {
+  readonly api_fdam?: readonly number[] | null
+}
+
+interface FriendlyAerialDamage {
+  readonly api_stage3?: FriendlyDamageStage | null
+  readonly api_stage3_combined?: FriendlyDamageStage | null
+}
+
+type RaigekiListItem = number | readonly (number | null)[] | null
+
+interface FriendlyRaigekiDamage {
+  readonly api_erai?: readonly (number | null)[]
+  readonly api_eydam?: readonly (number | null)[]
+  readonly api_fdam?: readonly (number | null)[]
+  readonly api_erai_list_items?: readonly RaigekiListItem[]
+  readonly api_eydam_list_items?: readonly RaigekiListItem[]
+}
+
+interface FriendlyBattleDamage {
+  readonly api_f_nowhps: readonly number[]
+  readonly api_f_nowhps_combined?: readonly number[]
+  readonly api_injection_kouku?: FriendlyAerialDamage | null
+  readonly api_kouku?: FriendlyAerialDamage | null
+  readonly api_kouku2?: FriendlyAerialDamage | null
+  readonly api_opening_taisen?: ApiHougeki | null
+  readonly api_opening_atack?: FriendlyRaigekiDamage | null
+  readonly api_n_hougeki1?: ApiHougeki | ApiHougekiMidnight | null
+  readonly api_n_hougeki2?: ApiHougeki | ApiHougekiMidnight | null
+  readonly api_hougeki1?: ApiHougeki | null
+  readonly api_hougeki2?: ApiHougeki | null
+  readonly api_hougeki3?: ApiHougeki | null
+  readonly api_raigeki?: FriendlyRaigekiDamage | null
+  readonly api_hougeki?: ApiHougekiMidnight | null
+}
+
+const normalizeFriendlyHps = (hps: readonly number[] | undefined): (number | undefined)[] =>
+  (hps ?? []).map((hp) => (Number.isFinite(hp) && hp >= 0 ? hp : undefined))
+
+const applyFriendlyDamage = (
+  state: FriendlyHpAccumulator,
+  position: number | null | undefined,
+  damage: number | null | undefined
+): boolean => {
+  if (
+    position === null ||
+    position === undefined ||
+    position < 0 ||
+    damage === null ||
+    damage === undefined ||
+    !Number.isFinite(damage)
+  ) {
+    return false
+  }
+
+  const target =
+    state.escort.length > 0 && position >= 6
+      ? { hps: state.escort, index: position - 6 }
+      : { hps: state.main, index: position }
+  const hp = target.hps[target.index]
+  if (hp === undefined) {
+    return false
+  }
+
+  target.hps[target.index] = hp - Math.floor(Math.max(0, damage))
+  return true
+}
+
+const applyFriendlyDamageArray = (
+  hps: (number | undefined)[],
+  damages: readonly (number | null)[] | null | undefined
+): void => {
+  damages?.forEach((damage, index) => {
+    const hp = hps[index]
+    if (hp !== undefined && damage !== null && Number.isFinite(damage)) {
+      hps[index] = hp - Math.floor(Math.max(0, damage))
+    }
+  })
+}
+
+const applyFriendlyAerialDamage = (
+  state: FriendlyHpAccumulator,
+  aerial: FriendlyAerialDamage | null | undefined
+): void => {
+  applyFriendlyDamageArray(state.main, aerial?.api_stage3?.api_fdam)
+  applyFriendlyDamageArray(state.escort, aerial?.api_stage3_combined?.api_fdam)
+}
+
+const applyFriendlyHougekiDamage = (
+  state: FriendlyHpAccumulator,
+  hougeki: ApiHougeki | ApiHougekiMidnight | null | undefined
+): void => {
+  hougeki?.api_at_eflag.forEach((enemyFlag, attackIndex) => {
+    if (enemyFlag !== 1) {
+      return
+    }
+
+    const defenders = hougeki.api_df_list[attackIndex] ?? []
+    const damages = hougeki.api_damage[attackIndex] ?? []
+    defenders.forEach((defender, hitIndex) => {
+      applyFriendlyDamage(state, defender, damages[hitIndex])
+    })
+  })
+}
+
+const toRaigekiList = (value: RaigekiListItem | undefined): readonly (number | null)[] => {
+  if (Array.isArray(value)) {
+    return value
+  }
+  return value === null || value === undefined ? [] : [value as number]
+}
+
+const applyFriendlyRaigekiDamage = (
+  state: FriendlyHpAccumulator,
+  raigeki: FriendlyRaigekiDamage | null | undefined
+): void => {
+  if (!raigeki) {
+    return
+  }
+
+  if (raigeki.api_erai_list_items !== undefined && raigeki.api_eydam_list_items !== undefined) {
+    raigeki.api_eydam_list_items.forEach((damageItem, attackerIndex) => {
+      const targets = toRaigekiList(raigeki.api_erai_list_items?.[attackerIndex])
+      const damages = toRaigekiList(damageItem)
+      damages.forEach((damage, hitIndex) => {
+        applyFriendlyDamage(state, targets[hitIndex], damage)
+      })
+    })
+    return
+  }
+
+  if (raigeki.api_erai !== undefined && raigeki.api_eydam !== undefined) {
+    raigeki.api_eydam.forEach((damage, attackerIndex) => {
+      applyFriendlyDamage(state, raigeki.api_erai?.[attackerIndex], damage)
+    })
+    return
+  }
+
+  // Older responses may only expose the aggregate friendly damage array.
+  raigeki.api_fdam?.forEach((damage, position) => {
+    applyFriendlyDamage(state, position, damage)
+  })
+}
+
+const applyFriendlyMiddayDamage = (
+  state: FriendlyHpAccumulator,
+  battle: FriendlyBattleDamage
+): void => {
+  const aerialPhases = [battle.api_injection_kouku, battle.api_kouku, battle.api_kouku2]
+  aerialPhases.forEach((aerial) => applyFriendlyAerialDamage(state, aerial))
+
+  applyFriendlyHougekiDamage(state, battle.api_n_hougeki1)
+  applyFriendlyHougekiDamage(state, battle.api_n_hougeki2)
+  applyFriendlyHougekiDamage(state, battle.api_opening_taisen)
+  applyFriendlyRaigekiDamage(state, battle.api_opening_atack)
+  applyFriendlyHougekiDamage(state, battle.api_hougeki1)
+  applyFriendlyHougekiDamage(state, battle.api_hougeki2)
+  applyFriendlyHougekiDamage(state, battle.api_hougeki3)
+  applyFriendlyRaigekiDamage(state, battle.api_raigeki)
+}
+
+const applyFriendlyMidnightDamage = (
+  state: FriendlyHpAccumulator,
+  battle: FriendlyBattleDamage
+): void => {
+  applyFriendlyHougekiDamage(state, battle.api_hougeki)
+}
+
+/**
+ * Calculates the friendly fleet HP visible at battle result time from observed battle data.
+ *
+ * Damage-control activation is intentionally not predicted here. The game does not include
+ * consumed equipment in the battle-result response, so that state remains authoritative only
+ * after the next ship/deck update.
+ */
+export const calcFriendlyHps = (battleInfo: PrvBattleInfo): FriendlyFleetState => {
+  const initialBattle = (battleInfo.midday ?? battleInfo.midnight) as FriendlyBattleDamage | null
+  if (!initialBattle) {
+    return { main: [], escort: [] }
+  }
+
+  const state: FriendlyHpAccumulator = {
+    main: normalizeFriendlyHps(initialBattle.api_f_nowhps),
+    escort: normalizeFriendlyHps(initialBattle.api_f_nowhps_combined)
+  }
+
+  if (battleInfo.midday) {
+    applyFriendlyMiddayDamage(state, battleInfo.midday as unknown as FriendlyBattleDamage)
+  }
+  if (battleInfo.midnight) {
+    applyFriendlyMidnightDamage(state, battleInfo.midnight as unknown as FriendlyBattleDamage)
+  }
+
+  return {
+    main: state.main.map((hp) => (hp === undefined ? undefined : Math.max(0, hp))),
+    escort: state.escort.map((hp) => (hp === undefined ? undefined : Math.max(0, hp)))
+  }
 }
 
 export function damaged(
@@ -272,4 +489,3 @@ const enemyParamCombined = (arg: PrvBattleInfo): EnemyParam[] => {
   });
 };
 */
-

@@ -7,6 +7,7 @@ import LockImage from '@assets/img/lock.svg'
 import DockTimer from '@renderer/components/DockTimer.vue'
 import DockStateTimer from '@renderer/components/DockStateTimer.vue'
 import ShipBanner from '@renderer/components/ShipBanner.vue'
+import { translateApp } from '@renderer/store/global_setting'
 
 interface NDockInfo {
   isIn: boolean
@@ -49,7 +50,7 @@ const ndocks = computed<NDockInfo[]>(() => {
 </script>
 <template>
   <section class="ndock-content">
-    <div class="ndock-title">入渠ドック</div>
+    <div class="ndock-title">{{ translateApp('operation.dock.repair.title') }}</div>
     <div class="ndock-list">
       <div v-for="(info, index) in ndocks" :key="index" class="ndock">
         <div v-if="info.isIn">
@@ -58,8 +59,8 @@ const ndocks = computed<NDockInfo[]>(() => {
             <span class="ndock-img-help"
               ><DockStateTimer
                 :complete_time="info.ndock.api_complete_time"
-                :progress_text="'修復'"
-                :completed_text="'完了'"
+                :progress_text="translateApp('operation.dock.repair.progress')"
+                :completed_text="translateApp('operation.dock.completed')"
             /></span>
           </span>
           <span class="ndock-info">
@@ -68,7 +69,8 @@ const ndocks = computed<NDockInfo[]>(() => {
               {{ info.info?.api.api_nowhp }}/{{ info.info?.api.api_maxhp }}</span
             >
             <span class="ndock-info-item"
-              >残り: <DockTimer :complete_time="info.ndock.api_complete_time" />
+              >{{ translateApp('operation.dock.remaining') }}
+              <DockTimer :complete_time="info.ndock.api_complete_time" />
               {{ info.completedTimeText }}</span
             >
           </span>
@@ -76,7 +78,9 @@ const ndocks = computed<NDockInfo[]>(() => {
         <div v-else-if="info.locked">
           <span class="ndock-locked"><LockImage /></span>
         </div>
-        <div v-else><span class="ndock-empty">Empty</span></div>
+        <div v-else>
+          <span class="ndock-empty">{{ translateApp('operation.dock.empty') }}</span>
+        </div>
       </div>
     </div>
   </section>
