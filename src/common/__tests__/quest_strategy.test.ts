@@ -219,6 +219,34 @@ describe('buildQuestStrategyRoutePlan', () => {
     expect(first.steps).toEqual(second.steps)
   })
 
+  it('checks quest slot capacity only for selected quests covered by a shared recipe', () => {
+    const shared = recipe('shared', [101, 102])
+    const localSnapshot = snapshot([101], {
+      quests: [quest(101, { state: 'available' })],
+      questCapacity: {
+        active: 4,
+        maximum: 5
+      }
+    })
+
+    const plan = build([shared], localSnapshot)
+
+    expect(plan.steps.map((step) => step.recipeId)).toEqual(['shared'])
+    expect(
+      plan.steps[0].checks.find((check) => check.code === 'quest-slot-capacity')
+    ).toMatchObject({
+      state: 'pass',
+      message: '必要な任務枠 1 件を確保できます'
+    })
+  })
+
+  it('does not report recipes unrelated to the selection as blocked candidates', () => {
+    const plan = build([recipe('selected', [101]), recipe('unrelated', [102])], snapshot([101]))
+
+    expect(plan.steps.map((step) => step.recipeId)).toEqual(['selected'])
+    expect(plan.blocked).toEqual([])
+  })
+
   it('keeps missing local facts unknown instead of treating them as false', () => {
     const uncertain = recipe('uncertain', [101], {
       fleet: {

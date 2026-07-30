@@ -54,6 +54,7 @@ import {
 } from '@renderer/common/quest-goal-view'
 import { getQuestCategoryText } from '@renderer/common/quest-view'
 import { translateApp } from '@renderer/store/global_setting'
+import QuestStrategyRoute from '@renderer/components/QuestStrategyRoute.vue'
 
 const WikiSourceStorageKey = 'questGuideWikiSource:v1'
 const GoalQuestStorageKey = 'questGuideGoalQuest:v1'
@@ -258,6 +259,24 @@ const equipmentStock = computed(() => {
     equippedInstanceIds
   )
 })
+const strategyShipTypeCounts = computed(() => {
+  const result: Record<string, number> = {}
+  for (const ship of svdata.ships) {
+    const shipType = svdata.mstShip(ship.api_ship_id)?.api_stype
+    if (shipType !== undefined) {
+      result[shipType] = (result[shipType] ?? 0) + 1
+    }
+  }
+  return result
+})
+const strategyEquipmentTypeCounts = computed(() => {
+  const result: Record<string, number> = {}
+  for (const item of equipmentStock.value) {
+    result[item.type] = (result[item.type] ?? 0) + item.owned
+  }
+  return result
+})
+const strategyMapDataAvailable = computed(() => svdata.mstMapInfos.length > 0)
 const consumableStock = computed<QuestGuideConsumableStockEntry[] | undefined>(() => {
   if (svdata.useitems.length === 0) {
     return undefined
@@ -931,6 +950,17 @@ function equipmentKindText(
         </p>
       </div>
     </section>
+
+    <QuestStrategyRoute
+      :recommendations="recommendations"
+      :available-map-keys="availableMapKeys"
+      :map-data-available="strategyMapDataAvailable"
+      :ship-type-counts="strategyShipTypeCounts"
+      :equipment-type-counts="strategyEquipmentTypeCounts"
+      :active-quest-count="activeCount"
+      :quest-capacity="svdata.parallelQuestCount"
+      :now="now"
+    />
 
     <div v-if="recommendations.length === 0" class="quest-guide-empty">
       {{ translateApp('quest.guide.empty.cache') }}

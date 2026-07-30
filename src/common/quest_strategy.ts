@@ -907,7 +907,7 @@ function evaluateRecipe(
   }
   checks.push(hardCheck('equipment-ready', equipmentState, equipmentMessage))
 
-  const inactiveQuestCount = recipe.questIds.filter(
+  const inactiveQuestCount = coveredQuestIds.filter(
     (questId) => questById.get(questId)?.state !== 'active'
   ).length
   const availableQuestSlots = snapshot.questCapacity
@@ -1056,7 +1056,10 @@ export function buildQuestStrategyRoutePlan(
     evaluateRecipe(recipe, snapshot, input.preferences, now)
   )
   const blocked: StrategyBlockedCandidate[] = evaluated
-    .filter((step) => step.checks.some((check) => check.state === 'fail'))
+    .filter(
+      (step) =>
+        step.coveredQuestIds.length > 0 && step.checks.some((check) => check.state === 'fail')
+    )
     .map((step) => ({
       recipeId: step.recipeId,
       title: step.title,
