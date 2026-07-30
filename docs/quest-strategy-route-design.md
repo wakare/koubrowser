@@ -30,6 +30,22 @@
 - 資源、危険度、期限、任務枠、情報不足を同時に扱う決定的な順位付け
 - 推薦理由、採用しなかった候補、欠損情報、失効情報を一つの監査可能な出力にする契約
 
+## 実装進捗
+
+2026-07-31 時点で P0 の純粋関数内核を実装した。
+
+- `quest_strategy.ts` に version 1 の recipe、非識別 snapshot、preference、plan 契約を追加
+- recipe と snapshot は未知フィールドを拒否し、ISO timestamp、HTTPS 根拠 URL、
+  通常海域 key、重複 ID を厳格に検証
+- approved、有効な根拠、有効期間、期限、前提、海域、艦種、装備カテゴリ、
+  任務枠を hard check として監査可能な形で出力
+- 欠損したローカル情報は `unknown` のまま候補を残し、失効情報は必ず除外
+- 整数 score、固定 tie-break、入力 fingerprint、`any` 前提の独立 alternative を実装
+- 合成 fixture 12 件で決定性、降格、失効、競合、preference を検証
+
+同梱 production recipe は意図的に 0 件としている。次の工程で Wiki 等の根拠を
+人手レビューし、通常海域 3 recipe を追加するまで、未確認の攻略情報を製品データにしない。
+
 ## 絶対境界
 
 1. 推薦エンジンは `src/common` の純粋関数とし、ネットワーク、IPC、DB 書込、
@@ -48,54 +64,48 @@
 
 ### 1. 審査済み攻略知識
 
-候補ファイル:
+実装済みファイル:
 
 - `src/common/quest_strategy.ts`: 型、正規化、純粋な推薦
-- `src/common/quest_strategy_knowledge.ts`: 同梱審査済み recipe
+- `src/common/quest_strategy_knowledge.ts`: version 付き同梱 recipe（現在は空）
 - `src/common/__tests__/quest_strategy.test.ts`: 決定性、降格、競合
+
+次工程のファイル:
+
 - `src/renderer/src/common/quest-strategy-view.ts`: 表示専用変換
 - `src/renderer/src/components/QuestStrategyRoute.vue`: 既存指引内の新セクション
 
 ```ts
-export type StrategyConfidence = 'verified' | 'supported' | 'observed'
-export type StrategyFreshness = 'current' | 'stale' | 'expired' | 'unknown'
+export type StrategyConfidence = 'verified' | 'supported'
 
 export interface StrategyEvidence {
-  source: 'official' | 'wikiwiki' | 'kcwiki' | 'bundled-definition'
+  sourceId: string
   sourceLabel: string
-  url?: string
-  verifiedAt: string
+  url: string
+  reviewedAt: string
+  validUntil?: string
   confidence: StrategyConfidence
-  claim: string
-}
-
-export interface StrategyValidity {
-  validFrom?: string
-  expiresAt?: string
-  gameVersion?: string
-  eventId?: string
+  summary: string
 }
 
 export interface QuestStrategyRecipe {
-  recipeId: string
+  schemaVersion: 1
+  id: string
   revision: number
-  questIds: string[]
-  action: 'sortie' | 'exercise' | 'expedition' | 'arsenal' | 'supply'
-  map?: {
-    areaId: number
-    mapNo: number
-    routeLabels?: string[]
-    targetNodes?: string[]
-  }
-  fleetConstraints?: FleetConstraint[]
-  equipmentConstraints?: EquipmentConstraint[]
-  formationOptions?: FormationOption[]
+  status: 'approved' | 'draft' | 'withdrawn'
+  questIds: number[]
+  mapKey: string
+  routeLabels: string[]
+  targetNodes: string[]
+  fleet: StrategyFleetGuidance
+  equipmentTypeConstraints: StrategyEquipmentTypeConstraint[]
+  formations: StrategyFormation[]
   airState?: AirStateGuidance
-  resourceBand?: 'low' | 'medium' | 'high' | 'unknown'
-  riskBand?: 'low' | 'medium' | 'high' | 'unknown'
+  cost: 'low' | 'medium' | 'high'
+  risk: 'low' | 'medium' | 'high'
   validity: StrategyValidity
   evidence: StrategyEvidence[]
-  reviewStatus: 'approved' | 'conflict' | 'incomplete'
+  prerequisiteAlternative?: StrategyPrerequisiteAlternative
 }
 ```
 
@@ -107,22 +117,19 @@ export interface QuestStrategyRecipe {
 
 ```ts
 export interface StrategyLocalSnapshot {
+  schemaVersion: 1
   capturedAt: string
-  activeQuestIds: string[]
-  questProgress: Readonly<Record<string, QuestProgressSnapshot>>
-  ships?: readonly StrategyShipSnapshot[]
-  equipment?: readonly StrategyEquipmentSnapshot[]
-  resources?: StrategyResourceSnapshot
-  availableMaps?: readonly string[]
-  fleetSlots?: number
-  missing: StrategyInputKind[]
+  selectedQuestIds: number[]
+  quests: StrategyQuestSnapshot[]
+  mapAvailability: Record<string, 'available' | 'unavailable' | 'unknown'>
+  shipTypeCounts?: Record<string, number>
+  equipmentTypeCounts?: Record<string, number>
+  questCapacity?: { active: number; maximum: number }
 }
 
 export interface StrategyPreferences {
-  priority: 'deadline' | 'resource-saving' | 'risk-averse' | 'balanced'
-  selectedQuestIds: string[]
-  maxConcurrentQuests?: number
-  allowStaleReference: boolean
+  preset: 'deadline' | 'resource-saving' | 'risk-averse' | 'balanced'
+  maximumRoutes: number
 }
 ```
 
@@ -134,24 +141,22 @@ snapshot は推薦呼出し前に正規化し、ソート順と時刻を明示�
 
 ```ts
 export interface StrategyRoutePlan {
-  planVersion: 1
+  schemaVersion: 1
   generatedAt: string
   inputFingerprint: string
   knowledgeVersion: string
   steps: StrategyRouteStep[]
-  alternatives: StrategyAlternative[]
-  warnings: StrategyWarning[]
-  blockedReasons: StrategyStopReason[]
+  alternatives: StrategyRouteStep[]
+  blocked: StrategyBlockedCandidate[]
+  warnings: string[]
 }
 
 export interface StrategyRouteStep {
-  stepId: string
   recipeId: string
-  coveredQuestIds: string[]
-  action: QuestStrategyRecipe['action']
-  checks: StrategyCheckResult[]
+  recipeRevision: number
+  coveredQuestIds: number[]
+  checks: StrategyHardCheck[]
   score: StrategyScoreBreakdown
-  explanation: StrategyExplanation[]
   evidence: StrategyEvidence[]
 }
 ```
@@ -231,16 +236,16 @@ score =
 
 ## 8 週間の実装ルート
 
-| 週 | 作業 | 依存 | 産物・受け入れ | 停止条件 |
-| --- | --- | --- | --- | --- |
-| 1 | 契約と fixture を固定 | 本設計 | 型、schema、通常海域 3 件の approved fixture、競合・失効 fixture。正規化と schema test が通る | 艦種・装備カテゴリを既存 master で安定照合できない |
-| 2 | 純粋な候補生成 | 週 1 | 選択任務、前提、任務枠、海域解放から候補を列挙。順序を入れ替えた入力で同一出力 | 未審査 claim を hard constraint に使う必要が生じる |
-| 3 | 決定的順位付けと説明 | 週 2 | preset、整数 score、tie-break、alternatives、blocked reason。golden test を固定 | 同一入力で出力が変わる、または理由を再構成できない |
-| 4 | 欠損・失効・競合の降格 | 週 3 | snapshot 欠損 matrix、stale 警告、expired 除外、既存ルート fallback | 欠損を不適合や準備完了と誤判定する |
-| 5 | Vue 表示統合 | 週 4 | `QuestGuide.vue` 内の opt-in セクション、score 内訳、証拠、次点、確認項目。既存 current/all と 6 step 表示を回帰 | 既存目標ルートの表示・保存状態が変わる |
-| 6 | 複数任務 co-completion | 週 5 | 2～5 任務の set-cover 型候補比較、任務枠提案、重複出撃削減の説明 | 組合せ上限を超えて UI または計算時間が不安定になる |
-| 7 | 署名 bundle と smoke | 週 6 | 攻略 schema を既存検証済み bundle へ追加、未知 version 拒否、同梱 fallback、production Electron smoke | #29 未決定を理由に本番 endpoint や鍵を仮定する必要がある |
-| 8 | 受け入れと限定公開判断 | 週 7 | 合成 snapshot の E2E、実アカウント読み取り専用確認手順、監査 checklist、機能 flag の公開判断 | 通信変更、個人情報出力、誤断定、既存指引の退行が 1 件でもある |
+| 週  | 作業                   | 依存   | 産物・受け入れ                                                                                                   | 停止条件                                                      |
+| --- | ---------------------- | ------ | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 1   | 契約と fixture を固定  | 本設計 | 型、schema、通常海域 3 件の approved fixture、競合・失効 fixture。正規化と schema test が通る                    | 艦種・装備カテゴリを既存 master で安定照合できない            |
+| 2   | 純粋な候補生成         | 週 1   | 選択任務、前提、任務枠、海域解放から候補を列挙。順序を入れ替えた入力で同一出力                                   | 未審査 claim を hard constraint に使う必要が生じる            |
+| 3   | 決定的順位付けと説明   | 週 2   | preset、整数 score、tie-break、alternatives、blocked reason。golden test を固定                                  | 同一入力で出力が変わる、または理由を再構成できない            |
+| 4   | 欠損・失効・競合の降格 | 週 3   | snapshot 欠損 matrix、stale 警告、expired 除外、既存ルート fallback                                              | 欠損を不適合や準備完了と誤判定する                            |
+| 5   | Vue 表示統合           | 週 4   | `QuestGuide.vue` 内の opt-in セクション、score 内訳、証拠、次点、確認項目。既存 current/all と 6 step 表示を回帰 | 既存目標ルートの表示・保存状態が変わる                        |
+| 6   | 複数任務 co-completion | 週 5   | 2～5 任務の set-cover 型候補比較、任務枠提案、重複出撃削減の説明                                                 | 組合せ上限を超えて UI または計算時間が不安定になる            |
+| 7   | 署名 bundle と smoke   | 週 6   | 攻略 schema を既存検証済み bundle へ追加、未知 version 拒否、同梱 fallback、production Electron smoke            | #29 未決定を理由に本番 endpoint や鍵を仮定する必要がある      |
+| 8   | 受け入れと限定公開判断 | 週 7   | 合成 snapshot の E2E、実アカウント読み取り専用確認手順、監査 checklist、機能 flag の公開判断                     | 通信変更、個人情報出力、誤断定、既存指引の退行が 1 件でもある |
 
 週 1～4 は #29 の本番運用決定に依存せず、同梱 fixture で進める。週 7 も正式 URL や鍵を
 要求せず、既存の一時鍵・loopback smoke で統合可能にする。本番配布は #29 完了後の別ゲートとする。
@@ -270,15 +275,15 @@ score =
 
 ## Early-stop マトリクス
 
-| リスク | 検出 | 即時動作 | 再開条件 |
-| --- | --- | --- | --- |
-| ゲーム通信へ影響 | main/preload diff、smoke、review | 実装と公開を停止 | 通信 bytes/semantics 非変更を独立確認 |
-| 誤った攻略断定 | conflict/expired fixture、文言 review | recipe を blocked に降格 | 二系統または一次情報で再審査 |
-| 活動情報の失効 | `expiresAt`、event ID 不一致 | 自動推薦から除外 | 新 revision の審査と署名 |
-| 個人情報露出 | snapshot schema、DOM/log audit | 機能 flag を無効化 | 非識別契約と smoke が通過 |
-| #29 未決定 | 正式 URL/鍵が必要になる | 同梱データだけで継続 | 所有者の運用決定と staging 受け入れ |
-| 計算量増大 | 5 任務 fixture の時間上限 | 組合せを 5 件・候補上限で打切り | bounded algorithm の証明と計測 |
-| 既存指引退行 | goal route regression | 新セクションを無効化 | 既存全 fixture と renderer test 通過 |
+| リスク           | 検出                                  | 即時動作                        | 再開条件                              |
+| ---------------- | ------------------------------------- | ------------------------------- | ------------------------------------- |
+| ゲーム通信へ影響 | main/preload diff、smoke、review      | 実装と公開を停止                | 通信 bytes/semantics 非変更を独立確認 |
+| 誤った攻略断定   | conflict/expired fixture、文言 review | recipe を blocked に降格        | 二系統または一次情報で再審査          |
+| 活動情報の失効   | `expiresAt`、event ID 不一致          | 自動推薦から除外                | 新 revision の審査と署名              |
+| 個人情報露出     | snapshot schema、DOM/log audit        | 機能 flag を無効化              | 非識別契約と smoke が通過             |
+| #29 未決定       | 正式 URL/鍵が必要になる               | 同梱データだけで継続            | 所有者の運用決定と staging 受け入れ   |
+| 計算量増大       | 5 任務 fixture の時間上限             | 組合せを 5 件・候補上限で打切り | bounded algorithm の証明と計測        |
+| 既存指引退行     | goal route regression                 | 新セクションを無効化            | 既存全 fixture と renderer test 通過  |
 
 ## 所有者判断と推奨初期値
 
