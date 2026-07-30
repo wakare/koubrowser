@@ -1,10 +1,50 @@
 import { ApiFormation, ApiShipType, SlotitemType } from '@common/kcs'
 import { normalizeQuestStrategyRecipes, type QuestStrategyRecipe } from '@common/quest_strategy'
 
+const MaximumStrategyRecipes = 512
+const KnowledgeVersionPattern = /^[0-9A-Za-z][0-9A-Za-z._-]{0,63}$/
+
 export interface QuestStrategyKnowledgeBundle {
   schemaVersion: 1
   version: string
   recipes: readonly QuestStrategyRecipe[]
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+export function validateQuestStrategyKnowledgeBundle(value: unknown): QuestStrategyKnowledgeBundle {
+  if (!isRecord(value)) {
+    throw new Error('quest strategy knowledge must be an object')
+  }
+  const keys = Object.keys(value)
+  if (
+    keys.length !== 3 ||
+    !keys.includes('schemaVersion') ||
+    !keys.includes('version') ||
+    !keys.includes('recipes')
+  ) {
+    throw new Error('quest strategy knowledge has unsupported or missing fields')
+  }
+  if (value.schemaVersion !== 1) {
+    throw new Error('unsupported quest strategy knowledge schema')
+  }
+  if (typeof value.version !== 'string' || !KnowledgeVersionPattern.test(value.version)) {
+    throw new Error('invalid quest strategy knowledge version')
+  }
+  if (
+    !Array.isArray(value.recipes) ||
+    value.recipes.length === 0 ||
+    value.recipes.length > MaximumStrategyRecipes
+  ) {
+    throw new Error('invalid quest strategy recipe list')
+  }
+  return {
+    schemaVersion: 1,
+    version: value.version,
+    recipes: normalizeQuestStrategyRecipes(value.recipes)
+  }
 }
 
 const ReviewedAt = '2026-07-31T00:00:00.000+09:00'
@@ -232,8 +272,8 @@ const recipes = [
   }
 ]
 
-export const BundledQuestStrategyKnowledge: QuestStrategyKnowledgeBundle = {
+export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
   version: '2026-07-31.1',
-  recipes: normalizeQuestStrategyRecipes(recipes)
-}
+  recipes
+})

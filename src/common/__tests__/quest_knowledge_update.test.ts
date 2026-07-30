@@ -5,6 +5,7 @@ import {
   validateQuestKnowledgeUpdate,
   type QuestKnowledgeUpdate
 } from '@common/quest_knowledge_update'
+import { BundledQuestStrategyKnowledge } from '@common/quest_strategy_knowledge'
 
 function createUpdate(
   overrides: Partial<QuestKnowledgeUpdate['claims'][number]> = {}
@@ -41,6 +42,37 @@ describe('quest knowledge update', () => {
     const update = createUpdate()
 
     expect(parseQuestKnowledgeUpdate(JSON.stringify(update))).toEqual(update)
+  })
+
+  it('parses signed strategy recipes and rejects unknown strategy versions', () => {
+    const update: QuestKnowledgeUpdate = {
+      ...createUpdate(),
+      strategy: {
+        schemaVersion: 1,
+        version: 'strategy-test-1',
+        recipes: [BundledQuestStrategyKnowledge.recipes[0]]
+      }
+    }
+
+    expect(parseQuestKnowledgeUpdate(JSON.stringify(update)).strategy).toEqual(update.strategy)
+    expect(() =>
+      validateQuestKnowledgeUpdate({
+        ...update,
+        strategy: {
+          ...update.strategy,
+          schemaVersion: 2
+        }
+      })
+    ).toThrow('unsupported quest strategy knowledge schema')
+    expect(() =>
+      validateQuestKnowledgeUpdate({
+        ...update,
+        strategy: {
+          ...update.strategy,
+          executable: 'alert(1)'
+        }
+      })
+    ).toThrow('unsupported or missing fields')
   })
 
   it('rejects unsupported fields and non-Wiki reference hosts', () => {

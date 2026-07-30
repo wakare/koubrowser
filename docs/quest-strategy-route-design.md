@@ -32,7 +32,8 @@
 
 ## 実装進捗
 
-2026-07-31 時点で P0 の純粋関数内核を実装した。
+2026-07-31 時点で 8 週間ルートの実装を完了し、公開判断だけを独立した
+実アカウント受け入れゲートとして残した。
 
 - `quest_strategy.ts` に version 1 の recipe、非識別 snapshot、preference、plan 契約を追加
 - recipe と snapshot は未知フィールドを拒否し、ISO timestamp、HTTPS 根拠 URL、
@@ -41,9 +42,16 @@
   任務枠を hard check として監査可能な形で出力
 - 欠損したローカル情報は `unknown` のまま候補を残し、失効情報は必ず除外
 - 整数 score、固定 tie-break、入力 fingerprint、`any` 前提の独立 alternative を実装
-- 合成 fixture と production 整合性テスト 15 件で決定性、降格、失効、競合、
+- 合成 fixture と production 整合性テストで決定性、降格、失効、競合、
   preference、任務定義との map/rank/count 一致を検証
 - Wiki の現行海域・定期任務ページをレビューし、通常海域 3 recipe を同梱
+- 既存任務指引内へ既定非表示の opt-in UI、score 内訳、次点、確認事項、
+  recipe 非表示、実行要約を追加
+- 2～5 任務を最大 512 recipe から限界被覆で選ぶ bounded set-cover と性能 fixture を追加
+- 攻略 schema を署名済み任務知識 bundle へ統合し、未知 field/version を拒否、
+  検証失敗時は同梱知識へ fallback
+- production Electron の署名 update smoke で攻略 version、privacy、横 overflow、
+  UI 状態復元を検証
 
 | recipe                            | 同時進行対象    | 審査根拠                                                                                                       |
 | --------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -75,10 +83,10 @@
 実装済みファイル:
 
 - `src/common/quest_strategy.ts`: 型、正規化、純粋な推薦
-- `src/common/quest_strategy_knowledge.ts`: version 付き同梱 recipe（現在は空）
+- `src/common/quest_strategy_knowledge.ts`: version 付き同梱 recipe と厳格な bundle 検証
 - `src/common/__tests__/quest_strategy.test.ts`: 決定性、降格、競合
 
-次工程のファイル:
+表示統合ファイル:
 
 - `src/renderer/src/common/quest-strategy-view.ts`: 表示専用変換
 - `src/renderer/src/components/QuestStrategyRoute.vue`: 既存指引内の新セクション
@@ -259,6 +267,9 @@ score =
 
 週 1～4 は #29 の本番運用決定に依存せず、同梱 fixture で進める。週 7 も正式 URL や鍵を
 要求せず、既存の一時鍵・loopback smoke で統合可能にする。本番配布は #29 完了後の別ゲートとする。
+
+実装と受け入れ証拠は
+[`quest-strategy-route-acceptance.md`](quest-strategy-route-acceptance.md) に固定する。
 
 ## テストと受け入れ
 

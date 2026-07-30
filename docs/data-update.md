@@ -13,9 +13,16 @@ Issue #29 の更新基盤として、地図 JSON と審査済み任務知識を�
 
 データ更新はゲームサーバーとの通信を読み書きせず、甲ブラウザ用の配布元とのみ通信する。
 
-任務知識はコードではなく、参照元、確認日、前提任務、審査状態だけを持つ宣言的 JSON に限定する。参照 URL は `wikiwiki.jp` または `zh.kcwiki.cn` の HTTPS URL のみ許可し、未知のフィールド、重複した参照元、自己参照、不正な件数や文字列は拒否する。
+任務知識はコードではなく、参照元、確認日、前提任務、審査状態と、任意の審査済み
+攻略 recipe だけを持つ宣言的 JSON に限定する。参照 URL は `wikiwiki.jp` または
+`zh.kcwiki.cn` の HTTPS URL のみ許可し、未知のフィールド、未知の schema version、
+重複した参照元、自己参照、不正な件数や文字列は拒否する。
 
-`quest/knowledge.json` に含まれる任務 ID は、その ID の同梱済み参照情報をまとめて置き換える。含まれない任務は同梱データを使い続ける。ファイルがない場合や検証に失敗した場合も同梱データへフォールバックする。
+`quest/knowledge.json` に含まれる任務 ID は、その ID の同梱済み参照情報をまとめて
+置き換える。含まれない任務は同梱データを使い続ける。任意の `strategy` が存在する
+場合は bundle 全体の署名・hash と攻略 schema の両方を検証してから置き換える。
+ファイルがない場合や検証に失敗した場合、攻略知識も含めて同梱データへ
+フォールバックする。
 
 ## 署名鍵
 
@@ -96,6 +103,12 @@ npm run data:bundle -- --version 2026.07.29.1 --private-key path/to/private-key.
   ]
 }
 ```
+
+攻略 recipe も同じ署名対象へ含める場合、最上位に `strategy` を追加し、その中へ
+`schemaVersion`、知識 `version`、審査済み `recipes` を置く。`recipes` は 1～512 件に
+限定し、各 recipe の未知フィールド、未知 schema、重複 ID、不正な evidence、
+失効条件、艦種・装備・海域の型を publisher とアプリの両方で拒否する。完全な構造は
+[`quest-strategy-route-design.md`](quest-strategy-route-design.md) を参照する。
 
 再現可能な発行時刻を指定する場合:
 

@@ -4,7 +4,9 @@ import type { QuestStrategyRecipe } from '@common/quest_strategy'
 import {
   buildQuestStrategyLocalSnapshot,
   listQuestStrategyCandidates,
-  normalizeQuestStrategySelection
+  normalizeQuestStrategySelection,
+  normalizeQuestStrategyVisibility,
+  QuestStrategyFeatureDefaultEnabled
 } from '../quest-strategy-view'
 
 function recommendation(
@@ -35,6 +37,13 @@ const recipes = [
 ] as QuestStrategyRecipe[]
 
 describe('quest strategy renderer adapter', () => {
+  it('keeps the feature opt-in until release acceptance is complete', () => {
+    expect(QuestStrategyFeatureDefaultEnabled).toBe(false)
+    expect(normalizeQuestStrategyVisibility(null)).toBe(false)
+    expect(normalizeQuestStrategyVisibility('false')).toBe(false)
+    expect(normalizeQuestStrategyVisibility('true')).toBe(true)
+  })
+
   it('lists only visible, supported, unclaimed quests in source order', () => {
     const result = listQuestStrategyCandidates(recipes, [
       recommendation(999, 'active'),

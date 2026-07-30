@@ -198,7 +198,10 @@ async function handleSmokeRequest(
         Boolean(process.env.KOU_DATA_UPDATE_PUBLIC_KEY),
       activeDataDirectory: getActiveDataDirectory(),
       questClaimCount: questKnowledgeUpdate?.claims.length ?? 0,
-      questIds: questKnowledgeUpdate?.claims.map((claim) => claim.questId) ?? []
+      questIds: questKnowledgeUpdate?.claims.map((claim) => claim.questId) ?? [],
+      strategyVersion: questKnowledgeUpdate?.strategy?.version ?? null,
+      strategyRecipeIds:
+        questKnowledgeUpdate?.strategy?.recipes.map((recipe) => recipe.id) ?? []
     }
   }
 

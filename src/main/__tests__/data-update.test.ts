@@ -24,6 +24,7 @@ import {
   verifyDataManifest
 } from '@main/data-update'
 import { getActiveQuestKnowledgeUpdate, setActiveDataDirectory } from '@main/data-path'
+import { BundledQuestStrategyKnowledge } from '@common/quest_strategy_knowledge'
 
 const temporaryDirectories: string[] = []
 
@@ -402,7 +403,12 @@ describe('data update', () => {
             questTitle: '配信テスト任務',
             prerequisites: []
           }
-        ]
+        ],
+        strategy: {
+          schemaVersion: 1,
+          version: '2026.07.29.quest-strategy',
+          recipes: [BundledQuestStrategyKnowledge.recipes[0]]
+        }
       }),
       'utf8'
     )
@@ -430,6 +436,14 @@ describe('data update', () => {
         questTitle: '配信テスト任務'
       })
     )
+    expect(getActiveQuestKnowledgeUpdate()?.strategy).toMatchObject({
+      version: '2026.07.29.quest-strategy',
+      recipes: [
+        expect.objectContaining({
+          id: 'normal-1-5-periodic-asw'
+        })
+      ]
+    })
   })
 
   it('rejects malformed quest knowledge before activating the bundle', async () => {
@@ -618,7 +632,12 @@ describe('data update', () => {
             questTitle: '发布测试任务',
             prerequisites: []
           }
-        ]
+        ],
+        strategy: {
+          schemaVersion: 1,
+          version: '2026.07.29.publisher-strategy',
+          recipes: [BundledQuestStrategyKnowledge.recipes[2]]
+        }
       }),
       'utf8'
     )

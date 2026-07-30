@@ -18,6 +18,7 @@ describe('quest strategy route UI wiring', () => {
     expect(questGuide).toContain(':equipment-type-counts="strategyEquipmentTypeCounts"')
     expect(strategyRoute).toContain('buildQuestStrategyLocalSnapshot({')
     expect(strategyRoute).toContain('buildQuestStrategyRoutePlan({')
+    expect(strategyRoute).toContain('questStrategyKnowledge.value.recipes')
     expect(questGuide).toContain('v-if="showStrategyRoute"')
     expect(questGuide).toContain('StrategyRouteVisibleStorageKey')
   })

@@ -1,6 +1,7 @@
 const crypto = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
+const { validateQuestStrategyKnowledge } = require('./validate-quest-strategy')
 
 const VersionPattern = /^[0-9A-Za-z][0-9A-Za-z._-]{0,63}$/
 const MapFilenamePattern = /^[0-9]{3}_[0-9]{2}_map\.json$/
@@ -244,7 +245,7 @@ function validateQuestKnowledgeData(data, filename) {
   if (!isRecord(value)) {
     throw new Error('quest knowledge update must be an object')
   }
-  requireExactKeys(value, ['schemaVersion', 'claims'], [], 'quest knowledge update')
+  requireExactKeys(value, ['schemaVersion', 'claims'], ['strategy'], 'quest knowledge update')
   if (
     value.schemaVersion !== 1 ||
     !Array.isArray(value.claims) ||
@@ -262,6 +263,9 @@ function validateQuestKnowledgeData(data, filename) {
     }
     seenSources.add(key)
   })
+  if (value.strategy !== undefined) {
+    validateQuestStrategyKnowledge(value.strategy)
+  }
 }
 
 function isFiniteNumber(value) {

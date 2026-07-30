@@ -6,7 +6,6 @@ import {
   type StrategyPreferencePreset,
   type StrategyQuestObjective
 } from '@common/quest_strategy'
-import { BundledQuestStrategyKnowledge } from '@common/quest_strategy_knowledge'
 import {
   buildQuestStrategyLocalSnapshot,
   listQuestStrategyCandidates,
@@ -14,6 +13,7 @@ import {
   QuestStrategyMaximumSelection
 } from '@renderer/common/quest-strategy-view'
 import { translateApp } from '@renderer/store/global_setting'
+import { questStrategyKnowledge } from '@renderer/store/quest_strategy'
 
 const SelectionStorageKey = 'questStrategyRouteSelection:v1'
 const PresetStorageKey = 'questStrategyRoutePreset:v1'
@@ -65,7 +65,7 @@ function normalizePreset(value: unknown): StrategyPreferencePreset {
 
 const hiddenRecipeIds = ref<string[]>(storedHiddenRecipes())
 const activeRecipes = computed(() =>
-  BundledQuestStrategyKnowledge.recipes.filter(
+  questStrategyKnowledge.value.recipes.filter(
     (recipe) => !hiddenRecipeIds.value.includes(recipe.id)
   )
 )
@@ -141,7 +141,7 @@ const plan = computed(() => {
     questCapacity: props.questCapacity
   })
   return buildQuestStrategyRoutePlan({
-    knowledgeVersion: BundledQuestStrategyKnowledge.version,
+    knowledgeVersion: questStrategyKnowledge.value.version,
     generatedAt,
     recipes: activeRecipes.value,
     snapshot,
@@ -203,7 +203,10 @@ function openEvidence(url: string): void {
 </script>
 
 <template>
-  <section class="quest-strategy-route">
+  <section
+    class="quest-strategy-route"
+    :data-knowledge-version="questStrategyKnowledge.version"
+  >
     <header class="quest-strategy-header">
       <div>
         <strong>{{ translateApp('quest.strategy.title') }}</strong>
@@ -212,7 +215,7 @@ function openEvidence(url: string): void {
       <small>
         {{
           translateApp('quest.strategy.knowledgeVersion', {
-            params: { version: BundledQuestStrategyKnowledge.version }
+            params: { version: questStrategyKnowledge.version }
           })
         }}
       </small>

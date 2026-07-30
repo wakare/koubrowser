@@ -19,6 +19,7 @@ import { GlobalSetting } from '@common/global_setting'
 import { AppSetting } from '@common/store'
 import { Quest } from '@common/record'
 import { setCuratedQuestKnowledgeUpdate } from '@common/quest_knowledge'
+import { setQuestStrategyKnowledgeUpdate } from '@renderer/store/quest_strategy'
 
 let requiredRecvedCallback: (()=> void) | null = null;
 
@@ -35,6 +36,7 @@ function onRequired(msg: RequiredMessage) {
   onGlobalSetting(msg.globalSetting);
   onAppSetting(msg.appSetting);
   setCuratedQuestKnowledgeUpdate(msg.questKnowledgeUpdate);
+  setQuestStrategyKnowledgeUpdate(msg.questKnowledgeUpdate?.strategy ?? null);
 
   console.log('stream got map info >> ', msg.mapInfo)
   Object.assign(mapInfo, msg.mapInfo)

@@ -518,4 +518,23 @@ describe('buildQuestStrategyRoutePlan', () => {
     expect(plan.steps[0].score.staleEvidencePenalty).toBe(-12)
     expect(plan.steps[0].warnings).toContain('1 件の根拠が失効しています')
   })
+
+  it('keeps the bounded five-quest planner responsive with 512 reviewed recipes', () => {
+    const questIds = [101, 102, 103, 104, 105]
+    const recipes = Array.from({ length: 512 }, (_, index) =>
+      recipe(
+        `bounded-${String(index).padStart(3, '0')}`,
+        [questIds[index % questIds.length], questIds[(index + 1) % questIds.length]].sort(
+          (left, right) => left - right
+        )
+      )
+    )
+    const startedAt = performance.now()
+
+    const plan = build(recipes, snapshot(questIds))
+
+    expect(performance.now() - startedAt).toBeLessThan(2_000)
+    expect(plan.coveredQuestIds).toEqual(questIds)
+    expect(plan.steps.length).toBeLessThanOrEqual(5)
+  })
 })

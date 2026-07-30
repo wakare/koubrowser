@@ -10,6 +10,11 @@ import {
 } from '@common/quest_strategy'
 
 export const QuestStrategyMaximumSelection = StrategyMaximumSelectedQuests
+export const QuestStrategyFeatureDefaultEnabled = false
+
+export function normalizeQuestStrategyVisibility(value: unknown): boolean {
+  return value === 'true' ? true : QuestStrategyFeatureDefaultEnabled
+}
 
 export interface QuestStrategyCandidate {
   questId: number

@@ -5,6 +5,10 @@ import type {
   QuestCuratedSource,
   QuestPrerequisiteReviewStatus
 } from '@common/quest_knowledge'
+import {
+  validateQuestStrategyKnowledgeBundle,
+  type QuestStrategyKnowledgeBundle
+} from '@common/quest_strategy_knowledge'
 
 const QuestKnowledgeSchemaVersion = 1
 const MaxQuestKnowledgeBytes = 2 * 1024 * 1024
@@ -21,6 +25,11 @@ export interface QuestKnowledgeUpdate {
    * Claims for all other quest IDs continue to use the bundled fallback.
    */
   readonly claims: QuestCuratedClaim[]
+  /**
+   * Optional signed strategy knowledge. Missing or invalid data never replaces
+   * the application-bundled fallback.
+   */
+  readonly strategy?: QuestStrategyKnowledgeBundle
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -191,11 +200,7 @@ function parseClaim(value: unknown, index: number): QuestCuratedClaim {
   )
 
   const source = parseSource(value.source, `${description} source`)
-  const sourceLabel = requireString(
-    value.sourceLabel,
-    `${description} source label`,
-    100
-  )
+  const sourceLabel = requireString(value.sourceLabel, `${description} source label`, 100)
   const expectedSourceLabel = source === 'wikiwiki' ? '日本語攻略Wiki' : '中文KCWiki'
   if (sourceLabel !== expectedSourceLabel) {
     throw new Error(`invalid ${description} source label`)
@@ -259,7 +264,7 @@ export function validateQuestKnowledgeUpdate(value: unknown): QuestKnowledgeUpda
   if (!isRecord(value)) {
     throw new Error('quest knowledge update must be an object')
   }
-  requireExactKeys(value, ['schemaVersion', 'claims'], [], 'quest knowledge update')
+  requireExactKeys(value, ['schemaVersion', 'claims'], ['strategy'], 'quest knowledge update')
   if (value.schemaVersion !== QuestKnowledgeSchemaVersion) {
     throw new Error('unsupported quest knowledge schema')
   }
@@ -282,7 +287,10 @@ export function validateQuestKnowledgeUpdate(value: unknown): QuestKnowledgeUpda
   }
   return {
     schemaVersion: QuestKnowledgeSchemaVersion,
-    claims
+    claims,
+    ...(value.strategy === undefined
+      ? {}
+      : { strategy: validateQuestStrategyKnowledgeBundle(value.strategy) })
   }
 }
 

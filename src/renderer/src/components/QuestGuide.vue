@@ -52,6 +52,7 @@ import {
   normalizeQuestGoalViewMode,
   type QuestGoalViewMode
 } from '@renderer/common/quest-goal-view'
+import { normalizeQuestStrategyVisibility } from '@renderer/common/quest-strategy-view'
 import { getQuestCategoryText } from '@renderer/common/quest-view'
 import { translateApp } from '@renderer/store/global_setting'
 import QuestStrategyRoute from '@renderer/components/QuestStrategyRoute.vue'
@@ -77,7 +78,9 @@ const viewFilter = ref<QuestGuideViewFilter>(
   normalizeQuestGuideViewFilter(localStorage.getItem(ViewFilterStorageKey))
 )
 const searchQuery = ref('')
-const showStrategyRoute = ref(localStorage.getItem(StrategyRouteVisibleStorageKey) === 'true')
+const showStrategyRoute = ref(
+  normalizeQuestStrategyVisibility(localStorage.getItem(StrategyRouteVisibleStorageKey))
+)
 const wikiSource = ref<QuestGuideWikiSource>(
   normalizeQuestGuideWikiSource(localStorage.getItem(WikiSourceStorageKey))
 )

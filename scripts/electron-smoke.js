@@ -124,6 +124,8 @@ const WebmSignature = '1a45dfa3'
 const DataUpdateFixtureQuestId = 9_000_001
 const DataUpdateFixtureQuestTitle = '署名更新スモーク任務'
 const DataUpdateFixtureVersion = 'smoke.quest.1'
+const DataUpdateFixtureStrategyVersion = 'smoke.strategy.1'
+const DataUpdateFixtureStrategyRecipeId = 'signed-smoke-route'
 const DataUpdateFixtureMapAreaId = 1
 const DataUpdateFixtureMapNo = 1
 const DataUpdateFixtureMapPath = 'map/001_01_map.json'
@@ -1240,7 +1242,60 @@ function createSignedDataUpdateFixture() {
         questTitle: DataUpdateFixtureQuestTitle,
         prerequisites: []
       }
-    ]
+    ],
+    strategy: {
+      schemaVersion: 1,
+      version: DataUpdateFixtureStrategyVersion,
+      recipes: [
+        {
+          schemaVersion: 1,
+          id: DataUpdateFixtureStrategyRecipeId,
+          revision: 1,
+          title: '署名更新スモーク攻略',
+          status: 'approved',
+          questIds: [DataUpdateFixtureQuestId],
+          objectives: [
+            {
+              questId: DataUpdateFixtureQuestId,
+              result: 'arrival',
+              requiredCount: 1
+            }
+          ],
+          mapKey: '1-1',
+          routeLabels: ['A-B'],
+          targetNodes: ['B'],
+          fleet: {
+            minimumShips: 1,
+            maximumShips: 6,
+            shipTypeConstraints: []
+          },
+          equipmentTypeConstraints: [],
+          formations: [
+            {
+              formationId: 1,
+              label: '単縦陣'
+            }
+          ],
+          actions: ['署名済み攻略 fixture を表示する'],
+          cost: 'low',
+          risk: 'low',
+          evidence: [
+            {
+              sourceId: 'wikiwiki-smoke-strategy',
+              sourceLabel: '日本語攻略Wiki',
+              url: 'https://wikiwiki.jp/kancolle/鎮守府海域/1-1',
+              reviewedAt: '2026-07-31T00:00:00.000Z',
+              validUntil: '2027-07-31T00:00:00.000Z',
+              confidence: 'supported',
+              summary: '署名更新経路の合成確認'
+            }
+          ],
+          validity: {
+            reviewBy: '2026-10-31T00:00:00.000Z'
+          }
+        }
+      ]
+    }
   }
   const mapData = Buffer.from(JSON.stringify(map), 'utf8')
   const data = Buffer.from(JSON.stringify(questKnowledge), 'utf8')
@@ -1274,6 +1329,8 @@ function createSignedDataUpdateFixture() {
     mapSpot: DataUpdateFixtureMapSpot,
     questId: DataUpdateFixtureQuestId,
     questTitle: DataUpdateFixtureQuestTitle,
+    strategyVersion: DataUpdateFixtureStrategyVersion,
+    strategyRecipeId: DataUpdateFixtureStrategyRecipeId,
     manifest,
     mapData,
     data
@@ -1469,7 +1526,8 @@ async function dataUpdateInstalledBundleState(cacheRoot, publicKey) {
       await fsPromises.readFile(path.join(versionDirectory, 'quest', 'knowledge.json'), 'utf8')
     )
     const claim = questKnowledge.claims?.[0]
-    if (!mapExpectation || !claim) {
+    const strategy = questKnowledge.strategy
+    if (!mapExpectation || !claim || typeof strategy?.version !== 'string') {
       return { ready: false }
     }
     return {
@@ -1483,7 +1541,9 @@ async function dataUpdateInstalledBundleState(cacheRoot, publicKey) {
       versionDirectory,
       ...mapExpectation,
       questId: claim.questId,
-      questTitle: claim.questTitle
+      questTitle: claim.questTitle,
+      strategyVersion: strategy.version,
+      strategyRecipeId: strategy.recipes?.[0]?.id ?? null
     }
   } catch {
     return { ready: false }
@@ -6062,6 +6122,59 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
   }
 
   let previousFilter
+  let previousStrategyVisibility
+  const inspectQuestStrategy = async (expectedVersion = undefined) => {
+    previousStrategyVisibility = await session.evaluate(`(() => {
+      const toggle = document.querySelector('.quest-strategy-visibility-toggle')
+      if (!toggle) return null
+      const visible = toggle.getAttribute('aria-expanded') === 'true'
+      const stored = localStorage.getItem('questStrategyRouteVisible:v1')
+      if (!visible) toggle.click()
+      return { visible, stored }
+    })()`)
+    if (previousStrategyVisibility === null) {
+      throw new Error('The quest-strategy visibility control is unavailable')
+    }
+    const strategyResult = await waitFor(
+      () =>
+        session.evaluate(`(() => {
+          const expectedVersion = ${JSON.stringify(expectedVersion)}
+          const route = document.querySelector('.quest-strategy-route')
+          if (!route) return null
+          const version = route.dataset.knowledgeVersion ?? null
+          const html = route.outerHTML
+          const forbidden = [
+            /admiral/i,
+            /member.?id/i,
+            /ship.?id/i,
+            /instance.?id/i,
+            /api_(?:token|port|member_id)/i
+          ].filter((pattern) => pattern.test(html)).map((pattern) => String(pattern))
+          return version && (!expectedVersion || version === expectedVersion)
+            ? {
+                version,
+                forbiddenIdentifiers: forbidden,
+                clientWidth: route.clientWidth,
+                scrollWidth: route.scrollWidth
+              }
+            : null
+        })()`),
+      expectedVersion
+        ? 'the signed quest-strategy update in the task guide'
+        : 'the bundled quest-strategy route in the task guide',
+      timeoutMs
+    )
+    if (
+      strategyResult.forbiddenIdentifiers.length > 0 ||
+      strategyResult.scrollWidth > strategyResult.clientWidth + 1
+    ) {
+      throw new Error(
+        `Quest-strategy view failed privacy or layout checks: ` +
+          `${JSON.stringify(strategyResult)}`
+      )
+    }
+    return strategyResult
+  }
   try {
     if (expectedQuestKnowledge) {
       const fixtureResult = await waitFor(
@@ -6100,8 +6213,10 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
         'the signed quest-knowledge update in the task guide',
         timeoutMs
       )
+      const strategyResult = await inspectQuestStrategy(expectedQuestKnowledge.strategyVersion)
       return {
         ...fixtureResult,
+        questStrategyUpdate: strategyResult,
         recurringUnregisteredCount: undefined,
         recurringUnresolvedCount: undefined,
         recurringReviewCount: undefined
@@ -6265,13 +6380,41 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
           `${result.expectedRecurringReviewCount} summarized`
       )
     }
+    const questStrategyUpdate = await inspectQuestStrategy()
     return {
       ...result,
+      questStrategyUpdate,
       recurringUnregisteredCount: unregistered.filteredCount,
       recurringUnresolvedCount: unresolved.filteredCount,
       recurringReviewCount: result.filteredCount
     }
   } finally {
+    if (previousStrategyVisibility !== undefined) {
+      await session.evaluate(`(() => {
+        const expected = ${JSON.stringify(previousStrategyVisibility.visible)}
+        const toggle = document.querySelector('.quest-strategy-visibility-toggle')
+        const visible = toggle?.getAttribute('aria-expanded') === 'true'
+        if (toggle && visible !== expected) toggle.click()
+      })()`)
+      await waitFor(
+        () =>
+          session.evaluate(`(() => {
+            const expected = ${JSON.stringify(previousStrategyVisibility.visible)}
+            const toggle = document.querySelector('.quest-strategy-visibility-toggle')
+            return (toggle?.getAttribute('aria-expanded') === 'true') === expected
+          })()`),
+        'the previous quest-strategy visibility to be restored',
+        timeoutMs
+      )
+      await session.evaluate(`(() => {
+        const stored = ${JSON.stringify(previousStrategyVisibility.stored)}
+        if (stored === null) {
+          localStorage.removeItem('questStrategyRouteVisible:v1')
+        } else {
+          localStorage.setItem('questStrategyRouteVisible:v1', stored)
+        }
+      })()`)
+    }
     if (previousFilter !== undefined) {
       await session.evaluate(`(() => {
       const previousFilter = ${JSON.stringify(previousFilter)}
@@ -6393,7 +6536,9 @@ function summarizeSmokeResult(result) {
           publicKeyConfigured: result.dataUpdateState.publicKeyConfigured,
           active: Boolean(result.dataUpdateState.activeDataDirectory),
           questClaimCount: result.dataUpdateState.questClaimCount,
-          questIds: result.dataUpdateState.questIds
+          questIds: result.dataUpdateState.questIds,
+          strategyVersion: result.dataUpdateState.strategyVersion,
+          strategyRecipeIds: result.dataUpdateState.strategyRecipeIds
         }
       : undefined,
     liveAcceptance: result.liveAcceptance
@@ -6614,7 +6759,8 @@ function summarizeSmokeResult(result) {
           recurringUnregisteredCount: result.taskGuide.recurringUnregisteredCount,
           recurringUnresolvedCount: result.taskGuide.recurringUnresolvedCount,
           recurringReviewCount: result.taskGuide.recurringReviewCount,
-          questKnowledgeUpdate: result.taskGuide.questKnowledgeUpdate
+          questKnowledgeUpdate: result.taskGuide.questKnowledgeUpdate,
+          questStrategyUpdate: result.taskGuide.questStrategyUpdate
         }
       : undefined,
     workspaceResizeSweep:
@@ -7031,7 +7177,9 @@ async function run(options) {
         actualUserDataPath.toLowerCase() !== expectedUserDataPath.toLowerCase() ||
         !dataUpdateState.publicKeyConfigured ||
         !dataUpdateState.activeDataDirectory ||
-        !dataUpdateState.questIds.includes(dataUpdateExpectation.questId)
+        !dataUpdateState.questIds.includes(dataUpdateExpectation.questId) ||
+        dataUpdateState.strategyVersion !== dataUpdateExpectation.strategyVersion ||
+        !dataUpdateState.strategyRecipeIds.includes(dataUpdateExpectation.strategyRecipeId)
       ) {
         throw new Error(
           `Signed task knowledge bundle was not activated: ${JSON.stringify(dataUpdateState)}`
@@ -7039,7 +7187,8 @@ async function run(options) {
       }
       progress(
         'data-update-ready',
-        `signed task knowledge includes #${dataUpdateExpectation.questId}`
+        `signed task knowledge includes #${dataUpdateExpectation.questId} and ` +
+          `strategy ${dataUpdateExpectation.strategyVersion}`
       )
       const cellInfo = await appSession.evaluate(
         `window.api.cellInfoAsync(${dataUpdateExpectation.mapAreaId}, ${dataUpdateExpectation.mapNo})`
@@ -7982,6 +8131,8 @@ module.exports = {
   DefaultTotalTimeoutMs,
   DataUpdateFixtureQuestId,
   DataUpdateFixtureQuestTitle,
+  DataUpdateFixtureStrategyVersion,
+  DataUpdateFixtureStrategyRecipeId,
   DataUpdateFixtureMapAreaId,
   DataUpdateFixtureMapNo,
   DataUpdateFixtureMapPath,

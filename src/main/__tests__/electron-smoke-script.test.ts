@@ -60,6 +60,8 @@ interface SmokeScript {
   }
   DataUpdateFixtureQuestId: number
   DataUpdateFixtureQuestTitle: string
+  DataUpdateFixtureStrategyVersion: string
+  DataUpdateFixtureStrategyRecipeId: string
   DisplayAcceptanceProfiles: readonly string[]
   LiveAcceptanceProfiles: readonly string[]
   DefaultPort: number
@@ -2348,7 +2350,9 @@ describe('Electron smoke script', () => {
         activeDataDirectory:
           'C:\\Temp\\koubrowser-layout-smoke-test\\koubrowser\\data-updates\\versions\\smoke.quest.1',
         questClaimCount: 1,
-        questIds: [smoke.DataUpdateFixtureQuestId]
+        questIds: [smoke.DataUpdateFixtureQuestId],
+        strategyVersion: smoke.DataUpdateFixtureStrategyVersion,
+        strategyRecipeIds: [smoke.DataUpdateFixtureStrategyRecipeId]
       },
       dataUpdateMapState: {
         areaId: smoke.DataUpdateFixtureMapAreaId,
@@ -2731,7 +2735,9 @@ describe('Electron smoke script', () => {
           publicKeyConfigured: true,
           active: true,
           questClaimCount: 1,
-          questIds: [smoke.DataUpdateFixtureQuestId]
+          questIds: [smoke.DataUpdateFixtureQuestId],
+          strategyVersion: smoke.DataUpdateFixtureStrategyVersion,
+          strategyRecipeIds: [smoke.DataUpdateFixtureStrategyRecipeId]
         },
         dataUpdateMapState: {
           areaId: smoke.DataUpdateFixtureMapAreaId,
