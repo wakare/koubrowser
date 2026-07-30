@@ -34,18 +34,16 @@
 
 ## 次の優先順
 
-1. **P0: 任務攻略推薦ルートの契約と決定的 MVP**
-   - [`quest-strategy-route-design.md`](quest-strategy-route-design.md) に従い、
-     現在の単一目標・前提任務ルートを、2～5 件の任務を同じ出撃候補へまとめる
-     読み取り専用の実行計画へ拡張する。
-   - 最初の 4 週間は、審査済み recipe、非識別ローカル snapshot、説明可能な
-     plan 出力、決定的 score、欠損・競合・失効時の fallback を
-     `src/common` の純粋関数と fixture で固定する。
-   - MVP は通常海域の海域・対象ノード/ルート表記・艦種/隻数・装備カテゴリ・
-     陣形候補・制空 guidance までとし、勝率・消費量予測、装備 optimizer、
-     イベント即時追従、自動操作を含めない。
-   - 既存任務指引を常に fallback として維持し、ゲーム通信の request、response、
-     state、semantics を変更する実装は受け入れない。
+1. **完了: 任務攻略推薦ルートの決定的 MVP**
+   - [`quest-strategy-route-design.md`](quest-strategy-route-design.md) の 8 週間ルートを
+     実装し、2～5 件の任務を審査済み出撃候補へまとめる読み取り専用計画、
+     canonical snapshot、固定 comparator、説明、fallback、opt-in UI、署名 schema、
+     production Electron の合成 smoke を完了した。
+   - [`quest-strategy-route-acceptance.md`](quest-strategy-route-acceptance.md) に従い、
+     実アカウント表示確認は `PENDING OWNER`、Issue #29 の正式配布運用は `FROZEN`、
+     既定有効化は別 PR の判断まで `BLOCKED` とする。
+   - 既存任務指引を常に fallback として維持し、勝率・消費量予測、装備 optimizer、
+     イベント即時追従、自動操作、ゲーム通信変更は引き続き非目標とする。
 2. **P1: #29 の本番運用決定**
    - 正式 HTTPS 配布 URL、公開鍵・指紋の値、秘密鍵保管とローテーションを決める。
    - [`data-update-key-operations.md`](data-update-key-operations.md) の役割分離、主鍵と

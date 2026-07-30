@@ -267,7 +267,10 @@ const equipmentStock = computed(() => {
     equippedInstanceIds
   )
 })
-const strategyShipTypeCounts = computed(() => {
+const strategyShipTypeCounts = computed<Readonly<Record<string, number>> | undefined>(() => {
+  if (svdata.mstShips.length === 0 || svdata.ships.length === 0) {
+    return undefined
+  }
   const result: Record<string, number> = {}
   for (const ship of svdata.ships) {
     const shipType = svdata.mstShip(ship.api_ship_id)?.api_stype
@@ -277,7 +280,10 @@ const strategyShipTypeCounts = computed(() => {
   }
   return result
 })
-const strategyEquipmentTypeCounts = computed(() => {
+const strategyEquipmentTypeCounts = computed<Readonly<Record<string, number>> | undefined>(() => {
+  if (svdata.mstSlotitems.length === 0 || svdata.slotitems.length === 0) {
+    return undefined
+  }
   const result: Record<string, number> = {}
   for (const item of equipmentStock.value) {
     result[item.type] = (result[item.type] ?? 0) + item.owned

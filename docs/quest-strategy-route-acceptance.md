@@ -32,6 +32,9 @@ Ed25519 鍵で攻略 recipe を含む bundle を署名し、production Electron 
 - component に横 overflow がない
 - 検査後に攻略表示、任務 filter、workspace page を開始前の状態へ戻す
 - 未知 field/version、改ざん、rollback、壊れた JSON は既存 bundle 検証で拒否する
+- 選択任務、任務 snapshot、record key、recipe の入力順を変えても plan と fingerprint が
+  同一で、文字列順位が host locale に依存しない
+- 艦船または装備 inventory が未読込なら空集合として不適合にせず、確認事項へ降格する
 
 2026-07-31 の production smoke は `smoke.strategy.1` と
 `signed-smoke-route` を読み込み、privacy 検出 0、`clientWidth = scrollWidth = 268`

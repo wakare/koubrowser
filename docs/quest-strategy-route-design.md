@@ -325,13 +325,26 @@ score =
 2026-07-31 に公開 Git の精確な commit
 `a26abe145e708371d50828c25b28b178829783f3` を対象として、ChatGPT Web の
 `Pro` 表示セッションへ 9 ファイルの取得証拠、8 週間計画、契約、算法、
-early-stop、所有者判断のレビューを依頼した。
+early-stop、所有者判断のレビューを依頼した。この回答を設計へ反映した後、
+実装済み commit `abb417d89570e3cc4cc996aab3d618ecbab70914` の 10 ファイルを
+同じ会話で再取得させ、release gate の観点で最終レビューした。
 
 Web 側の助言は設計入力に限り、ローカル `AGENTS.md`、実コード、テスト結果、
 利用者が指定した範囲を上書きしない。モデル UI は `Pro` を表示したが、
 バックエンドのモデルまたは routing を独立検証する証拠としては扱わない。
 会話 URL は
 `https://chatgpt.com/c/6a6b756d-32e8-83ee-92c6-b8bcb9cd5dc5`。
-9 パスの固定 ref 取得成功と、MVP を審査済み template 駆動の任務実行計画へ
-限定する中間結論は確認した。完全な A～H 回答は本設計保存時点で
-`Pro 思考中` のため、完了済みの審査証拠としては扱わない。
+最初の 9 パスは固定 ref で取得成功した。最終レビューでは 8 パスを完全取得し、
+巨大な `QuestGuide.vue` と smoke script は関連部分だけ取得したため、この 2 パスは
+部分取得として扱う。
+
+最終回答は P0 を報告せず、canonical snapshot の配列・record key 順、
+host locale に依存しない comparator、進捗文書の更新を狭い P1 として指摘した。
+ローカル再監査で、未読込の艦船・装備 inventory を空集合として不適合判定しない
+adapter guard も追加した。任務枠は recipe ごとの同時受注制約であり、別 step 間で
+順次入れ替えられるため、全 step の合計を hard constraint にはしない。
+
+UI と回答本文はそれぞれ `Pro`、`GPT-5.6 Pro` を表示・自己申告したが、
+バックエンド routing と fallback の独立証明は提供されなかった。したがって証拠分類は
+`UI_PRO_AND_SELF_REPORT_PRO_ROUTE_UNVERIFIED` とし、助言はローカルの型検査、
+unit test、production smoke、只読監査を通過した範囲だけ採用する。

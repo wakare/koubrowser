@@ -207,6 +207,32 @@ describe('quest strategy validation', () => {
       new QuestStrategyValidationError('snapshot.selectedQuestIds', 'at most 5 items expected')
     )
   })
+
+  it('canonicalizes snapshot arrays and record keys', () => {
+    const normalized = normalizeStrategyLocalSnapshot(
+      snapshot([102, 101], {
+        quests: [quest(102), quest(101)],
+        mapAvailability: {
+          '2-1': 'unknown',
+          '1-1': 'available'
+        },
+        shipTypeCounts: {
+          '10': 1,
+          '2': 2
+        },
+        equipmentTypeCounts: {
+          '14': 4,
+          '1': 1
+        }
+      })
+    )
+
+    expect(normalized.selectedQuestIds).toEqual([101, 102])
+    expect(normalized.quests.map((item) => item.questId)).toEqual([101, 102])
+    expect(Object.keys(normalized.mapAvailability)).toEqual(['1-1', '2-1'])
+    expect(Object.keys(normalized.shipTypeCounts ?? {})).toEqual(['2', '10'])
+    expect(Object.keys(normalized.equipmentTypeCounts ?? {})).toEqual(['1', '14'])
+  })
 })
 
 describe('buildQuestStrategyRoutePlan', () => {
@@ -230,6 +256,47 @@ describe('buildQuestStrategyRoutePlan', () => {
       additionalQuestSlots: 0,
       availableQuestSlots: 3
     })
+  })
+
+  it('keeps the complete plan and fingerprint stable across semantic input order', () => {
+    const zRoute = recipe('z-route', [101])
+    const accentedRoute = recipe('ä-route', [102])
+    const firstSnapshot = snapshot([102, 101], {
+      quests: [quest(102), quest(101)],
+      mapAvailability: {
+        '2-1': 'unknown',
+        '1-1': 'available'
+      },
+      shipTypeCounts: {
+        '10': 1,
+        '2': 2
+      },
+      equipmentTypeCounts: {
+        '14': 4,
+        '1': 1
+      }
+    })
+    const secondSnapshot = snapshot([101, 102], {
+      quests: [quest(101), quest(102)],
+      mapAvailability: {
+        '1-1': 'available',
+        '2-1': 'unknown'
+      },
+      shipTypeCounts: {
+        '2': 2,
+        '10': 1
+      },
+      equipmentTypeCounts: {
+        '1': 1,
+        '14': 4
+      }
+    })
+
+    const first = build([accentedRoute, zRoute], firstSnapshot)
+    const second = build([zRoute, accentedRoute], secondSnapshot)
+
+    expect(first.steps.map((step) => step.recipeId)).toEqual(['z-route', 'ä-route'])
+    expect(first).toEqual(second)
   })
 
   it('prefers new quest coverage over a higher-scoring overlapping route', () => {

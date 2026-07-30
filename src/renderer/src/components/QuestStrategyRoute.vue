@@ -23,8 +23,8 @@ const props = defineProps<{
   recommendations: readonly QuestGuideRecommendation[]
   availableMapKeys: ReadonlySet<string>
   mapDataAvailable: boolean
-  shipTypeCounts: Readonly<Record<string, number>>
-  equipmentTypeCounts: Readonly<Record<string, number>>
+  shipTypeCounts?: Readonly<Record<string, number>>
+  equipmentTypeCounts?: Readonly<Record<string, number>>
   activeQuestCount: number
   questCapacity?: number
   now: Date

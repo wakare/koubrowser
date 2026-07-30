@@ -597,7 +597,7 @@ function readQuestSnapshot(value: unknown, path: string): StrategyQuestSnapshot 
 function readCountRecord(value: unknown, path: string): Record<string, number> {
   const record = recordAt(value, path)
   const normalized: Record<string, number> = {}
-  for (const [key, count] of Object.entries(record)) {
+  for (const [key, count] of Object.entries(record).sort(([a], [b]) => Number(a) - Number(b))) {
     if (!/^[1-9]\d*$/.test(key)) {
       throw new QuestStrategyValidationError(`${path}.${key}`, 'positive integer key expected')
     }
@@ -625,20 +625,28 @@ export function normalizeStrategyLocalSnapshot(value: unknown): StrategyLocalSna
   if (record.schemaVersion !== 1) {
     throw new QuestStrategyValidationError('snapshot.schemaVersion', 'version 1 expected')
   }
-  const selectedQuestIds = uniqueIntegersAt(record.selectedQuestIds, 'snapshot.selectedQuestIds', 1)
+  const selectedQuestIds = uniqueIntegersAt(
+    record.selectedQuestIds,
+    'snapshot.selectedQuestIds',
+    1
+  ).sort((a, b) => a - b)
   if (selectedQuestIds.length > StrategyMaximumSelectedQuests) {
     throw new QuestStrategyValidationError(
       'snapshot.selectedQuestIds',
       `at most ${StrategyMaximumSelectedQuests} items expected`
     )
   }
-  const quests = arrayAt(record.quests, 'snapshot.quests', readQuestSnapshot)
+  const quests = arrayAt(record.quests, 'snapshot.quests', readQuestSnapshot).sort(
+    (a, b) => a.questId - b.questId
+  )
   if (new Set(quests.map((quest) => quest.questId)).size !== quests.length) {
     throw new QuestStrategyValidationError('snapshot.quests', 'duplicate questId values')
   }
   const mapAvailabilityRecord = recordAt(record.mapAvailability, 'snapshot.mapAvailability')
   const mapAvailability: Record<string, StrategyMapAvailability> = {}
-  for (const [key, availability] of Object.entries(mapAvailabilityRecord)) {
+  for (const [key, availability] of Object.entries(mapAvailabilityRecord).sort(([a], [b]) =>
+    compareText(a, b)
+  )) {
     if (!/^[1-9]\d*-[1-9]\d*$/.test(key)) {
       throw new QuestStrategyValidationError(
         `snapshot.mapAvailability.${key}`,
@@ -713,11 +721,15 @@ function sumCounts(counts: Readonly<Record<string, number>>, typeIds: readonly n
   return typeIds.reduce((total, typeId) => total + (counts[String(typeId)] ?? 0), 0)
 }
 
+function compareText(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0
+}
+
 function compareRecipeIdentity(a: QuestStrategyRecipe, b: QuestStrategyRecipe): number {
   return (
-    a.id.localeCompare(b.id) ||
-    a.mapKey.localeCompare(b.mapKey) ||
-    a.questIds.join(',').localeCompare(b.questIds.join(','))
+    compareText(a.id, b.id) ||
+    compareText(a.mapKey, b.mapKey) ||
+    compareText(a.questIds.join(','), b.questIds.join(','))
   )
 }
 
@@ -1038,9 +1050,9 @@ function evaluateRecipe(
 function compareSteps(a: StrategyRouteStep, b: StrategyRouteStep): number {
   return (
     b.score.total - a.score.total ||
-    a.recipeId.localeCompare(b.recipeId) ||
-    a.mapKey.localeCompare(b.mapKey) ||
-    a.questIds.join(',').localeCompare(b.questIds.join(','))
+    compareText(a.recipeId, b.recipeId) ||
+    compareText(a.mapKey, b.mapKey) ||
+    compareText(a.questIds.join(','), b.questIds.join(','))
   )
 }
 

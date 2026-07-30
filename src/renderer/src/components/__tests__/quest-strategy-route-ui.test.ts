@@ -21,6 +21,10 @@ describe('quest strategy route UI wiring', () => {
     expect(strategyRoute).toContain('questStrategyKnowledge.value.recipes')
     expect(questGuide).toContain('v-if="showStrategyRoute"')
     expect(questGuide).toContain('StrategyRouteVisibleStorageKey')
+    expect(questGuide).toContain('svdata.mstShips.length === 0 || svdata.ships.length === 0')
+    expect(questGuide).toContain(
+      'svdata.mstSlotitems.length === 0 || svdata.slotitems.length === 0'
+    )
   })
 
   it('uses localization for app-owned UI and opens only reviewed evidence externally', () => {
