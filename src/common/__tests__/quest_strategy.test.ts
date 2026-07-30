@@ -9,6 +9,7 @@ import {
   type StrategyQuestSnapshot
 } from '@common/quest_strategy'
 import { BundledQuestStrategyKnowledge } from '@common/quest_strategy_knowledge'
+import { getQuestStuff } from '@common/kcquest'
 
 const GeneratedAt = '2026-07-31T00:00:00.000Z'
 
@@ -38,6 +39,11 @@ function recipe(
     title: `攻略 ${id}`,
     status: 'approved',
     questIds,
+    objectives: questIds.map((questId) => ({
+      questId,
+      result: 'S',
+      requiredCount: 1
+    })),
     mapKey: '1-1',
     routeLabels: ['A', 'B'],
     targetNodes: ['B'],
@@ -107,12 +113,51 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('keeps the production bundle empty until sources are reviewed', () => {
-    expect(BundledQuestStrategyKnowledge).toEqual({
-      schemaVersion: 1,
-      version: '2026-07-31.0',
-      recipes: []
-    })
+  it('loads three reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-07-31.1')
+    expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
+      'normal-1-5-periodic-asw',
+      'normal-4-2-western-periodic',
+      'normal-1-4-light-fleet-periodic'
+    ])
+    expect(
+      BundledQuestStrategyKnowledge.recipes.every(
+        (item) =>
+          item.status === 'approved' &&
+          item.evidence.length >= 2 &&
+          item.evidence.every((evidence) => evidence.url.startsWith('https://wikiwiki.jp/'))
+      )
+    ).toBe(true)
+  })
+
+  it('keeps production objectives aligned with bundled quest definitions', () => {
+    for (const strategyRecipe of BundledQuestStrategyKnowledge.recipes) {
+      for (const objective of strategyRecipe.objectives) {
+        const stuff = getQuestStuff(objective.questId) as
+          | {
+              maps?: readonly (readonly unknown[])[]
+              max?: readonly number[]
+            }
+          | undefined
+        const expectedRank = objective.result === 'victory' ? 'B' : objective.result
+        const mapIndex =
+          stuff?.maps?.findIndex(
+            (map) =>
+              map[0] === Number(strategyRecipe.mapKey.split('-')[0]) &&
+              map[1] === Number(strategyRecipe.mapKey.split('-')[1]) &&
+              map[2] === expectedRank
+          ) ?? -1
+
+        expect(
+          mapIndex,
+          `${strategyRecipe.id} quest ${objective.questId} map/rank`
+        ).toBeGreaterThanOrEqual(0)
+        expect(
+          stuff?.max?.[mapIndex] ?? stuff?.max?.[0],
+          `${strategyRecipe.id} quest ${objective.questId} required count`
+        ).toBe(objective.requiredCount)
+      }
+    }
   })
 
   it('normalizes reviewed recipes and rejects unknown fields', () => {
@@ -125,6 +170,13 @@ describe('quest strategy validation', () => {
     }
     expect(() => normalizeQuestStrategyRecipes([unsafe])).toThrow(
       new QuestStrategyValidationError('recipes[0].successRate', 'unknown field')
+    )
+
+    const mismatchedObjective = recipe('mismatched', [101], {
+      objectives: [{ questId: 102, result: 'S', requiredCount: 1 }]
+    })
+    expect(() => normalizeQuestStrategyRecipes([mismatchedObjective])).toThrow(
+      'questIds and objective questId values must match'
     )
   })
 
@@ -184,6 +236,7 @@ describe('buildQuestStrategyRoutePlan', () => {
         {
           equipmentTypeIds: [1],
           minimum: 1,
+          required: true,
           label: '主砲 1 個以上'
         }
       ]
@@ -210,6 +263,51 @@ describe('buildQuestStrategyRoutePlan', () => {
     ])
     expect(plan.blocked).toEqual([])
     expect(plan.steps[0].score.unknownInputPenalty).toBe(-40)
+  })
+
+  it('warns about recommended equipment without blocking the route', () => {
+    const recommendation = recipe('recommended-equipment', [101], {
+      equipmentTypeConstraints: [
+        {
+          equipmentTypeIds: [14],
+          minimum: 4,
+          required: false,
+          label: 'ソナー系 4 個以上'
+        }
+      ]
+    })
+
+    const plan = build([recommendation], snapshot())
+
+    expect(plan.steps).toHaveLength(1)
+    expect(plan.steps[0].checks.find((check) => check.code === 'equipment-ready')?.state).toBe(
+      'pass'
+    )
+    expect(plan.steps[0].warnings).toContain('推奨装備を確認してください：ソナー系 4 個以上')
+  })
+
+  it('builds a production 4-2 route with per-quest objectives', () => {
+    const localSnapshot = snapshot([229, 264, 845], {
+      mapAvailability: { '4-2': 'available' },
+      shipTypeCounts: {
+        '2': 3,
+        '3': 1,
+        '7': 2
+      },
+      equipmentTypeCounts: {
+        '6': 2
+      }
+    })
+
+    const plan = build(BundledQuestStrategyKnowledge.recipes, localSnapshot)
+
+    expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-4-2-western-periodic'])
+    expect(plan.steps[0].objectives).toEqual([
+      { questId: 229, result: 'victory', requiredCount: 12 },
+      { questId: 264, result: 'S', requiredCount: 1 },
+      { questId: 845, result: 'S', requiredCount: 1 }
+    ])
+    expect(plan.coveredQuestIds).toEqual([229, 264, 845])
   })
 
   it('excludes expired knowledge even when it would otherwise score highest', () => {
@@ -250,6 +348,7 @@ describe('buildQuestStrategyRoutePlan', () => {
         {
           equipmentTypeIds: [1],
           minimum: 2,
+          required: true,
           label: '主砲 2 個以上'
         }
       ]

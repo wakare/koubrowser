@@ -41,10 +41,18 @@
   任務枠を hard check として監査可能な形で出力
 - 欠損したローカル情報は `unknown` のまま候補を残し、失効情報は必ず除外
 - 整数 score、固定 tie-break、入力 fingerprint、`any` 前提の独立 alternative を実装
-- 合成 fixture 12 件で決定性、降格、失効、競合、preference を検証
+- 合成 fixture と production 整合性テスト 15 件で決定性、降格、失効、競合、
+  preference、任務定義との map/rank/count 一致を検証
+- Wiki の現行海域・定期任務ページをレビューし、通常海域 3 recipe を同梱
 
-同梱 production recipe は意図的に 0 件としている。次の工程で Wiki 等の根拠を
-人手レビューし、通常海域 3 recipe を追加するまで、未確認の攻略情報を製品データにしない。
+| recipe                            | 同時進行対象    | 審査根拠                                                                                                       |
+| --------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------- |
+| `normal-1-5-periodic-asw`         | 261 / 265 / 893 | [1-5](https://wikiwiki.jp/kancolle/鎮守府海域/1-5)、[定期出撃任務](https://wikiwiki.jp/kancolle/任務/出撃定期) |
+| `normal-4-2-western-periodic`     | 229 / 264 / 845 | [4-2](https://wikiwiki.jp/kancolle/西方海域/4-2)、[定期出撃任務](https://wikiwiki.jp/kancolle/任務/出撃定期)   |
+| `normal-1-4-light-fleet-periodic` | 257 / 280 / 284 | [1-4](https://wikiwiki.jp/kancolle/鎮守府海域/1-4)、[定期出撃任務](https://wikiwiki.jp/kancolle/任務/出撃定期) |
+
+根拠には 2026-10-31 の再審査期限と 2027-07-31 の有効期限を設定した。
+再審査期限後は stale penalty と警告を付け、有効期限後は推薦から除外する。
 
 ## 絶対境界
 
@@ -94,6 +102,7 @@ export interface QuestStrategyRecipe {
   revision: number
   status: 'approved' | 'draft' | 'withdrawn'
   questIds: number[]
+  objectives: StrategyQuestObjective[]
   mapKey: string
   routeLabels: string[]
   targetNodes: string[]
@@ -155,6 +164,7 @@ export interface StrategyRouteStep {
   recipeId: string
   recipeRevision: number
   coveredQuestIds: number[]
+  objectives: StrategyQuestObjective[]
   checks: StrategyHardCheck[]
   score: StrategyScoreBreakdown
   evidence: StrategyEvidence[]

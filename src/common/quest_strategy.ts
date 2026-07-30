@@ -36,6 +36,7 @@ export interface StrategyShipTypeConstraint {
 export interface StrategyEquipmentTypeConstraint {
   equipmentTypeIds: number[]
   minimum: number
+  required: boolean
   label: string
 }
 
@@ -51,6 +52,12 @@ export interface StrategyPrerequisiteAlternative {
   requiredQuestIds: number[]
 }
 
+export interface StrategyQuestObjective {
+  questId: number
+  result: 'arrival' | 'victory' | 'A' | 'S'
+  requiredCount: number
+}
+
 export interface QuestStrategyRecipe {
   schemaVersion: 1
   id: string
@@ -58,6 +65,7 @@ export interface QuestStrategyRecipe {
   title: string
   status: StrategyKnowledgeStatus
   questIds: number[]
+  objectives: StrategyQuestObjective[]
   mapKey: string
   routeLabels: string[]
   targetNodes: string[]
@@ -145,6 +153,7 @@ export interface StrategyRouteStep {
   title: string
   questIds: number[]
   coveredQuestIds: number[]
+  objectives: StrategyQuestObjective[]
   mapKey: string
   routeLabels: string[]
   targetNodes: string[]
@@ -376,11 +385,22 @@ function readEquipmentTypeConstraint(
   path: string
 ): StrategyEquipmentTypeConstraint {
   const record = recordAt(value, path)
-  assertKeys(record, ['equipmentTypeIds', 'minimum', 'label'], path)
+  assertKeys(record, ['equipmentTypeIds', 'minimum', 'required', 'label'], path)
   return {
     equipmentTypeIds: uniqueIntegersAt(record.equipmentTypeIds, `${path}.equipmentTypeIds`),
     minimum: integerAt(record.minimum, `${path}.minimum`, 1),
+    required: booleanAt(record.required, `${path}.required`),
     label: stringAt(record.label, `${path}.label`)
+  }
+}
+
+function readQuestObjective(value: unknown, path: string): StrategyQuestObjective {
+  const record = recordAt(value, path)
+  assertKeys(record, ['questId', 'result', 'requiredCount'], path)
+  return {
+    questId: integerAt(record.questId, `${path}.questId`, 1),
+    result: enumAt(record.result, ['arrival', 'victory', 'A', 'S'] as const, `${path}.result`),
+    requiredCount: integerAt(record.requiredCount, `${path}.requiredCount`, 1)
   }
 }
 
@@ -418,6 +438,7 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
       'title',
       'status',
       'questIds',
+      'objectives',
       'mapKey',
       'routeLabels',
       'targetNodes',
@@ -462,13 +483,30 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
       summary: stringAt(airStateRecord.summary, `${path}.airState.summary`)
     }
   }
+  const questIds = uniqueIntegersAt(record.questIds, `${path}.questIds`)
+  const objectives = arrayAt(record.objectives, `${path}.objectives`, readQuestObjective, 1)
+  if (new Set(objectives.map((objective) => objective.questId)).size !== objectives.length) {
+    throw new QuestStrategyValidationError(`${path}.objectives`, 'duplicate questId values')
+  }
+  const sortedQuestIds = [...questIds].sort((a, b) => a - b)
+  const objectiveQuestIds = objectives.map((objective) => objective.questId).sort((a, b) => a - b)
+  if (
+    objectiveQuestIds.length !== sortedQuestIds.length ||
+    objectiveQuestIds.some((questId, index) => questId !== sortedQuestIds[index])
+  ) {
+    throw new QuestStrategyValidationError(
+      `${path}.objectives`,
+      'questIds and objective questId values must match'
+    )
+  }
   return {
     schemaVersion: 1,
     id: stringAt(record.id, `${path}.id`),
     revision: integerAt(record.revision, `${path}.revision`, 1),
     title: stringAt(record.title, `${path}.title`),
     status: enumAt(record.status, ['approved', 'draft', 'withdrawn'] as const, `${path}.status`),
-    questIds: uniqueIntegersAt(record.questIds, `${path}.questIds`),
+    questIds,
+    objectives,
     mapKey,
     routeLabels: uniqueStringsAt(record.routeLabels, `${path}.routeLabels`),
     targetNodes: uniqueStringsAt(record.targetNodes, `${path}.targetNodes`),
@@ -830,19 +868,41 @@ function evaluateRecipe(
   }
   checks.push(hardCheck('fleet-ready', fleetState, fleetMessage))
 
+  const requiredEquipment = recipe.equipmentTypeConstraints.filter(
+    (constraint) => constraint.required
+  )
+  const recommendedEquipment = recipe.equipmentTypeConstraints.filter(
+    (constraint) => !constraint.required
+  )
   let equipmentState: StrategyCheckState = 'pass'
   let equipmentMessage = '装備カテゴリ条件を満たせます'
   if (recipe.equipmentTypeConstraints.length > 0 && !snapshot.equipmentTypeCounts) {
-    equipmentState = 'unknown'
-    equipmentMessage = '装備カテゴリ別の保有数を確認できません'
+    if (requiredEquipment.length > 0) {
+      equipmentState = 'unknown'
+      equipmentMessage = '必須装備カテゴリ別の保有数を確認できません'
+    }
+    if (recommendedEquipment.length > 0) {
+      warnings.push('推奨装備カテゴリ別の保有数を確認できません')
+    }
   } else if (snapshot.equipmentTypeCounts) {
-    const failed = recipe.equipmentTypeConstraints.find(
+    const failed = requiredEquipment.find(
       (constraint) =>
         sumCounts(snapshot.equipmentTypeCounts!, constraint.equipmentTypeIds) < constraint.minimum
     )
     if (failed) {
       equipmentState = 'fail'
       equipmentMessage = `装備条件「${failed.label}」を満たせません`
+    }
+    const missingRecommended = recommendedEquipment.filter(
+      (constraint) =>
+        sumCounts(snapshot.equipmentTypeCounts!, constraint.equipmentTypeIds) < constraint.minimum
+    )
+    if (missingRecommended.length > 0) {
+      warnings.push(
+        `推奨装備を確認してください：${missingRecommended
+          .map((constraint) => constraint.label)
+          .join('、')}`
+      )
     }
   }
   checks.push(hardCheck('equipment-ready', equipmentState, equipmentMessage))
@@ -917,6 +977,7 @@ function evaluateRecipe(
     title: recipe.title,
     questIds: [...recipe.questIds],
     coveredQuestIds,
+    objectives: recipe.objectives.map((objective) => ({ ...objective })),
     mapKey: recipe.mapKey,
     routeLabels: [...recipe.routeLabels],
     targetNodes: [...recipe.targetNodes],
