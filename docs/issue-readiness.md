@@ -34,7 +34,19 @@
 
 ## 次の優先順
 
-1. **P0: #29 の本番運用決定**
+1. **P0: 任務攻略推薦ルートの契約と決定的 MVP**
+   - [`quest-strategy-route-design.md`](quest-strategy-route-design.md) に従い、
+     現在の単一目標・前提任務ルートを、2～5 件の任務を同じ出撃候補へまとめる
+     読み取り専用の実行計画へ拡張する。
+   - 最初の 4 週間は、審査済み recipe、非識別ローカル snapshot、説明可能な
+     plan 出力、決定的 score、欠損・競合・失効時の fallback を
+     `src/common` の純粋関数と fixture で固定する。
+   - MVP は通常海域の海域・対象ノード/ルート表記・艦種/隻数・装備カテゴリ・
+     陣形候補・制空 guidance までとし、勝率・消費量予測、装備 optimizer、
+     イベント即時追従、自動操作を含めない。
+   - 既存任務指引を常に fallback として維持し、ゲーム通信の request、response、
+     state、semantics を変更する実装は受け入れない。
+2. **P1: #29 の本番運用決定**
    - 正式 HTTPS 配布 URL、公開鍵・指紋の値、秘密鍵保管とローテーションを決める。
    - [`data-update-key-operations.md`](data-update-key-operations.md) の役割分離、主鍵と
      passphrase の別保管、独立した 2 backup、復旧試験周期、incident 連絡先を実在する
@@ -55,7 +67,7 @@
      `docs/data-update-candidates/quest-knowledge-reviewed-v1.json` に生成済み。正式鍵と
      data version の決定後、同梱地図とともに署名し、別担当者の審査を経て staging
      配布を確認する。
-2. **P1: #18 の独立要件を承認して Issue 化**
+3. **P2: #18 の独立要件を承認して Issue 化**
    - [`docs/localization-requirements.md`](localization-requirements.md) で第 2 言語と翻訳レビュー体制を決め、[`docs/localization-workflow.md`](localization-workflow.md) の公開基準で審査する。
    - [`docs/cross-pc-data-requirements.md`](cross-pc-data-requirements.md) の任務競合規則は実装済み。暗号化 transfer と実アカウント受け入れは [`docs/account-data-acceptance.md`](account-data-acceptance.md) の手順で実施する。
    - legacy 内容一致 preview、version 1 `recordIdentity`、安定 identity に基づく
@@ -69,7 +81,7 @@
      merge 専用 rollback/redo・crash recovery・保持期限管理、合成 90,000 件の
      production smoke、および任務 DB の保守的な `quest-monotonic-v1` 専用規則は実装済み。
    - PC 間データは live NeDB 同期を実装せず、復元可能な export/import を最初の milestone とする。
-3. **P2: #38 の Proxy 連携方式を決定**
+4. **P3: #38 の Proxy 連携方式を決定**
    - まず、既存の「甲ブラウザ → 74EO」の固定上流 Proxy と opt-in 艦ログ提供で
      利用目的を満たすか Issue 報告者に確認する。
    - 74EO 内蔵 browser を通信元として維持する必要がある場合、単純な CONNECT
@@ -80,13 +92,13 @@
      raw payload 非保存、通信 bytes 非変更、security review を受け入れ条件にする。
    - 推奨する intake bridge を選ぶ場合は、74EO 側の対応可否、version 付き schema、
      process 認証、size / rate limit、drop に不要な credential の拒否を先に合意する。
-4. **凍結: #23 / #34 の実機受け入れ**
+5. **凍結: #23 / #34 の実機受け入れ**
    - 2026-07-31 の判断で、現時点では対応需要がないため優先対象から外す。
    - 既存の自動検査と専用 acceptance command は削除せず、需要が生じた時点で再開する。
-5. **継続保守: 任務指引**
+6. **継続保守: 任務指引**
    - 新しい任務定義を追加するときだけ Wiki 根拠を再確認する。
    - ローカルデータで証明できない条件を「準備完了」と推測しない。
-6. **完了: #30 の実アカウント受け入れ**
+7. **完了: #30 の実アカウント受け入れ**
    - 2026-07-31 に `npm run smoke:accept:issue-30` が実アカウントで PASS。
    - 脱敏済み summary は 18 行、明示 error なし、鎮守府海域 filter と遠征パネルの
      一時変更・復元を記録した。PNG はアカウント固有情報を含み得るため公開しない。
