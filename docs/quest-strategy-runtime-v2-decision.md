@@ -72,8 +72,12 @@ selected route units
 
 ## UI 契約
 
-選択候補は「recipe 登録済み任務」ではなく、すべての visible non-claim 任務とする。
-各候補と結果に次の coverage status を表示する。
+`QuestStrategyRoute` の主選択候補は、visible non-claim のうち通常海域の出撃計画として
+扱える `ApiQuestCategory.syutugeki` に限定する。すべての visible non-claim を対象にする
+honest fallback は既存 `QuestGuide` に残し、fallback の可視性を planner の選択可能性や
+route coverage と同一視しない。
+
+出撃計画の候補と結果には次の coverage status を使用する。
 
 - `route-ready`
 - `objective-only`
@@ -84,6 +88,9 @@ selected route units
 - `withdrawn`
 
 完全 route がないことと、任務の目標事実がないことを同じ空表示にしない。
+`route-ready` だけを自動選択できる。審査済み partial は利用者の明示操作だけで選択でき、
+その他の状態は折り畳んだ診断へ降格する。演習、遠征、工廠、編成などの非出撃任務は
+この通常海域 planner に入れず、将来必要なら別の plan model と evidence 契約で扱う。
 
 ## 非目標
 

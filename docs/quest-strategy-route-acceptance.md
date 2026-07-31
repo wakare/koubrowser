@@ -31,6 +31,8 @@ Ed25519 鍵で攻略 recipe を含む bundle を署名し、production Electron 
 - 任務指引を opt-in で開き、攻略 component の知識 version が一致する
 - 攻略 DOM に提督名、member ID、艦船 instance ID、API token 等がない
 - component に横 overflow がない
+- 最初の表示が「次の海域」または neutral な zero-ready state で、候補変更と監査詳細は
+  折り畳まれている
 - 検査後に攻略表示、任務 filter、workspace page を開始前の状態へ戻す
 - 未知 field/version、改ざん、rollback、壊れた JSON は既存 bundle 検証で拒否する
 - 選択任務、任務 snapshot、record key、recipe の入力順を変えても plan と fingerprint が
@@ -80,7 +82,8 @@ npm run smoke:live
 利用者は画面上で次だけを確認する。
 
 1. 攻略ルートが初期状態では閉じている。
-2. 明示的に開くと、現在の任務候補に対する海域候補、score 内訳、次点、確認事項が読める。
+2. 明示的に開くと、完全 route がある場合は次の海域と同時進行任務が最初に読め、
+   候補変更、score 内訳、次点、診断は必要時だけ展開できる。
 3. 欠損情報は「不明」または確認事項であり、成功・最適・必須と断定されない。
 4. recipe を非表示・復元しても、既存の current/all 目標ルートは変わらない。
 5. smoke 終了後、ゲーム側状態に操作結果がない。

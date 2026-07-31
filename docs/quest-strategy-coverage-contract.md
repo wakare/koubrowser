@@ -81,6 +81,11 @@ ID: `QSTRAT_VISIBLE_NON_CLAIM`
 QuestGuide の cadence、deadline、map、readiness、装備・消耗品、curated conflict を使い、
 不足理由を明示する。
 
+この fallback denominator は、既存 `QuestGuide` で情報の欠損を隠さないための契約であり、
+`QuestStrategyRoute` の主選択候補、route coverage、または自動推薦への昇格条件ではない。
+通常海域 planner の選択候補は visible non-claim の `ApiQuestCategory.syutugeki` に限定し、
+完全 route の自動選択は `route-ready` だけに許可する。
+
 単一アカウントの snapshot は regression fixture としてのみ使用し、母集団の coverage
 推定には使わない。
 

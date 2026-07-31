@@ -77,6 +77,35 @@
 5. 証拠不足、競合、失効、ローカルデータ欠損は「不明」として表示し、成功可能、
    最適、必須、確率などの断定へ変換しない。
 
+## 現行 planner の製品境界
+
+`QuestStrategyRoute` が現在扱う利用者作業は、visible non-claim の通常海域出撃任務から、
+同じ出撃で進められる 1～5 件をまとめ、次の海域、同時進行理由、受注と準備の確認事項を
+示すことである。coverage inventory やすべての任務種別を一覧することを主目的にしない。
+
+- 主選択候補は `ApiQuestCategory.syutugeki` に限定する。
+- 自動選択は完全な `route-ready` route unit を一つだけ選び、別海域の任務で 5 件まで
+  埋めない。
+- 審査済み partial は明示的な手動選択だけを許可する。
+- objective-only、conflicted、knowledge-insufficient、withdrawn は折り畳んだ診断とし、
+  route coverage に数えない。
+- 演習、遠征、工廠、編成などの generic fallback は既存 `QuestGuide` に残す。将来それらを
+  計画する場合は通常海域 recipe を流用せず、別の plan model と evidence 契約を定義する。
+- 実アカウント受け入れ、Issue #29 と独立した release 判断が揃うまで機能は既定非表示とする。
+
+### 現在の actionability baseline
+
+primary denominator 27 件に対し、現行の審査済み 3 route unit が任務全体を完了できるのは
+261、265、229、264 の 4 件（14.81%）である。257、893、845、280、284 の 5 件は一部
+stage または機械判定できない hard fleet constraint が残り、残る 18 件には route unit が
+ない。この値は全利用者の表示任務に
+対する命中率ではなく、canonical recurring normal-sortie inventory 上のデータ充足率である。
+
+そのため本変更では、件数を増やすために未審査 Wiki 情報を取り込まず、まず route-ready
+だけを自動選択する UI と authority を固定する。次のデータ pilot は、代表 snapshot で
+zero-ready の原因を記録し、author と approver を分離できる場合に限り、小さな審査単位で
+追加する。14.81% をもって既定有効化や実用カバレッジ達成とは判断しない。
+
 ## 推奨アーキテクチャ
 
 ### 1. 審査済み攻略知識
@@ -350,6 +379,17 @@ UI と回答本文はそれぞれ `Pro`、`GPT-5.6 Pro` を表示・自己申告
 バックエンド routing と fallback の独立証明は提供されなかった。したがって証拠分類は
 `UI_PRO_AND_SELF_REPORT_PRO_ROUTE_UNVERIFIED` とし、助言はローカルの型検査、
 unit test、production smoke、只読監査を通過した範囲だけ採用する。
+
+同日、画面上の候補一覧が情報不足表示で埋まり、行動可能な推薦が見えない問題について、
+実装済み commit `828b5fa0d875d19ededc809c101f8d0a159ba4da` の 10 ファイルを別の
+ChatGPT Web Pro 会話で精確に取得させ、製品目的から再レビューした。提案された
+「通常海域出撃 planner への限定」「完全 route-ready 一組だけの自動選択」「partial は
+手動」「診断は折り畳み」「localStorage v2 migration」「実アカウント受け入れまで既定
+非表示」を採用した。10 パスは取得成功し、大きなファイルは分割取得された。
+会話 URL は
+`https://chatgpt.com/c/6a6ca06d-5e34-83ee-950e-0e977caa1154`。
+この会話も UI と自己申告は Pro だったが routing attestation は得られなかったため、
+証拠分類は同じく `UI_PRO_AND_SELF_REPORT_PRO_ROUTE_UNVERIFIED` とする。
 
 ## Coverage expansion contract
 

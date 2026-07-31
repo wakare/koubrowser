@@ -45,7 +45,18 @@ describe('quest strategy route UI wiring', () => {
   it('shows stage-aware partial coverage and an honest fallback for uncovered tasks', () => {
     expect(strategyRoute).toContain('step.stageContributions')
     expect(strategyRoute).toContain('plan.questCoverage')
-    expect(strategyRoute).toContain("translateApp('quest.strategy.fallback.title')")
+    expect(strategyRoute).toContain("translateApp('quest.strategy.fallback.compact'")
     expect(strategyRoute).toContain("translateApp('quest.strategy.stageRemaining')")
+  })
+
+  it('uses an action-first route hero with grouped candidates and storage v2 recovery', () => {
+    expect(strategyRoute).toContain("translateApp('quest.strategy.nextMap'")
+    expect(strategyRoute).toContain("translateApp('quest.strategy.selection.change')")
+    expect(strategyRoute).toContain('readyCandidates')
+    expect(strategyRoute).toContain('partialCandidates')
+    expect(strategyRoute).toContain('diagnosticCandidates')
+    expect(strategyRoute).toContain('questStrategyRouteSelection:v2')
+    expect(strategyRoute).toContain('migrateLegacyQuestStrategySelection')
+    expect(strategyRoute).toContain('restoreRecommendedSelection')
   })
 })

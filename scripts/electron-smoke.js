@@ -3056,10 +3056,7 @@ async function inspectMissionCheck(
     }
 
     if (operationsPageTemporarilyRestored) {
-      await selectWorkspacePage(
-        targetPageId,
-        'the temporarily restored operations workspace page'
-      )
+      await selectWorkspacePage(targetPageId, 'the temporarily restored operations workspace page')
       await setWorkspaceEditorOpen(false)
       await session.evaluate(`(() => {
         const button = document.querySelector(
@@ -6143,6 +6140,10 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
           if (!route) return null
           const version = route.dataset.knowledgeVersion ?? null
           const html = route.outerHTML
+          const hero = route.querySelector('.quest-strategy-hero')
+          const zeroReady = route.querySelector('.quest-strategy-zero-ready')
+          const controls = route.querySelector('.quest-strategy-controls')
+          const audit = route.querySelector('.quest-strategy-summary')
           const forbidden = [
             /admiral/i,
             /member.?id/i,
@@ -6154,6 +6155,9 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
             ? {
                 version,
                 forbiddenIdentifiers: forbidden,
+                actionState: hero ? 'route' : zeroReady ? 'zero-ready' : null,
+                selectionCollapsed: controls ? !controls.open : zeroReady ? true : null,
+                auditCollapsed: audit ? !audit.open : true,
                 clientWidth: route.clientWidth,
                 scrollWidth: route.scrollWidth
               }
@@ -6166,6 +6170,9 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
     )
     if (
       strategyResult.forbiddenIdentifiers.length > 0 ||
+      strategyResult.actionState === null ||
+      strategyResult.selectionCollapsed !== true ||
+      (strategyResult.auditCollapsed !== null && strategyResult.auditCollapsed !== true) ||
       strategyResult.scrollWidth > strategyResult.clientWidth + 1
     ) {
       throw new Error(
@@ -8076,10 +8083,7 @@ async function run(options) {
     const outputResult = options.summary ? summarizeSmokeResult(result) : result
     if (options.summary && screenshotDirectory) {
       const summaryFile = await writeSmokeSummaryFile(screenshotDirectory, outputResult)
-      const summaryLabel = path
-        .relative(repoRoot, summaryFile)
-        .split(path.sep)
-        .join('/')
+      const summaryLabel = path.relative(repoRoot, summaryFile).split(path.sep).join('/')
       progress('summary', `saved redacted JSON as ${summaryLabel}`)
     }
     console.log('[smoke] PASS')

@@ -70,6 +70,23 @@ export interface BuildQuestStrategyRoutePlanV2Input extends BuildQuestStrategyRo
   conflictedQuestIds?: readonly number[]
 }
 
+export function questStrategyRecipeIsOperational(
+  recipe: QuestStrategyRecipe,
+  generatedAt: string
+): boolean {
+  const now = Date.parse(generatedAt)
+  if (!Number.isFinite(now) || recipe.status !== 'approved') {
+    return false
+  }
+  if (!recipe.evidence.some((item) => !item.validUntil || Date.parse(item.validUntil) > now)) {
+    return false
+  }
+  if (recipe.validity.startsAt && now < Date.parse(recipe.validity.startsAt)) {
+    return false
+  }
+  return !recipe.validity.endsAt || now < Date.parse(recipe.validity.endsAt)
+}
+
 function objectiveProjection(questId: number): QuestStrategyObjectiveProjection | undefined {
   try {
     return projectQuestStrategyObjective(questId)
@@ -140,20 +157,31 @@ export function auditQuestStrategyRecipeObjective(
 export function questStrategyCoverageStatus(
   questId: number,
   recipes: readonly QuestStrategyRecipe[],
+  generatedAt: string,
   conflicted = false
 ): QuestStrategyCoverageStatus {
   if (conflicted) {
     return 'conflicted'
   }
-  const audits = recipes
-    .filter((recipe) => recipe.questIds.includes(questId))
-    .map((recipe) => auditQuestStrategyRecipeObjective(recipe, questId))
+  const matchingRecipes = recipes.filter((recipe) => recipe.questIds.includes(questId))
+  const operationalRecipes = matchingRecipes.filter((recipe) =>
+    questStrategyRecipeIsOperational(recipe, generatedAt)
+  )
+  const audits = operationalRecipes.map((recipe) =>
+    auditQuestStrategyRecipeObjective(recipe, questId)
+  )
   if (audits.some((audit) => audit.complete)) {
     return 'route-ready'
   }
   const partial = audits.find((audit) => audit.contributions.length > 0)
   if (partial) {
     return partial.coverageStatus
+  }
+  if (matchingRecipes.some((recipe) => recipe.status === 'withdrawn')) {
+    return 'withdrawn'
+  }
+  if (matchingRecipes.length > 0) {
+    return 'route-unreviewed'
   }
   const projection = objectiveProjection(questId)
   return (projection?.objectiveStages.length ?? 0) > 0 ? 'objective-only' : 'knowledge-insufficient'
@@ -172,6 +200,7 @@ function coverageForQuest(
   questId: number,
   contributions: readonly QuestStrategyStageContribution[],
   recipes: readonly QuestStrategyRecipe[],
+  generatedAt: string,
   conflicted: boolean
 ): QuestStrategyQuestCoverage {
   const projection = objectiveProjection(questId)
@@ -196,7 +225,7 @@ function coverageForQuest(
     remainingStageIndexes,
     complete,
     partial,
-    coverageStatus: questStrategyCoverageStatus(questId, recipes, conflicted)
+    coverageStatus: questStrategyCoverageStatus(questId, recipes, generatedAt, conflicted)
   }
 }
 
@@ -231,6 +260,7 @@ export function buildQuestStrategyRoutePlanV2(
       questId,
       selectedStepContributions,
       input.recipes,
+      input.generatedAt,
       conflictedQuestIds.has(questId)
     )
   )

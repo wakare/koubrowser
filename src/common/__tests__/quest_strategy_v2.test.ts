@@ -67,9 +67,29 @@ describe('quest strategy runtime v2 stage coverage', () => {
   })
 
   it('does not promote an opaque fleet constraint to complete coverage', () => {
-    expect(questStrategyCoverageStatus(257, BundledQuestStrategyKnowledge.recipes)).toBe(
+    expect(
+      questStrategyCoverageStatus(257, BundledQuestStrategyKnowledge.recipes, GeneratedAt)
+    ).toBe('route-unreviewed')
+  })
+
+  it('keeps draft, expired and withdrawn knowledge out of route-ready capability', () => {
+    const approved = BundledQuestStrategyKnowledge.recipes.find(
+      (item) => item.id === 'normal-4-2-western-periodic'
+    )!
+
+    expect(questStrategyCoverageStatus(229, [{ ...approved, status: 'draft' }], GeneratedAt)).toBe(
       'route-unreviewed'
     )
+    expect(
+      questStrategyCoverageStatus(229, [{ ...approved, status: 'withdrawn' }], GeneratedAt)
+    ).toBe('withdrawn')
+    expect(
+      questStrategyCoverageStatus(
+        229,
+        [{ ...approved, validity: { ...approved.validity, endsAt: GeneratedAt } }],
+        GeneratedAt
+      )
+    ).toBe('route-unreviewed')
   })
 
   it('reports complete, partial and remaining stages separately in a plan', () => {
