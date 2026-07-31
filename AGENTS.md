@@ -100,7 +100,18 @@ Run `npm run lint` only when the task is specifically about lint cleanup, ESLint
 
 If the change is small and tests are not relevant, explain why tests were not run.
 
-Do not run heavy release builds such as `npm run build:win` unless the task is specifically about packaging, installer generation, or release verification.
+When a feature-development task is complete, run:
+
+```bash
+npm run build:win
+```
+
+Regenerating the Windows installer is part of the default feature-delivery workflow even when
+packaging was not requested separately. Report the installer path, product version, file size,
+SHA-256 checksum, and Authenticode signing status.
+
+For tasks that do not complete a feature, do not run heavy release builds unless the task is
+specifically about packaging, installer generation, or release verification.
 
 ## Directory guide
 
@@ -204,6 +215,9 @@ If a task appears to require secret values, use placeholders and explain where t
 ## Release / packaging notes
 
 The Windows installer is generated through electron-builder.
+
+Generated installer files under `dist/` remain local release artifacts and must not be committed
+unless the user explicitly requests committing or publishing binaries.
 
 Do not change the following without explicit request:
 
