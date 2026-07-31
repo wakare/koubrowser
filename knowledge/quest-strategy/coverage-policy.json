@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "policyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
+  "revision": 1,
+  "status": "frozen",
+  "runtimeOutputSchema": 1,
+  "selection": {
+    "minimum": 1,
+    "maximum": 5,
+    "coCompletionMinimum": 2
+  },
+  "denominators": {
+    "primary": {
+      "id": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
+      "cadences": ["daily", "weekly", "monthly", "quarterly"],
+      "objectiveType": "sortie",
+      "mapScope": "normal",
+      "excludedScopes": ["event", "limited", "invalid"],
+      "multiStageCounting": "once-complete-only"
+    },
+    "fallback": {
+      "id": "QSTRAT_VISIBLE_NON_CLAIM",
+      "predicate": "visible-recommendation-and-status-not-claim"
+    }
+  },
+  "coverageStatuses": [
+    "route-ready",
+    "objective-only",
+    "route-unreviewed",
+    "conflicted",
+    "unsupported-v1-multi-stage",
+    "knowledge-insufficient",
+    "withdrawn"
+  ],
+  "gates": {
+    "classificationCoverageBasisPoints": 10000,
+    "fallbackDisplayCoverageBasisPoints": 10000,
+    "provisionalRouteCoverageBasisPoints": 8000,
+    "routeCoverageTargetState": "provisional-until-inventory",
+    "zeroHitSnapshotMaximum": 0,
+    "hardConflictCompiledMaximum": 0,
+    "expiredAutoRecommendMaximum": 0,
+    "withdrawnEligibleMaximum": 0,
+    "deterministicHashMismatchMaximum": 0,
+    "compiledRecipeMaximum": 512,
+    "privacyFindingMaximum": 0,
+    "protectedCommunicationDiffMaximum": 0
+  },
+  "freshness": {
+    "normalReviewDays": 90,
+    "normalHardExpiryDays": 365
+  },
+  "review": {
+    "authorApproverSeparationRequired": true,
+    "extractorMayApprove": false,
+    "hardConflictBlocksCompilation": true,
+    "approvedRequiresReviewBy": true,
+    "approvedRequiresValidUntil": true
+  },
+  "compilation": {
+    "mode": "deterministic-lossless-v1",
+    "unknownHardFact": "reject-combination",
+    "recipeOverflow": "fail",
+    "powerSetGenerationAllowed": false,
+    "approvedOnly": true
+  },
+  "runtimeV2Triggers": {
+    "losslessCoverageBelowBasisPoints": 8000,
+    "unsupportedMultiStageAboveBasisPoints": 2000,
+    "compiledRecipeAbove": 512,
+    "zeroHitRequiresLossyRecipe": true
+  }
+}

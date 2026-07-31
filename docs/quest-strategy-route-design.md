@@ -47,7 +47,8 @@
 - Wiki の現行海域・定期任務ページをレビューし、通常海域 3 recipe を同梱
 - 既存任務指引内へ既定非表示の opt-in UI、score 内訳、次点、確認事項、
   recipe 非表示、実行要約を追加
-- 2～5 任務を最大 512 recipe から限界被覆で選ぶ bounded set-cover と性能 fixture を追加
+- 1～5 任務を最大 512 recipe から限界被覆で選ぶ bounded set-cover と性能 fixture を追加。
+  1 件は単独ルート、2～5 件は co-completion の対象とする
 - 攻略 schema を署名済み任務知識 bundle へ統合し、未知 field/version を拒否、
   検証失敗時は同梱知識へ fallback
 - production Electron の署名 update smoke で攻略 version、privacy、横 overflow、
@@ -237,7 +238,8 @@ score =
 
 ### MVP
 
-- 通常海域を対象に、2～5 件の選択任務を出撃単位へまとめる
+- 通常海域を対象に、1～5 件の選択任務を出撃単位へまとめる。
+  1 件は単独ルート、2～5 件は co-completion として扱う
 - 審査済み recipe に限り、海域、対象ノード/ルート表記、艦種/隻数、
   装備カテゴリ、陣形候補、制空ガイダンスを表示する
 - 期限、任務枠、準備状況、資源帯、危険帯、証拠新鮮度で決定的に順位付けする
@@ -261,7 +263,7 @@ score =
 | 3   | 決定的順位付けと説明   | 週 2   | preset、整数 score、tie-break、alternatives、blocked reason。golden test を固定                                  | 同一入力で出力が変わる、または理由を再構成できない            |
 | 4   | 欠損・失効・競合の降格 | 週 3   | snapshot 欠損 matrix、stale 警告、expired 除外、既存ルート fallback                                              | 欠損を不適合や準備完了と誤判定する                            |
 | 5   | Vue 表示統合           | 週 4   | `QuestGuide.vue` 内の opt-in セクション、score 内訳、証拠、次点、確認項目。既存 current/all と 6 step 表示を回帰 | 既存目標ルートの表示・保存状態が変わる                        |
-| 6   | 複数任務 co-completion | 週 5   | 2～5 任務の set-cover 型候補比較、任務枠提案、重複出撃削減の説明                                                 | 組合せ上限を超えて UI または計算時間が不安定になる            |
+| 6   | 複数任務 co-completion | 週 5   | 1～5 任務の set-cover 型候補比較。1 件は単独ルート、2～5 件は任務枠提案と重複出撃削減を説明                      | 組合せ上限を超えて UI または計算時間が不安定になる            |
 | 7   | 署名 bundle と smoke   | 週 6   | 攻略 schema を既存検証済み bundle へ追加、未知 version 拒否、同梱 fallback、production Electron smoke            | #29 未決定を理由に本番 endpoint や鍵を仮定する必要がある      |
 | 8   | 受け入れと限定公開判断 | 週 7   | 合成 snapshot の E2E、実アカウント読み取り専用確認手順、監査 checklist、機能 flag の公開判断                     | 通信変更、個人情報出力、誤断定、既存指引の退行が 1 件でもある |
 
@@ -314,8 +316,8 @@ score =
    目標ルートとの文脈を維持し、既存利用者へ影響しない。
 3. **重み**: `balanced` を既定とし、version 付き 4 preset のみを推奨する。
    自由重みは結果の説明と受け入れを難しくする。
-4. **時効**: 通常海域は `verifiedAt` から 180 日で stale、イベントは必須
-   `expiresAt` 超過で expired を推奨する。stale は表示可能だが自動上位推薦を避ける。
+4. **時効**: 通常海域は 90 日で再審査、365 日で hard expiry とする。stale は表示可能だが
+   自動上位推薦を避け、hard expiry 後は自動推薦から除外する。
 5. **利用者 override**: preference と明示的な recipe 非表示だけをローカル保存する。
    審査済み知識や evidence 自体を利用者操作で verified に昇格させない。
 6. **公開順**: 同梱 fixture で MVP を完成させ、#29 の正式運用決定後に署名更新を有効化する。
@@ -348,3 +350,12 @@ UI と回答本文はそれぞれ `Pro`、`GPT-5.6 Pro` を表示・自己申告
 バックエンド routing と fallback の独立証明は提供されなかった。したがって証拠分類は
 `UI_PRO_AND_SELF_REPORT_PRO_ROUTE_UNVERIFIED` とし、助言はローカルの型検査、
 unit test、production smoke、只読監査を通過した範囲だけ採用する。
+
+## Coverage expansion contract
+
+実用カバレッジの拡張は、手書き combination recipe の大量追加ではなく、
+authoring schema から既存 runtime v1 へ無損失でコンパイルする方式で進める。
+分母、状態、審査、freshness、withdrawal、停止条件は
+[`quest-strategy-coverage-contract.md`](quest-strategy-coverage-contract.md) に固定する。
+機械受け入れ条件は
+[`quest-strategy-coverage-acceptance.md`](quest-strategy-coverage-acceptance.md) に固定する。

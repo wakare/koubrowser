@@ -15,6 +15,7 @@
     "data:key:inspect": "node scripts/inspect-data-update-public-key.js",
     "data:key:rotation:verify": "node scripts/verify-data-update-key-rotation.js",
     "data:quest:export": "vite-node --config vitest.config.ts scripts/export-reviewed-quest-knowledge.ts",
+    "data:quest-strategy:contract:verify": "node scripts/validate-quest-strategy-authoring.js",
     "data:release:record": "node scripts/create-data-update-release-record.js",
     "data:release:verify": "node scripts/verify-data-update-release-record.js",
     "copy-dev-code": "node scripts/copy-dev-code.js",

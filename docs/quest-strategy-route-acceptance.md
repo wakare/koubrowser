@@ -16,6 +16,7 @@
 
 ```powershell
 npm run check:l10n
+npm run data:quest-strategy:contract:verify
 npm run typecheck
 npm run test
 npm run build:bundle
@@ -90,13 +91,13 @@ npm run smoke:live
 
 ## リリース門禁
 
-| 門禁 | 現在 | 解除条件 |
-| --- | --- | --- |
-| 純粋関数・決定性・欠損降格 | PASS | 全 unit fixture 継続通過 |
-| 2～5 任務・最大 512 recipe | PASS | bounded 性能 fixture 継続通過 |
-| 署名 schema・fallback | PASS | publisher/runtime/smoke 継続通過 |
-| production 合成 E2E・privacy | PASS | `smoke:data-update` 継続通過 |
-| ゲーム通信非変更 | PASS | 攻略基点以降の保護 3 ファイル差分 0、只読テスト通過 |
-| 実アカウント表示確認 | PENDING OWNER | 上記 `smoke:live` と目視 5 項目 PASS |
-| Issue #29 正式配布運用 | FROZEN | URL、公開鍵、担当、staging 審査を Owner 承認 |
-| 機能の既定有効化 | BLOCKED | 前二項と独立リリース判断 |
+| 門禁                         | 現在          | 解除条件                                                            |
+| ---------------------------- | ------------- | ------------------------------------------------------------------- |
+| 純粋関数・決定性・欠損降格   | PASS          | 全 unit fixture 継続通過                                            |
+| 1～5 任務・最大 512 recipe   | PASS          | 1 件の単独ルートと 2～5 件の bounded co-completion fixture 継続通過 |
+| 署名 schema・fallback        | PASS          | publisher/runtime/smoke 継続通過                                    |
+| production 合成 E2E・privacy | PASS          | `smoke:data-update` 継続通過                                        |
+| ゲーム通信非変更             | PASS          | 攻略基点以降の保護 3 ファイル差分 0、只読テスト通過                 |
+| 実アカウント表示確認         | PENDING OWNER | 上記 `smoke:live` と目視 5 項目 PASS                                |
+| Issue #29 正式配布運用       | FROZEN        | URL、公開鍵、担当、staging 審査を Owner 承認                        |
+| 機能の既定有効化             | BLOCKED       | 前二項と独立リリース判断                                            |

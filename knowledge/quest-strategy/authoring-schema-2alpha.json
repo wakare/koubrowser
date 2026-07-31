@@ -1,0 +1,474 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wakare/koubrowser/knowledge/quest-strategy/authoring-schema-2alpha.json",
+  "title": "QuestStrategyAuthoring/2alpha",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "authoringSchema",
+    "manifestVersion",
+    "sourceSnapshot",
+    "coveragePolicyId",
+    "questFacts",
+    "mapTemplates",
+    "composabilityRules",
+    "evidenceReviews",
+    "withdrawals"
+  ],
+  "properties": {
+    "authoringSchema": {
+      "const": "QuestStrategyAuthoring/2alpha"
+    },
+    "manifestVersion": {
+      "$ref": "#/$defs/version"
+    },
+    "sourceSnapshot": {
+      "$ref": "#/$defs/sourceSnapshot"
+    },
+    "coveragePolicyId": {
+      "const": "QSTRAT_RECURRING_NORMAL_SORTIE_V1"
+    },
+    "questFacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/questFact"
+      }
+    },
+    "mapTemplates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mapTemplate"
+      }
+    },
+    "composabilityRules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/composabilityRule"
+      }
+    },
+    "evidenceReviews": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidenceReview"
+      }
+    },
+    "withdrawals": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/withdrawal"
+      }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[0-9A-Za-z][0-9A-Za-z._-]*$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": ["draft", "approved", "conflicted", "insufficient", "withdrawn"]
+    },
+    "sourceSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repositoryCommit", "questCatalogDigest", "curatedKnowledgeDigest"],
+      "properties": {
+        "repositoryCommit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "questCatalogDigest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "curatedKnowledgeDigest": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "canonicalLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "accessor", "sourceCommit", "projectionDigest"],
+      "properties": {
+        "module": {
+          "const": "src/common/kcquest"
+        },
+        "accessor": {
+          "const": "getQuestStuff"
+        },
+        "sourceCommit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "projectionDigest": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "author",
+        "approver",
+        "reviewedAt",
+        "reviewBy",
+        "validUntil",
+        "evidenceReviewIds"
+      ],
+      "properties": {
+        "author": {
+          "$ref": "#/$defs/identifier"
+        },
+        "approver": {
+          "$ref": "#/$defs/identifier"
+        },
+        "reviewedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "reviewBy": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "validUntil": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "evidenceReviewIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        }
+      }
+    },
+    "objectiveStage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mapKey", "result", "requiredCount"],
+      "properties": {
+        "mapKey": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*-[1-9][0-9]*$"
+        },
+        "result": {
+          "enum": ["arrival", "victory", "A", "S"]
+        },
+        "requiredCount": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "questFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "factId",
+        "questId",
+        "revision",
+        "status",
+        "origin",
+        "lineage",
+        "classification",
+        "objectiveStages"
+      ],
+      "properties": {
+        "factId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "questId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "origin": {
+          "enum": ["canonical-projection", "reviewed-supplement"]
+        },
+        "lineage": {
+          "$ref": "#/$defs/canonicalLineage"
+        },
+        "classification": {
+          "enum": [
+            "lossless-v1",
+            "multi-stage",
+            "opaque-constraint",
+            "conflicted",
+            "missing-structured-fact",
+            "out-of-scope"
+          ]
+        },
+        "objectiveStages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/objectiveStage"
+          }
+        },
+        "review": {
+          "$ref": "#/$defs/review"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "approved"
+              }
+            }
+          },
+          "then": {
+            "required": ["review"]
+          }
+        }
+      ]
+    },
+    "mapTemplate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "templateId",
+        "revision",
+        "status",
+        "mapKey",
+        "routeLabels",
+        "targetNodes",
+        "formations",
+        "actions",
+        "cost",
+        "risk"
+      ],
+      "properties": {
+        "templateId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "mapKey": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*-[1-9][0-9]*$"
+        },
+        "routeLabels": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "targetNodes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "fleetConstraintRef": {
+          "$ref": "#/$defs/identifier"
+        },
+        "formations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["formationId", "label"],
+            "properties": {
+              "formationId": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "when": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "cost": {
+          "enum": ["low", "medium", "high"]
+        },
+        "risk": {
+          "enum": ["low", "medium", "high"]
+        },
+        "review": {
+          "$ref": "#/$defs/review"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "approved"
+              }
+            }
+          },
+          "then": {
+            "required": ["review"]
+          }
+        }
+      ]
+    },
+    "composabilityRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ruleId", "revision", "status", "conditions", "unknownPolicy"],
+      "properties": {
+        "ruleId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "conditions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "same-map-key",
+              "complete-objective-representable-in-v1",
+              "hard-constraint-intersection-satisfiable",
+              "no-hard-evidence-conflict"
+            ]
+          }
+        },
+        "unknownPolicy": {
+          "const": "reject-combination"
+        },
+        "review": {
+          "$ref": "#/$defs/review"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "approved"
+              }
+            }
+          },
+          "then": {
+            "required": ["review"]
+          }
+        }
+      ]
+    },
+    "evidenceReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewId",
+        "status",
+        "sourceUrl",
+        "sourceLabel",
+        "reviewer",
+        "reviewedAt",
+        "validUntil",
+        "confidence"
+      ],
+      "properties": {
+        "reviewId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "sourceLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewer": {
+          "$ref": "#/$defs/identifier"
+        },
+        "reviewedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "validUntil": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "confidence": {
+          "enum": ["verified", "supported"]
+        }
+      }
+    },
+    "withdrawal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordId", "targetId", "targetRevision", "reason", "withdrawnAt", "approver"],
+      "properties": {
+        "recordId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "targetId": {
+          "$ref": "#/$defs/identifier"
+        },
+        "targetRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "withdrawnAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "approver": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    }
+  }
+}
