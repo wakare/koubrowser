@@ -58,6 +58,18 @@ export interface QuestStrategyInventoryEntry {
   fleetConstraint: 'none' | 'v1-lossless' | 'opaque'
 }
 
+export interface QuestStrategyObjectiveProjection {
+  questId: number
+  questType: QuestTypeValue
+  objectiveStages: QuestStrategyInventoryObjectiveStage[]
+  fleetConstraint: QuestStrategyInventoryEntry['fleetConstraint']
+  failureReason:
+    | 'MISSING_MAP_DEFINITION'
+    | 'INVALID_MAP_DEFINITION'
+    | 'EVENT_OR_LIMITED_MAP'
+    | undefined
+}
+
 export interface QuestStrategyInventorySummary {
   registeredQuestCount: number
   recurringQuestCount: number
@@ -238,6 +250,52 @@ function fleetConstraintOf(
   return questFleetConditionIsV1Lossless(condition) ? 'v1-lossless' : 'opaque'
 }
 
+export function projectQuestStrategyObjective(questId: number): QuestStrategyObjectiveProjection {
+  const stuff = getQuestStuff(questId) as QuestStuffView | undefined
+  if (!stuff) {
+    throw new Error(`quest ${questId} is not registered`)
+  }
+  const base = {
+    questId,
+    questType: stuff.questType,
+    fleetConstraint: fleetConstraintOf(stuff, getQuestFleetCondition(questId))
+  }
+  const maps = mapsOf(stuff)
+  if (maps === undefined) {
+    return {
+      ...base,
+      objectiveStages: [],
+      failureReason: 'INVALID_MAP_DEFINITION'
+    }
+  }
+  if (maps.length === 0) {
+    return {
+      ...base,
+      objectiveStages: [],
+      failureReason: 'MISSING_MAP_DEFINITION'
+    }
+  }
+  if (maps.some((map) => map[0] > 10)) {
+    return {
+      ...base,
+      objectiveStages: [],
+      failureReason: 'EVENT_OR_LIMITED_MAP'
+    }
+  }
+  const objectiveStages = objectiveStagesOf(stuff, maps)
+  return objectiveStages
+    ? {
+        ...base,
+        objectiveStages,
+        failureReason: undefined
+      }
+    : {
+        ...base,
+        objectiveStages: [],
+        failureReason: 'INVALID_MAP_DEFINITION'
+      }
+}
+
 export function classifyQuestStrategyInventoryEntry(
   questId: number,
   cadenceCatalog?: QuestStrategyCadenceCatalog
@@ -247,7 +305,8 @@ export function classifyQuestStrategyInventoryEntry(
     throw new Error(`quest ${questId} is not registered`)
   }
   const cadence = cadenceCatalog?.entries.get(questId) ?? cadenceOf(stuff.key)
-  const fleetConstraint = fleetConstraintOf(stuff, getQuestFleetCondition(questId))
+  const projection = projectQuestStrategyObjective(questId)
+  const fleetConstraint = projection.fleetConstraint
   const base = {
     questId,
     cadence,
@@ -279,16 +338,7 @@ export function classifyQuestStrategyInventoryEntry(
       reasonCodes: ['NOT_STRUCTURED_SORTIE_OBJECTIVE']
     }
   }
-  const maps = mapsOf(stuff)
-  if (maps === undefined) {
-    return {
-      ...base,
-      denominatorEligible: false,
-      classification: 'missing-structured-fact',
-      reasonCodes: ['INVALID_MAP_DEFINITION']
-    }
-  }
-  if (maps.length === 0) {
+  if (projection.failureReason === 'MISSING_MAP_DEFINITION') {
     return {
       ...base,
       denominatorEligible: false,
@@ -296,7 +346,7 @@ export function classifyQuestStrategyInventoryEntry(
       reasonCodes: ['MISSING_MAP_DEFINITION']
     }
   }
-  if (maps.some((map) => map[0] > 10)) {
+  if (projection.failureReason === 'EVENT_OR_LIMITED_MAP') {
     return {
       ...base,
       denominatorEligible: false,
@@ -304,8 +354,7 @@ export function classifyQuestStrategyInventoryEntry(
       reasonCodes: ['EVENT_OR_LIMITED_MAP']
     }
   }
-  const objectiveStages = objectiveStagesOf(stuff, maps)
-  if (!objectiveStages) {
+  if (projection.failureReason === 'INVALID_MAP_DEFINITION') {
     return {
       ...base,
       denominatorEligible: true,
@@ -313,6 +362,7 @@ export function classifyQuestStrategyInventoryEntry(
       reasonCodes: ['INVALID_MAP_DEFINITION']
     }
   }
+  const objectiveStages = projection.objectiveStages
   const eligibleBase = {
     ...base,
     denominatorEligible: true,

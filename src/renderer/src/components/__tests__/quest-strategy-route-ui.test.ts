@@ -17,7 +17,7 @@ describe('quest strategy route UI wiring', () => {
     expect(questGuide).toContain(':ship-type-counts="strategyShipTypeCounts"')
     expect(questGuide).toContain(':equipment-type-counts="strategyEquipmentTypeCounts"')
     expect(strategyRoute).toContain('buildQuestStrategyLocalSnapshot({')
-    expect(strategyRoute).toContain('buildQuestStrategyRoutePlan({')
+    expect(strategyRoute).toContain('buildQuestStrategyRoutePlanV2({')
     expect(strategyRoute).toContain('questStrategyKnowledge.value.recipes')
     expect(questGuide).toContain('v-if="showStrategyRoute"')
     expect(questGuide).toContain('StrategyRouteVisibleStorageKey')
@@ -40,5 +40,12 @@ describe('quest strategy route UI wiring', () => {
     expect(strategyRoute).toContain('plan.executionSummary')
     expect(strategyRoute).toContain('HiddenRecipeStorageKey')
     expect(strategyRoute).toContain('@click="hideRecipe(step.recipeId)"')
+  })
+
+  it('shows stage-aware partial coverage and an honest fallback for uncovered tasks', () => {
+    expect(strategyRoute).toContain('step.stageContributions')
+    expect(strategyRoute).toContain('plan.questCoverage')
+    expect(strategyRoute).toContain("translateApp('quest.strategy.fallback.title')")
+    expect(strategyRoute).toContain("translateApp('quest.strategy.stageRemaining')")
   })
 })

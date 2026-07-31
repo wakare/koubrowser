@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { QuestGuideRecommendation } from '@common/quest_guide'
+import { type StrategyPreferencePreset, type StrategyQuestObjective } from '@common/quest_strategy'
 import {
-  buildQuestStrategyRoutePlan,
-  type StrategyPreferencePreset,
-  type StrategyQuestObjective
-} from '@common/quest_strategy'
+  buildQuestStrategyRoutePlanV2,
+  type QuestStrategyCoverageStatus,
+  type QuestStrategyQuestCoverage
+} from '@common/quest_strategy_v2'
 import {
   buildQuestStrategyLocalSnapshot,
   listQuestStrategyCandidates,
@@ -140,7 +141,7 @@ const plan = computed(() => {
     activeQuestCount: props.activeQuestCount,
     questCapacity: props.questCapacity
   })
-  return buildQuestStrategyRoutePlan({
+  return buildQuestStrategyRoutePlanV2({
     knowledgeVersion: questStrategyKnowledge.value.version,
     generatedAt,
     recipes: activeRecipes.value,
@@ -148,7 +149,10 @@ const plan = computed(() => {
     preferences: {
       preset: preset.value,
       maximumRoutes: QuestStrategyMaximumSelection
-    }
+    },
+    conflictedQuestIds: props.recommendations
+      .filter((recommendation) => recommendation.knowledge.conflicts.length > 0)
+      .map((recommendation) => recommendation.quest.api_no)
   })
 })
 
@@ -197,16 +201,50 @@ function questTitle(questId: number): string {
   return candidateById.value.get(questId)?.title ?? `#${questId}`
 }
 
+function coverageStatusText(status: QuestStrategyCoverageStatus): string {
+  switch (status) {
+    case 'route-ready':
+      return translateApp('quest.strategy.coverage.routeReady')
+    case 'objective-only':
+      return translateApp('quest.strategy.coverage.objectiveOnly')
+    case 'route-unreviewed':
+      return translateApp('quest.strategy.coverage.routeUnreviewed')
+    case 'conflicted':
+      return translateApp('quest.strategy.coverage.conflicted')
+    case 'unsupported-v1-multi-stage':
+      return translateApp('quest.strategy.coverage.multiStage')
+    case 'withdrawn':
+      return translateApp('quest.strategy.coverage.withdrawn')
+    case 'knowledge-insufficient':
+      return translateApp('quest.strategy.coverage.insufficient')
+  }
+}
+
+function stageText(coverage: QuestStrategyQuestCoverage, stageIndex: number): string {
+  const stage = coverage.requiredStages[stageIndex]
+  if (!stage) {
+    return `stage ${stageIndex + 1}`
+  }
+  const targets = stage.targets
+    .map((target) => {
+      const cells = target.targetCells.length > 0 ? ` (${target.targetCells.join('/')})` : ''
+      return `${target.mapKey}${cells}`
+    })
+    .join(' / ')
+  return `${targets}: ${objectiveText({
+    questId: coverage.questId,
+    result: stage.targets[0]?.result ?? 'victory',
+    requiredCount: stage.requiredCount
+  })}`
+}
+
 function openEvidence(url: string): void {
   void window.api.openExternalUrl(url)
 }
 </script>
 
 <template>
-  <section
-    class="quest-strategy-route"
-    :data-knowledge-version="questStrategyKnowledge.version"
-  >
+  <section class="quest-strategy-route" :data-knowledge-version="questStrategyKnowledge.version">
     <header class="quest-strategy-header">
       <div>
         <strong>{{ translateApp('quest.strategy.title') }}</strong>
@@ -249,6 +287,7 @@ function openEvidence(url: string): void {
           />
           <span>#{{ candidate.questId }} {{ candidate.title }}</span>
           <small v-if="candidate.active">{{ translateApp('quest.strategy.active') }}</small>
+          <small class="coverage-status">{{ coverageStatusText(candidate.coverageStatus) }}</small>
         </label>
       </fieldset>
       <label class="quest-strategy-preset">
@@ -402,13 +441,19 @@ function openEvidence(url: string): void {
             <h4>{{ translateApp('quest.strategy.objectives') }}</h4>
             <ul>
               <li
-                v-for="objective in step.objectives.filter((item) =>
-                  step.coveredQuestIds.includes(item.questId)
-                )"
-                :key="`${step.recipeId}:${objective.questId}`"
+                v-for="contribution in step.stageContributions"
+                :key="`${step.recipeId}:${contribution.questId}:${contribution.stageIndex}`"
               >
-                #{{ objective.questId }} {{ questTitle(objective.questId) }}:
-                {{ objectiveText(objective) }}
+                #{{ contribution.questId }} {{ questTitle(contribution.questId) }}:
+                {{
+                  translateApp('quest.strategy.stageContribution', {
+                    params: { stage: contribution.stageIndex + 1 }
+                  })
+                }}
+                {{ objectiveText(contribution.objective) }}
+                <span v-if="!contribution.machineConstraintComplete" class="warning">
+                  {{ translateApp('quest.strategy.constraintIncomplete') }}
+                </span>
               </li>
             </ul>
           </section>
@@ -493,6 +538,42 @@ function openEvidence(url: string): void {
       <p v-else class="quest-strategy-empty">
         {{ translateApp('quest.strategy.noRoute') }}
       </p>
+
+      <section
+        v-if="plan.questCoverage.some((coverage) => !coverage.complete)"
+        class="quest-strategy-fallbacks"
+      >
+        <h3>{{ translateApp('quest.strategy.fallback.title') }}</h3>
+        <p>{{ translateApp('quest.strategy.fallback.description') }}</p>
+        <article
+          v-for="coverage in plan.questCoverage.filter((item) => !item.complete)"
+          :key="coverage.questId"
+          class="quest-strategy-fallback"
+        >
+          <header>
+            <strong>#{{ coverage.questId }} {{ questTitle(coverage.questId) }}</strong>
+            <span>{{ coverageStatusText(coverage.coverageStatus) }}</span>
+          </header>
+          <ul v-if="coverage.requiredStages.length > 0">
+            <li
+              v-for="(_, stageIndex) in coverage.requiredStages"
+              :key="`${coverage.questId}:stage:${stageIndex}`"
+              :class="{
+                completed: coverage.contributedStageIndexes.includes(stageIndex),
+                remaining: coverage.remainingStageIndexes.includes(stageIndex)
+              }"
+            >
+              {{
+                coverage.contributedStageIndexes.includes(stageIndex)
+                  ? translateApp('quest.strategy.stageCovered')
+                  : translateApp('quest.strategy.stageRemaining')
+              }}
+              {{ stageText(coverage, stageIndex) }}
+            </li>
+          </ul>
+          <p v-else>{{ translateApp('quest.strategy.fallback.insufficient') }}</p>
+        </article>
+      </section>
 
       <details v-if="plan.blocked.length > 0" class="quest-strategy-blocked">
         <summary>
@@ -614,6 +695,10 @@ function openEvidence(url: string): void {
   background: rgba(72, 199, 142, 0.16);
 }
 
+.quest-strategy-candidate .coverage-status {
+  background: rgba(50, 115, 220, 0.14);
+}
+
 .quest-strategy-preset {
   display: grid;
   gap: 0.25rem;
@@ -696,6 +781,40 @@ function openEvidence(url: string): void {
 
 .quest-strategy-alternatives > article > div {
   display: grid;
+}
+
+.quest-strategy-fallbacks {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.quest-strategy-fallbacks > h3,
+.quest-strategy-fallbacks > p,
+.quest-strategy-fallback ul,
+.quest-strategy-fallback p {
+  margin: 0;
+}
+
+.quest-strategy-fallback {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.65rem 0.75rem;
+  border-left: 3px solid #ffb70f;
+  background: rgba(255, 183, 15, 0.08);
+}
+
+.quest-strategy-fallback > header {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.quest-strategy-fallback li.completed {
+  opacity: 0.68;
+}
+
+.quest-strategy-fallback li.remaining {
+  font-weight: 600;
 }
 
 .quest-strategy-hidden {

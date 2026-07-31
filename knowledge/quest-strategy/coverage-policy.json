@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "policyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
-  "revision": 1,
+  "revision": 2,
   "status": "frozen",
-  "runtimeOutputSchema": 1,
+  "runtimeOutputSchema": 2,
   "selection": {
     "minimum": 1,
     "maximum": 5,
@@ -36,7 +36,7 @@
     "classificationCoverageBasisPoints": 10000,
     "fallbackDisplayCoverageBasisPoints": 10000,
     "provisionalRouteCoverageBasisPoints": 8000,
-    "routeCoverageTargetState": "provisional-until-inventory",
+    "routeCoverageTargetState": "runtime-v2-accepted",
     "zeroHitSnapshotMaximum": 0,
     "hardConflictCompiledMaximum": 0,
     "expiredAutoRecommendMaximum": 0,
@@ -58,7 +58,7 @@
     "approvedRequiresValidUntil": true
   },
   "compilation": {
-    "mode": "deterministic-lossless-v1",
+    "mode": "deterministic-stage-aware-v2",
     "unknownHardFact": "reject-combination",
     "recipeOverflow": "fail",
     "powerSetGenerationAllowed": false,

@@ -54,9 +54,14 @@ function reviewedManifest() {
         classification: 'lossless-v1',
         objectiveStages: [
           {
-            mapKey: '1-1',
-            result: 'S',
-            requiredCount: 1
+            requiredCount: 1,
+            targets: [
+              {
+                mapKey: '1-1',
+                result: 'S',
+                targetCells: []
+              }
+            ]
           }
         ],
         review
@@ -84,7 +89,7 @@ function reviewedManifest() {
         status: 'approved',
         conditions: [
           'same-map-key',
-          'complete-objective-representable-in-v1',
+          'exact-stage-contribution',
           'hard-constraint-intersection-satisfiable',
           'no-hard-evidence-conflict'
         ],

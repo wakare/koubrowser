@@ -37,14 +37,14 @@ const recipes = [
 ] as QuestStrategyRecipe[]
 
 describe('quest strategy renderer adapter', () => {
-  it('keeps the feature opt-in until release acceptance is complete', () => {
-    expect(QuestStrategyFeatureDefaultEnabled).toBe(false)
-    expect(normalizeQuestStrategyVisibility(null)).toBe(false)
+  it('enables the accepted feature by default while preserving an explicit opt-out', () => {
+    expect(QuestStrategyFeatureDefaultEnabled).toBe(true)
+    expect(normalizeQuestStrategyVisibility(null)).toBe(true)
     expect(normalizeQuestStrategyVisibility('false')).toBe(false)
     expect(normalizeQuestStrategyVisibility('true')).toBe(true)
   })
 
-  it('lists only visible, supported, unclaimed quests in source order', () => {
+  it('lists every visible non-claim quest in source order with honest coverage', () => {
     const result = listQuestStrategyCandidates(recipes, [
       recommendation(999, 'active'),
       recommendation(102, 'active'),
@@ -54,16 +54,25 @@ describe('quest strategy renderer adapter', () => {
 
     expect(result).toEqual([
       {
+        questId: 999,
+        title: '任務999',
+        active: true,
+        readiness: 'ready',
+        coverageStatus: 'knowledge-insufficient'
+      },
+      {
         questId: 102,
         title: '任務102',
         active: true,
-        readiness: 'ready'
+        readiness: 'ready',
+        coverageStatus: 'knowledge-insufficient'
       },
       {
         questId: 101,
         title: '任務101',
         active: false,
-        readiness: 'ready'
+        readiness: 'ready',
+        coverageStatus: 'knowledge-insufficient'
       }
     ])
   })

@@ -4,7 +4,12 @@
 
 Task ID: `QSTRAT-COV-001_Coverage_Contract_and_Manifest_Freeze`
 
-Status: `CONTRACT_FROZEN`
+Status: `CONTRACT_FROZEN_WITH_RUNTIME_V2_DECISION`
+
+2026-07-31 の inventory で runtime v2 の独立判断条件を満たした。denominator、
+freshness、review、privacy、fallback の契約は維持し、runtime 出力と compilation mode は
+policy revision 2 で stage-aware v2 へ移行する。判断記録は
+[`quest-strategy-runtime-v2-decision.md`](quest-strategy-runtime-v2-decision.md) を参照。
 
 ## 目的
 
@@ -26,13 +31,13 @@ getQuestStuff / QuestGuide / curated QuestKnowledge
   -> existing signature, fallback and read-only runtime
 ```
 
-- runtime bundle は schema v1 のままとする。
-- v1 の exact-key validator に未知 field を追加しない。
-- authoring compiler は `approved` だけを入力にする。
+- 旧 runtime bundle schema v1 は移行入力としてのみ保持する。
+- runtime v2 は exact stage contribution を持ち、v1 validator を緩和しない。
+- authoring compiler は `approved` だけを route-ready 入力にする。
 - hard fact が `unknown` の場合は combination を拒否するが、事実ベースの fallback 表示は
   拒否しない。
-- multi-stage objective を v1 で完全に表現できない場合は
-  `unsupported-v1-multi-stage` とし、partial recipe を生成しない。
+- multi-stage objective の partial route は stage contribution としてだけ出力し、全 stage が
+  揃うまで任務全体を covered としない。
 - route signature 単位で集約し、quest power set を生成しない。
 - 512 recipe 超過は hard failure とし、切り捨てない。
 - runtime Wiki scraping、アカウントデータ外送、ゲーム通信変更、自動操作を行わない。
@@ -139,7 +144,7 @@ withdrawal dependency report を出力する。
 1. 本契約、policy、schema、機械 gate を固定する。
 2. canonical fact inventory と v1-lossless report を生成する。
 3. 審査済み pilot を作る。
-4. deterministic v1 compiler を実装する。
+4. deterministic stage-aware v2 compiler を実装する。
 5. honest fallback と zero-hit regression を renderer に統合する。
 6. local acceptance、production smoke、Windows installer を生成する。
 

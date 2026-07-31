@@ -1,0 +1,196 @@
+{
+  "authoringSchema": "QuestStrategyAuthoring/2alpha",
+  "manifestVersion": "2026-07-31.1",
+  "sourceSnapshot": {
+    "repositoryCommit": "0505bc88f7e31c7c2ad84dc50b2f0e8c2bc34d56",
+    "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
+    "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
+  },
+  "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
+  "questFacts": [
+    {
+      "factId": "quest:229:objective",
+      "questId": 229,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "0505bc88f7e31c7c2ad84dc50b2f0e8c2bc34d56",
+        "projectionDigest": "sha256:9465df11e0e8f5eaff50e05694ff777e96554683a7408987baf53bf6fdaba021"
+      },
+      "classification": "lossless-v1",
+      "objectiveStages": [
+        {
+          "requiredCount": 12,
+          "targets": [
+            { "mapKey": "4-1", "result": "victory", "targetCells": [] },
+            { "mapKey": "4-2", "result": "victory", "targetCells": [] },
+            { "mapKey": "4-3", "result": "victory", "targetCells": [] },
+            { "mapKey": "4-4", "result": "victory", "targetCells": [] },
+            { "mapKey": "4-5", "result": "victory", "targetCells": [] }
+          ]
+        }
+      ],
+      "review": {
+        "author": "canonical-inventory-projection",
+        "approver": "legacy-bundle-review-record",
+        "reviewedAt": "2026-07-31T00:00:00.000Z",
+        "reviewBy": "2026-10-29T00:00:00.000Z",
+        "validUntil": "2027-07-31T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:264:objective",
+      "questId": 264,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "0505bc88f7e31c7c2ad84dc50b2f0e8c2bc34d56",
+        "projectionDigest": "sha256:8ae224a25d7fa1442b7d58f0e4081644442b25602d6e48d78a468c34721e128b"
+      },
+      "classification": "lossless-v1",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "4-2", "result": "S", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "canonical-inventory-projection",
+        "approver": "legacy-bundle-review-record",
+        "reviewedAt": "2026-07-31T00:00:00.000Z",
+        "reviewBy": "2026-10-29T00:00:00.000Z",
+        "validUntil": "2027-07-31T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:845:objective",
+      "questId": 845,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "0505bc88f7e31c7c2ad84dc50b2f0e8c2bc34d56",
+        "projectionDigest": "sha256:b4c296ac4709416cb80c4803bfb5b7e189663cd1f327ac62b854cdd081d0599f"
+      },
+      "classification": "multi-stage",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "4-1", "result": "S", "targetCells": [] }]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "4-2", "result": "S", "targetCells": [] }]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "4-3", "result": "S", "targetCells": [] }]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "4-4", "result": "S", "targetCells": [] }]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "4-5", "result": "S", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "canonical-inventory-projection",
+        "approver": "legacy-bundle-review-record",
+        "reviewedAt": "2026-07-31T00:00:00.000Z",
+        "reviewBy": "2026-10-29T00:00:00.000Z",
+        "validUntil": "2027-07-31T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    }
+  ],
+  "mapTemplates": [
+    {
+      "templateId": "normal-map:4-2:legacy-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "4-2",
+      "routeLabels": ["A-C-L", "B-D-C-L"],
+      "targetNodes": ["L"],
+      "fleetConstraintRef": "legacy-recipe:normal-4-2-western-periodic",
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "通常戦・Lボス"
+        }
+      ],
+      "actions": [
+        "対象任務を同時に受注してから出撃する",
+        "空母系2・軽巡1・駆逐3の6隻でA-C-LまたはB-D-C-Lを狙う",
+        "LボスでS勝利し、対象任務の残数を確認する"
+      ],
+      "cost": "medium",
+      "risk": "medium",
+      "review": {
+        "author": "legacy-bundle-migration",
+        "approver": "legacy-bundle-review-record",
+        "reviewedAt": "2026-07-31T00:00:00.000Z",
+        "reviewBy": "2026-10-29T00:00:00.000Z",
+        "validUntil": "2027-07-31T00:00:00.000Z",
+        "evidenceReviewIds": ["map-4-2-review", "periodic-sortie-review"]
+      }
+    }
+  ],
+  "composabilityRules": [
+    {
+      "ruleId": "SAME_ROUTE_SIGNATURE_V2",
+      "revision": 1,
+      "status": "approved",
+      "conditions": [
+        "same-map-key",
+        "exact-stage-contribution",
+        "hard-constraint-intersection-satisfiable",
+        "no-hard-evidence-conflict"
+      ],
+      "unknownPolicy": "reject-combination",
+      "review": {
+        "author": "stage-aware-compiler-design",
+        "approver": "legacy-bundle-review-record",
+        "reviewedAt": "2026-07-31T00:00:00.000Z",
+        "reviewBy": "2026-10-29T00:00:00.000Z",
+        "validUntil": "2027-07-31T00:00:00.000Z",
+        "evidenceReviewIds": ["map-4-2-review", "periodic-sortie-review"]
+      }
+    }
+  ],
+  "evidenceReviews": [
+    {
+      "reviewId": "periodic-sortie-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+      "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+      "reviewer": "legacy-bundle-review-record",
+      "reviewedAt": "2026-07-31T00:00:00.000Z",
+      "validUntil": "2027-07-31T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-4-2-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/西方海域/4-2",
+      "sourceLabel": "艦これ攻略 Wiki - 4-2",
+      "reviewer": "legacy-bundle-review-record",
+      "reviewedAt": "2026-07-31T00:00:00.000Z",
+      "validUntil": "2027-07-31T00:00:00.000Z",
+      "confidence": "supported"
+    }
+  ],
+  "withdrawals": []
+}

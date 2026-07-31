@@ -1,0 +1,1250 @@
+{
+  "compilerVersion": "quest-strategy-v2-compiler/1",
+  "objectiveFacts": [
+    {
+      "cadence": "daily",
+      "classification": "lossless-v1",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 5,
+          "targets": [
+            {
+              "mapKey": "2-1",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "2-2",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "2-3",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "2-4",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "2-5",
+              "result": "victory",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 226,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "weekly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 12,
+          "targets": [
+            {
+              "mapKey": "4-1",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "4-2",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "4-3",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "4-4",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "4-5",
+              "result": "victory",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 229,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "weekly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 5,
+          "targets": [
+            {
+              "mapKey": "3-3",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "3-4",
+              "result": "victory",
+              "targetCells": []
+            },
+            {
+              "mapKey": "3-5",
+              "result": "victory",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 241,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "weekly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "4-4",
+              "result": "victory",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 242,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "weekly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 2,
+          "targets": [
+            {
+              "mapKey": "5-2",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 243,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "monthly",
+      "classification": "opaque-constraint",
+      "fleetConstraint": "opaque",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-5",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 249,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "cadence": "monthly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 3,
+          "targets": [
+            {
+              "mapKey": "6-1",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 256,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "monthly",
+      "classification": "opaque-constraint",
+      "fleetConstraint": "opaque",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "1-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 257,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "cadence": "monthly",
+      "classification": "opaque-constraint",
+      "fleetConstraint": "opaque",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "5-1",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 259,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "cadence": "weekly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 3,
+          "targets": [
+            {
+              "mapKey": "1-5",
+              "result": "A",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 261,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "monthly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "v1-lossless",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "4-2",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 264,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "monthly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 10,
+          "targets": [
+            {
+              "mapKey": "1-5",
+              "result": "A",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 265,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "monthly",
+      "classification": "opaque-constraint",
+      "fleetConstraint": "opaque",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-5",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 266,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "cadence": "monthly",
+      "classification": "multi-stage",
+      "fleetConstraint": "v1-lossless",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "1-2",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "1-3",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "1-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-1",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 280,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "multi-stage",
+      "fleetConstraint": "v1-lossless",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "1-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-1",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-2",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-3",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 284,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 2,
+          "targets": [
+            {
+              "mapKey": "2-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 822,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "multi-stage",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "4-1",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "4-2",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "4-3",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "4-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "4-5",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 845,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "multi-stage",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-4",
+              "result": "A",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "6-1",
+              "result": "A",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "6-3",
+              "result": "A",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "6-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 854,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "v1-lossless",
+      "objectiveStages": [
+        {
+          "requiredCount": 2,
+          "targets": [
+            {
+              "mapKey": "1-6",
+              "result": "arrival",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 861,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "lossless-v1",
+      "fleetConstraint": "v1-lossless",
+      "objectiveStages": [
+        {
+          "requiredCount": 2,
+          "targets": [
+            {
+              "mapKey": "6-3",
+              "result": "A",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 862,
+      "reasonCodes": [
+        "LOSSLESS_V1"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "multi-stage",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "7-2",
+              "result": "S",
+              "targetCells": [
+                15
+              ]
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "5-5",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "6-2",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "6-5",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 872,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "multi-stage",
+      "fleetConstraint": "v1-lossless",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "3-1",
+              "result": "A",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "3-2",
+              "result": "A",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "3-3",
+              "result": "A",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 873,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "opaque-constraint",
+      "fleetConstraint": "opaque",
+      "objectiveStages": [
+        {
+          "requiredCount": 2,
+          "targets": [
+            {
+              "mapKey": "5-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 875,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "multi-stage",
+      "fleetConstraint": "opaque",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "5-1",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "5-3",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "5-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 888,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "multi-stage",
+      "fleetConstraint": "none",
+      "objectiveStages": [
+        {
+          "requiredCount": 3,
+          "targets": [
+            {
+              "mapKey": "1-5",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 3,
+          "targets": [
+            {
+              "mapKey": "7-1",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 3,
+          "targets": [
+            {
+              "mapKey": "7-2",
+              "result": "S",
+              "targetCells": [
+                7
+              ]
+            }
+          ]
+        },
+        {
+          "requiredCount": 3,
+          "targets": [
+            {
+              "mapKey": "7-2",
+              "result": "S",
+              "targetCells": [
+                15
+              ]
+            }
+          ]
+        }
+      ],
+      "questId": 893,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "multi-stage",
+      "fleetConstraint": "v1-lossless",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "1-3",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "1-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-1",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-2",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "2-3",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 894,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "cadence": "quarterly",
+      "classification": "multi-stage",
+      "fleetConstraint": "opaque",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "5-1",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "5-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "6-4",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [
+            {
+              "mapKey": "6-5",
+              "result": "S",
+              "targetCells": []
+            }
+          ]
+        }
+      ],
+      "questId": 903,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "actions": [
+        "対象任務を同時に受注してから出撃する",
+        "4隻編成とし、通常戦艦・正規空母・潜水艦を含めず、軽巡級2隻以下・軽空母1隻以下にする",
+        "Jボスで各任務の要求勝利回数までA勝利以上、任務893はS勝利を重ねる"
+      ],
+      "contributions": [
+        {
+          "mapKey": "1-5",
+          "questId": 261,
+          "requiredCount": 3,
+          "result": "A",
+          "stageIndex": 0
+        },
+        {
+          "mapKey": "1-5",
+          "questId": 265,
+          "requiredCount": 10,
+          "result": "A",
+          "stageIndex": 0
+        },
+        {
+          "mapKey": "1-5",
+          "questId": 893,
+          "requiredCount": 3,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            14,
+            40
+          ],
+          "label": "ソナー系 4 個以上",
+          "minimum": 4,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            15
+          ],
+          "label": "爆雷系 4 個以上",
+          "minimum": 4,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-map-1-5",
+          "sourceLabel": "艦これ攻略 Wiki - 1-5",
+          "summary": "4隻のボス固定条件、対潜陣形、定期任務の勝利回数を確認",
+          "url": "https://wikiwiki.jp/kancolle/鎮守府海域/1-5",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 4,
+        "minimumShips": 4,
+        "shipTypeConstraints": []
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "A・D・F・J の対潜戦"
+        }
+      ],
+      "mapKey": "1-5",
+      "revision": 1,
+      "risk": "low",
+      "routeId": "normal-1-5-periodic-asw",
+      "routeLabels": [
+        "A-D-F-G-J"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "J"
+      ],
+      "title": "1-5 定期対潜任務まとめ",
+      "validity": {
+        "reviewBy": "2026-10-31T00:00:00.000+09:00"
+      }
+    },
+    {
+      "actions": [
+        "対象任務を同時に受注してから出撃する",
+        "空母系2・軽巡1・駆逐3の6隻でA-C-LまたはB-D-C-Lを狙う",
+        "LボスでS勝利し、任務229の残数があれば同じ海域で勝利を重ねる"
+      ],
+      "airState": {
+        "summary": "制空値85以上を目安にするとDマス航空優勢とLボス制空権確保を狙える",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "4-2",
+          "questId": 229,
+          "requiredCount": 12,
+          "result": "victory",
+          "stageIndex": 0
+        },
+        {
+          "mapKey": "4-2",
+          "questId": 264,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        },
+        {
+          "mapKey": "4-2",
+          "questId": 845,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 1
+        }
+      ],
+      "cost": "medium",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6
+          ],
+          "label": "艦上戦闘機 2 個以上",
+          "minimum": 2,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-map-4-2",
+          "sourceLabel": "艦これ攻略 Wiki - 4-2",
+          "summary": "空母2・軽巡1・駆逐3のルート候補、制空目安、定期任務条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/西方海域/4-2",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "空母系 2 隻以上",
+            "minimum": 2,
+            "shipTypeIds": [
+              7,
+              11,
+              18
+            ]
+          },
+          {
+            "label": "駆逐艦 3 隻以上",
+            "minimum": 3,
+            "shipTypeIds": [
+              2
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻以上",
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "通常戦・Lボス"
+        }
+      ],
+      "mapKey": "4-2",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-4-2-western-periodic",
+      "routeLabels": [
+        "A-C-L",
+        "B-D-C-L"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "L"
+      ],
+      "title": "4-2 西方定期任務まとめ",
+      "validity": {
+        "reviewBy": "2026-10-31T00:00:00.000+09:00"
+      }
+    },
+    {
+      "actions": [
+        "対象任務を同時に受注してから出撃する",
+        "軽巡洋艦を旗艦にし、軽巡洋艦1〜2・駆逐艦4〜5の合計6隻だけで編成する",
+        "LボスでS勝利する"
+      ],
+      "airState": {
+        "summary": "制空権喪失でも達成可能。搭載可能なら水上爆撃機や水上戦闘機で敵弾着の抑止を検討",
+        "target": "denial"
+      },
+      "contributions": [
+        {
+          "mapKey": "1-4",
+          "questId": 280,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 2
+        },
+        {
+          "mapKey": "1-4",
+          "questId": 284,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-map-1-4",
+          "sourceLabel": "艦これ攻略 Wiki - 1-4",
+          "summary": "軽巡旗艦・駆逐4以上の両立編成、ボス固定候補、定期任務条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/鎮守府海域/1-4",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "軽巡洋艦 1 隻以上",
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 4 隻以上",
+            "minimum": 4,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "水上戦・Lボス"
+        }
+      ],
+      "mapKey": "1-4",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-1-4-light-fleet-periodic",
+      "routeLabels": [
+        "A-D-E-H-L",
+        "A-D-G-J-L",
+        "B-C-F-E-H-L"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "L"
+      ],
+      "title": "1-4 軽巡・駆逐定期任務まとめ",
+      "validity": {
+        "reviewBy": "2026-10-31T00:00:00.000+09:00"
+      }
+    }
+  ],
+  "schemaVersion": 2,
+  "source": {
+    "cadenceCatalogDigest": "sha256:04af8bbcbdc4f5b978f5e93ab764cbc7e9bd8f8a28fb6dd1733ab921515c464a",
+    "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
+    "coveragePolicyRevision": 2,
+    "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
+    "inventoryDigest": "sha256:ff1e5e90b621733c996b0a96c13f090c0ba8dfeb754f585bbe071a7909e97afb",
+    "legacyKnowledgeDigest": "sha256:31448a357e763e7e4c44343041fe5bd104c8e53f550a9170e4734abca7ad6ede",
+    "pilotAuthoringManifestDigest": "sha256:4bc751bb62230031608dfe62f8534e59686be6a7d06679e2bfaf7d3a9d333885",
+    "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
+    "repositoryCommit": "0505bc88f7e31c7c2ad84dc50b2f0e8c2bc34d56"
+  },
+  "version": "2026-07-31.1.v2"
+}

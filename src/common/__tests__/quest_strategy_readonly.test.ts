@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 const StrategyImplementationFiles = [
   'src/common/quest_strategy.ts',
+  'src/common/quest_strategy_v2.ts',
   'src/common/quest_strategy_knowledge.ts',
   'src/renderer/src/common/quest-strategy-view.ts',
   'src/renderer/src/store/quest_strategy.ts',
@@ -19,9 +20,7 @@ describe('quest strategy read-only boundary', () => {
     'does not add a game communication or renderer IPC path in %s',
     (filename) => {
       const content = source(filename)
-      expect(content).not.toMatch(
-        /from ['"]@(?:main|preload)\//
-      )
+      expect(content).not.toMatch(/from ['"]@(?:main|preload)\//)
       expect(content).not.toMatch(
         /\b(?:fetch|XMLHttpRequest|ipcRenderer|webRequest|postMessage)\b|<webview|\bsession\./
       )

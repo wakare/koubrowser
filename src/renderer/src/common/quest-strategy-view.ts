@@ -8,12 +8,18 @@ import {
   type StrategyMapAvailability,
   type StrategyQuestSnapshot
 } from '@common/quest_strategy'
+import {
+  questStrategyCoverageStatus,
+  type QuestStrategyCoverageStatus
+} from '@common/quest_strategy_v2'
 
 export const QuestStrategyMaximumSelection = StrategyMaximumSelectedQuests
-export const QuestStrategyFeatureDefaultEnabled = false
+export const QuestStrategyFeatureDefaultEnabled = true
 
 export function normalizeQuestStrategyVisibility(value: unknown): boolean {
-  return value === 'true' ? true : QuestStrategyFeatureDefaultEnabled
+  if (value === 'true') return true
+  if (value === 'false') return false
+  return QuestStrategyFeatureDefaultEnabled
 }
 
 export interface QuestStrategyCandidate {
@@ -21,6 +27,7 @@ export interface QuestStrategyCandidate {
   title: string
   active: boolean
   readiness: QuestGuideRecommendation['readiness']
+  coverageStatus: QuestStrategyCoverageStatus
 }
 
 export interface QuestStrategySnapshotInput {
@@ -81,17 +88,18 @@ export function listQuestStrategyCandidates(
   recipes: readonly QuestStrategyRecipe[],
   recommendations: readonly QuestGuideRecommendation[]
 ): QuestStrategyCandidate[] {
-  const supportedQuestIds = new Set(recipes.flatMap((recipe) => recipe.questIds))
   return recommendations
-    .filter(
-      (recommendation) =>
-        recommendation.status !== 'claim' && supportedQuestIds.has(recommendation.quest.api_no)
-    )
+    .filter((recommendation) => recommendation.status !== 'claim')
     .map((recommendation) => ({
       questId: recommendation.quest.api_no,
       title: recommendation.quest.api_title,
       active: recommendation.status === 'active',
-      readiness: recommendation.readiness
+      readiness: recommendation.readiness,
+      coverageStatus: questStrategyCoverageStatus(
+        recommendation.quest.api_no,
+        recipes,
+        (recommendation.knowledge?.conflicts.length ?? 0) > 0
+      )
     }))
 }
 

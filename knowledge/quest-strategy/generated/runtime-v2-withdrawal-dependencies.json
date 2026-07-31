@@ -1,0 +1,66 @@
+{
+  "compilerVersion": "quest-strategy-v2-compiler/1",
+  "dependencies": [
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-1-5",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 261,
+          "stageIndex": 0
+        },
+        {
+          "questId": 265,
+          "stageIndex": 0
+        },
+        {
+          "questId": 893,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-1-5-periodic-asw"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-4-2",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 229,
+          "stageIndex": 0
+        },
+        {
+          "questId": 264,
+          "stageIndex": 0
+        },
+        {
+          "questId": 845,
+          "stageIndex": 1
+        }
+      ],
+      "routeId": "normal-4-2-western-periodic"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-1-4",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 280,
+          "stageIndex": 2
+        },
+        {
+          "questId": 284,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-1-4-light-fleet-periodic"
+    }
+  ],
+  "schemaVersion": 1,
+  "withdrawals": []
+}

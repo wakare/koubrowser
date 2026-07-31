@@ -120,8 +120,8 @@ function validateCoveragePolicy(value) {
     [],
     'coverage policy'
   )
-  if (value.schemaVersion !== 1 || value.runtimeOutputSchema !== 1) {
-    throw new Error('coverage policy must preserve runtime schema v1')
+  if (value.schemaVersion !== 1 || value.runtimeOutputSchema !== 2) {
+    throw new Error('coverage policy must select runtime schema v2')
   }
   if (value.policyId !== CoveragePolicyId || value.status !== 'frozen') {
     throw new Error('invalid coverage policy identity')
@@ -207,7 +207,7 @@ function validateCoveragePolicy(value) {
     value.gates.classificationCoverageBasisPoints !== 10_000 ||
     value.gates.fallbackDisplayCoverageBasisPoints !== 10_000 ||
     value.gates.provisionalRouteCoverageBasisPoints !== 8_000 ||
-    value.gates.routeCoverageTargetState !== 'provisional-until-inventory' ||
+    value.gates.routeCoverageTargetState !== 'runtime-v2-accepted' ||
     value.gates.compiledRecipeMaximum !== 512
   ) {
     throw new Error('invalid coverage gate threshold')
@@ -259,7 +259,7 @@ function validateCoveragePolicy(value) {
     'compilation policy'
   )
   if (
-    value.compilation.mode !== 'deterministic-lossless-v1' ||
+    value.compilation.mode !== 'deterministic-stage-aware-v2' ||
     value.compilation.unknownHardFact !== 'reject-combination' ||
     value.compilation.recipeOverflow !== 'fail' ||
     value.compilation.powerSetGenerationAllowed !== false ||
@@ -482,12 +482,26 @@ function validateQuestFact(value, description, approvedEvidenceReviewIds) {
     value.objectiveStages,
     `${description} objectiveStages`,
     (stage, stageDescription) => {
-      exactKeys(stage, ['mapKey', 'result', 'requiredCount'], [], stageDescription)
-      if (!MapKeyPattern.test(text(stage.mapKey, `${stageDescription} mapKey`))) {
-        throw new Error(`invalid ${stageDescription} mapKey`)
-      }
-      oneOf(stage.result, ['arrival', 'victory', 'A', 'S'], `${stageDescription} result`)
+      exactKeys(stage, ['requiredCount', 'targets'], [], stageDescription)
       integer(stage.requiredCount, `${stageDescription} requiredCount`, 1)
+      uniqueArray(
+        stage.targets,
+        `${stageDescription} targets`,
+        (target, targetDescription) => {
+          exactKeys(target, ['mapKey', 'result', 'targetCells'], [], targetDescription)
+          if (!MapKeyPattern.test(text(target.mapKey, `${targetDescription} mapKey`))) {
+            throw new Error(`invalid ${targetDescription} mapKey`)
+          }
+          oneOf(target.result, ['arrival', 'victory', 'A', 'S'], `${targetDescription} result`)
+          uniqueArray(
+            target.targetCells,
+            `${targetDescription} targetCells`,
+            (cell, cellDescription) => integer(cell, cellDescription, 1)
+          )
+          return target
+        },
+        1
+      )
       return stage
     },
     classification === 'lossless-v1' ? 1 : 0
@@ -545,7 +559,7 @@ function validateComposabilityRule(value, description, approvedEvidenceReviewIds
         condition,
         [
           'same-map-key',
-          'complete-objective-representable-in-v1',
+          'exact-stage-contribution',
           'hard-constraint-intersection-satisfiable',
           'no-hard-evidence-conflict'
         ],
