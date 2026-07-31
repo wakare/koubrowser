@@ -1,0 +1,520 @@
+{
+  "bundledPartialRecipeIds": [
+    "normal-1-5-periodic-asw",
+    "normal-4-2-western-periodic",
+    "normal-1-4-light-fleet-periodic"
+  ],
+  "curatedPrerequisiteConflicts": [
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 257
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 284
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 311
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 318
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 330
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 337
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 339
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 342
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 345
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 346
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 348
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 350
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 353
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 355
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 356
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 357
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 362
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 368
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 371
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 372
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 373
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 375
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 377
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 424
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 434
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 438
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 442
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 444
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 628
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 637
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 653
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 654
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 655
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 657
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 678
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 681
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 686
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 688
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 714
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 715
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 716
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 717
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 822
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 845
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 861
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 862
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 893
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 894
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 904
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 905
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 912
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 914
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 948
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 973
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 975
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 1005
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 1012
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 1045
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 1104
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 1105
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 1107
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 1120
+    },
+    {
+      "conflictKinds": [
+        "source-disagreement"
+      ],
+      "questId": 1123
+    },
+    {
+      "conflictKinds": [
+        "unresolved-review"
+      ],
+      "questId": 1138
+    }
+  ],
+  "gapReasonCounts": {
+    "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1": 5,
+    "MULTI_STAGE_OBJECTIVE": 10
+  },
+  "gaps": [
+    {
+      "classification": "opaque-constraint",
+      "questId": 249,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "classification": "opaque-constraint",
+      "questId": 257,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "classification": "opaque-constraint",
+      "questId": 259,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "classification": "opaque-constraint",
+      "questId": 266,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 280,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 284,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 845,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 854,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 872,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 873,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "classification": "opaque-constraint",
+      "questId": 875,
+      "reasonCodes": [
+        "FLEET_CONSTRAINT_NOT_REPRESENTABLE_IN_V1"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 888,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 893,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 894,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    },
+    {
+      "classification": "multi-stage",
+      "questId": 903,
+      "reasonCodes": [
+        "MULTI_STAGE_OBJECTIVE"
+      ]
+    }
+  ],
+  "primaryGapCount": 15,
+  "schemaVersion": 1,
+  "source": {
+    "cadenceCatalogDigest": "sha256:04af8bbcbdc4f5b978f5e93ab764cbc7e9bd8f8a28fb6dd1733ab921515c464a",
+    "cadenceEvidence": {
+      "contentDigest": "sha256:ed5503b19982b2bf3f68af6ffdec6998e171f1fa400ec2453d17ea3982691370",
+      "retrievedOn": "2026-07-31",
+      "sourceId": "wikiwiki-periodic-sortie",
+      "url": "https://wikiwiki.jp/kancolle/任務/出撃定期"
+    },
+    "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
+    "coveragePolicyRevision": 1,
+    "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
+    "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
+    "repositoryCommit": "417cc23e0fdc1a20ddf7b65f17ee0e0e89f4fc52"
+  }
+}

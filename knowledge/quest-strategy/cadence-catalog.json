@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "version": "2026-07-31.1",
+  "scope": "daily-weekly-monthly-quarterly-sortie-quests",
+  "complete": true,
+  "source": {
+    "sourceId": "wikiwiki-periodic-sortie",
+    "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+    "retrievedOn": "2026-07-31",
+    "contentDigest": "sha256:ed5503b19982b2bf3f68af6ffdec6998e171f1fa400ec2453d17ea3982691370"
+  },
+  "entries": [
+    {
+      "questId": 201,
+      "cadence": "daily",
+      "sourceCode": "Bd1",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 210,
+      "cadence": "daily",
+      "sourceCode": "Bd3",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 211,
+      "cadence": "daily",
+      "sourceCode": "Bd4",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 212,
+      "cadence": "daily",
+      "sourceCode": "Bd6",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 213,
+      "cadence": "weekly",
+      "sourceCode": "Bw3",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 214,
+      "cadence": "weekly",
+      "sourceCode": "Bw1",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 216,
+      "cadence": "daily",
+      "sourceCode": "Bd2",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 218,
+      "cadence": "daily",
+      "sourceCode": "Bd5",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 220,
+      "cadence": "weekly",
+      "sourceCode": "Bw2",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 221,
+      "cadence": "weekly",
+      "sourceCode": "Bw4",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 226,
+      "cadence": "daily",
+      "sourceCode": "Bd7",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 228,
+      "cadence": "weekly",
+      "sourceCode": "Bw5",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 229,
+      "cadence": "weekly",
+      "sourceCode": "Bw6",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 230,
+      "cadence": "daily",
+      "sourceCode": "Bd8",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 241,
+      "cadence": "weekly",
+      "sourceCode": "Bw7",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 242,
+      "cadence": "weekly",
+      "sourceCode": "Bw8",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 243,
+      "cadence": "weekly",
+      "sourceCode": "Bw9",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 249,
+      "cadence": "monthly",
+      "sourceCode": "Bm1",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 256,
+      "cadence": "monthly",
+      "sourceCode": "Bm2",
+      "matchMethod": "reviewed-override"
+    },
+    {
+      "questId": 257,
+      "cadence": "monthly",
+      "sourceCode": "Bm3",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 259,
+      "cadence": "monthly",
+      "sourceCode": "Bm4",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 261,
+      "cadence": "weekly",
+      "sourceCode": "Bw10",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 264,
+      "cadence": "monthly",
+      "sourceCode": "Bm6",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 265,
+      "cadence": "monthly",
+      "sourceCode": "Bm5",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 266,
+      "cadence": "monthly",
+      "sourceCode": "Bm7",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 280,
+      "cadence": "monthly",
+      "sourceCode": "Bm8",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 284,
+      "cadence": "quarterly",
+      "sourceCode": "Bq11",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 822,
+      "cadence": "quarterly",
+      "sourceCode": "Bq1",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 845,
+      "cadence": "quarterly",
+      "sourceCode": "Bq12",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 854,
+      "cadence": "quarterly",
+      "sourceCode": "Bq2",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 861,
+      "cadence": "quarterly",
+      "sourceCode": "Bq3",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 862,
+      "cadence": "quarterly",
+      "sourceCode": "Bq4",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 872,
+      "cadence": "quarterly",
+      "sourceCode": "Bq10",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 873,
+      "cadence": "quarterly",
+      "sourceCode": "Bq5",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 875,
+      "cadence": "quarterly",
+      "sourceCode": "Bq6",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 888,
+      "cadence": "quarterly",
+      "sourceCode": "Bq7",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 893,
+      "cadence": "quarterly",
+      "sourceCode": "Bq8",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 894,
+      "cadence": "quarterly",
+      "sourceCode": "Bq9",
+      "matchMethod": "normalized-title"
+    },
+    {
+      "questId": 903,
+      "cadence": "quarterly",
+      "sourceCode": "Bq13",
+      "matchMethod": "normalized-title"
+    }
+  ]
+}

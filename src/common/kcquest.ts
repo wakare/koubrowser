@@ -750,6 +750,14 @@ export function getQuestStuff(id: number): QuestStuffClass<QuestType> | undefine
   return questStuffs.get(id)
 }
 
+export function listQuestStuffIds(): number[] {
+  return [...questStuffs.keys()].sort((left, right) => left - right)
+}
+
+export function getQuestFleetCondition(id: number): Readonly<QuestFleetCondition> | undefined {
+  return questFleetConditions.get(id)
+}
+
 /**
  *
  * @param prefixs
