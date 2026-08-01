@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/9",
+  "compilerVersion": "quest-growth-authoring-compiler/10",
   "output": {
     "approvedDecisionRubricCount": 8,
     "approvedMilestoneCount": 8,

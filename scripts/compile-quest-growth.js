@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 const { RouteOutputFilenames, buildRouteLineageArtifacts } = require('./quest-growth-route-lineage')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/9'
+const CompilerVersion = 'quest-growth-authoring-compiler/10'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/

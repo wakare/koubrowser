@@ -33,9 +33,15 @@ const {
     root: string
   ) => { value: unknown; rubrics: Map<string, unknown> }
 }
-const { findForbiddenFields } = require('../../../scripts/quest-growth-route-lineage.js') as {
-  findForbiddenFields: (value: unknown, forbiddenFields: Set<string>) => string[]
-}
+const { findForbiddenFields, semanticApprovalDigest, validatePolicy } =
+  require('../../../scripts/quest-growth-route-lineage.js') as {
+    findForbiddenFields: (value: unknown, forbiddenFields: Set<string>) => string[]
+    semanticApprovalDigest: (value: Record<string, unknown>) => string
+    validatePolicy: (
+      value: Record<string, unknown>,
+      expectedCommit: string
+    ) => { approvalDigest: string }
+  }
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -175,6 +181,76 @@ describe('quest growth authoring contract', () => {
     expect(findForbiddenFields([{ objective: 'invalid', mapKey: '1-5' }], forbidden)).toEqual([
       '$[0].mapKey'
     ])
+  })
+
+  it('generates a digest-bound R6 approval packet without authorizing R7', () => {
+    const packet = read<{
+      status: string
+      scope: string
+      publicationAuthorization: string
+      evidenceLineageDigest: string
+      policy: { currentStatus: string; semanticDigest: string }
+      lineages: { currentStatus: string; semanticDigest: string }[]
+      routeUnits: { currentStatus: string; semanticDigest: string }[]
+      approvalRequirements: {
+        requiredApprover: string
+        authorApproverMustDiffer: boolean
+        exactDigestMatchRequired: boolean
+        r7AuthorizationIncluded: boolean
+        runtimePublicationIncluded: boolean
+        realAccountAcceptanceIncluded: boolean
+      }
+    }>('generated', 'route-approval-packet.json')
+
+    expect(packet.status).toBe('AWAITING_PROJECT_OWNER_REVIEW')
+    expect(packet.scope).toBe('R6_AUTHORING_REVIEW_ONLY')
+    expect(packet.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(packet.evidenceLineageDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(packet.policy.currentStatus).toBe('draft')
+    expect(packet.policy.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(packet.lineages).toHaveLength(6)
+    expect(packet.routeUnits).toHaveLength(6)
+    expect(packet.lineages.every((item) => item.currentStatus === 'draft')).toBe(true)
+    expect(packet.routeUnits.every((item) => item.currentStatus === 'draft')).toBe(true)
+    expect(packet.approvalRequirements).toEqual({
+      requiredApprover: 'project-owner',
+      authorApproverMustDiffer: true,
+      exactDigestMatchRequired: true,
+      r7AuthorizationIncluded: false,
+      runtimePublicationIncluded: false,
+      realAccountAcceptanceIncluded: false
+    })
+  })
+
+  it('binds approval to semantic content while excluding approval metadata', () => {
+    const policy = read<Record<string, unknown>>('authoring', 'route-eligibility-policy.json')
+    const baselineDigest = semanticApprovalDigest(policy)
+    const approved = structuredClone(policy) as Record<string, unknown> & {
+      status: string
+      sourceSnapshot: { auditedBaseCommit: string }
+      review: {
+        author: string
+        approver: string | null
+        reviewedAt: string | null
+        approvalDigest: string | null
+      }
+      evidenceThresholds: { editorialGroups: number }
+    }
+    approved.status = 'approved'
+    approved.review.approver = 'project-owner'
+    approved.review.reviewedAt = '2026-08-02T00:00:00.000Z'
+    approved.review.approvalDigest = baselineDigest
+
+    expect(semanticApprovalDigest(approved)).toBe(baselineDigest)
+    expect(validatePolicy(approved, approved.sourceSnapshot.auditedBaseCommit).approvalDigest).toBe(
+      baselineDigest
+    )
+
+    approved.evidenceThresholds.editorialGroups += 1
+    expect(semanticApprovalDigest(approved)).not.toBe(baselineDigest)
+    expect(() => validatePolicy(approved, approved.sourceSnapshot.auditedBaseCommit)).toThrow(
+      'approval digest mismatch'
+    )
   })
 
   it('audits every referenced observable without adding communication hooks or data export', () => {

@@ -1,10 +1,10 @@
 # 新人成長ルート R6 判断記録
 
-最終更新日: 2026-08-01
+最終更新日: 2026-08-02
 
-Task ID: `QGROWTH-R6-0_GOVERNANCE_AND_RETRIEVAL_CLOSURE`
+Task ID: `QGROWTH-R6-1_INDEPENDENT_APPROVAL_PACKET`
 
-Status: `R6_AUTHORING_IMPLEMENTATION_AUTHORIZED_R7_NOT_AUTHORIZED`
+Status: `R6_APPROVAL_PACKET_READY_OWNER_DECISION_PENDING`
 
 ## 判断
 
@@ -54,7 +54,9 @@ authoritative backend route / fallback attestation は提供されなかった�
 
 ## 次の独立判断
 
-次は R6 policy、pilot authoring revision、evidence lineage と generated digest の独立レビューを
-行う。author と approver は分離し、承認は exact revision と canonical input digest に固定する。
+R6 policy、pilot authoring revision、evidence lineage と generated digest の独立レビュー packet を
+生成した。author と approver は分離し、承認は exact revision と canonical semantic digest に固定する。
+承認対象と範囲は [`quest-growth-r6-approval-checklist.md`](quest-growth-r6-approval-checklist.md) に示す。
+現在は owner decision pending であり、authoring data の status と approver は変更していない。
 R6 完了後も、R7 schema、output class、real-account read-only acceptance、release enablement は
 それぞれ独立した owner 判断を必要とする。

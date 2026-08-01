@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-route-lineage-compiler/1",
+  "compilerVersion": "quest-growth-route-lineage-compiler/2",
   "output": {
     "claimSupportCount": 16,
     "independenceGroupCount": 5,

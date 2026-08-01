@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const RouteCompilerVersion = 'quest-growth-route-lineage-compiler/1'
+const RouteCompilerVersion = 'quest-growth-route-lineage-compiler/2'
 const R6AuditedBaseCommit = '6b52e143af9fcab1dbb00b74f7e89bcf695e5e38'
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -10,11 +10,31 @@ const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const RouteOutputFilenames = [
   'route-lineage-manifest.json',
   'route-eligibility-report.json',
-  'route-validation-matrix.json'
+  'route-validation-matrix.json',
+  'route-approval-packet.json'
 ]
 
 function digest(value) {
   return `sha256:${createHash('sha256').update(value).digest('hex')}`
+}
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, item]) => [key, canonicalize(item)])
+    )
+  }
+  return value
+}
+
+function semanticApprovalDigest(value) {
+  const payload = Object.fromEntries(
+    Object.entries(value).filter(([key]) => key !== 'status' && key !== 'review')
+  )
+  return digest(`${JSON.stringify(canonicalize(payload), null, 2)}\n`)
 }
 
 function exactKeys(value, required, optional, description) {
@@ -79,7 +99,7 @@ function validateVersionedRef(value, description) {
   return value
 }
 
-function validateReview(value, status, description) {
+function validateReview(value, status, description, expectedApprovalDigest) {
   exactKeys(value, ['author', 'approver', 'reviewedAt', 'approvalDigest'], [], description)
   identifier(value.author, `${description} author`)
   for (const key of ['approver', 'reviewedAt', 'approvalDigest']) {
@@ -88,11 +108,19 @@ function validateReview(value, status, description) {
     }
   }
   if (value.reviewedAt !== null) timestamp(value.reviewedAt, `${description} reviewedAt`)
+  if (status === 'draft') {
+    if (value.approver !== null || value.reviewedAt !== null || value.approvalDigest !== null) {
+      throw new Error(`${description} draft must not contain approval metadata`)
+    }
+  }
   if (status === 'reviewed' || status === 'approved') {
     requiredText(value.approver, `${description} approver`)
     timestamp(value.reviewedAt, `${description} reviewedAt`)
     requiredText(value.approvalDigest, `${description} approvalDigest`)
     if (value.author === value.approver) throw new Error(`${description} author is approver`)
+    if (value.approvalDigest !== expectedApprovalDigest) {
+      throw new Error(`${description} approval digest mismatch`)
+    }
   }
 }
 
@@ -219,8 +247,16 @@ function validatePolicy(value, expectedCommit) {
   const stepCategories = new Set(unique(value.stepCategories, 'step categories', identifier, 1))
   const forbiddenFields = new Set(unique(value.forbiddenFields, 'forbidden fields', identifier, 1))
   const failureReasons = new Set(unique(value.failureReasons, 'failure reasons', identifier, 1))
-  validateReview(value.review, value.status, 'policy review')
-  return { value, routeFamilies, stepCategories, forbiddenFields, failureReasons }
+  const approvalDigest = semanticApprovalDigest(value)
+  validateReview(value.review, value.status, 'policy review', approvalDigest)
+  return {
+    value,
+    routeFamilies,
+    stepCategories,
+    forbiddenFields,
+    failureReasons,
+    approvalDigest
+  }
 }
 
 function validateEvidenceLineage(value, expectedCommit, evidence, policy) {
@@ -484,12 +520,13 @@ function validateLineages(value, expectedCommit, policy, catalog, evidence, rubr
         description
       )
       requiredText(lineage.gameVersionScope, `${description} game version scope`)
-      validateReview(lineage.review, lineage.status, `${description} review`)
+      const approvalDigest = semanticApprovalDigest(lineage)
+      validateReview(lineage.review, lineage.status, `${description} review`, approvalDigest)
       if (lineage.boundaryPolicyRef !== policy.value.policyId)
         throw new Error(`${description} policy mismatch`)
       if (lineage.concreteOutputAllowed !== false)
         throw new Error(`${description} concrete output must be false`)
-      lineages.set(id, { ...lineage, currentnessAudit: currentness })
+      lineages.set(id, { ...lineage, currentnessAudit: currentness, approvalDigest })
       return id
     },
     policy.routeFamilies.size
@@ -673,7 +710,8 @@ function validateUnits(value, expectedCommit, policy, lineages, observability, r
         policy.value.freshnessMaximumDays[`${freshnessClass}-valid`],
         description
       )
-      validateReview(unit.review, unit.status, `${description} review`)
+      const approvalDigest = semanticApprovalDigest(unit)
+      validateReview(unit.review, unit.status, `${description} review`, approvalDigest)
       if (unit.eligibilityPolicyRef !== policy.value.policyId)
         throw new Error(`${description} policy mismatch`)
       if (!Array.isArray(unit.questStrategyRefs) || unit.questStrategyRefs.length !== 0) {
@@ -681,7 +719,12 @@ function validateUnits(value, expectedCommit, policy, lineages, observability, r
       }
       if (unit.publicationClass !== 'reviewed-authoring-only')
         throw new Error(`invalid ${description} publication class`)
-      units.set(id, { ...unit, observableAudits, currentnessAudit: currentness })
+      units.set(id, {
+        ...unit,
+        observableAudits,
+        currentnessAudit: currentness,
+        approvalDigest
+      })
       return id
     },
     lineages.size
@@ -1018,11 +1061,48 @@ function buildRouteLineageArtifacts({
     passed: fixtureResults.every((item) => item.passed),
     cases: fixtureResults
   }
+  const routeApprovalPacket = {
+    schemaVersion: 1,
+    compilerVersion: RouteCompilerVersion,
+    packetVersion: '1.0.0-alpha.1',
+    generatedAt: policy.value.evaluationAsOf,
+    status: 'AWAITING_PROJECT_OWNER_REVIEW',
+    scope: 'R6_AUTHORING_REVIEW_ONLY',
+    publicationAuthorization: policy.value.publicationAuthorization,
+    evidenceLineageDigest: inputDigests.evidenceLineageDigest,
+    policy: {
+      policyId: policy.value.policyId,
+      policyVersion: policy.value.policyVersion,
+      currentStatus: policy.value.status,
+      semanticDigest: policy.approvalDigest
+    },
+    lineages: [...lineages.lineages.values()].map((lineage) => ({
+      routeLineageId: lineage.routeLineageId,
+      revision: lineage.revision,
+      currentStatus: lineage.status,
+      semanticDigest: lineage.approvalDigest
+    })),
+    routeUnits: [...units.units.values()].map((unit) => ({
+      routeUnitId: unit.routeUnitId,
+      revision: unit.revision,
+      currentStatus: unit.status,
+      semanticDigest: unit.approvalDigest
+    })),
+    approvalRequirements: {
+      requiredApprover: 'project-owner',
+      authorApproverMustDiffer: true,
+      exactDigestMatchRequired: true,
+      r7AuthorizationIncluded: false,
+      runtimePublicationIncluded: false,
+      realAccountAcceptanceIncluded: false
+    }
+  }
   return {
     artifacts: {
       'route-lineage-manifest.json': routeLineageManifest,
       'route-eligibility-report.json': routeEligibilityReport,
-      'route-validation-matrix.json': routeValidationMatrix
+      'route-validation-matrix.json': routeValidationMatrix,
+      'route-approval-packet.json': routeApprovalPacket
     },
     source: inputDigests,
     output: routeLineageManifest.output,
@@ -1034,5 +1114,7 @@ module.exports = {
   RouteOutputFilenames,
   buildRouteLineageArtifacts,
   evaluateFixtureCase,
-  findForbiddenFields
+  findForbiddenFields,
+  semanticApprovalDigest,
+  validatePolicy
 }

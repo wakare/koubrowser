@@ -145,7 +145,7 @@
       "passed": true
     }
   ],
-  "compilerVersion": "quest-growth-route-lineage-compiler/1",
+  "compilerVersion": "quest-growth-route-lineage-compiler/2",
   "fixtureVersion": "1.0.0-alpha.1",
   "passed": true,
   "schemaVersion": 1

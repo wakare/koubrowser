@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-route-lineage-compiler/1",
+  "compilerVersion": "quest-growth-route-lineage-compiler/2",
   "evaluationAsOf": "2026-08-01T08:22:58.133Z",
   "globalStops": [
     "POLICY_OWNER_APPROVAL_MISSING",
