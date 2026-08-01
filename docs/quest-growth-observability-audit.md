@@ -48,8 +48,8 @@ Status: `OWNER_APPROVED_FALLBACK_ONLY_RUNTIME_BLOCKED`
 | `maps.eo-affordability`           | EO、資源、損傷、能力              | EO 別の route と負担条件                 |
 | `capability.breadth-summary`      | 匿名の艦種・練度・装備・資源集約  | event overlay と自動優先順位             |
 
-partial は推測で埋めない。将来の三カード UI では測定値と manual check を表示し、自動行動可能とは
-表現しない。
+partial は推測で埋めない。現在の UI は選択中の重点に対応する匿名集約済み測定値と manual check を
+分けて表示し、自動行動可能とは表現しない。
 
 external advisory review では、`modernization.material-summary` と `fleet.safety-state` の2件だけが
 authoring/future restricted fallback の範囲で `APPROVE`、残る6件が `REVISE`、runtime candidate は

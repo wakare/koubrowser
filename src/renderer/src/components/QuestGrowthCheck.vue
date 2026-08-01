@@ -82,6 +82,36 @@ interface GrowthCheckRow {
   actions: readonly string[]
 }
 
+interface GrowthFact {
+  key: string
+  label: string
+  value: string
+}
+
+type GrowthFactLabelKey = Extract<AppMessageKey, `quest.growth.fact.${string}`>
+
+const ConstraintStateMessageKeys = {
+  pass: 'quest.growth.fact.state.clear',
+  blocked: 'quest.growth.fact.state.blocked',
+  unknown: 'quest.growth.fact.state.unknown'
+} as const satisfies Readonly<Record<'pass' | 'blocked' | 'unknown', GrowthFactLabelKey>>
+
+const EventOverlayMessageKeys = {
+  unavailable: 'quest.growth.fact.state.unavailable',
+  expired: 'quest.growth.fact.state.expired',
+  unreviewed: 'quest.growth.fact.state.unreviewed',
+  malformed: 'quest.growth.fact.state.malformed'
+} as const satisfies Readonly<
+  Record<'unavailable' | 'expired' | 'unreviewed' | 'malformed', GrowthFactLabelKey>
+>
+
+const FreshnessMessageKeys = {
+  fresh: 'quest.growth.fact.state.available',
+  stale: 'quest.growth.fact.state.stale',
+  unknown: 'quest.growth.fact.state.unknown',
+  unavailable: 'quest.growth.fact.state.unavailable'
+} as const satisfies Readonly<Record<QuestGrowthFallbackInput['freshness'], GrowthFactLabelKey>>
+
 const rows = computed<GrowthCheckRow[]>(() =>
   props.inputs.map((input) => {
     const outcome = evaluateQuestGrowthFallback(input)
@@ -124,6 +154,94 @@ const priorityActions = computed(() => {
   }
   return [...unique].slice(0, 5)
 })
+const focusedInput = computed(() => {
+  const observableId = FocusObservableIds[props.focus]
+  return observableId
+    ? props.inputs.find((candidate) => candidate.observableId === observableId)
+    : undefined
+})
+const focusedFacts = computed<GrowthFact[]>(() => {
+  const input = focusedInput.value
+  if (!input) return []
+
+  switch (input.observableId) {
+    case 'resources.bands':
+      if (!input.totals) return [availabilityFact(input.freshness)]
+      return [
+        numberFact('fuel', 'quest.growth.fact.fuel', input.totals.fuel),
+        numberFact('ammunition', 'quest.growth.fact.ammunition', input.totals.ammunition),
+        numberFact('steel', 'quest.growth.fact.steel', input.totals.steel),
+        numberFact('bauxite', 'quest.growth.fact.bauxite', input.totals.bauxite),
+        numberFact(
+          'repairBuckets',
+          'quest.growth.fact.repairBuckets',
+          input.totals.repairBuckets
+        )
+      ]
+    case 'ships.asw-capable-summary':
+      if (input.freshness !== 'fresh') return [availabilityFact(input.freshness)]
+      return [
+        numberFact('sonarCount', 'quest.growth.fact.sonarCount', input.sonarCount),
+        numberFact(
+          'depthChargeCount',
+          'quest.growth.fact.depthChargeCount',
+          input.depthChargeCount
+        )
+      ]
+    case 'capability.surface-air-los-gaps':
+      if (input.freshness !== 'fresh') return [availabilityFact(input.freshness)]
+      return [
+        numberFact(
+          'airEquipmentCount',
+          'quest.growth.fact.airEquipmentCount',
+          input.airEquipmentCount
+        ),
+        numberFact(
+          'losEquipmentCount',
+          'quest.growth.fact.losEquipmentCount',
+          input.losEquipmentCount
+        )
+      ]
+    case 'maps.eo-affordability':
+      if (input.freshness !== 'fresh') return [availabilityFact(input.freshness)]
+      return [
+        numberFact(
+          'unlockedEoCount',
+          'quest.growth.fact.unlockedEoCount',
+          input.unlockedEoCount
+        ),
+        {
+          key: 'fleetSafety',
+          label: translateApp('quest.growth.fact.fleetSafety'),
+          value: translateApp(ConstraintStateMessageKeys[input.safety])
+        }
+      ]
+    case 'capability.breadth-summary':
+      return [availabilityFact(input.freshness)]
+    case 'event.overlay-status':
+      return [
+        {
+          key: 'eventOverlay',
+          label: translateApp('quest.growth.fact.eventOverlay'),
+          value: translateApp(EventOverlayMessageKeys[input.overlayStatus])
+        }
+      ]
+    default:
+      return []
+  }
+})
+
+function numberFact(key: string, labelKey: GrowthFactLabelKey, value: number): GrowthFact {
+  return { key, label: translateApp(labelKey), value: value.toLocaleString('ja-JP') }
+}
+
+function availabilityFact(freshness: QuestGrowthFallbackInput['freshness']): GrowthFact {
+  return {
+    key: 'localData',
+    label: translateApp('quest.growth.fact.localData'),
+    value: translateApp(FreshnessMessageKeys[freshness])
+  }
+}
 
 function title(input: QuestGrowthFallbackInput): string {
   return translateApp(ObservableTitleKeys[input.observableId])
@@ -201,6 +319,20 @@ function updateFocus(event: Event): void {
       </label>
       <small>{{ translateApp('quest.growth.context.sessionOnly') }}</small>
     </div>
+
+    <section class="quest-growth-facts" :data-focus="focus">
+      <header>
+        <strong>{{ translateApp('quest.growth.facts.title') }}</strong>
+        <span>{{ translateApp('quest.growth.facts.description') }}</span>
+      </header>
+      <dl v-if="focusedFacts.length > 0">
+        <div v-for="fact in focusedFacts" :key="fact.key">
+          <dt>{{ fact.label }}</dt>
+          <dd>{{ fact.value }}</dd>
+        </div>
+      </dl>
+      <p v-else>{{ translateApp('quest.growth.facts.selectFocus') }}</p>
+    </section>
 
     <section class="quest-growth-priority">
       <strong>{{ translateApp('quest.growth.priority') }}</strong>
@@ -358,6 +490,62 @@ function updateFocus(event: Event): void {
     gap: 3px;
     margin: 0;
     padding-left: 20px;
+    font-size: 10px;
+  }
+}
+
+.quest-growth-facts {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(#9fffc7, 0.2);
+  background: rgba(#9fffc7, 0.035);
+
+  header {
+    display: grid;
+    gap: 2px;
+
+    strong {
+      color: rgba(#fff, 0.88);
+      font-size: 11px;
+    }
+
+    span {
+      color: rgba(#fff, 0.48);
+      font-size: 9px;
+    }
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+    gap: 5px;
+    margin: 0;
+
+    div {
+      min-width: 0;
+      padding: 5px 6px;
+      background: rgba(#000, 0.16);
+    }
+  }
+
+  dt {
+    overflow: hidden;
+    color: rgba(#fff, 0.5);
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  dd {
+    margin: 1px 0 0;
+    color: #dff8ff;
+    font-size: 11px;
+  }
+
+  p {
+    margin: 0;
+    color: rgba(#fff, 0.54);
     font-size: 10px;
   }
 }

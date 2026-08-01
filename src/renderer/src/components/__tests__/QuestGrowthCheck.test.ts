@@ -30,10 +30,13 @@ const Inputs: QuestGrowthFallbackInput[] = [
 ]
 
 describe('QuestGrowthCheck.vue', () => {
-  async function render() {
+  async function render(
+    focus: 'unset' | 'resources' | 'asw' = 'unset',
+    inputs: QuestGrowthFallbackInput[] = Inputs
+  ) {
     const { default: QuestGrowthCheck } = await import('../QuestGrowthCheck.vue')
     return mount(QuestGrowthCheck, {
-      props: { inputs: Inputs, resourcePosture: 'unset', focus: 'unset' }
+      props: { inputs, resourcePosture: 'unset', focus }
     })
   }
 
@@ -65,6 +68,39 @@ describe('QuestGrowthCheck.vue', () => {
     expect(html).not.toContain('9001')
     expect(html).not.toContain('SELECT_RESOURCE_POSTURE')
     expect(html).not.toContain('ROUTE_OUTPUT_PROHIBITED_IN_PURE_EVALUATOR')
+  })
+
+  it('shows measured local facts only for the selected focus without a readiness verdict', async () => {
+    const wrapper = await render('resources')
+
+    expect(wrapper.get('.quest-growth-facts').attributes('data-focus')).toBe('resources')
+    expect(wrapper.findAll('.quest-growth-facts dd').map((fact) => fact.text())).toEqual([
+      '123,456',
+      '234,567',
+      '345,678',
+      '456,789',
+      '987'
+    ])
+    expect(wrapper.get('.quest-growth-facts').text()).toContain('quest.growth.facts.description')
+    expect(wrapper.get('.quest-growth-facts').text()).not.toContain('route')
+  })
+
+  it('does not present zero counts when focused local facts are unavailable', async () => {
+    const wrapper = await render('asw', [
+      {
+        observableId: 'ships.asw-capable-summary',
+        freshness: 'unknown',
+        sonarCount: 0,
+        depthChargeCount: 0,
+        targetSelected: true,
+        reviewedTargetRule: false,
+        intendedFleetConfirmed: false
+      }
+    ])
+
+    expect(wrapper.findAll('.quest-growth-facts dd')).toHaveLength(1)
+    expect(wrapper.get('.quest-growth-facts dd').text()).toBe('quest.growth.fact.state.unknown')
+    expect(wrapper.get('.quest-growth-facts').text()).not.toContain('quest.growth.fact.sonarCount')
   })
 
   it('emits session-only resource posture and growth focus selections', async () => {

@@ -6146,6 +6146,13 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
           const audit = route.querySelector('.quest-strategy-summary')
           const growth = document.querySelector('.quest-growth-check')
           const growthDetails = growth?.querySelector('.quest-growth-details')
+          const growthContextSelects = growth?.querySelectorAll('.quest-growth-context select') ?? []
+          const growthFocus = growthContextSelects[1]
+          if (growthFocus && growthFocus.value !== 'resources') {
+            growthFocus.value = 'resources'
+            growthFocus.dispatchEvent(new Event('change', { bubbles: true }))
+            return null
+          }
           const growthHtml = growth?.outerHTML ?? ''
           const forbidden = [
             /admiral/i,
@@ -6170,6 +6177,9 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
                       contextSelectCount: growth.querySelectorAll(
                         '.quest-growth-context select'
                       ).length,
+                      factFocus:
+                        growth.querySelector('.quest-growth-facts')?.dataset.focus ?? null,
+                      factCount: growth.querySelectorAll('.quest-growth-facts dd').length,
                       detailsCollapsed: growthDetails ? !growthDetails.open : null,
                       forbiddenIdentifiers: forbidden
                         .filter((pattern) => pattern.test(growthHtml))
@@ -6195,6 +6205,8 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       strategyResult.growth?.routeOutput !== 'prohibited' ||
       strategyResult.growth?.priorityCount < 1 ||
       strategyResult.growth?.contextSelectCount !== 2 ||
+      strategyResult.growth?.factFocus !== 'resources' ||
+      strategyResult.growth?.factCount < 1 ||
       strategyResult.growth?.detailsCollapsed !== true ||
       strategyResult.growth?.forbiddenIdentifiers.length > 0 ||
       strategyResult.growth?.scrollWidth > strategyResult.growth?.clientWidth + 1

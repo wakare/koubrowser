@@ -39,6 +39,8 @@ describe('quest strategy route UI wiring', () => {
     expect(questGuide).toContain('v-model:focus="growthFocus"')
     expect(growthCheck).toContain('evaluateQuestGrowthFallback(input)')
     expect(growthCheck).toContain('data-route-output="prohibited"')
+    expect(growthCheck).toContain('class="quest-growth-facts"')
+    expect(growthCheck).toContain('focusedFacts')
     expect(growthCheck).not.toContain('buildQuestStrategyRoutePlan')
   })
 
