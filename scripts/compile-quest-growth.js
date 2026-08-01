@@ -2,15 +2,20 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 const { RouteOutputFilenames, buildRouteLineageArtifacts } = require('./quest-growth-route-lineage')
+const {
+  R7DecisionOutputFilenames,
+  buildR7DecisionArtifacts
+} = require('./quest-growth-r7-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/10'
+const CompilerVersion = 'quest-growth-authoring-compiler/11'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
 const OutputFilenames = [
   'source-manifest.json',
   'conflict-and-gap-report.json',
-  ...RouteOutputFilenames
+  ...RouteOutputFilenames,
+  ...R7DecisionOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -807,6 +812,11 @@ function buildQuestGrowthArtifacts(root) {
     observability,
     decisionRubrics
   })
+  const r7Decision = buildR7DecisionArtifacts({
+    base,
+    routeApprovalPacket: routeLineage.artifacts['route-approval-packet.json'],
+    routeEligibilityReport: routeLineage.eligibilityReport
+  })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -854,6 +864,7 @@ function buildQuestGrowthArtifacts(root) {
       observabilityAuditDigest: sha256(observabilityRaw),
       decisionRubricsDigest: sha256(decisionRubricsRaw),
       ...routeLineage.source,
+      ...r7Decision.source,
       fixtureDigests
     },
     output: {
@@ -887,7 +898,8 @@ function buildQuestGrowthArtifacts(root) {
       manualCheckOnlyCount: routeLineage.output.manualCheckOnlyCount,
       r7CandidateCount: routeLineage.output.r7CandidateCount,
       routeRuntimeEligibleCount: routeLineage.output.runtimeEligibleCount,
-      routeValidationCaseCount: routeLineage.output.validationCaseCount
+      routeValidationCaseCount: routeLineage.output.validationCaseCount,
+      ...r7Decision.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -938,7 +950,8 @@ function buildQuestGrowthArtifacts(root) {
   return {
     'source-manifest.json': sourceManifest,
     'conflict-and-gap-report.json': conflictAndGapReport,
-    ...routeLineage.artifacts
+    ...routeLineage.artifacts,
+    ...r7Decision.artifacts
   }
 }
 

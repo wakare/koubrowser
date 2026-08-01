@@ -1,0 +1,60 @@
+{
+  "authorizationGates": [
+    {
+      "authorizationState": "not-authorized",
+      "gateId": "r7-schema-output-class",
+      "semanticDigest": "sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed"
+    },
+    {
+      "authorizationState": "not-authorized",
+      "gateId": "r7-pilot-content-authoring",
+      "semanticDigest": "sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3"
+    },
+    {
+      "authorizationState": "not-authorized",
+      "gateId": "r7-renderer-opt-in-integration",
+      "semanticDigest": "sha256:c2f7ce617eaaf00bb8aded393734af42bbe75a8d3a9480ea31f4b31a7f1f6be3"
+    },
+    {
+      "authorizationState": "not-authorized",
+      "gateId": "r7-real-account-readonly-acceptance",
+      "semanticDigest": "sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb"
+    },
+    {
+      "authorizationState": "not-authorized",
+      "gateId": "r7-runtime-publication",
+      "semanticDigest": "sha256:1cafef68f4fa841168fc733742100058bb7481a984b041303f03072312f3c3a5"
+    },
+    {
+      "authorizationState": "not-authorized",
+      "gateId": "r7-default-enablement",
+      "semanticDigest": "sha256:b982afd1d510f5eaed2e17900f703dcc2e3cb2619259d7ffdc32676d766081b8"
+    }
+  ],
+  "compilerVersion": "quest-growth-r7-decision-compiler/1",
+  "concreteRouteArtifactCount": 0,
+  "generatedAt": "2026-08-01T17:34:57.044Z",
+  "implementationAuthorization": "R7_NOT_AUTHORIZED",
+  "pilotProposal": {
+    "maximumInitialFamilies": 2,
+    "recommendedFamilies": [
+      "expedition-resource-periodic-loop",
+      "anti-submarine-foundation"
+    ],
+    "selectedInitialFamilies": [],
+    "selectionState": "owner-decision-required"
+  },
+  "r6ApprovalBasis": {
+    "packetDigest": "sha256:9982237824796126a35a5490d7a7e39fec839552624b130f37f8b4ae75cf0164",
+    "packetStatus": "R6_AUTHORING_APPROVED",
+    "publicationAuthorization": "R7_NOT_AUTHORIZED"
+  },
+  "requestDigest": "sha256:066928b85b9141137bf60a14a3cc8d8cf4654994cb5eba0ebf90b23c5a68f56e",
+  "requestId": "decision:quest-growth-r7-0",
+  "revision": 1,
+  "runtimeEligibleCount": 0,
+  "schemaVersion": 1,
+  "scope": "R7_DECISION_ONLY",
+  "semanticDigest": "sha256:29a541841298790180ab782eafc5555668d915b8fbf81405f8bb61d572b70ae9",
+  "status": "OWNER_DECISION_REQUIRED"
+}

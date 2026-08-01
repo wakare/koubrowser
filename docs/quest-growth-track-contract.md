@@ -213,6 +213,10 @@ UI のいずれからも具体的 route を出力してはならない。
 4. `R7 Reviewed Concrete Route UI`: lineage と適用条件を満たす route だけを具体的な海域、編成、
    装備、分岐条件として表示する。未審査・失効・条件不明は引き続き fail closed とする。
 
+R7 の実装前判断は [`quest-growth-r7-decision-packet.md`](quest-growth-r7-decision-packet.md) に分離した。
+現在は decision-only request と compiler gate だけを生成し、6 authorization gate はすべて
+`not-authorized`、concrete route artifact と runtime eligible は0件である。
+
 `R7` の実装開始には、R6 policy / lineage / unit の独立承認、実アカウント受入確認、route publication
 authorization の追加承認を必要とする。R6 の pure evaluation artifact は R7 の承認を代替しない。
 

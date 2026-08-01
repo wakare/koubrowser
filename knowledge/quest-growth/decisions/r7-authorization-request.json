@@ -1,0 +1,161 @@
+{
+  "authoringSchema": "QuestGrowthR7AuthorizationRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-0",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_DECISION_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "09a9ae0af19979f07a908ae93fc739c9600fb14c",
+    "checkedAt": "2026-08-01T17:34:57.044Z"
+  },
+  "r6ApprovalBasis": {
+    "packetDigest": "sha256:9982237824796126a35a5490d7a7e39fec839552624b130f37f8b4ae75cf0164",
+    "packetStatus": "R6_AUTHORING_APPROVED",
+    "publicationAuthorization": "R7_NOT_AUTHORIZED"
+  },
+  "authorizationGates": [
+    {
+      "gateId": "r7-schema-output-class",
+      "authorizationState": "not-authorized",
+      "summary": "允许定义可表达具体海域、节点、编成、装备与条件的版本化 R7 schema。",
+      "requiredEvidence": [
+        "schema rejects unknown fields and unsupported versions",
+        "concrete fields require versioned evidence references",
+        "R6 authoring remains unable to contain concrete route fields"
+      ]
+    },
+    {
+      "gateId": "r7-pilot-content-authoring",
+      "authorizationState": "not-authorized",
+      "summary": "允许在独立审查后写入选定 pilot family 的具体攻略内容。",
+      "requiredEvidence": [
+        "each route binds exact lineage revision and semantic digest",
+        "hard mechanics have two independent readable evidence groups",
+        "unknown, conflict and expiry produce a non-empty fallback"
+      ]
+    },
+    {
+      "gateId": "r7-renderer-opt-in-integration",
+      "authorizationState": "not-authorized",
+      "summary": "允许 renderer 在用户明确展开后显示已审查的具体路线。",
+      "requiredEvidence": [
+        "feature remains opt-in and existing quest guide remains fallback",
+        "no main or preload dependency is added to the route evaluator",
+        "privacy and horizontal overflow checks pass with synthetic fixtures"
+      ]
+    },
+    {
+      "gateId": "r7-real-account-readonly-acceptance",
+      "authorizationState": "not-authorized",
+      "summary": "允许按脱敏步骤执行实账号只读显示验收。",
+      "requiredEvidence": [
+        "owner starts the game manually and credentials are not handled by the agent",
+        "no game action or communication mutation occurs",
+        "page, filter, panel and window state are restored"
+      ]
+    },
+    {
+      "gateId": "r7-runtime-publication",
+      "authorizationState": "not-authorized",
+      "summary": "允许把已审查路线加入可分发 runtime bundle。",
+      "requiredEvidence": [
+        "schema, pilot content, renderer and acceptance gates are approved",
+        "signed bundle and rollback path are independently verified",
+        "expired or withdrawn content cannot remain runtime eligible"
+      ]
+    },
+    {
+      "gateId": "r7-default-enablement",
+      "authorizationState": "not-authorized",
+      "summary": "允许另行决定是否默认启用具体路线显示。",
+      "requiredEvidence": [
+        "runtime publication is already approved",
+        "fallback remains reachable when route knowledge is missing",
+        "default change is reviewed as a separate release decision"
+      ]
+    }
+  ],
+  "proposedOutputContract": {
+    "outputClasses": [
+      "reviewed-concrete-route",
+      "manual-check-route",
+      "objective-only",
+      "knowledge-insufficient",
+      "withdrawn"
+    ],
+    "concreteFieldsRequiringEvidence": [
+      "mapKey",
+      "targetNodes",
+      "fleetConstraints",
+      "equipmentConstraints",
+      "formations",
+      "airState",
+      "branchConditions",
+      "sortieInstructions"
+    ],
+    "alwaysProhibited": [
+      "automatic-game-operation",
+      "game-communication-mutation",
+      "runtime-web-scraping",
+      "account-data-export",
+      "unreviewed-success-or-optimality-claim"
+    ],
+    "unknownPolicy": "fallback"
+  },
+  "pilotProposal": {
+    "selectionState": "owner-decision-required",
+    "maximumInitialFamilies": 2,
+    "candidates": [
+      {
+        "routeFamily": "system-fleet-unlock",
+        "r6ContentDecision": "R7_CANDIDATE",
+        "disposition": "defer",
+        "reason": "完整任务前置链仍依赖维护后的 curated relation。"
+      },
+      {
+        "routeFamily": "experience-remodel-modernization",
+        "r6ContentDecision": "MANUAL_CHECK_ONLY",
+        "disposition": "defer",
+        "reason": "剩余演习机会不可从现有只读状态完整观测。"
+      },
+      {
+        "routeFamily": "expedition-resource-periodic-loop",
+        "r6ContentDecision": "R7_CANDIDATE",
+        "disposition": "recommended-wave-a",
+        "reason": "解锁、历史成功与受注任务可观测，当前舰队条件和资源方针可保持人工 gate。"
+      },
+      {
+        "routeFamily": "anti-submarine-foundation",
+        "r6ContentDecision": "R7_CANDIDATE",
+        "disposition": "recommended-wave-a",
+        "reason": "可用匿名舰队与装备类别事实，适合作为目标规则和具体路线证据门禁的首个战斗型 pilot。"
+      },
+      {
+        "routeFamily": "surface-air-los-foundation",
+        "r6ContentDecision": "R7_CANDIDATE",
+        "disposition": "defer",
+        "reason": "需要先固定目标、route variant 与版本化制空和索敌公式。"
+      },
+      {
+        "routeFamily": "normal-map-eo-blueprint-loop",
+        "r6ContentDecision": "R7_CANDIDATE",
+        "disposition": "defer",
+        "reason": "EO 路线与可负担性资料的复查周期更短，应在 pilot 门禁稳定后接入。"
+      }
+    ]
+  },
+  "requiredSequence": [
+    "r7-schema-output-class",
+    "r7-pilot-content-authoring",
+    "r7-renderer-opt-in-integration",
+    "r7-real-account-readonly-acceptance",
+    "r7-runtime-publication",
+    "r7-default-enablement"
+  ],
+  "review": {
+    "author": "codex-r7-decision-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

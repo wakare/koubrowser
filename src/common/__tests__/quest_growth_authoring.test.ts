@@ -42,6 +42,15 @@ const { findForbiddenFields, semanticApprovalDigest, validatePolicy } =
       expectedCommit: string
     ) => { approvalDigest: string }
   }
+const { authorizationRequestSemanticDigest, validateR7AuthorizationRequest } =
+  require('../../../scripts/quest-growth-r7-decision.js') as {
+    authorizationRequestSemanticDigest: (value: Record<string, unknown>) => string
+    validateR7AuthorizationRequest: (
+      value: Record<string, unknown>,
+      routeApprovalPacket: Record<string, unknown>,
+      routeEligibilityReport: Record<string, unknown>
+    ) => { recommendedFamilies: string[]; semanticDigest: string }
+  }
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -225,6 +234,77 @@ describe('quest growth authoring contract', () => {
       runtimePublicationIncluded: false,
       realAccountAcceptanceIncluded: false
     })
+  })
+
+  it('generates an R7 decision packet without authorizing implementation or publication', () => {
+    const report = read<{
+      status: string
+      scope: string
+      requestDigest: string
+      semanticDigest: string
+      authorizationGates: {
+        gateId: string
+        authorizationState: string
+        semanticDigest: string
+      }[]
+      pilotProposal: {
+        selectionState: string
+        maximumInitialFamilies: number
+        recommendedFamilies: string[]
+        selectedInitialFamilies: string[]
+      }
+      implementationAuthorization: string
+      concreteRouteArtifactCount: number
+      runtimeEligibleCount: number
+    }>('generated', 'r7-authorization-report.json')
+
+    expect(report.status).toBe('OWNER_DECISION_REQUIRED')
+    expect(report.scope).toBe('R7_DECISION_ONLY')
+    expect(report.requestDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(report.authorizationGates).toHaveLength(6)
+    expect(
+      report.authorizationGates.every(
+        (gate) =>
+          gate.authorizationState === 'not-authorized' &&
+          /^sha256:[0-9a-f]{64}$/.test(gate.semanticDigest)
+      )
+    ).toBe(true)
+    expect(report.pilotProposal).toEqual({
+      selectionState: 'owner-decision-required',
+      maximumInitialFamilies: 2,
+      recommendedFamilies: [
+        'expedition-resource-periodic-loop',
+        'anti-submarine-foundation'
+      ],
+      selectedInitialFamilies: []
+    })
+    expect(report.implementationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.concreteRouteArtifactCount).toBe(0)
+    expect(report.runtimeEligibleCount).toBe(0)
+  })
+
+  it('fails closed if an R7 gate is marked authorized before owner approval', () => {
+    const request = read<Record<string, unknown> & {
+      authorizationGates: { authorizationState: string }[]
+    }>('decisions', 'r7-authorization-request.json')
+    const approvalPacket = read<Record<string, unknown>>(
+      'generated',
+      'route-approval-packet.json'
+    )
+    const eligibilityReport = read<Record<string, unknown>>(
+      'generated',
+      'route-eligibility-report.json'
+    )
+    const tampered = structuredClone(request)
+    tampered.authorizationGates[0].authorizationState = 'authorized'
+
+    expect(authorizationRequestSemanticDigest(tampered)).toBe(
+      authorizationRequestSemanticDigest(request)
+    )
+    expect(() =>
+      validateR7AuthorizationRequest(tampered, approvalPacket, eligibilityReport)
+    ).toThrow('is authorized before owner decision')
   })
 
   it('binds approval to semantic content while excluding approval metadata', () => {

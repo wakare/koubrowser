@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R6_AUTHORING_IMPLEMENTED_R7_NOT_AUTHORIZED`
+Status: `R6_AUTHORING_APPROVED_R7_DECISION_PACKET_PENDING`
 
 ## 目的
 
@@ -146,8 +146,9 @@ claim support を記録する。各 route unit は具体的 route を持たず�
 ## Wave 2 判断結果
 
 author / approver 分離と local observability audit は完了し、partial / unavailable は manual fallback
-に固定した。R6 authoring と pure eligibility evaluator は追加したが、独立承認と R7 authorization は
-未完了のため、引き続き具体的 route を返さない。
+に固定した。R6 policy、lineage、route unit は project owner が current semantic digest に固定して
+承認した。R7 は decision packet の審査中であり、authorization gate はすべて未承認のため、
+引き続き具体的 route を返さない。
 
 1. author と approver が分離している。
 2. hard mechanic の claim に独立して読める資料が二つ以上ある。
