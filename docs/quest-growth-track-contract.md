@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R1_Evidence_Ledger_and_Milestone_Contract`
 
-Status: `AUTHORING_AND_OBSERVABILITY_AUDITED_RUNTIME_BLOCKED`
+Status: `DECISION_RUBRICS_REVISED_INDEPENDENT_APPROVAL_PENDING_RUNTIME_BLOCKED`
 
 ## モデル境界
 
@@ -77,23 +77,32 @@ claim は URL、title、site、language、分類、可読性、独立性、suppo
 失敗させる。現行8件はすべて `draft` である。29 observable の local source は監査済みだが、
 complete 19、partial 8、unavailable 2 であり、監査完了は runtime 利用可能を意味しない。
 
+exact commit `55a7151c5b63a40453ffb55eccef49b6cbd5a7f9` に対する external advisory review は、
+2 rubric を authoring/future restricted fallback として `APPROVE`、6 rubric を `REVISE`、runtime
+candidate を0件と判定した。6件は revision 2 へ修正済みだが、この advisory は repository の
+approver または Owner authorization を代替しない。全8件は独立 approver が確定するまで `draft`
+かつ `fallback-only` のままとする。
+
 ## Unknown と fallback
 
 unknown state でも空画面にしない。将来の UI は最低限次を表示する。
 
 ### 今やること
 
-状態不足時は、補給、損傷、入渠、素材安全の確認、利用可能な演習、成功確認済み遠征を案内し、
-具体的出撃 route を断定しない。
+状態不足時は、補給、損傷、入渠、素材安全を確認し、演習画面または現在の遠征編成を確認する
+data-acquisition step を案内する。履歴上の成功だけで現在実行可能とせず、具体的出撃 route を断定
+しない。
 
 ### 次にやること
 
-反潜、制空、索敵、輸送のうち、ローカルに確認できる不足カテゴリを一つ示す。能力を観測できない
-場合は演習と可視の解放任務へ戻る。
+反潜、制空、索敵、輸送のカテゴリ存在・不在を事実として表示し、ユーザーが次に確認するカテゴリを
+一つ選ぶ。審査済みの対象別 rule がない限り、不在カテゴリを攻略上の不足とは断定しない。能力を
+観測できない場合は演習画面の確認と可視の解放任務へ戻る。
 
 ### 長期目標
 
-通常海域と攻略可能な EO を段階的に開放し、勲章・設計図と活動準備へつながる資源循環を作る。
+通常海域と解放済み EO を長期候補として表示し、勲章・設計図と活動準備へつながる資源循環を示す。
+EO の攻略可能性は、審査済み route と現在の安全・資源・能力・時間条件が揃うまで断定しない。
 
 ## Synthetic fixtures
 

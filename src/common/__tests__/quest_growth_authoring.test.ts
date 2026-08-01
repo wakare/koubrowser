@@ -151,8 +151,15 @@ describe('quest growth authoring contract', () => {
     }>('authoring', 'observability-map.json')
     const packet = read<{
       rubrics: {
+        rubricId: string
         observableId: string
+        revision: number
         status: string
+        proposal: {
+          automaticOutputs: string[]
+          manualInputs: string[]
+          prohibitedInferences: string[]
+        }
         fallback: string
         acceptanceTests: string[]
         review: { author: string; approver: string | null }
@@ -171,6 +178,61 @@ describe('quest growth authoring contract', () => {
     expect(packet.rubrics.every((rubric) => rubric.review.approver === null)).toBe(true)
     expect(packet.rubrics.every((rubric) => rubric.fallback.trim())).toBe(true)
     expect(packet.rubrics.every((rubric) => rubric.acceptanceTests.length >= 2)).toBe(true)
+
+    const rubricById = new Map(packet.rubrics.map((rubric) => [rubric.rubricId, rubric]))
+    expect(
+      Object.fromEntries(packet.rubrics.map((rubric) => [rubric.rubricId, rubric.revision]))
+    ).toEqual({
+      'rubric:modernization-material-safety': 1,
+      'rubric:fleet-safety-gate': 1,
+      'rubric:visible-quest-chain': 2,
+      'rubric:resource-posture': 2,
+      'rubric:asw-capability-facts': 2,
+      'rubric:surface-air-los-gaps': 2,
+      'rubric:eo-affordability': 2,
+      'rubric:evergreen-breadth': 2
+    })
+
+    const visibleChain = rubricById.get('rubric:visible-quest-chain')!
+    expect(visibleChain.proposal.automaticOutputs.join(' ')).toContain('view-coverage')
+    expect(visibleChain.proposal.automaticOutputs.join(' ')).toContain('graph-coverage')
+    expect(visibleChain.proposal.prohibitedInferences.join(' ')).toContain(
+      'missing from a partial or cached list'
+    )
+    expect(visibleChain.fallback).toContain('data-acquisition step')
+    expect(visibleChain.acceptanceTests).toHaveLength(5)
+
+    const resourcePosture = rubricById.get('rubric:resource-posture')!
+    expect(resourcePosture.proposal.automaticOutputs.join(' ')).toContain(
+      'measured, unknown, or stale'
+    )
+    expect(resourcePosture.proposal.manualInputs.join(' ')).toContain('preference only')
+    expect(resourcePosture.fallback).toContain('keep the posture unset')
+    expect(resourcePosture.acceptanceTests).toHaveLength(4)
+
+    const aswFacts = rubricById.get('rubric:asw-capability-facts')!
+    expect(aswFacts.proposal.automaticOutputs.join(' ')).toContain('category absent')
+    expect(aswFacts.proposal.prohibitedInferences.join(' ')).toContain('target selection alone')
+    expect(aswFacts.acceptanceTests).toHaveLength(5)
+
+    const surfaceAirLos = rubricById.get('rubric:surface-air-los-gaps')!
+    expect(surfaceAirLos.proposal.automaticOutputs.join(' ')).toContain('presence or absence')
+    expect(surfaceAirLos.proposal.prohibitedInferences.join(' ')).toContain(
+      'without a reviewed target rule'
+    )
+    expect(surfaceAirLos.acceptanceTests).toHaveLength(5)
+
+    const eoAffordability = rubricById.get('rubric:eo-affordability')!
+    expect(eoAffordability.proposal.automaticOutputs.join(' ')).not.toContain('prior local clear')
+    expect(eoAffordability.proposal.prohibitedInferences.join(' ')).toContain('EO unlock state')
+    expect(eoAffordability.acceptanceTests).toHaveLength(6)
+
+    const evergreenBreadth = rubricById.get('rubric:evergreen-breadth')!
+    expect(evergreenBreadth.proposal.manualInputs.join(' ')).toContain(
+      'chooses one evergreen capability category'
+    )
+    expect(evergreenBreadth.fallback).toContain('one explicit manual next step')
+    expect(evergreenBreadth.acceptanceTests).toHaveLength(5)
 
     const report = read<{ globalStops: string[] }>('generated', 'conflict-and-gap-report.json')
     expect(report.globalStops).toContain('DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED')

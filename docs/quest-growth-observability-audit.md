@@ -51,6 +51,11 @@ Status: `AUDITED_WITH_GAPS_RUNTIME_BLOCKED`
 partial は推測で埋めない。将来の三カード UI では測定値と manual check を表示し、自動行動可能とは
 表現しない。
 
+external advisory review では、`modernization.material-summary` と `fleet.safety-state` の2件だけが
+authoring/future restricted fallback の範囲で `APPROVE`、残る6件が `REVISE`、runtime candidate は
+0件だった。6件は revision 2 へ修正済みだが、全8件とも独立 approver 未確定のため `draft` と
+`fallback-only` を維持する。
+
 ## 現在取得できないもの
 
 ### `practice.available-count`
@@ -91,7 +96,8 @@ promotion しない。unknown 時の fallback は全 observable で非空とす�
 
 pure evaluator を作る前に、次を満たす。
 
-1. 8 partial observable の判断境界を `decision-rubrics.json` で独立審査する。
+1. revision 2 を含む8 partial observable の判断境界を、project が認める独立 approver が審査する。
 2. 2 unavailable observable は新規観測で補わず、manual fallback を evaluator test に固定する。
 3. milestone と rubric を独立 approver が承認する。
 4. quest strategy lineage gap を解決または明示的に受理する。
+5. unknown、stale、unavailable、blocked と manual-check / data-acquisition の shared contract を固定する。

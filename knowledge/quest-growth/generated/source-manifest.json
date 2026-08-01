@@ -22,7 +22,7 @@
   "source": {
     "auditedBaseCommit": "33abf8ff2534deaa7ce12007c001e1e1ea18837f",
     "checkedAt": "2026-08-01T00:00:00.000Z",
-    "decisionRubricsDigest": "sha256:72d3711fd24f01ba7d82fc64908eb319a06922bf76dec683c66a8d7887c5da07",
+    "decisionRubricsDigest": "sha256:0fba826f50280a03f28c8c8296a15f63a8f1b64ee874697dcf8ff592baaa7dbb",
     "evidenceLedgerDigest": "sha256:9bf921d02429a5bef0126df39bd21042141041af8e25b3a4ec57cd871ff7f948",
     "fixtureDigests": {
       "asw-missing.json": "sha256:080e13b003cb6be8ecd9e844fc1316fd4d34b56c46b6cdb0dc25a665e5f8f1e2",

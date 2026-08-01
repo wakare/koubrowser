@@ -96,49 +96,49 @@
       "status": "draft"
     },
     {
-      "acceptanceTestCount": 2,
+      "acceptanceTestCount": 5,
       "decisionMode": "fail-closed-composite",
-      "fallback": "Show visible unlock quests and state that hidden or unregistered prerequisites may remain.",
+      "fallback": "If a visible unlock quest exists, show it as current-view-only. Otherwise show the exact data-acquisition step to open all quest tabs and refresh the guide. Keep the chain partial and never return an empty plan.",
       "observableId": "quest.visible-chain",
       "rubricId": "rubric:visible-quest-chain",
       "status": "draft"
     },
     {
-      "acceptanceTestCount": 2,
+      "acceptanceTestCount": 4,
       "decisionMode": "manual-decision",
-      "fallback": "Show raw totals and default to conserve posture until the user chooses otherwise.",
+      "fallback": "When totals or posture are missing or stale, keep the posture unset, show the exact step to open or refresh the local resource view, and present only non-executable conservation checks. Do not produce a sortie route.",
       "observableId": "resources.bands",
       "rubricId": "rubric:resource-posture",
       "status": "draft"
     },
     {
-      "acceptanceTestCount": 2,
+      "acceptanceTestCount": 5,
       "decisionMode": "manual-decision",
-      "fallback": "Show measured ASW facts and suggest selecting a target map or mechanic.",
+      "fallback": "Show the measured ASW facts and the exact steps to select a target map or mechanic and inspect the intended fleet. Without a reviewed, versioned target rule, do not emit an ASW readiness verdict.",
       "observableId": "ships.asw-capable-summary",
       "rubricId": "rubric:asw-capability-facts",
       "status": "draft"
     },
     {
-      "acceptanceTestCount": 2,
+      "acceptanceTestCount": 5,
       "decisionMode": "manual-decision",
-      "fallback": "Show category coverage and ask the user which capability to inspect next.",
+      "fallback": "Show category presence and absence, ask which capability and target context the user wants to inspect, and show a data-acquisition step when reviewed route or formula knowledge is unavailable. Do not select a sortie route.",
       "observableId": "capability.surface-air-los-gaps",
       "rubricId": "rubric:surface-air-los-gaps",
       "status": "draft"
     },
     {
-      "acceptanceTestCount": 3,
+      "acceptanceTestCount": 6,
       "decisionMode": "manual-decision",
-      "fallback": "Present EO as optional long-term targets and continue normal-map, practice, or expedition growth.",
+      "fallback": "Present unlocked EO only as optional long-term targets. Show the exact unresolved safety, resource, capability, route, or time check and the local screen needed to obtain it. Alternative normal-map, practice, or expedition items must be presented as checks or data-acquisition steps unless their own current conditions are verified.",
       "observableId": "maps.eo-affordability",
       "rubricId": "rubric:eo-affordability",
       "status": "draft"
     },
     {
-      "acceptanceTestCount": 2,
+      "acceptanceTestCount": 5,
       "decisionMode": "manual-decision",
-      "fallback": "Show evergreen category coverage and hide event-specific readiness conclusions.",
+      "fallback": "Show evergreen category coverage and one explicit manual next step: ask the user to choose a category to inspect. When event participation is selected but no valid overlay exists, state that event-specific guidance is unavailable and return to evergreen preparation without an event-readiness conclusion.",
       "observableId": "capability.breadth-summary",
       "rubricId": "rubric:evergreen-breadth",
       "status": "draft"

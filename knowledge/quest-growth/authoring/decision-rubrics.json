@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestGrowthDecisionRubrics/1alpha",
-  "packetVersion": "2026-08-01.1",
+  "packetVersion": "2026-08-01.2",
   "sourceSnapshot": {
-    "auditedBaseCommit": "ebec343d04d7e067d187c69a4488089154b124b2",
+    "auditedBaseCommit": "55a7151c5b63a40453ffb55eccef49b6cbd5a7f9",
     "checkedAt": "2026-08-01T00:00:00.000Z"
   },
   "rubrics": [
@@ -77,25 +77,29 @@
     {
       "rubricId": "rubric:visible-quest-chain",
       "observableId": "quest.visible-chain",
-      "revision": 1,
+      "revision": 2,
       "status": "draft",
       "decisionMode": "fail-closed-composite",
       "proposal": {
         "automaticOutputs": [
-          "Show only currently visible quests and locally curated prerequisite edges.",
-          "Label every chain as complete, partial, or current-view-only."
+          "Show only quests present in the current live or cached local view and prerequisite edges whose reviewed status permits automatic reasoning.",
+          "Emit separate view-coverage and graph-coverage labels. View coverage must distinguish live-all-tabs, live-partial-tabs, cached-session, and unknown; graph coverage must distinguish reviewed-complete, reviewed-partial, and unresolved."
         ],
         "manualInputs": [
-          "The user opens all quest tabs when a complete current availability check is needed."
+          "The user opens every relevant quest tab in the current session when a complete current-availability check is required."
         ],
         "prohibitedInferences": [
-          "Never invent a hidden prerequisite.",
-          "Never describe a partial curated chain as complete."
+          "Never treat a quest missing from a partial or cached list as completed, unavailable, or not required.",
+          "Never invent a hidden prerequisite or promote an unregistered, disputed, or unresolved edge.",
+          "Never collapse current-view completeness and curated-graph completeness into one complete label."
         ]
       },
-      "fallback": "Show visible unlock quests and state that hidden or unregistered prerequisites may remain.",
+      "fallback": "If a visible unlock quest exists, show it as current-view-only. Otherwise show the exact data-acquisition step to open all quest tabs and refresh the guide. Keep the chain partial and never return an empty plan.",
       "acceptanceTests": [
-        "An unregistered edge produces a partial label rather than an empty plan.",
+        "A quest missing from a partial-tab or cached list remains unknown and is never described as completed.",
+        "A reviewed-complete graph with partial current-view coverage is not labeled complete.",
+        "Live all-tab coverage with an unresolved or unregistered edge is labeled graph-partial.",
+        "No visible quest produces a non-empty data-acquisition step rather than an empty plan.",
         "A cached quest list is visibly distinguished from live all-tab data."
       ],
       "evidence": [
@@ -106,6 +110,10 @@
         {
           "path": "src/common/quest_knowledge.ts",
           "symbol": "curated prerequisite relationships"
+        },
+        {
+          "path": "docs/quest-guide-architecture.md",
+          "symbol": "Goal planner missing-current-list semantics"
         }
       ],
       "review": { "author": "codex", "approver": null, "reviewedAt": null }
@@ -113,26 +121,30 @@
     {
       "rubricId": "rubric:resource-posture",
       "observableId": "resources.bands",
-      "revision": 1,
+      "revision": 2,
       "status": "draft",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
-          "Display current local resource totals, supply blockers, and an optional local trend.",
-          "Use measured or unknown as the only automatic resource-state labels."
+          "Display current local resource totals with an explicit freshness state and an optional trend whose observation window is shown.",
+          "Use measured, unknown, or stale as the only automatic resource-state labels. Do not emit low, medium, or high."
         ],
         "manualInputs": [
-          "The user selects conserve, balanced, or spend posture for the current goal."
+          "The user selects the current goal and a conserve, balanced, or spend posture. The posture expresses preference only and does not prove affordability."
         ],
         "prohibitedInferences": [
-          "Never apply one fixed low, medium, or high threshold to every account.",
-          "Never infer willingness to spend resources from inventory totals."
+          "Never apply an unapproved low, medium, or high threshold.",
+          "Never infer willingness to spend resources from inventory totals.",
+          "Never infer map, EO, sortie, or event affordability from totals or user posture alone.",
+          "Never treat missing or stale totals as zero."
         ]
       },
-      "fallback": "Show raw totals and default to conserve posture until the user chooses otherwise.",
+      "fallback": "When totals or posture are missing or stale, keep the posture unset, show the exact step to open or refresh the local resource view, and present only non-executable conservation checks. Do not produce a sortie route.",
       "acceptanceTests": [
-        "The same resource total can yield different advice under different user postures.",
-        "Missing totals default to conserve and do not yield a sortie route."
+        "The same resource total can produce different preference annotations under different user postures without changing safety or route eligibility.",
+        "Zero, maximum, and exact boundary-looking totals remain measured facts and are not assigned an unapproved band.",
+        "Missing or stale totals remain unknown or stale and never become zero.",
+        "A selected spend posture cannot by itself produce an executable sortie or EO recommendation."
       ],
       "evidence": [
         {
@@ -149,28 +161,38 @@
     {
       "rubricId": "rubric:asw-capability-facts",
       "observableId": "ships.asw-capable-summary",
-      "revision": 1,
+      "revision": 2,
       "status": "draft",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
-          "Show anonymous ship-type, level, ASW-stat, and ASW-equipment category coverage.",
-          "Report zero sonar or zero depth-charge coverage as an inventory gap."
+          "Show anonymous ship-type, level, ASW-stat, compatibility, and ASW-equipment category facts with an explicit freshness state.",
+          "Describe zero sonar or zero depth-charge ownership as category absent, not as a universal readiness gap."
         ],
         "manualInputs": [
-          "The user selects the target map or mechanic before readiness is evaluated."
+          "The user selects the target map or mechanic before any target-specific check is requested.",
+          "The user confirms the intended fleet when local compatibility for that fleet cannot be established."
         ],
         "prohibitedInferences": [
           "Never apply one universal ASW-ready threshold.",
-          "Never equate equipment ownership with fleet compatibility."
+          "Never treat target selection alone as sufficient evidence for readiness.",
+          "Never equate equipment ownership or equipped-category counts with compatibility for the intended fleet.",
+          "Never claim that an absent ASW category makes a route impossible without a reviewed target-specific rule."
         ]
       },
-      "fallback": "Show measured ASW facts and suggest selecting a target map or mechanic.",
+      "fallback": "Show the measured ASW facts and the exact steps to select a target map or mechanic and inspect the intended fleet. Without a reviewed, versioned target rule, do not emit an ASW readiness verdict.",
       "acceptanceTests": [
-        "Zero-category gaps are reported without claiming a specific route is impossible.",
-        "No target map produces facts and a manual prompt, not a readiness verdict."
+        "Zero sonar or depth-charge ownership is labeled category absent without claiming that a specific route is impossible.",
+        "No target map produces facts and a manual selection step, not a readiness verdict.",
+        "A selected target with no reviewed target-specific rule still produces no readiness verdict.",
+        "Owned ASW equipment that is incompatible with the intended fleet cannot produce a ready label.",
+        "Unknown or stale ship, equipment, or fleet data cannot produce a ready label."
       ],
       "evidence": [
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "ships.asw-capable-summary"
+        },
         {
           "path": "src/common/kcs.ts",
           "symbol": "ApiShip ASW state and SlotitemType ASW categories"
@@ -181,26 +203,31 @@
     {
       "rubricId": "rubric:surface-air-los-gaps",
       "observableId": "capability.surface-air-los-gaps",
-      "revision": 1,
+      "revision": 2,
       "status": "draft",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
-          "Report absent ship-type and equipment categories as coverage gaps.",
-          "Keep quantity, quality, and map-specific formula checks separate."
+          "Report ship-type, air-equipment, and LOS-equipment category presence or absence with explicit freshness.",
+          "Keep category presence, quantity, quality, air-power calculation, and map-specific LOS calculation as separate facts or checks."
         ],
         "manualInputs": [
-          "The user selects a target map before quality or LOS sufficiency is evaluated."
+          "The user selects a target map and, when applicable, the route variant, difficulty, and intended air-state goal before target-specific sufficiency is requested."
         ],
         "prohibitedInferences": [
           "Never label non-zero category ownership sufficient for a map.",
-          "Never replace a map-specific LOS or air-power calculation with inventory counts."
+          "Never label an absent category a target-specific gap without a reviewed target rule.",
+          "Never replace a map-specific LOS or air-power calculation with inventory counts.",
+          "Never treat target-map selection alone as evidence that the required route, formula, or threshold is known."
         ]
       },
-      "fallback": "Show category coverage and ask the user which capability to inspect next.",
+      "fallback": "Show category presence and absence, ask which capability and target context the user wants to inspect, and show a data-acquisition step when reviewed route or formula knowledge is unavailable. Do not select a sortie route.",
       "acceptanceTests": [
-        "A non-zero fighter count does not automatically produce air-readiness.",
-        "A missing category can be highlighted without selecting a sortie route."
+        "A non-zero fighter count does not automatically produce air readiness.",
+        "An absent category is shown as a fact and is not automatically declared required for the target.",
+        "A selected map without a reviewed route, air-state target, or LOS formula remains insufficient.",
+        "An exact boundary-looking value cannot be classified while the applicable versioned formula is unavailable.",
+        "Unknown or stale ship and equipment inputs cannot produce a sufficient label."
       ],
       "evidence": [
         {
@@ -213,37 +240,42 @@
     {
       "rubricId": "rubric:eo-affordability",
       "observableId": "maps.eo-affordability",
-      "revision": 1,
+      "revision": 2,
       "status": "draft",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
-          "List unlocked EO from the existing EO catalog.",
-          "Show prior local clear evidence, current safety blockers, and measured resources separately."
+          "List unlocked EO from the existing EO catalog as identity and unlock facts with explicit freshness.",
+          "Show current measured resources, damage, and capability facts separately without producing an affordability conclusion."
         ],
         "manualInputs": [
-          "The user confirms the current goal, resource posture, available time, and willingness to accept repair cost."
+          "The user selects one EO, the current goal, resource posture, available time, and willingness to accept repair cost. These inputs express preference and constraints only."
         ],
         "prohibitedInferences": [
-          "Never claim that a prior clear guarantees current affordability.",
+          "Never infer affordability or safety from EO unlock state.",
+          "Never infer current affordability from a prior clear or historical success.",
+          "Never infer affordability from resource posture alone.",
           "Never recommend all unlocked EO by default.",
-          "Never create an EO route without separately reviewed route knowledge."
+          "Never create an EO route without separately reviewed, versioned, and unexpired route knowledge and current required inputs."
         ]
       },
-      "fallback": "Present EO as optional long-term targets and continue normal-map, practice, or expedition growth.",
+      "fallback": "Present unlocked EO only as optional long-term targets. Show the exact unresolved safety, resource, capability, route, or time check and the local screen needed to obtain it. Alternative normal-map, practice, or expedition items must be presented as checks or data-acquisition steps unless their own current conditions are verified.",
       "acceptanceTests": [
-        "An unlocked EO with unknown safety or resources remains optional and non-executable.",
-        "A previous clear is displayed as evidence, not a guarantee.",
-        "No route knowledge produces no route instructions."
+        "An unlocked EO with unknown or failed safety, resources, capability, route, or time constraints remains optional and non-executable.",
+        "A previous clear, when separately evidenced, is displayed only as historical evidence and never as a guarantee.",
+        "No reviewed route knowledge produces no route instructions.",
+        "A selected resource posture cannot by itself produce an affordability verdict.",
+        "An unlocked EO that is unsuitable for the current fleet produces an explicit blocker and a non-empty alternative check.",
+        "Unknown or stale map unlock data produces a map-screen data-acquisition step rather than an EO list."
       ],
       "evidence": [
         {
-          "path": "src/renderer/src/common/battle-score.ts",
-          "symbol": "eoRates"
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "maps.unlocked-eo/maps.eo-affordability"
         },
         {
-          "path": "knowledge/quest-growth/authoring/evidence-ledger.json",
-          "symbol": "claim:eo-medal-blueprint-loop"
+          "path": "src/renderer/src/common/battle-score.ts",
+          "symbol": "eoRates"
         }
       ],
       "review": { "author": "codex", "approver": null, "reviewedAt": null }
@@ -251,26 +283,31 @@
     {
       "rubricId": "rubric:evergreen-breadth",
       "observableId": "capability.breadth-summary",
-      "revision": 1,
+      "revision": 2,
       "status": "draft",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
-          "Show anonymous ship-type, level-band, equipment-category, and resource coverage facts.",
-          "Label the result evergreen coverage rather than event readiness."
+          "Show anonymous ship-type, level-band, equipment-category, and resource coverage facts with explicit freshness.",
+          "Label the result evergreen coverage and never event readiness."
         ],
         "manualInputs": [
-          "Event-specific requirements come only from a reviewed, versioned, unexpired overlay."
+          "The user selects whether event participation is a current goal and chooses one evergreen capability category to inspect next."
         ],
         "prohibitedInferences": [
           "Never declare event-ready from evergreen breadth alone.",
-          "Never infer event difficulty, routing, locks, or bonuses without an approved overlay."
+          "Never accept user-entered free text as a substitute for a reviewed event overlay.",
+          "Never infer event difficulty, routing, locks, bonuses, or ship preservation requirements without a reviewed, versioned, and unexpired overlay.",
+          "Never rank a category as the most important deficiency without an independently approved evergreen breadth rubric."
         ]
       },
-      "fallback": "Show evergreen category coverage and hide event-specific readiness conclusions.",
+      "fallback": "Show evergreen category coverage and one explicit manual next step: ask the user to choose a category to inspect. When event participation is selected but no valid overlay exists, state that event-specific guidance is unavailable and return to evergreen preparation without an event-readiness conclusion.",
       "acceptanceTests": [
-        "No event overlay produces no event-ready label.",
-        "A broad fleet can still be shown as having unknown event suitability."
+        "No event overlay produces no event-ready label and a non-empty evergreen manual-check outcome.",
+        "An expired, malformed, or unreviewed overlay cannot produce event-specific advice.",
+        "A broad fleet can still be shown as having unknown event suitability.",
+        "Selecting an event goal cannot bypass the overlay requirement.",
+        "Without an approved breadth rubric, no category is automatically called the highest-priority deficiency."
       ],
       "evidence": [
         {
