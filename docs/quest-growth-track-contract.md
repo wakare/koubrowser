@@ -2,9 +2,9 @@
 
 最終更新日: 2026-08-01
 
-Task ID: `QGROWTH-R1_Evidence_Ledger_and_Milestone_Contract`
+Task ID: `QGROWTH-R2_Pure_Fallback_Evaluator`
 
-Status: `DECISION_RUBRICS_REVISED_INDEPENDENT_APPROVAL_PENDING_RUNTIME_BLOCKED`
+Status: `OWNER_APPROVED_PURE_FALLBACK_EVALUATOR_RUNTIME_BLOCKED`
 
 ## モデル境界
 
@@ -24,7 +24,8 @@ GrowthMilestone から QuestRouteUnit への参照は一方向とする。`manua
 
 ## Wave 1 の固定境界
 
-本 Wave は authoring と audit artifact だけを作る。
+Wave 1 は authoring と audit artifact を固定した。現 Wave は、それらを入力契約とする pure
+fallback evaluator までを許可する。
 
 ```text
 evidence-ledger.json ──────┐
@@ -35,13 +36,14 @@ synthetic fixtures ────────┘          │
                                       └─ conflict-and-gap-report.json
 ```
 
-次は生成しない。
+次は生成・接続しない。
 
 - production runtime bundle
-- account snapshot evaluator
+- real account snapshot adapter
 - renderer UI
 - network fetcher
 - real-account fixture
+- concrete route output
 
 ## Evidence gate
 
@@ -74,14 +76,28 @@ claim は URL、title、site、language、分類、可読性、独立性、suppo
 - author / approver 分離
 
 `approved` は approver と reviewedAt を必須とし、author と approver が同じ場合は validation を
-失敗させる。現行8件はすべて `draft` である。29 observable の local source は監査済みだが、
-complete 19、partial 8、unavailable 2 であり、監査完了は runtime 利用可能を意味しない。
+失敗させる。現行8件と対応する8 rubric の現在の意味は project owner が 2026-08-01 に承認した。
+この承認は pure fallback evaluator の実装だけを許可し、runtime route、account adapter、UI 接続、
+または route eligibility を承認しない。29 observable の local source は監査済みだが、complete 19、
+partial 8、unavailable 2 であり、監査・意味承認の完了は runtime 利用可能を意味しない。
 
 exact commit `55a7151c5b63a40453ffb55eccef49b6cbd5a7f9` に対する external advisory review は、
 2 rubric を authoring/future restricted fallback として `APPROVE`、6 rubric を `REVISE`、runtime
-candidate を0件と判定した。6件は revision 2 へ修正済みだが、この advisory は repository の
-approver または Owner authorization を代替しない。全8件は独立 approver が確定するまで `draft`
-かつ `fallback-only` のままとする。
+candidate を0件と判定した。6件は revision 2 へ修正済みで、その後 project owner が全8件の現在の
+意味を承認した。observable の `partial` / `unavailable` と `fallback-only` / `blocked` は変更せず、
+runtime candidate は0件のままとする。
+
+## Pure fallback evaluator gate
+
+`src/common/quest_growth_evaluator.ts` は I/O、clock、local account state、renderer、Electron、network
+に依存しない決定的な関数とする。許可する結果は次の2種類だけである。
+
+- `manual-check`: ユーザーが確認・選択する非実行チェック
+- `data-acquisition`: 不足・古い・利用不能な入力を確認する手順
+
+結果型には executable suggestion、`routeId`、route steps、sortie/map recommendation を設けない。
+rubric と observable の参照は contract trace であり route lineage ではない。unknown、stale、invalid、
+unavailable は fail closed とし、invalid input は evaluator boundary で拒否する。
 
 ## Unknown と fallback
 
@@ -142,7 +158,9 @@ digest を記録する。
 compiler version、input digest、output digest を固定する。
 
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
-本データで上書きしない。`QUEST_STRATEGY_LINEAGE_GATE_UNRESOLVED` として downstream stop に残す。
+本データで上書きしない。route lineage は project owner の判断により延期し、
+`QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT` として downstream stop に残す。延期中は pure
+evaluator、adapter、UI のいずれからも具体的 route を出力してはならない。
 
 ## Commands
 

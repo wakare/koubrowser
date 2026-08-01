@@ -1,8 +1,8 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/3",
+  "compilerVersion": "quest-growth-authoring-compiler/4",
   "output": {
-    "approvedDecisionRubricCount": 0,
-    "approvedMilestoneCount": 0,
+    "approvedDecisionRubricCount": 8,
+    "approvedMilestoneCount": 8,
     "claimCount": 9,
     "decisionRubricCount": 8,
     "eligibleForRuntimeCount": 0,
@@ -15,14 +15,14 @@
     "unavailableObservableCount": 2
   },
   "runtimePromotion": {
-    "reason": "AUTHORING_AND_OBSERVABILITY_AUDIT_ONLY",
+    "reason": "PURE_FALLBACK_EVALUATOR_ONLY_NO_ROUTE_OUTPUT",
     "status": "blocked"
   },
   "schemaVersion": 1,
   "source": {
     "auditedBaseCommit": "33abf8ff2534deaa7ce12007c001e1e1ea18837f",
     "checkedAt": "2026-08-01T00:00:00.000Z",
-    "decisionRubricsDigest": "sha256:0fba826f50280a03f28c8c8296a15f63a8f1b64ee874697dcf8ff592baaa7dbb",
+    "decisionRubricsDigest": "sha256:2e833de8a3e4e0b6a9182bd065cc42db0c69c6cd6ccde1fbcf423e41f079726e",
     "evidenceLedgerDigest": "sha256:9bf921d02429a5bef0126df39bd21042141041af8e25b3a4ec57cd871ff7f948",
     "fixtureDigests": {
       "asw-missing.json": "sha256:080e13b003cb6be8ecd9e844fc1316fd4d34b56c46b6cdb0dc25a665e5f8f1e2",
@@ -32,8 +32,8 @@
       "resource-low.json": "sha256:699822f69cf694afc12d16f76405a48be2d630da31ffeac2feec3b0294bce6f1",
       "unknown-state.json": "sha256:fa9ea91a843c0153a5ac237ab0119d040a6330604a0a08c2cba117937671eeec"
     },
-    "milestoneCandidatesDigest": "sha256:ebf0ba991b8203515fbdc16161b3330ffaf326b06cc5fd5397b97116d0359c20",
-    "observabilityAuditDigest": "sha256:0993b39d27cc537ffc54fe90bd3d3dacd07c9d9b0f7d342363023d0c91a5acee",
+    "milestoneCandidatesDigest": "sha256:16da5c915689307c201362f612f0634e838f4d481086487c86deb9d18a4e6c33",
+    "observabilityAuditDigest": "sha256:83f4241a7f1c6c7db2799848d84851f6ae7e3657b949ca93648fe1b3c4f66096",
     "observabilityAuditedBaseCommit": "148e2022a941cd9b11b58b60ad201ca4b138307f",
     "observabilityCheckedAt": "2026-08-01T00:00:00.000Z"
   }

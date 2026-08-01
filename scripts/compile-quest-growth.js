@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/3'
+const CompilerVersion = 'quest-growth-authoring-compiler/4'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -835,13 +835,16 @@ function buildQuestGrowthArtifacts(root) {
     },
     runtimePromotion: {
       status: 'blocked',
-      reason: 'AUTHORING_AND_OBSERVABILITY_AUDIT_ONLY'
+      reason: 'PURE_FALLBACK_EVALUATOR_ONLY_NO_ROUTE_OUTPUT'
     }
   }
+  const independentApprovalPending =
+    [...catalog.milestones.values()].some((item) => item.status !== 'approved') ||
+    [...decisionRubrics.rubrics.values()].some((item) => item.status !== 'approved')
   const conflictAndGapReport = {
     schemaVersion: 1,
     compilerVersion: CompilerVersion,
-    runtimePromotionStatus: eligibleForRuntimeCount > 0 ? 'review-required' : 'blocked',
+    runtimePromotionStatus: 'blocked',
     claimAudits: claims,
     observableAudits: [...observability.observables.values()].map((observable) => ({
       observableId: observable.id,
@@ -863,7 +866,7 @@ function buildQuestGrowthArtifacts(root) {
     milestoneGaps,
     globalStops: [
       'NO_RUNTIME_BUNDLE_IN_WAVE_1',
-      'INDEPENDENT_APPROVER_REQUIRED',
+      ...(independentApprovalPending ? ['INDEPENDENT_APPROVER_REQUIRED'] : []),
       ...([...observability.observables.values()].some(
         (item) => item.coverage !== 'complete' || item.runtimeUse !== 'candidate'
       )
@@ -872,7 +875,7 @@ function buildQuestGrowthArtifacts(root) {
       ...([...decisionRubrics.rubrics.values()].some((item) => item.status !== 'approved')
         ? ['DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED']
         : []),
-      'QUEST_STRATEGY_LINEAGE_GATE_UNRESOLVED'
+      'QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT'
     ]
   }
   return {
@@ -904,11 +907,12 @@ function main() {
   console.log(
     `Quest growth authoring ${check ? 'verified' : 'compiled'}: ` +
       `${output.sourceCount} sources, ${output.claimCount} claims, ` +
-      `${output.milestoneCount} draft milestones, ${output.fixtureCount} fixtures, ` +
+      `${output.approvedMilestoneCount}/${output.milestoneCount} approved milestones, ` +
+      `${output.fixtureCount} fixtures, ` +
       `${output.observableCount} observables ` +
       `(${output.fullyObservedCount} complete, ${output.partiallyObservedCount} partial, ` +
       `${output.unavailableObservableCount} unavailable), ` +
-      `${output.decisionRubricCount} draft rubrics, ` +
+      `${output.approvedDecisionRubricCount}/${output.decisionRubricCount} approved rubrics, ` +
       `${output.eligibleForRuntimeCount} runtime-eligible`
   )
 }

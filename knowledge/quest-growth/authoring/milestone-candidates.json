@@ -1,6 +1,6 @@
 {
   "authoringSchema": "QuestGrowthMilestones/1alpha",
-  "catalogVersion": "2026-08-01.1",
+  "catalogVersion": "2026-08-01.2",
   "sourceSnapshot": {
     "auditedBaseCommit": "33abf8ff2534deaa7ce12007c001e1e1ea18837f",
     "checkedAt": "2026-08-01T00:00:00.000Z"
@@ -9,7 +9,7 @@
     {
       "id": "growth:safety-executable",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "phase": "safety",
       "goal": "安全に実行できる状態を先に作る",
       "rationale": "補給不足、損傷、入渠、素材誤使用を無視した推薦は、成長より先に損失を増やす。",
@@ -56,14 +56,14 @@
       },
       "review": {
         "author": "codex-with-web-pro-advisory",
-        "approver": null,
-        "reviewedAt": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
       }
     },
     {
       "id": "growth:system-fleet-unlock",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "phase": "system-unlock",
       "goal": "艦隊枠と遠征の選択肢を増やす",
       "rationale": "追加艦隊と遠征の開放は、自然回復だけに依存しない資源循環の前提になる。",
@@ -111,14 +111,14 @@
       },
       "review": {
         "author": "codex-with-web-pro-advisory",
-        "approver": null,
-        "reviewedAt": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
       }
     },
     {
       "id": "growth:experience-modernization-loop",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "phase": "experience-loop",
       "goal": "低修理負担の経験・改造・近代化ループを作る",
       "rationale": "演習で複数艦種を育て、改造時期と近代化素材の投入を合わせると、初期の攻略負担を抑えやすい。",
@@ -174,14 +174,14 @@
       },
       "review": {
         "author": "codex-with-web-pro-advisory",
-        "approver": null,
-        "reviewedAt": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
       }
     },
     {
       "id": "growth:resource-periodic-loop",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "phase": "resource-loop",
       "goal": "成長行動が資源を一方的に減らさない循環を作る",
       "rationale": "遠征と有益な周期任務を現在の不足資源に合わせ、任務欄を埋めること自体を目的にしない。",
@@ -236,14 +236,14 @@
       },
       "review": {
         "author": "codex-with-web-pro-advisory",
-        "approver": null,
-        "reviewedAt": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
       }
     },
     {
       "id": "growth:anti-submarine-foundation",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "phase": "capability",
       "goal": "最初の専門能力として基礎対潜を作る",
       "rationale": "軽巡・駆逐・海防と対潜装備の層は、1-5、周期任務、後続海域や活動の潜水艦対策につながる。",
@@ -318,14 +318,14 @@
       },
       "review": {
         "author": "codex-with-web-pro-advisory",
-        "approver": null,
-        "reviewedAt": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
       }
     },
     {
       "id": "growth:surface-air-los-foundation",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "phase": "capability",
       "goal": "水上戦、制空、索敵と艦種の基礎幅を作る",
       "rationale": "少数の高練度艦だけでなく、空母、軽巡、駆逐、偵察機、電探などの能力カテゴリが通常海域と活動の選択肢を広げる。",
@@ -394,14 +394,14 @@
       },
       "review": {
         "author": "codex-with-web-pro-advisory",
-        "approver": null,
-        "reviewedAt": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
       }
     },
     {
       "id": "growth:normal-map-eo-blueprint-loop",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "phase": "normal-map-and-eo",
       "goal": "通常海域進行を勲章と改装設計図の循環へつなげる",
       "rationale": "攻略可能な EO を段階的に増やすと、勲章と設計図を継続取得できるが、全 EO 強制は資源負担を無視する。",
@@ -458,14 +458,14 @@
       },
       "review": {
         "author": "codex-with-web-pro-advisory",
-        "approver": null,
-        "reviewedAt": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
       }
     },
     {
       "id": "growth:event-readiness-overlay",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "phase": "event-readiness",
       "goal": "活動期だけ成長優先度を短期的に組み替える",
       "rationale": "活動参加は艦種、装備、資源の幅を要求するが、個別海域の札、特効、難易度は短命な情報であり恒久ルートへ混ぜられない。",
@@ -521,8 +521,8 @@
       },
       "review": {
         "author": "codex-with-web-pro-advisory",
-        "approver": null,
-        "reviewedAt": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
       }
     }
   ]

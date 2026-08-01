@@ -49,24 +49,41 @@ describe('quest growth authoring contract', () => {
     )
 
     expect(output).toContain(
-      '14 sources, 9 claims, 8 draft milestones, 6 fixtures, ' +
+      '14 sources, 9 claims, 8/8 approved milestones, 6 fixtures, ' +
         '29 observables (19 complete, 8 partial, 2 unavailable), ' +
-        '8 draft rubrics, 0 runtime-eligible'
+        '8/8 approved rubrics, 0 runtime-eligible'
     )
   })
 
   it('keeps every candidate blocked after the completed audit exposes observability gaps', () => {
+    const manifest = read<{
+      output: {
+        approvedMilestoneCount: number
+        approvedDecisionRubricCount: number
+        eligibleForRuntimeCount: number
+      }
+      runtimePromotion: { status: string; reason: string }
+    }>('generated', 'source-manifest.json')
     const report = read<{
       runtimePromotionStatus: string
       milestoneGaps: { milestoneId: string; reasonCodes: string[] }[]
       globalStops: string[]
     }>('generated', 'conflict-and-gap-report.json')
 
+    expect(manifest.output).toMatchObject({
+      approvedMilestoneCount: 8,
+      approvedDecisionRubricCount: 8,
+      eligibleForRuntimeCount: 0
+    })
+    expect(manifest.runtimePromotion).toEqual({
+      status: 'blocked',
+      reason: 'PURE_FALLBACK_EVALUATOR_ONLY_NO_ROUTE_OUTPUT'
+    })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
     expect(
-      report.milestoneGaps.every((gap) =>
-        gap.reasonCodes.includes('MILESTONE_NOT_INDEPENDENTLY_APPROVED')
+      report.milestoneGaps.every(
+        (gap) => !gap.reasonCodes.includes('MILESTONE_NOT_INDEPENDENTLY_APPROVED')
       )
     ).toBe(true)
     expect(
@@ -81,6 +98,8 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_RUNTIME_BUNDLE_IN_WAVE_1')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
+    expect(report.globalStops).toContain('QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT')
+    expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
 
@@ -145,7 +164,7 @@ describe('quest growth authoring contract', () => {
     expect(manifest.source.observabilityAuditDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
   })
 
-  it('provides one independently reviewable draft rubric for every partial observable', () => {
+  it('provides one independently approved rubric for every partial observable', () => {
     const audit = read<{
       observables: { id: string; coverage: string }[]
     }>('authoring', 'observability-map.json')
@@ -174,8 +193,8 @@ describe('quest growth authoring contract', () => {
 
     expect(validated.rubrics.size).toBe(8)
     expect(new Set(validated.rubrics.keys())).toEqual(partialIds)
-    expect(packet.rubrics.every((rubric) => rubric.status === 'draft')).toBe(true)
-    expect(packet.rubrics.every((rubric) => rubric.review.approver === null)).toBe(true)
+    expect(packet.rubrics.every((rubric) => rubric.status === 'approved')).toBe(true)
+    expect(packet.rubrics.every((rubric) => rubric.review.approver === 'project-owner')).toBe(true)
     expect(packet.rubrics.every((rubric) => rubric.fallback.trim())).toBe(true)
     expect(packet.rubrics.every((rubric) => rubric.acceptanceTests.length >= 2)).toBe(true)
 
@@ -235,7 +254,7 @@ describe('quest growth authoring contract', () => {
     expect(evergreenBreadth.acceptanceTests).toHaveLength(5)
 
     const report = read<{ globalStops: string[] }>('generated', 'conflict-and-gap-report.json')
-    expect(report.globalStops).toContain('DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED')
+    expect(report.globalStops).not.toContain('DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED')
   })
 
   it('does not count prompt-only NGA observations as independent readable evidence', () => {
@@ -260,6 +279,8 @@ describe('quest growth authoring contract', () => {
     const catalog = validateMilestoneCatalog(read('authoring', 'milestone-candidates.json'), ledger)
 
     for (const milestone of catalog.milestones.values()) {
+      expect((milestone as { status: string }).status).toBe('approved')
+      expect((milestone as { review: { approver: string } }).review.approver).toBe('project-owner')
       expect(
         (milestone as { guidance: { fallback: string } }).guidance.fallback.trim().length
       ).toBeGreaterThan(0)

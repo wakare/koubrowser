@@ -77,7 +77,7 @@
       "readableIndependentSourceIds": []
     }
   ],
-  "compilerVersion": "quest-growth-authoring-compiler/3",
+  "compilerVersion": "quest-growth-authoring-compiler/4",
   "decisionRubricAudits": [
     {
       "acceptanceTestCount": 2,
@@ -85,7 +85,7 @@
       "fallback": "Show the material-safety checklist and omit ship-specific consumption advice.",
       "observableId": "modernization.material-summary",
       "rubricId": "rubric:modernization-material-safety",
-      "status": "draft"
+      "status": "approved"
     },
     {
       "acceptanceTestCount": 3,
@@ -93,7 +93,7 @@
       "fallback": "Keep executable sortie advice blocked and show the unresolved safety checks.",
       "observableId": "fleet.safety-state",
       "rubricId": "rubric:fleet-safety-gate",
-      "status": "draft"
+      "status": "approved"
     },
     {
       "acceptanceTestCount": 5,
@@ -101,7 +101,7 @@
       "fallback": "If a visible unlock quest exists, show it as current-view-only. Otherwise show the exact data-acquisition step to open all quest tabs and refresh the guide. Keep the chain partial and never return an empty plan.",
       "observableId": "quest.visible-chain",
       "rubricId": "rubric:visible-quest-chain",
-      "status": "draft"
+      "status": "approved"
     },
     {
       "acceptanceTestCount": 4,
@@ -109,7 +109,7 @@
       "fallback": "When totals or posture are missing or stale, keep the posture unset, show the exact step to open or refresh the local resource view, and present only non-executable conservation checks. Do not produce a sortie route.",
       "observableId": "resources.bands",
       "rubricId": "rubric:resource-posture",
-      "status": "draft"
+      "status": "approved"
     },
     {
       "acceptanceTestCount": 5,
@@ -117,7 +117,7 @@
       "fallback": "Show the measured ASW facts and the exact steps to select a target map or mechanic and inspect the intended fleet. Without a reviewed, versioned target rule, do not emit an ASW readiness verdict.",
       "observableId": "ships.asw-capable-summary",
       "rubricId": "rubric:asw-capability-facts",
-      "status": "draft"
+      "status": "approved"
     },
     {
       "acceptanceTestCount": 5,
@@ -125,7 +125,7 @@
       "fallback": "Show category presence and absence, ask which capability and target context the user wants to inspect, and show a data-acquisition step when reviewed route or formula knowledge is unavailable. Do not select a sortie route.",
       "observableId": "capability.surface-air-los-gaps",
       "rubricId": "rubric:surface-air-los-gaps",
-      "status": "draft"
+      "status": "approved"
     },
     {
       "acceptanceTestCount": 6,
@@ -133,7 +133,7 @@
       "fallback": "Present unlocked EO only as optional long-term targets. Show the exact unresolved safety, resource, capability, route, or time check and the local screen needed to obtain it. Alternative normal-map, practice, or expedition items must be presented as checks or data-acquisition steps unless their own current conditions are verified.",
       "observableId": "maps.eo-affordability",
       "rubricId": "rubric:eo-affordability",
-      "status": "draft"
+      "status": "approved"
     },
     {
       "acceptanceTestCount": 5,
@@ -141,84 +141,65 @@
       "fallback": "Show evergreen category coverage and one explicit manual next step: ask the user to choose a category to inspect. When event participation is selected but no valid overlay exists, state that event-specific guidance is unavailable and return to evergreen preparation without an event-readiness conclusion.",
       "observableId": "capability.breadth-summary",
       "rubricId": "rubric:evergreen-breadth",
-      "status": "draft"
+      "status": "approved"
     }
   ],
   "globalStops": [
     "NO_RUNTIME_BUNDLE_IN_WAVE_1",
-    "INDEPENDENT_APPROVER_REQUIRED",
     "OBSERVABILITY_GAPS_REMAIN",
-    "DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED",
-    "QUEST_STRATEGY_LINEAGE_GATE_UNRESOLVED"
+    "QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT"
   ],
   "milestoneGaps": [
     {
       "milestoneId": "growth:safety-executable",
       "reasonCodes": [
-        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
         "OBSERVABLE_PARTIAL:modernization.material-summary",
-        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:modernization.material-summary",
-        "OBSERVABLE_PARTIAL:fleet.safety-state",
-        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:fleet.safety-state"
+        "OBSERVABLE_PARTIAL:fleet.safety-state"
       ]
     },
     {
       "milestoneId": "growth:system-fleet-unlock",
       "reasonCodes": [
-        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:quest.visible-chain",
-        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:quest.visible-chain"
+        "OBSERVABLE_PARTIAL:quest.visible-chain"
       ]
     },
     {
       "milestoneId": "growth:experience-modernization-loop",
       "reasonCodes": [
-        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
         "OBSERVABLE_UNAVAILABLE:practice.available-count"
       ]
     },
     {
       "milestoneId": "growth:resource-periodic-loop",
       "reasonCodes": [
-        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:resources.bands",
-        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:resources.bands"
+        "OBSERVABLE_PARTIAL:resources.bands"
       ]
     },
     {
       "milestoneId": "growth:anti-submarine-foundation",
       "reasonCodes": [
-        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:ships.asw-capable-summary",
-        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:ships.asw-capable-summary"
+        "OBSERVABLE_PARTIAL:ships.asw-capable-summary"
       ]
     },
     {
       "milestoneId": "growth:surface-air-los-foundation",
       "reasonCodes": [
-        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:capability.surface-air-los-gaps",
-        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:capability.surface-air-los-gaps"
+        "OBSERVABLE_PARTIAL:capability.surface-air-los-gaps"
       ]
     },
     {
       "milestoneId": "growth:normal-map-eo-blueprint-loop",
       "reasonCodes": [
-        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:maps.eo-affordability",
-        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:maps.eo-affordability"
+        "OBSERVABLE_PARTIAL:maps.eo-affordability"
       ]
     },
     {
       "milestoneId": "growth:event-readiness-overlay",
       "reasonCodes": [
-        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
         "OBSERVABLE_UNAVAILABLE:event.overlay-status",
         "OBSERVABLE_RUNTIME_BLOCKED:event.overlay-status",
         "OBSERVABLE_PARTIAL:capability.breadth-summary",
-        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:capability.breadth-summary",
-        "OBSERVABLE_PARTIAL:resources.bands",
-        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:resources.bands"
+        "OBSERVABLE_PARTIAL:resources.bands"
       ]
     }
   ],
@@ -600,7 +581,7 @@
       "coverage": "partial",
       "freshness": "release-bound",
       "limitations": [
-        "No independently approved evergreen breadth rubric exists yet."
+        "The approved rubric permits evergreen category coverage only; no event overlay or automatic priority ranking exists."
       ],
       "observableId": "capability.breadth-summary",
       "origins": [

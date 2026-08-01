@@ -612,7 +612,9 @@
           "role": "Audited component observables"
         }
       ],
-      "limitations": ["No independently approved evergreen breadth rubric exists yet."],
+      "limitations": [
+        "The approved rubric permits evergreen category coverage only; no event overlay or automatic priority ranking exists."
+      ],
       "unknownFallback": "Show category coverage only and avoid declaring event readiness."
     }
   ]

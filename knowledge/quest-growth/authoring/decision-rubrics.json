@@ -1,6 +1,6 @@
 {
   "authoringSchema": "QuestGrowthDecisionRubrics/1alpha",
-  "packetVersion": "2026-08-01.2",
+  "packetVersion": "2026-08-01.3",
   "sourceSnapshot": {
     "auditedBaseCommit": "55a7151c5b63a40453ffb55eccef49b6cbd5a7f9",
     "checkedAt": "2026-08-01T00:00:00.000Z"
@@ -10,7 +10,7 @@
       "rubricId": "rubric:modernization-material-safety",
       "observableId": "modernization.material-summary",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
@@ -35,13 +35,17 @@
           "symbol": "modernization.material-summary"
         }
       ],
-      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+      "review": {
+        "author": "codex",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
+      }
     },
     {
       "rubricId": "rubric:fleet-safety-gate",
       "observableId": "fleet.safety-state",
       "revision": 1,
-      "status": "draft",
+      "status": "approved",
       "decisionMode": "fail-closed-composite",
       "proposal": {
         "automaticOutputs": [
@@ -72,13 +76,17 @@
           "symbol": "existing fleet warnings"
         }
       ],
-      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+      "review": {
+        "author": "codex",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
+      }
     },
     {
       "rubricId": "rubric:visible-quest-chain",
       "observableId": "quest.visible-chain",
       "revision": 2,
-      "status": "draft",
+      "status": "approved",
       "decisionMode": "fail-closed-composite",
       "proposal": {
         "automaticOutputs": [
@@ -116,13 +124,17 @@
           "symbol": "Goal planner missing-current-list semantics"
         }
       ],
-      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+      "review": {
+        "author": "codex",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
+      }
     },
     {
       "rubricId": "rubric:resource-posture",
       "observableId": "resources.bands",
       "revision": 2,
-      "status": "draft",
+      "status": "approved",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
@@ -156,13 +168,17 @@
           "symbol": "PortRecord"
         }
       ],
-      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+      "review": {
+        "author": "codex",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
+      }
     },
     {
       "rubricId": "rubric:asw-capability-facts",
       "observableId": "ships.asw-capable-summary",
       "revision": 2,
-      "status": "draft",
+      "status": "approved",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
@@ -198,13 +214,17 @@
           "symbol": "ApiShip ASW state and SlotitemType ASW categories"
         }
       ],
-      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+      "review": {
+        "author": "codex",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
+      }
     },
     {
       "rubricId": "rubric:surface-air-los-gaps",
       "observableId": "capability.surface-air-los-gaps",
       "revision": 2,
-      "status": "draft",
+      "status": "approved",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
@@ -235,13 +255,17 @@
           "symbol": "capability.surface-air-los-gaps"
         }
       ],
-      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+      "review": {
+        "author": "codex",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
+      }
     },
     {
       "rubricId": "rubric:eo-affordability",
       "observableId": "maps.eo-affordability",
       "revision": 2,
-      "status": "draft",
+      "status": "approved",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
@@ -278,13 +302,17 @@
           "symbol": "eoRates"
         }
       ],
-      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+      "review": {
+        "author": "codex",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
+      }
     },
     {
       "rubricId": "rubric:evergreen-breadth",
       "observableId": "capability.breadth-summary",
       "revision": 2,
-      "status": "draft",
+      "status": "approved",
       "decisionMode": "manual-decision",
       "proposal": {
         "automaticOutputs": [
@@ -315,7 +343,11 @@
           "symbol": "capability.breadth-summary"
         }
       ],
-      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+      "review": {
+        "author": "codex",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T04:16:06.000Z"
+      }
     }
   ]
 }
