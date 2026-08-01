@@ -478,22 +478,27 @@
     },
     {
       "id": "maps.unlocked-eo",
-      "coverage": "partial",
+      "coverage": "complete",
       "origins": ["renderer-readonly-state", "bundled-knowledge"],
       "freshness": "release-bound",
-      "runtimeUse": "fallback-only",
-      "derivation": "Intersect unlocked map IDs with a versioned bundled EO catalog.",
+      "runtimeUse": "candidate",
+      "derivation": "Intersect unlocked map IDs with the existing Git-versioned EO catalog used by the battle-score feature.",
       "evidence": [
         {
           "path": "src/common/kcs.ts",
           "symbol": "SvData.mapinfos and MstMapinfo.api_maparea_id/api_no",
           "role": "Existing map identity and unlock state"
+        },
+        {
+          "path": "src/renderer/src/common/battle-score.ts",
+          "symbol": "eoRates",
+          "role": "Existing bundled EO map catalog"
         }
       ],
       "limitations": [
-        "A reviewed bundled EO identity catalog has not yet been authored for this module."
+        "EO identity and unlock state do not establish affordability or a safe route."
       ],
-      "unknownFallback": "List unlocked maps without labeling EO eligibility."
+      "unknownFallback": "Ask the user to open the sortie map screen before listing unlocked EO."
     },
     {
       "id": "maps.eo-affordability",

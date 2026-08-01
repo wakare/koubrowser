@@ -1,0 +1,284 @@
+{
+  "authoringSchema": "QuestGrowthDecisionRubrics/1alpha",
+  "packetVersion": "2026-08-01.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "ebec343d04d7e067d187c69a4488089154b124b2",
+    "checkedAt": "2026-08-01T00:00:00.000Z"
+  },
+  "rubrics": [
+    {
+      "rubricId": "rubric:modernization-material-safety",
+      "observableId": "modernization.material-summary",
+      "revision": 1,
+      "status": "draft",
+      "decisionMode": "manual-decision",
+      "proposal": {
+        "automaticOutputs": [
+          "Display anonymous counts of unlocked ships and their visible modernization yields."
+        ],
+        "manualInputs": [
+          "The user confirms that each selected material ship is not rare, unique, quest-required, or intentionally retained."
+        ],
+        "prohibitedInferences": [
+          "Never label a ship safe to consume from lock state, duplicate count, or modernization yield alone.",
+          "Never select or rank material ships automatically."
+        ]
+      },
+      "fallback": "Show the material-safety checklist and omit ship-specific consumption advice.",
+      "acceptanceTests": [
+        "An unlocked duplicate is never described as safe to consume.",
+        "Unknown inventory state still produces a non-empty checklist."
+      ],
+      "evidence": [
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "modernization.material-summary"
+        }
+      ],
+      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+    },
+    {
+      "rubricId": "rubric:fleet-safety-gate",
+      "observableId": "fleet.safety-state",
+      "revision": 1,
+      "status": "draft",
+      "decisionMode": "fail-closed-composite",
+      "proposal": {
+        "automaticOutputs": [
+          "Block sortie guidance on heavy damage, missing supply, or unavailable repair-state inputs.",
+          "Report damage, supply, and repair facts separately."
+        ],
+        "manualInputs": [
+          "Material safety is confirmed only when the recommendation involves modernization."
+        ],
+        "prohibitedInferences": [
+          "Never use a modernization-material check to declare a sortie fleet safe.",
+          "Never collapse an unknown component into a healthy state."
+        ]
+      },
+      "fallback": "Keep executable sortie advice blocked and show the unresolved safety checks.",
+      "acceptanceTests": [
+        "Any heavy-damage signal blocks executable sortie advice.",
+        "Unknown damage or supply state cannot produce a safe label.",
+        "A non-modernization recommendation does not require material selection."
+      ],
+      "evidence": [
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "fleet.safety-state"
+        },
+        {
+          "path": "src/renderer/src/components/TitleBar.vue",
+          "symbol": "existing fleet warnings"
+        }
+      ],
+      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+    },
+    {
+      "rubricId": "rubric:visible-quest-chain",
+      "observableId": "quest.visible-chain",
+      "revision": 1,
+      "status": "draft",
+      "decisionMode": "fail-closed-composite",
+      "proposal": {
+        "automaticOutputs": [
+          "Show only currently visible quests and locally curated prerequisite edges.",
+          "Label every chain as complete, partial, or current-view-only."
+        ],
+        "manualInputs": [
+          "The user opens all quest tabs when a complete current availability check is needed."
+        ],
+        "prohibitedInferences": [
+          "Never invent a hidden prerequisite.",
+          "Never describe a partial curated chain as complete."
+        ]
+      },
+      "fallback": "Show visible unlock quests and state that hidden or unregistered prerequisites may remain.",
+      "acceptanceTests": [
+        "An unregistered edge produces a partial label rather than an empty plan.",
+        "A cached quest list is visibly distinguished from live all-tab data."
+      ],
+      "evidence": [
+        {
+          "path": "src/renderer/src/components/QuestGuide.vue",
+          "symbol": "sourceQuestList and goal plan"
+        },
+        {
+          "path": "src/common/quest_knowledge.ts",
+          "symbol": "curated prerequisite relationships"
+        }
+      ],
+      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+    },
+    {
+      "rubricId": "rubric:resource-posture",
+      "observableId": "resources.bands",
+      "revision": 1,
+      "status": "draft",
+      "decisionMode": "manual-decision",
+      "proposal": {
+        "automaticOutputs": [
+          "Display current local resource totals, supply blockers, and an optional local trend.",
+          "Use measured or unknown as the only automatic resource-state labels."
+        ],
+        "manualInputs": [
+          "The user selects conserve, balanced, or spend posture for the current goal."
+        ],
+        "prohibitedInferences": [
+          "Never apply one fixed low, medium, or high threshold to every account.",
+          "Never infer willingness to spend resources from inventory totals."
+        ]
+      },
+      "fallback": "Show raw totals and default to conserve posture until the user chooses otherwise.",
+      "acceptanceTests": [
+        "The same resource total can yield different advice under different user postures.",
+        "Missing totals default to conserve and do not yield a sortie route."
+      ],
+      "evidence": [
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "resources.bands"
+        },
+        {
+          "path": "src/common/record.ts",
+          "symbol": "PortRecord"
+        }
+      ],
+      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+    },
+    {
+      "rubricId": "rubric:asw-capability-facts",
+      "observableId": "ships.asw-capable-summary",
+      "revision": 1,
+      "status": "draft",
+      "decisionMode": "manual-decision",
+      "proposal": {
+        "automaticOutputs": [
+          "Show anonymous ship-type, level, ASW-stat, and ASW-equipment category coverage.",
+          "Report zero sonar or zero depth-charge coverage as an inventory gap."
+        ],
+        "manualInputs": [
+          "The user selects the target map or mechanic before readiness is evaluated."
+        ],
+        "prohibitedInferences": [
+          "Never apply one universal ASW-ready threshold.",
+          "Never equate equipment ownership with fleet compatibility."
+        ]
+      },
+      "fallback": "Show measured ASW facts and suggest selecting a target map or mechanic.",
+      "acceptanceTests": [
+        "Zero-category gaps are reported without claiming a specific route is impossible.",
+        "No target map produces facts and a manual prompt, not a readiness verdict."
+      ],
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiShip ASW state and SlotitemType ASW categories"
+        }
+      ],
+      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+    },
+    {
+      "rubricId": "rubric:surface-air-los-gaps",
+      "observableId": "capability.surface-air-los-gaps",
+      "revision": 1,
+      "status": "draft",
+      "decisionMode": "manual-decision",
+      "proposal": {
+        "automaticOutputs": [
+          "Report absent ship-type and equipment categories as coverage gaps.",
+          "Keep quantity, quality, and map-specific formula checks separate."
+        ],
+        "manualInputs": [
+          "The user selects a target map before quality or LOS sufficiency is evaluated."
+        ],
+        "prohibitedInferences": [
+          "Never label non-zero category ownership sufficient for a map.",
+          "Never replace a map-specific LOS or air-power calculation with inventory counts."
+        ]
+      },
+      "fallback": "Show category coverage and ask the user which capability to inspect next.",
+      "acceptanceTests": [
+        "A non-zero fighter count does not automatically produce air-readiness.",
+        "A missing category can be highlighted without selecting a sortie route."
+      ],
+      "evidence": [
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "capability.surface-air-los-gaps"
+        }
+      ],
+      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+    },
+    {
+      "rubricId": "rubric:eo-affordability",
+      "observableId": "maps.eo-affordability",
+      "revision": 1,
+      "status": "draft",
+      "decisionMode": "manual-decision",
+      "proposal": {
+        "automaticOutputs": [
+          "List unlocked EO from the existing EO catalog.",
+          "Show prior local clear evidence, current safety blockers, and measured resources separately."
+        ],
+        "manualInputs": [
+          "The user confirms the current goal, resource posture, available time, and willingness to accept repair cost."
+        ],
+        "prohibitedInferences": [
+          "Never claim that a prior clear guarantees current affordability.",
+          "Never recommend all unlocked EO by default.",
+          "Never create an EO route without separately reviewed route knowledge."
+        ]
+      },
+      "fallback": "Present EO as optional long-term targets and continue normal-map, practice, or expedition growth.",
+      "acceptanceTests": [
+        "An unlocked EO with unknown safety or resources remains optional and non-executable.",
+        "A previous clear is displayed as evidence, not a guarantee.",
+        "No route knowledge produces no route instructions."
+      ],
+      "evidence": [
+        {
+          "path": "src/renderer/src/common/battle-score.ts",
+          "symbol": "eoRates"
+        },
+        {
+          "path": "knowledge/quest-growth/authoring/evidence-ledger.json",
+          "symbol": "claim:eo-medal-blueprint-loop"
+        }
+      ],
+      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+    },
+    {
+      "rubricId": "rubric:evergreen-breadth",
+      "observableId": "capability.breadth-summary",
+      "revision": 1,
+      "status": "draft",
+      "decisionMode": "manual-decision",
+      "proposal": {
+        "automaticOutputs": [
+          "Show anonymous ship-type, level-band, equipment-category, and resource coverage facts.",
+          "Label the result evergreen coverage rather than event readiness."
+        ],
+        "manualInputs": [
+          "Event-specific requirements come only from a reviewed, versioned, unexpired overlay."
+        ],
+        "prohibitedInferences": [
+          "Never declare event-ready from evergreen breadth alone.",
+          "Never infer event difficulty, routing, locks, or bonuses without an approved overlay."
+        ]
+      },
+      "fallback": "Show evergreen category coverage and hide event-specific readiness conclusions.",
+      "acceptanceTests": [
+        "No event overlay produces no event-ready label.",
+        "A broad fleet can still be shown as having unknown event suitability."
+      ],
+      "evidence": [
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "capability.breadth-summary"
+        }
+      ],
+      "review": { "author": "codex", "approver": null, "reviewedAt": null }
+    }
+  ]
+}

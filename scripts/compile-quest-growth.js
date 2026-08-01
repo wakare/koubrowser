@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/2'
+const CompilerVersion = 'quest-growth-authoring-compiler/3'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -545,6 +545,116 @@ function validateObservabilityAudit(value, root) {
   return { value, observables }
 }
 
+function validateDecisionRubrics(value, root) {
+  exactKeys(
+    value,
+    ['authoringSchema', 'packetVersion', 'sourceSnapshot', 'rubrics'],
+    [],
+    'decision rubric packet'
+  )
+  if (value.authoringSchema !== 'QuestGrowthDecisionRubrics/1alpha') {
+    throw new Error('unsupported decision rubric schema')
+  }
+  text(value.packetVersion, 'decision rubric packet version')
+  validateSnapshot(value.sourceSnapshot, 'decision rubric source snapshot')
+  const rubrics = new Map()
+  const rubricIds = new Set()
+  unique(
+    value.rubrics,
+    'decision rubrics',
+    (rubric, description) => {
+      exactKeys(
+        rubric,
+        [
+          'rubricId',
+          'observableId',
+          'revision',
+          'status',
+          'decisionMode',
+          'proposal',
+          'fallback',
+          'acceptanceTests',
+          'evidence',
+          'review'
+        ],
+        [],
+        description
+      )
+      const rubricId = identifier(rubric.rubricId, `${description} rubricId`)
+      if (rubricIds.has(rubricId)) throw new Error(`duplicate rubric id ${rubricId}`)
+      rubricIds.add(rubricId)
+      const observableId = identifier(rubric.observableId, `${description} observableId`)
+      if (!Number.isInteger(rubric.revision) || rubric.revision < 1) {
+        throw new Error(`invalid ${description} revision`)
+      }
+      oneOf(rubric.status, ['draft', 'approved', 'withdrawn'], `${description} status`)
+      oneOf(
+        rubric.decisionMode,
+        ['automatic-fact', 'manual-decision', 'fail-closed-composite'],
+        `${description} decisionMode`
+      )
+      exactKeys(
+        rubric.proposal,
+        ['automaticOutputs', 'manualInputs', 'prohibitedInferences'],
+        [],
+        `${description} proposal`
+      )
+      unique(rubric.proposal.automaticOutputs, `${description} automaticOutputs`, text, 1)
+      unique(rubric.proposal.manualInputs, `${description} manualInputs`, text, 1)
+      unique(rubric.proposal.prohibitedInferences, `${description} prohibitedInferences`, text, 1)
+      text(rubric.fallback, `${description} fallback`)
+      unique(rubric.acceptanceTests, `${description} acceptanceTests`, text, 2)
+      unique(
+        rubric.evidence,
+        `${description} evidence`,
+        (entry, evidenceDescription) => {
+          exactKeys(entry, ['path', 'symbol'], [], evidenceDescription)
+          const evidencePath = text(entry.path, `${evidenceDescription} path`)
+          if (
+            path.isAbsolute(evidencePath) ||
+            evidencePath.includes('\\') ||
+            evidencePath.split('/').includes('..')
+          ) {
+            throw new Error(`invalid ${evidenceDescription} repository path`)
+          }
+          const resolved = path.resolve(root, evidencePath)
+          if (
+            !resolved.startsWith(`${path.resolve(root)}${path.sep}`) ||
+            !fs.existsSync(resolved)
+          ) {
+            throw new Error(`missing ${evidenceDescription} repository path ${evidencePath}`)
+          }
+          text(entry.symbol, `${evidenceDescription} symbol`)
+          return `${evidencePath}:${entry.symbol}`
+        },
+        1
+      )
+      exactKeys(rubric.review, ['author', 'approver', 'reviewedAt'], [], `${description} review`)
+      const author = identifier(rubric.review.author, `${description} author`)
+      if (rubric.review.approver !== null) {
+        identifier(rubric.review.approver, `${description} approver`)
+      }
+      if (rubric.review.reviewedAt !== null) {
+        timestamp(rubric.review.reviewedAt, `${description} reviewedAt`)
+      }
+      if (rubric.status === 'approved') {
+        if (!rubric.review.approver || !rubric.review.reviewedAt) {
+          throw new Error(`${description} approved rubric requires an independent review`)
+        }
+        if (author === rubric.review.approver) {
+          throw new Error(`${description} rubric author and approver must differ`)
+        }
+      } else if (rubric.review.approver !== null || rubric.review.reviewedAt !== null) {
+        throw new Error(`${description} unapproved rubric must not claim approval`)
+      }
+      rubrics.set(observableId, rubric)
+      return observableId
+    },
+    1
+  )
+  return { value, rubrics }
+}
+
 function claimAudit(claim, sources) {
   const readableIndependent = claim.sourceIds.filter((sourceId) => {
     const source = sources.get(sourceId)
@@ -603,12 +713,15 @@ function buildQuestGrowthArtifacts(root) {
   const ledgerPath = path.join(base, 'authoring', 'evidence-ledger.json')
   const milestonesPath = path.join(base, 'authoring', 'milestone-candidates.json')
   const observabilityPath = path.join(base, 'authoring', 'observability-map.json')
+  const decisionRubricsPath = path.join(base, 'authoring', 'decision-rubrics.json')
   const ledgerRaw = fs.readFileSync(ledgerPath)
   const milestonesRaw = fs.readFileSync(milestonesPath)
   const observabilityRaw = fs.readFileSync(observabilityPath)
+  const decisionRubricsRaw = fs.readFileSync(decisionRubricsPath)
   const evidence = validateEvidenceLedger(JSON.parse(ledgerRaw))
   const catalog = validateMilestoneCatalog(JSON.parse(milestonesRaw), evidence)
   const observability = validateObservabilityAudit(JSON.parse(observabilityRaw), root)
+  const decisionRubrics = validateDecisionRubrics(JSON.parse(decisionRubricsRaw), root)
   const referencedObservableIds = new Set(
     [...catalog.milestones.values()].flatMap(milestoneObservableIds)
   )
@@ -620,6 +733,21 @@ function buildQuestGrowthArtifacts(root) {
   for (const observableId of observability.observables.keys()) {
     if (!referencedObservableIds.has(observableId)) {
       throw new Error(`observability audit contains unused observable ${observableId}`)
+    }
+  }
+  const partialObservableIds = new Set(
+    [...observability.observables.values()]
+      .filter((observable) => observable.coverage === 'partial')
+      .map((observable) => observable.id)
+  )
+  for (const observableId of partialObservableIds) {
+    if (!decisionRubrics.rubrics.has(observableId)) {
+      throw new Error(`partial observable lacks decision rubric ${observableId}`)
+    }
+  }
+  for (const observableId of decisionRubrics.rubrics.keys()) {
+    if (!partialObservableIds.has(observableId)) {
+      throw new Error(`decision rubric does not target a partial observable ${observableId}`)
     }
   }
   const fixtureDirectory = path.join(base, 'fixtures')
@@ -647,6 +775,10 @@ function buildQuestGrowthArtifacts(root) {
       const observable = observability.observables.get(observableId)
       if (observable.coverage === 'partial') {
         reasonCodes.push(`OBSERVABLE_PARTIAL:${observableId}`)
+        const rubric = decisionRubrics.rubrics.get(observableId)
+        if (rubric.status !== 'approved') {
+          reasonCodes.push(`RUBRIC_NOT_INDEPENDENTLY_APPROVED:${observableId}`)
+        }
       } else if (observable.coverage === 'unavailable') {
         reasonCodes.push(`OBSERVABLE_UNAVAILABLE:${observableId}`)
       }
@@ -674,6 +806,7 @@ function buildQuestGrowthArtifacts(root) {
       evidenceLedgerDigest: sha256(ledgerRaw),
       milestoneCandidatesDigest: sha256(milestonesRaw),
       observabilityAuditDigest: sha256(observabilityRaw),
+      decisionRubricsDigest: sha256(decisionRubricsRaw),
       fixtureDigests
     },
     output: {
@@ -694,6 +827,10 @@ function buildQuestGrowthArtifacts(root) {
       ).length,
       unavailableObservableCount: [...observability.observables.values()].filter(
         (item) => item.coverage === 'unavailable'
+      ).length,
+      decisionRubricCount: decisionRubrics.rubrics.size,
+      approvedDecisionRubricCount: [...decisionRubrics.rubrics.values()].filter(
+        (item) => item.status === 'approved'
       ).length
     },
     runtimePromotion: {
@@ -715,6 +852,14 @@ function buildQuestGrowthArtifacts(root) {
       limitations: observable.limitations,
       unknownFallback: observable.unknownFallback
     })),
+    decisionRubricAudits: [...decisionRubrics.rubrics.values()].map((rubric) => ({
+      rubricId: rubric.rubricId,
+      observableId: rubric.observableId,
+      status: rubric.status,
+      decisionMode: rubric.decisionMode,
+      fallback: rubric.fallback,
+      acceptanceTestCount: rubric.acceptanceTests.length
+    })),
     milestoneGaps,
     globalStops: [
       'NO_RUNTIME_BUNDLE_IN_WAVE_1',
@@ -723,6 +868,9 @@ function buildQuestGrowthArtifacts(root) {
         (item) => item.coverage !== 'complete' || item.runtimeUse !== 'candidate'
       )
         ? ['OBSERVABILITY_GAPS_REMAIN']
+        : []),
+      ...([...decisionRubrics.rubrics.values()].some((item) => item.status !== 'approved')
+        ? ['DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED']
         : []),
       'QUEST_STRATEGY_LINEAGE_GATE_UNRESOLVED'
     ]
@@ -760,6 +908,7 @@ function main() {
       `${output.observableCount} observables ` +
       `(${output.fullyObservedCount} complete, ${output.partiallyObservedCount} partial, ` +
       `${output.unavailableObservableCount} unavailable), ` +
+      `${output.decisionRubricCount} draft rubrics, ` +
       `${output.eligibleForRuntimeCount} runtime-eligible`
   )
 }
@@ -772,5 +921,6 @@ module.exports = {
   validateEvidenceLedger,
   validateFixture,
   validateMilestoneCatalog,
-  validateObservabilityAudit
+  validateObservabilityAudit,
+  validateDecisionRubrics
 }

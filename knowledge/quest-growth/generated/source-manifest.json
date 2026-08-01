@@ -1,14 +1,16 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/2",
+  "compilerVersion": "quest-growth-authoring-compiler/3",
   "output": {
+    "approvedDecisionRubricCount": 0,
     "approvedMilestoneCount": 0,
     "claimCount": 9,
+    "decisionRubricCount": 8,
     "eligibleForRuntimeCount": 0,
     "fixtureCount": 6,
-    "fullyObservedCount": 18,
+    "fullyObservedCount": 19,
     "milestoneCount": 8,
     "observableCount": 29,
-    "partiallyObservedCount": 9,
+    "partiallyObservedCount": 8,
     "sourceCount": 14,
     "unavailableObservableCount": 2
   },
@@ -20,6 +22,7 @@
   "source": {
     "auditedBaseCommit": "33abf8ff2534deaa7ce12007c001e1e1ea18837f",
     "checkedAt": "2026-08-01T00:00:00.000Z",
+    "decisionRubricsDigest": "sha256:72d3711fd24f01ba7d82fc64908eb319a06922bf76dec683c66a8d7887c5da07",
     "evidenceLedgerDigest": "sha256:9bf921d02429a5bef0126df39bd21042141041af8e25b3a4ec57cd871ff7f948",
     "fixtureDigests": {
       "asw-missing.json": "sha256:080e13b003cb6be8ecd9e844fc1316fd4d34b56c46b6cdb0dc25a665e5f8f1e2",
@@ -30,7 +33,7 @@
       "unknown-state.json": "sha256:fa9ea91a843c0153a5ac237ab0119d040a6330604a0a08c2cba117937671eeec"
     },
     "milestoneCandidatesDigest": "sha256:ebf0ba991b8203515fbdc16161b3330ffaf326b06cc5fd5397b97116d0359c20",
-    "observabilityAuditDigest": "sha256:5aaa2b35d8d314d7342214b6aa91994dda6af4ba1d40fe0045c9d6fdd856f182",
+    "observabilityAuditDigest": "sha256:0993b39d27cc537ffc54fe90bd3d3dacd07c9d9b0f7d342363023d0c91a5acee",
     "observabilityAuditedBaseCommit": "148e2022a941cd9b11b58b60ad201ca4b138307f",
     "observabilityCheckedAt": "2026-08-01T00:00:00.000Z"
   }

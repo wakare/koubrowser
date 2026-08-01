@@ -30,7 +30,8 @@ GrowthMilestone から QuestRouteUnit への参照は一方向とする。`manua
 evidence-ledger.json ──────┐
 milestone-candidates.json ─┼─ strict validation
 observability-map.json ────┤          │
-synthetic fixtures ────────┘          ├─ source-manifest.json
+decision-rubrics.json ─────┤          ├─ source-manifest.json
+synthetic fixtures ────────┘          │
                                       └─ conflict-and-gap-report.json
 ```
 
@@ -74,7 +75,7 @@ claim は URL、title、site、language、分類、可読性、独立性、suppo
 
 `approved` は approver と reviewedAt を必須とし、author と approver が同じ場合は validation を
 失敗させる。現行8件はすべて `draft` である。29 observable の local source は監査済みだが、
-complete 18、partial 9、unavailable 2 であり、監査完了は runtime 利用可能を意味しない。
+complete 19、partial 8、unavailable 2 であり、監査完了は runtime 利用可能を意味しない。
 
 ## Unknown と fallback
 

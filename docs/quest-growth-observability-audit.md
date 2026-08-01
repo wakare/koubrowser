@@ -10,8 +10,8 @@ Status: `AUDITED_WITH_GAPS_RUNTIME_BLOCKED`
 
 既存のローカル read-only state だけで、29 observable の取得経路を監査した。
 
-- complete: 18
-- partial: 9
+- complete: 19
+- partial: 8
 - unavailable: 2
 - 新規 communication hook: 0
 - account snapshot の外送: 0
@@ -31,6 +31,7 @@ Status: `AUDITED_WITH_GAPS_RUNTIME_BLOCKED`
 - 受注中任務 ID、解放済み通常海域
 - 対潜・航空・索敵装備カテゴリ数
 - 勲章・改装設計図数、設計図を要求する改造需要
+- 既存 EO catalog と mapinfo を組み合わせた解放済み EO
 
 これらも raw 艦隊一覧を保存せず、count、band、warning の集約値だけを evaluator input とする。
 
@@ -44,7 +45,6 @@ Status: `AUDITED_WITH_GAPS_RUNTIME_BLOCKED`
 | `resources.bands`                 | 現在資源、local trend             | low/medium/high の審査済み閾値           |
 | `ships.asw-capable-summary`       | 艦種、練度、対潜値、装備          | 海域・mechanic 別の十分な閾値            |
 | `capability.surface-air-los-gaps` | 艦種、航空、索敵カテゴリ          | 審査済み gap rubric                      |
-| `maps.unlocked-eo`                | map ID、area、番号                | versioned EO catalog                     |
 | `maps.eo-affordability`           | EO、資源、損傷、能力              | EO 別の route と負担条件                 |
 | `capability.breadth-summary`      | 匿名の艦種・練度・装備・資源集約  | evergreen breadth rubric                 |
 
@@ -91,7 +91,7 @@ promotion しない。unknown 時の fallback は全 observable で非空とす�
 
 pure evaluator を作る前に、次を満たす。
 
-1. 9 partial observable のうち、実行判定に必要な rubric/catalog を別 authoring data にする。
+1. 8 partial observable の判断境界を `decision-rubrics.json` で独立審査する。
 2. 2 unavailable observable は新規観測で補わず、manual fallback を evaluator test に固定する。
 3. milestone と rubric を独立 approver が承認する。
 4. quest strategy lineage gap を解決または明示的に受理する。

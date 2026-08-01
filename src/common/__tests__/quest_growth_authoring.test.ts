@@ -10,7 +10,8 @@ const {
   validateEvidenceLedger,
   validateFixture,
   validateMilestoneCatalog,
-  validateObservabilityAudit
+  validateObservabilityAudit,
+  validateDecisionRubrics
 } = require('../../../scripts/compile-quest-growth.js') as {
   buildQuestGrowthArtifacts: (root: string) => Record<string, unknown>
   validateEvidenceLedger: (value: unknown) => {
@@ -27,6 +28,10 @@ const {
     value: unknown,
     root: string
   ) => { value: unknown; observables: Map<string, unknown> }
+  validateDecisionRubrics: (
+    value: unknown,
+    root: string
+  ) => { value: unknown; rubrics: Map<string, unknown> }
 }
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
@@ -45,7 +50,8 @@ describe('quest growth authoring contract', () => {
 
     expect(output).toContain(
       '14 sources, 9 claims, 8 draft milestones, 6 fixtures, ' +
-        '29 observables (18 complete, 9 partial, 2 unavailable), 0 runtime-eligible'
+        '29 observables (19 complete, 8 partial, 2 unavailable), ' +
+        '8 draft rubrics, 0 runtime-eligible'
     )
   })
 
@@ -128,11 +134,46 @@ describe('quest growth authoring contract', () => {
     expect(eventOverlay.coverage).toBe('unavailable')
     expect(eventOverlay.runtimeUse).toBe('blocked')
 
+    const unlockedEo = audit.observables.find((observable) => observable.id === 'maps.unlocked-eo')!
+    expect(unlockedEo.coverage).toBe('complete')
+    expect(unlockedEo.runtimeUse).toBe('candidate')
+
     const manifest = read<{
       source: { observabilityAuditedBaseCommit: string; observabilityAuditDigest: string }
     }>('generated', 'source-manifest.json')
     expect(manifest.source.observabilityAuditedBaseCommit).toMatch(/^[0-9a-f]{40}$/)
     expect(manifest.source.observabilityAuditDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+  })
+
+  it('provides one independently reviewable draft rubric for every partial observable', () => {
+    const audit = read<{
+      observables: { id: string; coverage: string }[]
+    }>('authoring', 'observability-map.json')
+    const packet = read<{
+      rubrics: {
+        observableId: string
+        status: string
+        fallback: string
+        acceptanceTests: string[]
+        review: { author: string; approver: string | null }
+      }[]
+    }>('authoring', 'decision-rubrics.json')
+    const validated = validateDecisionRubrics(packet, process.cwd())
+    const partialIds = new Set(
+      audit.observables
+        .filter((observable) => observable.coverage === 'partial')
+        .map((observable) => observable.id)
+    )
+
+    expect(validated.rubrics.size).toBe(8)
+    expect(new Set(validated.rubrics.keys())).toEqual(partialIds)
+    expect(packet.rubrics.every((rubric) => rubric.status === 'draft')).toBe(true)
+    expect(packet.rubrics.every((rubric) => rubric.review.approver === null)).toBe(true)
+    expect(packet.rubrics.every((rubric) => rubric.fallback.trim())).toBe(true)
+    expect(packet.rubrics.every((rubric) => rubric.acceptanceTests.length >= 2)).toBe(true)
+
+    const report = read<{ globalStops: string[] }>('generated', 'conflict-and-gap-report.json')
+    expect(report.globalStops).toContain('DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED')
   })
 
   it('does not count prompt-only NGA observations as independent readable evidence', () => {

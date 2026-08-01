@@ -77,11 +77,78 @@
       "readableIndependentSourceIds": []
     }
   ],
-  "compilerVersion": "quest-growth-authoring-compiler/2",
+  "compilerVersion": "quest-growth-authoring-compiler/3",
+  "decisionRubricAudits": [
+    {
+      "acceptanceTestCount": 2,
+      "decisionMode": "manual-decision",
+      "fallback": "Show the material-safety checklist and omit ship-specific consumption advice.",
+      "observableId": "modernization.material-summary",
+      "rubricId": "rubric:modernization-material-safety",
+      "status": "draft"
+    },
+    {
+      "acceptanceTestCount": 3,
+      "decisionMode": "fail-closed-composite",
+      "fallback": "Keep executable sortie advice blocked and show the unresolved safety checks.",
+      "observableId": "fleet.safety-state",
+      "rubricId": "rubric:fleet-safety-gate",
+      "status": "draft"
+    },
+    {
+      "acceptanceTestCount": 2,
+      "decisionMode": "fail-closed-composite",
+      "fallback": "Show visible unlock quests and state that hidden or unregistered prerequisites may remain.",
+      "observableId": "quest.visible-chain",
+      "rubricId": "rubric:visible-quest-chain",
+      "status": "draft"
+    },
+    {
+      "acceptanceTestCount": 2,
+      "decisionMode": "manual-decision",
+      "fallback": "Show raw totals and default to conserve posture until the user chooses otherwise.",
+      "observableId": "resources.bands",
+      "rubricId": "rubric:resource-posture",
+      "status": "draft"
+    },
+    {
+      "acceptanceTestCount": 2,
+      "decisionMode": "manual-decision",
+      "fallback": "Show measured ASW facts and suggest selecting a target map or mechanic.",
+      "observableId": "ships.asw-capable-summary",
+      "rubricId": "rubric:asw-capability-facts",
+      "status": "draft"
+    },
+    {
+      "acceptanceTestCount": 2,
+      "decisionMode": "manual-decision",
+      "fallback": "Show category coverage and ask the user which capability to inspect next.",
+      "observableId": "capability.surface-air-los-gaps",
+      "rubricId": "rubric:surface-air-los-gaps",
+      "status": "draft"
+    },
+    {
+      "acceptanceTestCount": 3,
+      "decisionMode": "manual-decision",
+      "fallback": "Present EO as optional long-term targets and continue normal-map, practice, or expedition growth.",
+      "observableId": "maps.eo-affordability",
+      "rubricId": "rubric:eo-affordability",
+      "status": "draft"
+    },
+    {
+      "acceptanceTestCount": 2,
+      "decisionMode": "manual-decision",
+      "fallback": "Show evergreen category coverage and hide event-specific readiness conclusions.",
+      "observableId": "capability.breadth-summary",
+      "rubricId": "rubric:evergreen-breadth",
+      "status": "draft"
+    }
+  ],
   "globalStops": [
     "NO_RUNTIME_BUNDLE_IN_WAVE_1",
     "INDEPENDENT_APPROVER_REQUIRED",
     "OBSERVABILITY_GAPS_REMAIN",
+    "DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED",
     "QUEST_STRATEGY_LINEAGE_GATE_UNRESOLVED"
   ],
   "milestoneGaps": [
@@ -90,14 +157,17 @@
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
         "OBSERVABLE_PARTIAL:modernization.material-summary",
-        "OBSERVABLE_PARTIAL:fleet.safety-state"
+        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:modernization.material-summary",
+        "OBSERVABLE_PARTIAL:fleet.safety-state",
+        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:fleet.safety-state"
       ]
     },
     {
       "milestoneId": "growth:system-fleet-unlock",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:quest.visible-chain"
+        "OBSERVABLE_PARTIAL:quest.visible-chain",
+        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:quest.visible-chain"
       ]
     },
     {
@@ -111,29 +181,32 @@
       "milestoneId": "growth:resource-periodic-loop",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:resources.bands"
+        "OBSERVABLE_PARTIAL:resources.bands",
+        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:resources.bands"
       ]
     },
     {
       "milestoneId": "growth:anti-submarine-foundation",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:ships.asw-capable-summary"
+        "OBSERVABLE_PARTIAL:ships.asw-capable-summary",
+        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:ships.asw-capable-summary"
       ]
     },
     {
       "milestoneId": "growth:surface-air-los-foundation",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:capability.surface-air-los-gaps"
+        "OBSERVABLE_PARTIAL:capability.surface-air-los-gaps",
+        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:capability.surface-air-los-gaps"
       ]
     },
     {
       "milestoneId": "growth:normal-map-eo-blueprint-loop",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "OBSERVABLE_PARTIAL:maps.unlocked-eo",
-        "OBSERVABLE_PARTIAL:maps.eo-affordability"
+        "OBSERVABLE_PARTIAL:maps.eo-affordability",
+        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:maps.eo-affordability"
       ]
     },
     {
@@ -143,7 +216,9 @@
         "OBSERVABLE_UNAVAILABLE:event.overlay-status",
         "OBSERVABLE_RUNTIME_BLOCKED:event.overlay-status",
         "OBSERVABLE_PARTIAL:capability.breadth-summary",
-        "OBSERVABLE_PARTIAL:resources.bands"
+        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:capability.breadth-summary",
+        "OBSERVABLE_PARTIAL:resources.bands",
+        "RUBRIC_NOT_INDEPENDENTLY_APPROVED:resources.bands"
       ]
     }
   ],
@@ -441,18 +516,18 @@
       "unknownFallback": "Present measured category counts and let the user select one area to inspect."
     },
     {
-      "coverage": "partial",
+      "coverage": "complete",
       "freshness": "release-bound",
       "limitations": [
-        "A reviewed bundled EO identity catalog has not yet been authored for this module."
+        "EO identity and unlock state do not establish affordability or a safe route."
       ],
       "observableId": "maps.unlocked-eo",
       "origins": [
         "renderer-readonly-state",
         "bundled-knowledge"
       ],
-      "runtimeUse": "fallback-only",
-      "unknownFallback": "List unlocked maps without labeling EO eligibility."
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to open the sortie map screen before listing unlocked EO."
     },
     {
       "coverage": "partial",
