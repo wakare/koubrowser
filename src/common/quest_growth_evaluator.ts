@@ -7,6 +7,14 @@ interface BaseInput {
   freshness: QuestGrowthFreshness
 }
 
+export interface QuestGrowthResourceTotals {
+  fuel: number
+  ammunition: number
+  steel: number
+  bauxite: number
+  repairBuckets: number
+}
+
 export type QuestGrowthFallbackInput =
   | (BaseInput & {
       observableId: 'modernization.material-summary'
@@ -26,7 +34,7 @@ export type QuestGrowthFallbackInput =
     })
   | (BaseInput & {
       observableId: 'resources.bands'
-      totalsAvailable: boolean
+      totals: QuestGrowthResourceTotals | null
       posture: 'conserve' | 'balanced' | 'spend' | 'unset'
     })
   | (BaseInput & {
@@ -186,6 +194,27 @@ function assertBoolean(value: boolean, field: string): void {
   }
 }
 
+function assertResourceTotals(value: QuestGrowthResourceTotals | null): void {
+  if (value === null) return
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Invalid quest growth fallback input: totals')
+  }
+  const fields: (keyof QuestGrowthResourceTotals)[] = [
+    'fuel',
+    'ammunition',
+    'steel',
+    'bauxite',
+    'repairBuckets'
+  ]
+  if (
+    Object.keys(value).length !== fields.length ||
+    Object.keys(value).some((field) => !fields.includes(field as keyof QuestGrowthResourceTotals))
+  ) {
+    throw new Error('Invalid quest growth fallback input: totals')
+  }
+  for (const field of fields) assertCount(value[field], `totals.${field}`)
+}
+
 function validateInput(input: QuestGrowthFallbackInput): void {
   assertEnum(input.observableId, Object.keys(ObservableContracts), 'observableId')
   assertEnum(input.freshness, ['fresh', 'stale', 'unknown', 'unavailable'], 'freshness')
@@ -212,7 +241,7 @@ function validateInput(input: QuestGrowthFallbackInput): void {
       )
       return
     case 'resources.bands':
-      assertBoolean(input.totalsAvailable, 'totalsAvailable')
+      assertResourceTotals(input.totals)
       assertEnum(input.posture, ['conserve', 'balanced', 'spend', 'unset'], 'posture')
       return
     case 'ships.asw-capable-summary':
@@ -334,12 +363,12 @@ export function evaluateQuestGrowthFallback(
 
     case 'resources.bands':
       assertEnum(input.posture, ['conserve', 'balanced', 'spend', 'unset'], 'posture')
-      if (!input.totalsAvailable || input.posture === 'unset') {
+      if (input.totals === null || input.posture === 'unset') {
         return dataAcquisition(
           input.observableId,
           ['OPEN_OR_REFRESH_LOCAL_RESOURCE_VIEW', 'SELECT_RESOURCE_POSTURE'],
           [
-            ...(!input.totalsAvailable ? ['RESOURCE_TOTALS_UNAVAILABLE'] : []),
+            ...(input.totals === null ? ['RESOURCE_TOTALS_UNAVAILABLE'] : []),
             ...(input.posture === 'unset' ? ['RESOURCE_POSTURE_UNSET'] : [])
           ]
         )

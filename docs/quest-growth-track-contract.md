@@ -2,9 +2,9 @@
 
 最終更新日: 2026-08-01
 
-Task ID: `QGROWTH-R2_Pure_Fallback_Evaluator`
+Task ID: `QGROWTH-R3_Readonly_Local_Snapshot_Adapter`
 
-Status: `OWNER_APPROVED_PURE_FALLBACK_EVALUATOR_RUNTIME_BLOCKED`
+Status: `READONLY_LOCAL_SNAPSHOT_ADAPTER_IMPLEMENTED_UI_RUNTIME_BLOCKED`
 
 ## モデル境界
 
@@ -22,10 +22,10 @@ Status: `OWNER_APPROVED_PURE_FALLBACK_EVALUATOR_RUNTIME_BLOCKED`
 GrowthMilestone から QuestRouteUnit への参照は一方向とする。`manual-partial` は残り stage を
 隠さず、`route-ready-only` だけを自動実行候補として扱う。
 
-## Wave 1 の固定境界
+## 現在の固定境界
 
-Wave 1 は authoring と audit artifact を固定した。現 Wave は、それらを入力契約とする pure
-fallback evaluator までを許可する。
+Wave 1 は authoring と audit artifact、Wave 2 は pure fallback evaluator を固定した。現 Wave は
+既存 renderer state を匿名集約する read-only snapshot adapter までを許可する。
 
 ```text
 evidence-ledger.json ──────┐
@@ -39,11 +39,11 @@ synthetic fixtures ────────┘          │
 次は生成・接続しない。
 
 - production runtime bundle
-- real account snapshot adapter
 - renderer UI
 - network fetcher
 - real-account fixture
 - concrete route output
+- snapshot persistence / export
 
 ## Evidence gate
 
@@ -77,9 +77,10 @@ claim は URL、title、site、language、分類、可読性、独立性、suppo
 
 `approved` は approver と reviewedAt を必須とし、author と approver が同じ場合は validation を
 失敗させる。現行8件と対応する8 rubric の現在の意味は project owner が 2026-08-01 に承認した。
-この承認は pure fallback evaluator の実装だけを許可し、runtime route、account adapter、UI 接続、
-または route eligibility を承認しない。29 observable の local source は監査済みだが、complete 19、
-partial 8、unavailable 2 であり、監査・意味承認の完了は runtime 利用可能を意味しない。
+最初の承認は pure fallback evaluator、その後の承認は匿名 read-only local snapshot adapter までを
+許可する。runtime route、UI 接続、snapshot 保存・外送、または route eligibility は承認しない。
+29 observable の local source は監査済みだが、complete 19、partial 8、unavailable 2 であり、
+監査・意味承認・adapter 実装の完了は runtime 利用可能を意味しない。
 
 exact commit `55a7151c5b63a40453ffb55eccef49b6cbd5a7f9` に対する external advisory review は、
 2 rubric を authoring/future restricted fallback として `APPROVE`、6 rubric を `REVISE`、runtime
@@ -98,6 +99,16 @@ runtime candidate は0件のままとする。
 結果型には executable suggestion、`routeId`、route steps、sortie/map recommendation を設けない。
 rubric と observable の参照は contract trace であり route lineage ではない。unknown、stale、invalid、
 unavailable は fail closed とし、invalid input は evaluator boundary で拒否する。
+
+## Read-only local snapshot adapter gate
+
+`src/renderer/src/common/quest-growth-snapshot.ts` は既存 `SvData` だけを同期的に読み取り、10個の
+fallback evaluator input へ匿名集約する。ship / equipment instance ID、member ID、nickname、raw
+payload は結果型に持たず、I/O、local DB query、保存、外送、network、game communication を行わない。
+
+未ロード状態は `unknown`、演習残数と event overlay は常に `unavailable` とする。resource は自動
+band 化せず測定値だけを保持する。route lineage 延期中のため EO の `reviewedRouteKnowledge` は adapter
+で常に `false` とし、具体的 route を生成できない状態を維持する。
 
 ## Unknown と fallback
 

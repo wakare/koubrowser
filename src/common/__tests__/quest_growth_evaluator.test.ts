@@ -45,7 +45,7 @@ const FreshInputs: QuestGrowthFallbackInput[] = [
   {
     observableId: 'resources.bands',
     freshness: 'fresh',
-    totalsAvailable: true,
+    totals: { fuel: 1000, ammunition: 1000, steel: 1000, bauxite: 1000, repairBuckets: 10 },
     posture: 'balanced'
   },
   {
@@ -111,7 +111,13 @@ describe('quest growth pure fallback evaluator', () => {
       const outcome = evaluateQuestGrowthFallback({
         observableId: 'resources.bands',
         freshness,
-        totalsAvailable: true,
+        totals: {
+          fuel: 1000,
+          ammunition: 1000,
+          steel: 1000,
+          bauxite: 1000,
+          repairBuckets: 10
+        },
         posture: 'spend'
       })
 
@@ -144,7 +150,13 @@ describe('quest growth pure fallback evaluator', () => {
       evaluateQuestGrowthFallback({
         observableId: 'resources.bands',
         freshness: 'fresh',
-        totalsAvailable: true,
+        totals: {
+          fuel: 1000,
+          ammunition: 1000,
+          steel: 1000,
+          bauxite: 1000,
+          repairBuckets: 10
+        },
         posture
       })
     )
@@ -230,6 +242,21 @@ describe('quest growth pure fallback evaluator', () => {
         freshness: 'fresh'
       } as never)
     ).toThrow('Invalid quest growth fallback input: observableId')
+
+    expect(() =>
+      evaluateQuestGrowthFallback({
+        observableId: 'resources.bands',
+        freshness: 'fresh',
+        totals: {
+          fuel: 1000,
+          ammunition: 1000,
+          steel: 1000,
+          bauxite: 1000,
+          repairBuckets: -1
+        },
+        posture: 'conserve'
+      })
+    ).toThrow('Invalid quest growth fallback input: totals.repairBuckets')
   })
 
   it('has no I/O or renderer dependency in the pure evaluator source', () => {

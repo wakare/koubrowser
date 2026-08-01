@@ -4,7 +4,13 @@
   "observables": {
     "resources.bands": {
       "freshness": "fresh",
-      "totalsAvailable": true,
+      "totals": {
+        "fuel": 12000,
+        "ammunition": 10000,
+        "steel": 15000,
+        "bauxite": 8000,
+        "repairBuckets": 40
+      },
       "posture": "conserve"
     }
   },

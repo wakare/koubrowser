@@ -77,7 +77,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'PURE_FALLBACK_EVALUATOR_ONLY_NO_ROUTE_OUTPUT'
+      reason: 'READONLY_LOCAL_SNAPSHOT_ADAPTER_NO_UI_NO_ROUTE_OUTPUT'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -96,7 +96,7 @@ describe('quest growth authoring contract', () => {
         gap.reasonCodes.includes('LOCAL_OBSERVABILITY_NOT_AUDITED')
       )
     ).toBe(false)
-    expect(report.globalStops).toContain('NO_RUNTIME_BUNDLE_IN_WAVE_1')
+    expect(report.globalStops).toContain('NO_RUNTIME_BUNDLE_IN_ADAPTER_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
     expect(report.globalStops).toContain('QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT')
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')

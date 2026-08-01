@@ -16,7 +16,7 @@
     },
     "resources.bands": {
       "freshness": "unknown",
-      "totalsAvailable": false,
+      "totals": null,
       "posture": "unset"
     }
   },

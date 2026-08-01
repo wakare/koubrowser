@@ -13,7 +13,13 @@
     },
     "resources.bands": {
       "freshness": "fresh",
-      "totalsAvailable": true,
+      "totals": {
+        "fuel": 20000,
+        "ammunition": 20000,
+        "steel": 25000,
+        "bauxite": 15000,
+        "repairBuckets": 80
+      },
       "posture": "conserve"
     }
   },
