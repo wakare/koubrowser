@@ -109,8 +109,8 @@ hard mechanic は原則として、独立して読める二つ以上の資料を
 7. 通常海域・EO・改装設計図ループ。
 8. 活動期だけ有効な短期 overlay。
 
-すべて `draft` であり、独立 approver と local observability audit を通過するまで runtime へ
-含めない。
+8件の現在の意味は project owner が承認したが、local observability gap と延期された route lineage
+が残るため runtime へ含めない。
 
 ## プライバシーとゲーム通信
 
@@ -121,13 +121,16 @@ hard mechanic は原則として、独立して読める二つ以上の資料を
   変更しない。
 - 自動出撃、自動編成、自動任務操作を行わない。
 
-## 次の判断条件
+## Wave 2 判断結果
 
-Wave 2 へ進む前に、次を満たす必要がある。
+author / approver 分離と local observability audit は完了し、partial / unavailable は manual fallback
+に固定した。route lineage は解決せず明示的に延期したため、Wave 2 は具体的 route を返さない pure
+fallback evaluator に限定する。
 
 1. author と approver が分離している。
 2. hard mechanic の claim に独立して読める資料が二つ以上ある。
 3. 各 predicate の local observable audit で `complete` とされた入力だけを自動判定に使い、
    `partial` / `unavailable` は manual fallback に固定する。
 4. unknown、conflicted、expired、partial の場合も三カードが空にならない。
-5. quest strategy generated artifacts の `0505bc...` lineage gap を解決または明示的に受理する。
+5. quest strategy generated artifacts の `0505bc...` lineage gap を解決または明示的に受理する
+   （現状は延期・route output 禁止として受理）。

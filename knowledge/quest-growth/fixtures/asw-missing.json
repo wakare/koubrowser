@@ -1,16 +1,24 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "fixtureId": "growth-fixture:asw-missing",
   "observables": {
-    "maps.unlocked": ["1-1", "1-2", "1-3", "1-4", "1-5"],
-    "ships.asw-capable-summary": "insufficient",
-    "equipment.asw-category-counts": "missing"
+    "ships.asw-capable-summary": {
+      "freshness": "fresh",
+      "sonarCount": 0,
+      "depthChargeCount": 0,
+      "targetSelected": false,
+      "reviewedTargetRule": false,
+      "intendedFleetConfirmed": false
+    }
   },
   "privacy": {
     "containsAccountIdentifier": false,
     "containsRawPayload": false
   },
   "expectations": {
-    "nonEmptyFallbackRequired": true
+    "nonEmptyFallbackRequired": true,
+    "expectedOutcomeKinds": {
+      "ships.asw-capable-summary": "data-acquisition"
+    }
   }
 }

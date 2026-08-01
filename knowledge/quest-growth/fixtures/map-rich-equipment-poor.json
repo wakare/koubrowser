@@ -1,17 +1,36 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "fixtureId": "growth-fixture:map-rich-equipment-poor",
   "observables": {
-    "maps.unlocked": ["1-5", "2-5", "3-5", "4-4"],
-    "ships.type-level-bands": "broad",
-    "equipment.air-category-counts": "insufficient",
-    "equipment.los-category-counts": "insufficient"
+    "capability.surface-air-los-gaps": {
+      "freshness": "fresh",
+      "airEquipmentCount": 0,
+      "losEquipmentCount": 0,
+      "targetSelected": true,
+      "routeVariantSelected": false,
+      "reviewedTargetRule": false,
+      "versionedFormulaAvailable": false
+    },
+    "maps.eo-affordability": {
+      "freshness": "fresh",
+      "unlockedEoCount": 3,
+      "targetSelected": false,
+      "reviewedRouteKnowledge": false,
+      "safety": "unknown",
+      "resources": "unknown",
+      "capability": "unknown",
+      "time": "unknown"
+    }
   },
   "privacy": {
     "containsAccountIdentifier": false,
     "containsRawPayload": false
   },
   "expectations": {
-    "nonEmptyFallbackRequired": true
+    "nonEmptyFallbackRequired": true,
+    "expectedOutcomeKinds": {
+      "capability.surface-air-los-gaps": "data-acquisition",
+      "maps.eo-affordability": "data-acquisition"
+    }
   }
 }

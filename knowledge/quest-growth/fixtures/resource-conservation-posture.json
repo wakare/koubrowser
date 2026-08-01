@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "fixtureId": "growth-fixture:resource-conservation-posture",
+  "observables": {
+    "resources.bands": {
+      "freshness": "fresh",
+      "totalsAvailable": true,
+      "posture": "conserve"
+    }
+  },
+  "privacy": {
+    "containsAccountIdentifier": false,
+    "containsRawPayload": false
+  },
+  "expectations": {
+    "nonEmptyFallbackRequired": true,
+    "expectedOutcomeKinds": {
+      "resources.bands": "manual-check"
+    }
+  }
+}

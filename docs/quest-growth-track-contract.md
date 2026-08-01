@@ -127,12 +127,14 @@ Wave 2 の pure evaluator を先に拘束するため、次の匿名 fixture を
 - `unknown-state`
 - `early-maps-only`
 - `asw-missing`
-- `resource-low`
+- `resource-conservation-posture`
 - `map-rich-equipment-poor`
 - `event-active-not-ready`
 
 fixture は account identifier と raw payload を禁止し、非空 fallback を要求する。実アカウントの
-coverage 推定には使用しない。
+coverage 推定には使用しない。各 observable は evaluator input と同じ構造を持ち、期待する
+`manual-check` / `data-acquisition` を明記する。審査されていない resource band、取得不能な演習残数、
+未審査 event overlay の有効扱いを fixture 内でも禁止する。
 
 ## Stop matrix
 

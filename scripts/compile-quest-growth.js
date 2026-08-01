@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/4'
+const CompilerVersion = 'quest-growth-authoring-compiler/5'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -678,7 +678,7 @@ function validateFixture(value, filename) {
     [],
     `fixture ${filename}`
   )
-  if (value.schemaVersion !== 1) throw new Error(`unsupported fixture ${filename} schema`)
+  if (value.schemaVersion !== 2) throw new Error(`unsupported fixture ${filename} schema`)
   identifier(value.fixtureId, `fixture ${filename} id`)
   if (
     !value.observables ||
@@ -686,6 +686,15 @@ function validateFixture(value, filename) {
     Array.isArray(value.observables)
   ) {
     throw new Error(`invalid fixture ${filename} observables`)
+  }
+  const observableIds = Object.keys(value.observables)
+  if (observableIds.length === 0) throw new Error(`fixture ${filename} has no observables`)
+  for (const observableId of observableIds) {
+    identifier(observableId, `fixture ${filename} observable id`)
+    const observable = value.observables[observableId]
+    if (!observable || typeof observable !== 'object' || Array.isArray(observable)) {
+      throw new Error(`invalid fixture ${filename} observable ${observableId}`)
+    }
   }
   exactKeys(
     value.privacy,
@@ -698,12 +707,35 @@ function validateFixture(value, filename) {
   }
   exactKeys(
     value.expectations,
-    ['nonEmptyFallbackRequired'],
+    ['nonEmptyFallbackRequired', 'expectedOutcomeKinds'],
     [],
     `fixture ${filename} expectations`
   )
   if (value.expectations.nonEmptyFallbackRequired !== true) {
     throw new Error(`fixture ${filename} must require a non-empty fallback`)
+  }
+  if (
+    !value.expectations.expectedOutcomeKinds ||
+    typeof value.expectations.expectedOutcomeKinds !== 'object' ||
+    Array.isArray(value.expectations.expectedOutcomeKinds)
+  ) {
+    throw new Error(`invalid fixture ${filename} expected outcome kinds`)
+  }
+  const expectedObservableIds = Object.keys(value.expectations.expectedOutcomeKinds)
+  if (
+    expectedObservableIds.length !== observableIds.length ||
+    expectedObservableIds.some((observableId) => !observableIds.includes(observableId))
+  ) {
+    throw new Error(`fixture ${filename} expected outcomes must cover every observable`)
+  }
+  for (const [observableId, outcomeKind] of Object.entries(
+    value.expectations.expectedOutcomeKinds
+  )) {
+    oneOf(
+      outcomeKind,
+      ['manual-check', 'data-acquisition'],
+      `fixture ${filename} expected outcome for ${observableId}`
+    )
   }
   return value.fixtureId
 }

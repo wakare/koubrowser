@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/4",
+  "compilerVersion": "quest-growth-authoring-compiler/5",
   "output": {
     "approvedDecisionRubricCount": 8,
     "approvedMilestoneCount": 8,
@@ -25,12 +25,12 @@
     "decisionRubricsDigest": "sha256:2e833de8a3e4e0b6a9182bd065cc42db0c69c6cd6ccde1fbcf423e41f079726e",
     "evidenceLedgerDigest": "sha256:9bf921d02429a5bef0126df39bd21042141041af8e25b3a4ec57cd871ff7f948",
     "fixtureDigests": {
-      "asw-missing.json": "sha256:080e13b003cb6be8ecd9e844fc1316fd4d34b56c46b6cdb0dc25a665e5f8f1e2",
-      "early-maps-only.json": "sha256:d1b02ea9d36471c430014bbc4fee0eb28926cc2e8fb143044447cf38d485e20f",
-      "event-active-not-ready.json": "sha256:bccb3f7046da4ab4b66b8d49c72d55e1542db3f73d5be809a3069a3d9de6747b",
-      "map-rich-equipment-poor.json": "sha256:da95f94b200618ccf788673256882baabe9732b65c0c8c380f25d72ed43a9dcc",
-      "resource-low.json": "sha256:699822f69cf694afc12d16f76405a48be2d630da31ffeac2feec3b0294bce6f1",
-      "unknown-state.json": "sha256:fa9ea91a843c0153a5ac237ab0119d040a6330604a0a08c2cba117937671eeec"
+      "asw-missing.json": "sha256:c98d591b6b7d554281c48bb6fc76424348611e28c71d7fb0260b586bc7e64862",
+      "early-maps-only.json": "sha256:5b98e72fc2446e29bfc9b76e65ebb58d8901afd6f8ff987dfc138a0a4e33e31a",
+      "event-active-not-ready.json": "sha256:acae209b8cb3dc10fe99d74b5e572689909f7444a38ddc226c82af11fe5fecc4",
+      "map-rich-equipment-poor.json": "sha256:0b7d673fbdfb90846efb34ebdc651f1ae603adce546d80e28c6425807f90102f",
+      "resource-conservation-posture.json": "sha256:f2754225fbf127b2b319a632fc73a86dc9233dd2f7b3152978f4c8ea4f8637ce",
+      "unknown-state.json": "sha256:5abbbfe08daabcb33ef90b2c672a72d6a4909ca6b0ebea515fba9f39ef05188d"
     },
     "milestoneCandidatesDigest": "sha256:16da5c915689307c201362f612f0634e838f4d481086487c86deb9d18a4e6c33",
     "observabilityAuditDigest": "sha256:83f4241a7f1c6c7db2799848d84851f6ae7e3657b949ca93648fe1b3c4f66096",

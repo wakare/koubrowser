@@ -1,16 +1,35 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "fixtureId": "growth-fixture:unknown-state",
   "observables": {
-    "fleet.safety-state": "unknown",
-    "maps.unlocked": "unknown",
-    "resources.bands": "unknown"
+    "fleet.safety-state": {
+      "freshness": "unknown",
+      "damage": "unknown",
+      "supply": "unknown",
+      "repair": "unknown"
+    },
+    "quest.visible-chain": {
+      "freshness": "unknown",
+      "visibleUnlockQuestCount": 0,
+      "viewCoverage": "unknown",
+      "graphCoverage": "unresolved"
+    },
+    "resources.bands": {
+      "freshness": "unknown",
+      "totalsAvailable": false,
+      "posture": "unset"
+    }
   },
   "privacy": {
     "containsAccountIdentifier": false,
     "containsRawPayload": false
   },
   "expectations": {
-    "nonEmptyFallbackRequired": true
+    "nonEmptyFallbackRequired": true,
+    "expectedOutcomeKinds": {
+      "fleet.safety-state": "data-acquisition",
+      "quest.visible-chain": "data-acquisition",
+      "resources.bands": "data-acquisition"
+    }
   }
 }

@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R1A_Local_Observability_Audit`
 
-Status: `AUDITED_WITH_GAPS_RUNTIME_BLOCKED`
+Status: `OWNER_APPROVED_FALLBACK_ONLY_RUNTIME_BLOCKED`
 
 ## 結論
 
@@ -42,19 +42,20 @@ Status: `AUDITED_WITH_GAPS_RUNTIME_BLOCKED`
 | `modernization.material-summary`  | lock、艦種、近代化改修上昇値      | 希少艦・任務艦・重要艦を素材にしてよいか |
 | `fleet.safety-state`              | 損傷、補給、入渠、素材候補        | 素材安全を自動断定できない               |
 | `quest.visible-chain`             | live/cache 任務、curated relation | 全 tab と未登録 prerequisite             |
-| `resources.bands`                 | 現在資源、local trend             | low/medium/high の審査済み閾値           |
+| `resources.bands`                 | 現在資源、local trend             | 姿勢は手動選択、affordability は未判定   |
 | `ships.asw-capable-summary`       | 艦種、練度、対潜値、装備          | 海域・mechanic 別の十分な閾値            |
-| `capability.surface-air-los-gaps` | 艦種、航空、索敵カテゴリ          | 審査済み gap rubric                      |
+| `capability.surface-air-los-gaps` | 艦種、航空、索敵カテゴリ          | 対象別 rule、route variant、versioned 式 |
 | `maps.eo-affordability`           | EO、資源、損傷、能力              | EO 別の route と負担条件                 |
-| `capability.breadth-summary`      | 匿名の艦種・練度・装備・資源集約  | evergreen breadth rubric                 |
+| `capability.breadth-summary`      | 匿名の艦種・練度・装備・資源集約  | event overlay と自動優先順位             |
 
 partial は推測で埋めない。将来の三カード UI では測定値と manual check を表示し、自動行動可能とは
 表現しない。
 
 external advisory review では、`modernization.material-summary` と `fleet.safety-state` の2件だけが
 authoring/future restricted fallback の範囲で `APPROVE`、残る6件が `REVISE`、runtime candidate は
-0件だった。6件は revision 2 へ修正済みだが、全8件とも独立 approver 未確定のため `draft` と
-`fallback-only` を維持する。
+0件だった。6件は revision 2 へ修正済みで、その後 project owner が8 rubric と8 milestone の現在の
+意味を承認した。承認範囲は pure fallback evaluator に限定され、全 partial observable は
+`fallback-only`、unavailable/blocked observable と runtime candidate 0件は維持する。
 
 ## 現在取得できないもの
 
@@ -81,8 +82,8 @@ authoring/future restricted fallback の範囲で `APPROVE`、残る6件が `REV
 | normal map/EO/blueprint loop  | EO catalog と affordability       |
 | event readiness overlay       | overlay package と breadth rubric |
 
-したがって8 milestone は独立 approver に加えて、各 blocker の authoring が終わるまで runtime
-promotion しない。unknown 時の fallback は全 observable で非空とする。
+8 milestone の意味承認後も各 local blocker は残るため runtime promotion しない。unknown 時の
+fallback は全 observable で非空とする。
 
 ## 通信・プライバシー境界
 
@@ -92,12 +93,16 @@ promotion しない。unknown 時の fallback は全 observable で非空とす�
 - local DB を使う場合も既存 `queryDb` の read-only projection から匿名集約し、履歴明細を UI へ
   流さない。
 
-## 次の実装 gate
+## Pure evaluator gate の結果
 
-pure evaluator を作る前に、次を満たす。
+次を満たしたため、I/O を持たない pure fallback evaluator と synthetic fixture regression だけを
+実装できる。
 
-1. revision 2 を含む8 partial observable の判断境界を、project が認める独立 approver が審査する。
-2. 2 unavailable observable は新規観測で補わず、manual fallback を evaluator test に固定する。
-3. milestone と rubric を独立 approver が承認する。
-4. quest strategy lineage gap を解決または明示的に受理する。
-5. unknown、stale、unavailable、blocked と manual-check / data-acquisition の shared contract を固定する。
+1. revision 2 を含む8 partial observable の判断境界を project owner が承認した。
+2. 2 unavailable observable は新規観測で補わず、manual fallback を evaluator test に固定した。
+3. 8 milestone と8 rubric の現在の意味を project owner が承認した。
+4. quest strategy route lineage は延期し、延期中の具体的 route 出力を禁止した。
+5. unknown、stale、unavailable、blocked と manual-check / data-acquisition の shared contract を固定した。
+
+real account snapshot adapter、renderer UI、runtime bundle はこの gate に含まれない。追加承認まで
+既存 local state との接続は行わない。

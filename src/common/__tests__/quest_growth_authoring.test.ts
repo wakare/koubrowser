@@ -311,6 +311,14 @@ describe('quest growth authoring contract', () => {
     expect(() => validateFixture(unsafeFixture, 'unsafe.json')).toThrow(
       'contains prohibited identifying or raw data'
     )
+
+    const incompleteFixture = read<{
+      expectations: { expectedOutcomeKinds: Record<string, string> }
+    }>('fixtures', 'unknown-state.json')
+    delete incompleteFixture.expectations.expectedOutcomeKinds['resources.bands']
+    expect(() => validateFixture(incompleteFixture, 'incomplete.json')).toThrow(
+      'expected outcomes must cover every observable'
+    )
   })
 
   it('rejects an observability audit that permits new hooks or exports account state', () => {

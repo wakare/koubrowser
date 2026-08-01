@@ -1,17 +1,32 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "fixtureId": "growth-fixture:event-active-not-ready",
   "observables": {
-    "event.overlay-status": "active",
-    "capability.breadth-summary": "insufficient",
-    "resources.bands": "low",
-    "event.goal": "participate-without-overextension"
+    "event.overlay-status": {
+      "freshness": "unavailable",
+      "overlayStatus": "unavailable"
+    },
+    "capability.breadth-summary": {
+      "freshness": "fresh",
+      "eventGoalSelected": true,
+      "categorySelected": false
+    },
+    "resources.bands": {
+      "freshness": "fresh",
+      "totalsAvailable": true,
+      "posture": "conserve"
+    }
   },
   "privacy": {
     "containsAccountIdentifier": false,
     "containsRawPayload": false
   },
   "expectations": {
-    "nonEmptyFallbackRequired": true
+    "nonEmptyFallbackRequired": true,
+    "expectedOutcomeKinds": {
+      "event.overlay-status": "data-acquisition",
+      "capability.breadth-summary": "manual-check",
+      "resources.bands": "manual-check"
+    }
   }
 }
