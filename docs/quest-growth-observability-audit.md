@@ -98,6 +98,8 @@ fallback は全 observable で非空とする。
 pure fallback evaluator gate の完了後、project owner は匿名 read-only local snapshot adapter まで
 追加承認し、その後に非実行 fallback UI の接続を承認した。adapter は既存 `SvData` を集約するだけで、
 UI は evaluator の `manual-check` / `data-acquisition` だけを表示し、新しい観測や I/O を追加しない。
+資源方針と成長重点は現在画面だけの user-declared context とし、保存・外送せず、審査済み知識の
+代用にしない。
 
 1. revision 2 を含む8 partial observable の判断境界を project owner が承認した。
 2. 2 unavailable observable は新規観測で補わず、manual fallback を evaluator test に固定した。

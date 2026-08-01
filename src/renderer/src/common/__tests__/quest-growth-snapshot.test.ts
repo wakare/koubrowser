@@ -21,7 +21,10 @@ import {
   evaluateQuestGrowthFallback,
   type QuestGrowthFallbackInput
 } from '@common/quest_growth_evaluator'
-import { buildQuestGrowthLocalSnapshot } from '@renderer/common/quest-growth-snapshot'
+import {
+  buildQuestGrowthLocalSnapshot,
+  questGrowthContextFromSelection
+} from '@renderer/common/quest-growth-snapshot'
 
 function ship(
   instanceId: number,
@@ -247,5 +250,27 @@ describe('quest growth local snapshot adapter', () => {
     expect(source).not.toContain('XMLHttpRequest')
     expect(source).not.toContain('@renderer/store')
     expect(source).not.toMatch(/from ['"]vue['"]/)
+  })
+
+  it('maps session-only user choices without granting reviewed knowledge', () => {
+    expect(questGrowthContextFromSelection({ resourcePosture: 'conserve', focus: 'asw' })).toEqual({
+      resourcePosture: 'conserve',
+      aswTargetSelected: true,
+      surfaceTargetSelected: false,
+      eoTargetSelected: false,
+      eventGoalSelected: false,
+      evergreenCategorySelected: false
+    })
+    expect(questGrowthContextFromSelection({ resourcePosture: 'unset', focus: 'event' })).toEqual({
+      resourcePosture: undefined,
+      aswTargetSelected: false,
+      surfaceTargetSelected: false,
+      eoTargetSelected: false,
+      eventGoalSelected: true,
+      evergreenCategorySelected: false
+    })
+    expect(
+      JSON.stringify(questGrowthContextFromSelection({ resourcePosture: 'spend', focus: 'eo' }))
+    ).not.toContain('reviewedRouteKnowledge')
   })
 })

@@ -6167,6 +6167,9 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
                   ? {
                       routeOutput: growth.dataset.routeOutput ?? null,
                       priorityCount: growth.querySelectorAll('.quest-growth-priority li').length,
+                      contextSelectCount: growth.querySelectorAll(
+                        '.quest-growth-context select'
+                      ).length,
                       detailsCollapsed: growthDetails ? !growthDetails.open : null,
                       forbiddenIdentifiers: forbidden
                         .filter((pattern) => pattern.test(growthHtml))
@@ -6191,6 +6194,7 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       strategyResult.scrollWidth > strategyResult.clientWidth + 1 ||
       strategyResult.growth?.routeOutput !== 'prohibited' ||
       strategyResult.growth?.priorityCount < 1 ||
+      strategyResult.growth?.contextSelectCount !== 2 ||
       strategyResult.growth?.detailsCollapsed !== true ||
       strategyResult.growth?.forbiddenIdentifiers.length > 0 ||
       strategyResult.growth?.scrollWidth > strategyResult.growth?.clientWidth + 1

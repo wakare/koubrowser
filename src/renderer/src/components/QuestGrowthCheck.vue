@@ -6,10 +6,20 @@ import {
   type QuestGrowthFallbackInput,
   type QuestGrowthFallbackOutcome
 } from '@common/quest_growth_evaluator'
+import type {
+  QuestGrowthFocus,
+  QuestGrowthResourcePosture
+} from '@renderer/common/quest-growth-snapshot'
 import { translateApp } from '@renderer/store/global_setting'
 
 const props = defineProps<{
   inputs: readonly QuestGrowthFallbackInput[]
+  resourcePosture: QuestGrowthResourcePosture
+  focus: QuestGrowthFocus
+}>()
+const emit = defineEmits<{
+  'update:resourcePosture': [value: QuestGrowthResourcePosture]
+  'update:focus': [value: QuestGrowthFocus]
 }>()
 
 const ObservableTitleKeys = {
@@ -86,9 +96,30 @@ const acquisitionRows = computed(() =>
   rows.value.filter((row) => row.outcome.kind === 'data-acquisition')
 )
 const manualRows = computed(() => rows.value.filter((row) => row.outcome.kind === 'manual-check'))
+const FocusObservableIds: Readonly<
+  Partial<Record<QuestGrowthFocus, QuestGrowthFallbackInput['observableId']>>
+> = {
+  resources: 'resources.bands',
+  asw: 'ships.asw-capable-summary',
+  surface: 'capability.surface-air-los-gaps',
+  eo: 'maps.eo-affordability',
+  breadth: 'capability.breadth-summary',
+  event: 'event.overlay-status'
+}
+const orderedRows = computed(() => {
+  const focusObservableId = FocusObservableIds[props.focus]
+  return [...rows.value].sort((left, right) => {
+    const leftFocused = left.input.observableId === focusObservableId ? 0 : 1
+    const rightFocused = right.input.observableId === focusObservableId ? 0 : 1
+    if (leftFocused !== rightFocused) return leftFocused - rightFocused
+    const leftKind = left.outcome.kind === 'data-acquisition' ? 0 : 1
+    const rightKind = right.outcome.kind === 'data-acquisition' ? 0 : 1
+    return leftKind - rightKind
+  })
+})
 const priorityActions = computed(() => {
   const unique = new Set<string>()
-  for (const row of [...acquisitionRows.value, ...manualRows.value]) {
+  for (const row of orderedRows.value) {
     for (const action of row.actions) unique.add(action)
   }
   return [...unique].slice(0, 5)
@@ -103,6 +134,17 @@ function actionText(action: string): string {
     ? ActionMessageKeys[action as keyof typeof ActionMessageKeys]
     : 'quest.growth.action.review'
   return translateApp(key)
+}
+
+function updateResourcePosture(event: Event): void {
+  emit(
+    'update:resourcePosture',
+    (event.target as HTMLSelectElement).value as QuestGrowthResourcePosture
+  )
+}
+
+function updateFocus(event: Event): void {
+  emit('update:focus', (event.target as HTMLSelectElement).value as QuestGrowthFocus)
 }
 </script>
 
@@ -132,6 +174,33 @@ function actionText(action: string): string {
     </header>
 
     <p class="quest-growth-route-notice">{{ translateApp('quest.growth.routePending') }}</p>
+
+    <div class="quest-growth-context">
+      <label>
+        <span>{{ translateApp('quest.growth.context.resourcePosture') }}</span>
+        <select :value="resourcePosture" @change="updateResourcePosture">
+          <option value="unset">{{ translateApp('quest.growth.context.unset') }}</option>
+          <option value="conserve">{{ translateApp('quest.growth.context.conserve') }}</option>
+          <option value="balanced">{{ translateApp('quest.growth.context.balanced') }}</option>
+          <option value="spend">{{ translateApp('quest.growth.context.spend') }}</option>
+        </select>
+      </label>
+      <label>
+        <span>{{ translateApp('quest.growth.context.focus') }}</span>
+        <select :value="focus" @change="updateFocus">
+          <option value="unset">{{ translateApp('quest.growth.context.unset') }}</option>
+          <option value="resources">{{ translateApp('quest.growth.observable.resources') }}</option>
+          <option value="asw">{{ translateApp('quest.growth.observable.asw') }}</option>
+          <option value="surface">
+            {{ translateApp('quest.growth.observable.surfaceAirLos') }}
+          </option>
+          <option value="eo">{{ translateApp('quest.growth.observable.eo') }}</option>
+          <option value="breadth">{{ translateApp('quest.growth.observable.breadth') }}</option>
+          <option value="event">{{ translateApp('quest.growth.observable.event') }}</option>
+        </select>
+      </label>
+      <small>{{ translateApp('quest.growth.context.sessionOnly') }}</small>
+    </div>
 
     <section class="quest-growth-priority">
       <strong>{{ translateApp('quest.growth.priority') }}</strong>
@@ -237,6 +306,39 @@ function actionText(action: string): string {
   font-size: 10px;
 }
 
+.quest-growth-context {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 6px 10px;
+  padding: 8px;
+  border: 1px solid rgba(#75e8ff, 0.18);
+  background: rgba(#000, 0.12);
+
+  label {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 6px;
+    align-items: center;
+    color: rgba(#fff, 0.64);
+    font-size: 10px;
+  }
+
+  select {
+    min-width: 0;
+    padding: 3px 5px;
+    border: 1px solid rgba(#75e8ff, 0.32);
+    color: #fff;
+    background: #292929;
+    font-size: 10px;
+  }
+
+  small {
+    grid-column: 1 / -1;
+    color: rgba(#fff, 0.42);
+    font-size: 9px;
+  }
+}
+
 .quest-growth-priority {
   display: grid;
   grid-template-columns: minmax(110px, auto) minmax(0, 1fr);
@@ -317,6 +419,10 @@ function actionText(action: string): string {
 
 @media (max-width: 760px) {
   .quest-growth-priority {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .quest-growth-context {
     grid-template-columns: minmax(0, 1fr);
   }
 

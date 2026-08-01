@@ -28,6 +28,21 @@ export interface QuestGrowthLocalContext {
   evergreenCategorySelected?: boolean
 }
 
+export type QuestGrowthResourcePosture = 'unset' | 'conserve' | 'balanced' | 'spend'
+export type QuestGrowthFocus =
+  | 'unset'
+  | 'resources'
+  | 'asw'
+  | 'surface'
+  | 'eo'
+  | 'breadth'
+  | 'event'
+
+export interface QuestGrowthLocalSelection {
+  resourcePosture: QuestGrowthResourcePosture
+  focus: QuestGrowthFocus
+}
+
 export interface QuestGrowthLocalSnapshot {
   schemaVersion: 1
   source: 'renderer-readonly-state'
@@ -37,6 +52,19 @@ export interface QuestGrowthLocalSnapshot {
     containsShipIdentifier: false
     containsEquipmentInstanceIdentifier: false
     containsRawPayload: false
+  }
+}
+
+export function questGrowthContextFromSelection(
+  selection: QuestGrowthLocalSelection
+): QuestGrowthLocalContext {
+  return {
+    resourcePosture: selection.resourcePosture === 'unset' ? undefined : selection.resourcePosture,
+    aswTargetSelected: selection.focus === 'asw',
+    surfaceTargetSelected: selection.focus === 'surface',
+    eoTargetSelected: selection.focus === 'eo',
+    eventGoalSelected: selection.focus === 'event',
+    evergreenCategorySelected: selection.focus === 'breadth'
   }
 }
 

@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/7'
+const CompilerVersion = 'quest-growth-authoring-compiler/8'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -867,7 +867,7 @@ function buildQuestGrowthArtifacts(root) {
     },
     runtimePromotion: {
       status: 'blocked',
-      reason: 'READONLY_FALLBACK_UI_ONLY_NO_ROUTE_OUTPUT'
+      reason: 'EXISTING_OBSERVATION_CONTEXT_UI_ONLY_NO_ROUTE_OUTPUT'
     }
   }
   const independentApprovalPending =
@@ -897,7 +897,7 @@ function buildQuestGrowthArtifacts(root) {
     })),
     milestoneGaps,
     globalStops: [
-      'NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_FALLBACK_UI_STAGE',
+      'NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE',
       ...(independentApprovalPending ? ['INDEPENDENT_APPROVER_REQUIRED'] : []),
       ...([...observability.observables.values()].some(
         (item) => item.coverage !== 'complete' || item.runtimeUse !== 'candidate'

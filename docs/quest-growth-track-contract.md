@@ -2,9 +2,9 @@
 
 最終更新日: 2026-08-01
 
-Task ID: `QGROWTH-R4_Readonly_Fallback_UI`
+Task ID: `QGROWTH-R5_Existing_Observation_Context`
 
-Status: `READONLY_FALLBACK_UI_IMPLEMENTED_ROUTE_OUTPUT_BLOCKED`
+Status: `EXISTING_OBSERVATION_CONTEXT_IMPLEMENTED_ROUTE_OUTPUT_BLOCKED`
 
 ## モデル境界
 
@@ -25,8 +25,8 @@ GrowthMilestone から QuestRouteUnit への参照は一方向とする。`manua
 ## 現在の固定境界
 
 Wave 1 は authoring と audit artifact、Wave 2 は pure fallback evaluator、Wave 3 は read-only
-snapshot adapter を固定した。現 Wave は adapter の結果を非実行チェックとして renderer に表示する
-read-only fallback UI までを許可する。
+snapshot adapter、Wave 4 は read-only fallback UI を固定した。現 Wave は新しい観測を追加せず、
+利用者が現在画面で選んだ資源方針と成長重点を evaluator context へ渡すところまでを許可する。
 
 ```text
 evidence-ledger.json ──────┐
@@ -111,6 +111,10 @@ payload は結果型に持たず、I/O、local DB query、保存、外送、netw
 band 化せず測定値だけを保持する。route lineage 延期中のため EO の `reviewedRouteKnowledge` は adapter
 で常に `false` とし、具体的 route を生成できない状態を維持する。
 
+`resourcePosture` と `focus` は renderer の一時 state とし、localStorage、DB、設定ファイルへ保存せず、
+外送もしない。選択は対象 observable の確認順と user-declared context だけを変更する。審査済み rule、
+formula、route knowledge を選択から生成せず、`reviewedRouteKnowledge` は引き続き常に `false` とする。
+
 ## Unknown と fallback
 
 unknown state でも空画面にしない。現在の fallback UI は最低限次を表示する。
@@ -183,7 +187,7 @@ evaluator、adapter、UI のいずれからも具体的 route を出力しては
 1. `R4 Readonly Fallback UI`: 匿名 snapshot の `manual-check` / `data-acquisition` を、
    情報不足と次の確認行動として renderer に表示する。具体的 route は表示しない。
 2. `R5 Existing-Observation Context`: 新しい通信観測を追加せず、既存 local state と利用者選択で
-   判定できる context を増やす。
+   判定できる context を増やす。資源方針と成長重点の session-only 選択を実装済み。
 3. `R6 Reviewed Route Lineage`: 中日コミュニティの複数資料を route 単位で交差確認し、参照元、
    確認日、game version、適用条件、失効条件を固定する。
 4. `R7 Reviewed Concrete Route UI`: lineage と適用条件を満たす route だけを具体的な海域、編成、

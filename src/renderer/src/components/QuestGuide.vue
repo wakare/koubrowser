@@ -52,7 +52,12 @@ import {
   normalizeQuestGoalViewMode,
   type QuestGoalViewMode
 } from '@renderer/common/quest-goal-view'
-import { buildQuestGrowthLocalSnapshot } from '@renderer/common/quest-growth-snapshot'
+import {
+  buildQuestGrowthLocalSnapshot,
+  questGrowthContextFromSelection,
+  type QuestGrowthFocus,
+  type QuestGrowthResourcePosture
+} from '@renderer/common/quest-growth-snapshot'
 import { normalizeQuestStrategyVisibility } from '@renderer/common/quest-strategy-view'
 import { getQuestCategoryText } from '@renderer/common/quest-view'
 import { translateApp } from '@renderer/store/global_setting'
@@ -83,6 +88,8 @@ const searchQuery = ref('')
 const showStrategyRoute = ref(
   normalizeQuestStrategyVisibility(localStorage.getItem(StrategyRouteVisibleStorageKey))
 )
+const growthResourcePosture = ref<QuestGrowthResourcePosture>('unset')
+const growthFocus = ref<QuestGrowthFocus>('unset')
 const wikiSource = ref<QuestGuideWikiSource>(
   normalizeQuestGuideWikiSource(localStorage.getItem(WikiSourceStorageKey))
 )
@@ -293,7 +300,15 @@ const strategyEquipmentTypeCounts = computed<Readonly<Record<string, number>> | 
   return result
 })
 const strategyMapDataAvailable = computed(() => svdata.mstMapInfos.length > 0)
-const growthSnapshot = computed(() => buildQuestGrowthLocalSnapshot(svdata))
+const growthSnapshot = computed(() =>
+  buildQuestGrowthLocalSnapshot(
+    svdata,
+    questGrowthContextFromSelection({
+      resourcePosture: growthResourcePosture.value,
+      focus: growthFocus.value
+    })
+  )
+)
 const consumableStock = computed<QuestGuideConsumableStockEntry[] | undefined>(() => {
   if (svdata.useitems.length === 0) {
     return undefined
@@ -981,7 +996,12 @@ function equipmentKindText(
           )
         }}
       </button>
-      <QuestGrowthCheck v-if="showStrategyRoute" :inputs="growthSnapshot.inputs" />
+      <QuestGrowthCheck
+        v-if="showStrategyRoute"
+        v-model:resource-posture="growthResourcePosture"
+        v-model:focus="growthFocus"
+        :inputs="growthSnapshot.inputs"
+      />
       <QuestStrategyRoute
         v-if="showStrategyRoute"
         :recommendations="recommendations"

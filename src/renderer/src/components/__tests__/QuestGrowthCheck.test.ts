@@ -30,9 +30,15 @@ const Inputs: QuestGrowthFallbackInput[] = [
 ]
 
 describe('QuestGrowthCheck.vue', () => {
-  it('shows non-empty priorities and a compact summary without concrete routes', async () => {
+  async function render() {
     const { default: QuestGrowthCheck } = await import('../QuestGrowthCheck.vue')
-    const wrapper = mount(QuestGrowthCheck, { props: { inputs: Inputs } })
+    return mount(QuestGrowthCheck, {
+      props: { inputs: Inputs, resourcePosture: 'unset', focus: 'unset' }
+    })
+  }
+
+  it('shows non-empty priorities and a compact summary without concrete routes', async () => {
+    const wrapper = await render()
 
     expect(wrapper.get('.quest-growth-route-notice').text()).toBe('quest.growth.routePending')
     expect(wrapper.get('.quest-growth-counts').text()).toContain(
@@ -51,8 +57,7 @@ describe('QuestGrowthCheck.vue', () => {
   })
 
   it('does not render measured totals, counts, identifiers, or raw outcome codes', async () => {
-    const { default: QuestGrowthCheck } = await import('../QuestGrowthCheck.vue')
-    const wrapper = mount(QuestGrowthCheck, { props: { inputs: Inputs } })
+    const wrapper = await render()
     const html = wrapper.html()
 
     expect(html).not.toContain('123456')
@@ -60,6 +65,20 @@ describe('QuestGrowthCheck.vue', () => {
     expect(html).not.toContain('9001')
     expect(html).not.toContain('SELECT_RESOURCE_POSTURE')
     expect(html).not.toContain('ROUTE_OUTPUT_PROHIBITED_IN_PURE_EVALUATOR')
+  })
+
+  it('emits session-only resource posture and growth focus selections', async () => {
+    const wrapper = await render()
+    const selects = wrapper.findAll('.quest-growth-context select')
+
+    await selects[0].setValue('conserve')
+    await selects[1].setValue('asw')
+
+    expect(wrapper.emitted('update:resourcePosture')).toEqual([['conserve']])
+    expect(wrapper.emitted('update:focus')).toEqual([['asw']])
+    expect(wrapper.get('.quest-growth-context small').text()).toBe(
+      'quest.growth.context.sessionOnly'
+    )
   })
 
   it('has no persistence, external I/O, or route builder dependency', () => {

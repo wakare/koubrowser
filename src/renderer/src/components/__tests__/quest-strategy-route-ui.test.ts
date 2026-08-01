@@ -30,9 +30,13 @@ describe('quest strategy route UI wiring', () => {
 
   it('connects the readonly growth snapshot to a non-route fallback UI', () => {
     expect(questGuide).toContain('import QuestGrowthCheck from')
-    expect(questGuide).toContain('buildQuestGrowthLocalSnapshot(svdata)')
+    expect(questGuide).toContain('buildQuestGrowthLocalSnapshot(')
+    expect(questGuide).toContain('svdata,')
+    expect(questGuide).toContain('questGrowthContextFromSelection({')
     expect(questGuide).toContain('<QuestGrowthCheck')
     expect(questGuide).toContain(':inputs="growthSnapshot.inputs"')
+    expect(questGuide).toContain('v-model:resource-posture="growthResourcePosture"')
+    expect(questGuide).toContain('v-model:focus="growthFocus"')
     expect(growthCheck).toContain('evaluateQuestGrowthFallback(input)')
     expect(growthCheck).toContain('data-route-output="prohibited"')
     expect(growthCheck).not.toContain('buildQuestStrategyRoutePlan')
