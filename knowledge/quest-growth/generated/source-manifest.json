@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/12",
+  "compilerVersion": "quest-growth-authoring-compiler/13",
   "output": {
     "approvedDecisionRubricCount": 8,
     "approvedMilestoneCount": 8,
@@ -20,6 +20,10 @@
     "r7ConcreteRouteArtifactCount": 0,
     "r7DecisionGateCount": 6,
     "r7PilotCandidateCount": 6,
+    "r7PilotContentAuthorizedGateCount": 0,
+    "r7PilotContentCurrentRouteArtifactCount": 0,
+    "r7PilotContentDecisionGateCount": 1,
+    "r7PilotContentMaximumRouteArtifactCount": 2,
     "r7RecommendedPilotFamilyCount": 2,
     "r7SchemaFixtureCaseCount": 4,
     "r7SchemaFixtureValidationPassed": true,
@@ -60,6 +64,7 @@
     "policyDigest": "sha256:488622d26c41afc3e276affb952d7bb6a1234d33b2962f204e08a697c886d4eb",
     "r7AuthoringSchemaDigest": "sha256:660baa094b6a493a12de1bcedb26d26e455f8ee2c4a4dc6e8b9f08de58835b68",
     "r7AuthorizationRequestDigest": "sha256:1c068752121f6de81e82e2dc54ab8c5f9443c1e66f744d370065bcb3439ec72a",
+    "r7PilotContentAuthorizationRequestDigest": "sha256:f932089c8770f8d739335a3a17e8737249e5712b38a2bdbf1265fc32521686f6",
     "r7RouteCatalogDigest": "sha256:2c431964a73b1c9d6b736bb914fe9a6d5b96ec4e967093d249f18841579b9043",
     "r7SchemaFixtureDigest": "sha256:d7b84372b10103d5849e1278fbe6799268e08fd6f7b27d6141a83c920c1483b6",
     "schemaDigest": "sha256:3ff863c1063459cbf5a9e8780ddf95f0fdcf9a9c2e0ecc8c69d2776475c57682",

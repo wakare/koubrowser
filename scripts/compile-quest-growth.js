@@ -10,8 +10,12 @@ const {
   R7SchemaOutputFilenames,
   buildR7SchemaArtifacts
 } = require('./quest-growth-r7-schema')
+const {
+  R7ContentDecisionOutputFilenames,
+  buildR7ContentDecisionArtifacts
+} = require('./quest-growth-r7-content-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/12'
+const CompilerVersion = 'quest-growth-authoring-compiler/13'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -20,7 +24,8 @@ const OutputFilenames = [
   'conflict-and-gap-report.json',
   ...RouteOutputFilenames,
   ...R7DecisionOutputFilenames,
-  ...R7SchemaOutputFilenames
+  ...R7SchemaOutputFilenames,
+  ...R7ContentDecisionOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -826,6 +831,12 @@ function buildQuestGrowthArtifacts(root) {
     base,
     r7DecisionReport: r7Decision.artifacts['r7-authorization-report.json']
   })
+  const r7ContentDecision = buildR7ContentDecisionArtifacts({
+    base,
+    routeApprovalPacket: routeLineage.artifacts['route-approval-packet.json'],
+    r7AuthorizationReport: r7Decision.artifacts['r7-authorization-report.json'],
+    r7SchemaReport: r7Schema.artifacts['r7-schema-validation-report.json']
+  })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -875,6 +886,7 @@ function buildQuestGrowthArtifacts(root) {
       ...routeLineage.source,
       ...r7Decision.source,
       ...r7Schema.source,
+      ...r7ContentDecision.source,
       fixtureDigests
     },
     output: {
@@ -910,7 +922,8 @@ function buildQuestGrowthArtifacts(root) {
       routeRuntimeEligibleCount: routeLineage.output.runtimeEligibleCount,
       routeValidationCaseCount: routeLineage.output.validationCaseCount,
       ...r7Decision.output,
-      ...r7Schema.output
+      ...r7Schema.output,
+      ...r7ContentDecision.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -963,7 +976,8 @@ function buildQuestGrowthArtifacts(root) {
     'conflict-and-gap-report.json': conflictAndGapReport,
     ...routeLineage.artifacts,
     ...r7Decision.artifacts,
-    ...r7Schema.artifacts
+    ...r7Schema.artifacts,
+    ...r7ContentDecision.artifacts
   }
 }
 

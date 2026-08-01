@@ -60,6 +60,19 @@ const { validateCatalog, validateFixturePacket } =
     ) => Record<string, unknown>
     validateFixturePacket: (value: Record<string, unknown>) => Record<string, unknown>[]
   }
+const { contentAuthorizationSemanticDigest, validateR7ContentAuthorizationRequest } =
+  require('../../../scripts/quest-growth-r7-content-decision.js') as {
+    contentAuthorizationSemanticDigest: (value: Record<string, unknown>) => string
+    validateR7ContentAuthorizationRequest: (
+      value: Record<string, unknown>,
+      dependencies: {
+        base: string
+        routeApprovalPacket: Record<string, unknown>
+        r7AuthorizationReport: Record<string, unknown>
+        r7SchemaReport: Record<string, unknown>
+      }
+    ) => { semanticDigest: string }
+  }
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -379,6 +392,82 @@ describe('quest growth authoring contract', () => {
 
     expect(() => validateCatalog(tampered, request, report)).toThrow(
       'R7 pilot content is not authorized; route catalog must be empty'
+    )
+  })
+
+  it('generates a digest-bound R7 pilot content decision packet without route content', () => {
+    const report = read<{
+      status: string
+      scope: string
+      semanticDigest: string
+      gateId: string
+      gateSemanticDigest: string
+      authorizationState: string
+      selectedPilotFamilies: string[]
+      maximumRouteArtifacts: number
+      maximumRouteArtifactsPerFamily: number
+      maximumAuthoringStatus: string
+      currentCatalogRouteCount: number
+      draftConcreteRouteArtifactCount: number
+      reviewedConcreteRouteArtifactCount: number
+      runtimeEligibleCount: number
+      publicationAuthorization: string
+      stillProhibited: string[]
+    }>('generated', 'r7-pilot-content-authorization-report.json')
+
+    expect(report.status).toBe('OWNER_DECISION_REQUIRED')
+    expect(report.scope).toBe('R7_PILOT_CONTENT_AUTHORING_REVIEW_ONLY')
+    expect(report.semanticDigest).toBe(
+      'sha256:d2c474af9b09a959cb9e9a1532ba954e1f11da8669feb2fc5049421715a972fc'
+    )
+    expect(report.gateId).toBe('r7-pilot-content-authoring')
+    expect(report.gateSemanticDigest).toBe(
+      'sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3'
+    )
+    expect(report.authorizationState).toBe('not-authorized')
+    expect(report.selectedPilotFamilies).toEqual([
+      'expedition-resource-periodic-loop',
+      'anti-submarine-foundation'
+    ])
+    expect(report.maximumRouteArtifacts).toBe(2)
+    expect(report.maximumRouteArtifactsPerFamily).toBe(1)
+    expect(report.maximumAuthoringStatus).toBe('draft')
+    expect(report.currentCatalogRouteCount).toBe(0)
+    expect(report.draftConcreteRouteArtifactCount).toBe(0)
+    expect(report.reviewedConcreteRouteArtifactCount).toBe(0)
+    expect(report.runtimeEligibleCount).toBe(0)
+    expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.stillProhibited).toContain('renderer-integration')
+    expect(report.stillProhibited).toContain('runtime-publication')
+  })
+
+  it('fails closed when the R7 pilot content authoring limit is changed', () => {
+    const request = read<Record<string, unknown> & {
+      requestedAuthorization: { maximumRouteArtifacts: number }
+    }>('decisions', 'r7-pilot-content-authorization-request.json')
+    const tampered = structuredClone(request)
+    tampered.requestedAuthorization.maximumRouteArtifacts = 3
+    const dependencies = {
+      base: GrowthDirectory,
+      routeApprovalPacket: read<Record<string, unknown>>(
+        'generated',
+        'route-approval-packet.json'
+      ),
+      r7AuthorizationReport: read<Record<string, unknown>>(
+        'generated',
+        'r7-authorization-report.json'
+      ),
+      r7SchemaReport: read<Record<string, unknown>>(
+        'generated',
+        'r7-schema-validation-report.json'
+      )
+    }
+
+    expect(contentAuthorizationSemanticDigest(tampered)).not.toBe(
+      contentAuthorizationSemanticDigest(request)
+    )
+    expect(() => validateR7ContentAuthorizationRequest(tampered, dependencies)).toThrow(
+      'R7 requested content authorization boundary mismatch'
     )
   })
 

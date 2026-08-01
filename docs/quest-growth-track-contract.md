@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R7_SCHEMA_ONLY_AUTHORIZED_CONTENT_NOT_AUTHORIZED`
+Status: `R7_SCHEMA_ONLY_AUTHORIZED_CONTENT_DECISION_PACKET_READY`
 
 ## モデル境界
 
@@ -221,6 +221,11 @@ R7 の実装前判断は [`quest-growth-r7-decision-packet.md`](quest-growth-r7-
 具体的 route authoring の開始には `r7-pilot-content-authoring` の追加承認を必要とする。renderer、
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や
 R6 の pure evaluation artifact はそれらの承認を代替しない。
+
+pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
+`draft` までに固定した。固定摘要と推奨承認文面は
+[`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)
+に記録する。owner 承認までは catalog route count を0件に保つ。
 
 ## Commands
 

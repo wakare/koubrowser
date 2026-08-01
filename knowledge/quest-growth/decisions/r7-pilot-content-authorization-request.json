@@ -1,0 +1,96 @@
+{
+  "authoringSchema": "QuestGrowthR7PilotContentAuthorizationRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-pilot-content",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_PILOT_CONTENT_AUTHORING_REVIEW_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "e5cb218630756e722b4e64369e0af620ff0320d3",
+    "checkedAt": "2026-08-01T18:21:30.465Z"
+  },
+  "approvalBasis": {
+    "authorizationRequestDigest": "sha256:1c068752121f6de81e82e2dc54ab8c5f9443c1e66f744d370065bcb3439ec72a",
+    "schemaGateDigest": "sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed",
+    "pilotContentGateDigest": "sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3",
+    "authoringSchemaDigest": "sha256:660baa094b6a493a12de1bcedb26d26e455f8ee2c4a4dc6e8b9f08de58835b68",
+    "emptyCatalogDigest": "sha256:2c431964a73b1c9d6b736bb914fe9a6d5b96ec4e967093d249f18841579b9043",
+    "r6ApprovalPacketDigest": "sha256:9982237824796126a35a5490d7a7e39fec839552624b130f37f8b4ae75cf0164"
+  },
+  "requestedAuthorization": {
+    "gateId": "r7-pilot-content-authoring",
+    "authorizationState": "owner-decision-required",
+    "maximumRouteArtifacts": 2,
+    "maximumRouteArtifactsPerFamily": 1,
+    "maximumAuthoringStatus": "draft",
+    "selectedPilotFamilies": [
+      "expedition-resource-periodic-loop",
+      "anti-submarine-foundation"
+    ]
+  },
+  "pilotBindings": [
+    {
+      "routeFamily": "expedition-resource-periodic-loop",
+      "lineage": {
+        "id": "growth-lineage:expedition-resource-periodic-loop",
+        "revision": 1,
+        "semanticDigest": "sha256:5b94ab240c29f314f5a8abb83b7afa6a8ef1eacfca0d6e1311aff9ea673c5eaa"
+      },
+      "routeUnit": {
+        "id": "growth-route:expedition-resource-periodic-loop:baseline",
+        "revision": 1,
+        "semanticDigest": "sha256:89fb168f03870eb705274b523d0f82d6466b908438e1cd798f6b7ef6cc0d21da"
+      }
+    },
+    {
+      "routeFamily": "anti-submarine-foundation",
+      "lineage": {
+        "id": "growth-lineage:anti-submarine-foundation",
+        "revision": 1,
+        "semanticDigest": "sha256:563da2a96f2f4b4dbe2324939e8f5f9f3182a7bfd2b738503510342971878951"
+      },
+      "routeUnit": {
+        "id": "growth-route:anti-submarine-foundation:baseline",
+        "revision": 1,
+        "semanticDigest": "sha256:7daa5b339ceafdf26d77f19c908719ed653cad4f1e7e72ab4727d275ee4f019b"
+      }
+    }
+  ],
+  "authoringRequirements": {
+    "allowedOutputClasses": [
+      "manual-check-route",
+      "objective-only",
+      "knowledge-insufficient",
+      "withdrawn"
+    ],
+    "requiredEvidenceRules": [
+      "every concrete segment binds exact claim, independence-group and source digests",
+      "hard mechanics require at least two readable independent editorial groups",
+      "source title, URL, access time and currentness window are recorded",
+      "prompt-only or unreadable observations do not count as evidence",
+      "conflict, unknown or expiry always produces a non-empty fallback"
+    ],
+    "requiredReviewRules": [
+      "route author and approver are different identities",
+      "route approval is bound to a separate semantic digest",
+      "draft authoring does not imply reviewed status or runtime eligibility"
+    ]
+  },
+  "stillProhibited": [
+    "content-outside-selected-pilots",
+    "reviewed-status-without-route-approval",
+    "renderer-integration",
+    "real-account-acceptance",
+    "runtime-publication",
+    "default-enablement",
+    "automatic-game-operation",
+    "game-communication-mutation",
+    "runtime-web-scraping",
+    "account-data-export"
+  ],
+  "review": {
+    "author": "codex-r7-content-decision-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

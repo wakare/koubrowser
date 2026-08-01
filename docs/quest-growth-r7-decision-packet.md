@@ -97,6 +97,10 @@ validator は schema gate の digest、選択した2 pilot、空 catalog、匿�
 分岐条件、出撃手順を authoring しない。renderer、実アカウント受入、runtime publication、
 default enablement も引き続き未承認である。
 
+件数、対象、証拠、review 境界を固定した decision-only packet は
+[`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)
+に分離する。
+
 ## Fail-closed 条件
 
 - R6 approval packet の digest が変わった場合は request を再作成する。
