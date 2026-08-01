@@ -1,0 +1,130 @@
+{
+  "authoringSchema": "QuestGrowthR7EvidenceSnapshots/1alpha",
+  "snapshotVersion": "1.0.0-alpha.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "5df613898c62a52f8429102d1997724e44059011",
+    "checkedAt": "2026-08-01T18:34:55.864Z"
+  },
+  "sources": [
+    {
+      "sourceId": "source:r7-wikiwiki-expedition-05",
+      "independenceGroupId": "group:wikiwiki-ja",
+      "url": "https://wikiwiki.jp/kancolle/遠征",
+      "title": "遠征 - 艦隊これくしょん -艦これ- 攻略 Wiki*",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki*",
+      "language": "ja-JP",
+      "accessibility": "independently-readable",
+      "evidenceClass": "mechanic",
+      "checkedAt": "2026-08-01T18:34:55.864Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-01-28T00:00:00.000Z",
+      "supportedClaims": ["claim:expedition-resource-loop"],
+      "facts": [
+        {
+          "factId": "fact:expedition-05-unlock",
+          "statement": "遠征02と03の完了後に遠征05が開放される。"
+        },
+        {
+          "factId": "fact:expedition-05-duration-reward",
+          "statement": "遠征05は1時間30分で、基本報酬は燃料200、弾薬200、鋼材20、ボーキサイト20。"
+        },
+        {
+          "factId": "fact:expedition-05-success-condition",
+          "statement": "旗艦Lv3以上、最低4隻、軽巡1隻、駆逐または海防艦2隻、その他1隻が成功条件として掲載されている。"
+        }
+      ],
+      "notes": [
+        "大成功条件や唯一の最適遠征は主張しない。",
+        "実行時は履歴ではなく現在の編成と補給を手動確認する。"
+      ]
+    },
+    {
+      "sourceId": "source:r7-kcwiki-expedition-05",
+      "independenceGroupId": "group:kcwiki-zh",
+      "url": "https://zh.kcwiki.cn/wiki/远征",
+      "title": "远征列表 - 舰娘百科",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "accessibility": "independently-readable",
+      "evidenceClass": "mechanic",
+      "checkedAt": "2026-08-01T18:34:55.864Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-01-28T00:00:00.000Z",
+      "supportedClaims": ["claim:expedition-resource-loop"],
+      "facts": [
+        {
+          "factId": "fact:expedition-05-duration-reward",
+          "statement": "远征05耗时1小时30分，基本报酬为燃料200、弹药200、钢材20、铝土20。"
+        },
+        {
+          "factId": "fact:expedition-05-success-condition",
+          "statement": "远征05表格列出旗舰Lv3、最低4艘、轻巡1艘与驱逐或海防舰3艘。"
+        }
+      ],
+      "notes": [
+        "与日文 Wiki 的更一般条件取保守交集，草案使用轻巡1加驱逐或海防舰3。",
+        "不把效率表解释为所有玩家的唯一优先级。"
+      ]
+    },
+    {
+      "sourceId": "source:r7-wikiwiki-1-5",
+      "independenceGroupId": "group:wikiwiki-ja",
+      "url": "https://wikiwiki.jp/kancolle/鎮守府海域/1-5",
+      "title": "鎮守府海域/1-5 - 艦隊これくしょん -艦これ- 攻略 Wiki*",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki*",
+      "language": "ja-JP",
+      "accessibility": "independently-readable",
+      "evidenceClass": "mechanic",
+      "checkedAt": "2026-08-01T18:34:55.864Z",
+      "reviewBy": "2026-09-30T00:00:00.000Z",
+      "validUntil": "2026-12-31T00:00:00.000Z",
+      "supportedClaims": ["claim:conditional-leveling-maps"],
+      "facts": [
+        {
+          "factId": "fact:1-5-submarine-nodes",
+          "statement": "1-5のA、D、E、Fは対潜戦で、5隻以上ではDからEまたはFへ進む。"
+        },
+        {
+          "factId": "fact:1-5-third-battle-stop",
+          "statement": "Eの先は5隻以上でC、Fの先は条件を満たすとGへ進むため、EまたはFの戦闘後撤退すれば3戦で止められる。"
+        }
+      ],
+      "notes": [
+        "ページ最終更新は2026-07-28、分岐法則更新日は2024-10-20と表示されていた。",
+        "敵編成や分岐が変わった場合は草案を停止して再審査する。"
+      ]
+    },
+    {
+      "sourceId": "source:r7-zekamashi-1-5-three-battle",
+      "independenceGroupId": "group:zekamashi",
+      "url": "https://zekamashi.net/kancolle-kouryaku/levelup-hazimete/",
+      "title": "初心者のレベリング・周回におすすめの海域例",
+      "site": "ぜかましねっと艦これ！",
+      "language": "ja-JP",
+      "accessibility": "independently-readable",
+      "evidenceClass": "editorial",
+      "checkedAt": "2026-08-01T18:34:55.864Z",
+      "reviewBy": "2026-09-30T00:00:00.000Z",
+      "validUntil": "2026-12-31T00:00:00.000Z",
+      "supportedClaims": ["claim:conditional-leveling-maps"],
+      "facts": [
+        {
+          "factId": "fact:1-5-three-battle-training",
+          "statement": "初心者向け例として軽巡2・駆逐4で1-5のADEまたはADFを3戦し、各戦単横陣を選んで撤退する方法を掲載している。"
+        },
+        {
+          "factId": "fact:1-5-hq-level-condition",
+          "statement": "主対象は司令部Lv60未満で、Lv上昇後は先制対潜なしでは不向きとしている。"
+        },
+        {
+          "factId": "fact:1-5-asw-equipment-condition",
+          "statement": "最低限旗艦の対潜装備を用意し、装備が増えるほど安定するとしている。"
+        }
+      ],
+      "notes": [
+        "記事更新日は2024-05-23であり、high currentness risk として短い再審査期限を設定する。",
+        "効率や安全を保証せず、司令部レベルと先制対潜可否を手動条件に残す。"
+      ]
+    }
+  ]
+}

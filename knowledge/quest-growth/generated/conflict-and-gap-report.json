@@ -77,7 +77,7 @@
       "readableIndependentSourceIds": []
     }
   ],
-  "compilerVersion": "quest-growth-authoring-compiler/13",
+  "compilerVersion": "quest-growth-authoring-compiler/14",
   "decisionRubricAudits": [
     {
       "acceptanceTestCount": 2,
@@ -147,7 +147,7 @@
   "globalStops": [
     "NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE",
     "OBSERVABILITY_GAPS_REMAIN",
-    "R7_PILOT_CONTENT_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT"
+    "R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED"
   ],
   "milestoneGaps": [
     {

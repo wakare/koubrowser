@@ -59,13 +59,13 @@
   },
   "cases": [
     {
-      "caseId": "schema-valid-content-gate-blocked",
+      "caseId": "schema-valid-draft-content-authorized",
       "mutation": "none",
       "containsAccountIdentifier": false,
       "expected": {
         "schemaDecision": "VALID",
-        "contentDecision": "BLOCKED",
-        "reasonCodes": ["R7_PILOT_CONTENT_NOT_AUTHORIZED"]
+        "contentDecision": "AUTHORIZED_DRAFT_ONLY",
+        "reasonCodes": ["R7_DRAFT_ONLY_NO_RUNTIME"]
       }
     },
     {

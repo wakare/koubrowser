@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-0_CONCRETE_ROUTE_DECISION_PACKET`
 
-Status: `SCHEMA_GATE_APPROVED_PILOT_SELECTED_CONTENT_NOT_AUTHORIZED`
+Status: `SCHEMA_AND_PILOT_DRAFT_AUTHORING_APPROVED`
 
 ## 目的
 
@@ -41,9 +41,11 @@ R6 basis は次に固定する。
 6. `r7-default-enablement`
    - publication 後も、既定有効化は別の release 判断とする。
 
-`r7-schema-output-class` だけを project owner が gate semantic digest
+`r7-schema-output-class` を project owner が gate semantic digest
 `sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed`
-に固定して 2026-08-01T17:57:38.441Z に承認した。残り5件は `not-authorized` のままであり、
+に固定して 2026-08-01T17:57:38.441Z に承認した。続いて `r7-pilot-content-authoring` を
+`sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3`
+に固定して 2026-08-01T18:34:55.864Z に承認した。残り4件は `not-authorized` のままであり、
 前段の承認は後段の承認へ自動変換しない。
 
 ## 提案する output class
@@ -79,23 +81,25 @@ project owner は初期 pilot として次の2件を選択した。
 - `expedition-resource-periodic-loop`
 - `anti-submarine-foundation`
 
-この選択は schema fixture の対象範囲だけを定め、具体的攻略内容を承認しない。
+この選択と別の固定摘要承認により、各 family 1件・合計2件までの `draft` authoring だけを許可した。
 
-## 承認済みの schema-only 成果物
+## 承認済みの schema / draft authoring 成果物
 
 - [`r7-authoring-schema-1alpha.json`](../knowledge/quest-growth/r7-authoring-schema-1alpha.json)
-- [`route-catalog.json`](../knowledge/quest-growth/r7/route-catalog.json)（`routes: []`）
+- [`route-catalog.json`](../knowledge/quest-growth/r7/route-catalog.json)（draft 2件）
+- [`evidence-snapshots.json`](../knowledge/quest-growth/r7/evidence-snapshots.json)
 - [`schema-cases.json`](../knowledge/quest-growth/fixtures/r7-schema/schema-cases.json)（匿名 synthetic）
 - [`r7-schema-validation-report.json`](../knowledge/quest-growth/generated/r7-schema-validation-report.json)
 
-validator は schema gate の digest、選択した2 pilot、空 catalog、匿名 fixture を検証する。
-`r7-pilot-content-authoring` が未承認の間は、catalog に1件でも route が入ると compile error にする。
+validator は2 gate の digest、選択した2 pilot、family別件数、draft status、R6 lineage、独立証拠、
+匿名 fixture を検証する。3件目、選択外 family、`reviewed` status、同一 editorial group の二重計上は
+compile error にする。
 
 ## 次に必要な owner 判断
 
-次の独立 gate は `r7-pilot-content-authoring` である。承認されるまでは具体的な海域、編成、装備、
-分岐条件、出撃手順を authoring しない。renderer、実アカウント受入、runtime publication、
-default enablement も引き続き未承認である。
+次の独立 gate は route 単位の authoring review である。現 draft を `reviewed` へ昇格するには、
+route author と異なる approver が別 semantic digest を審査する必要がある。renderer、実アカウント受入、
+runtime publication、default enablement も引き続き未承認である。
 
 件数、対象、証拠、review 境界を固定した decision-only packet は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)
@@ -106,5 +110,5 @@ default enablement も引き続き未承認である。
 - R6 approval packet の digest が変わった場合は request を再作成する。
 - authorization gate が owner review なしで変更された場合は compiler error とする。
 - pilot candidate の R6 decision が generated report と一致しない場合は compiler error とする。
-- content gate が未承認の間、concrete route artifact count と runtime eligible count は常に0とする。
+- draft route は最大2件・各 pilot family 最大1件、runtime eligible count は常に0とする。
 - R6 authoring schema は引き続き concrete field を拒否する。

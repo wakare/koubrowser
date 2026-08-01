@@ -6,16 +6,13 @@ const {
   R7DecisionOutputFilenames,
   buildR7DecisionArtifacts
 } = require('./quest-growth-r7-decision')
-const {
-  R7SchemaOutputFilenames,
-  buildR7SchemaArtifacts
-} = require('./quest-growth-r7-schema')
+const { R7SchemaOutputFilenames, buildR7SchemaArtifacts } = require('./quest-growth-r7-schema')
 const {
   R7ContentDecisionOutputFilenames,
   buildR7ContentDecisionArtifacts
 } = require('./quest-growth-r7-content-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/13'
+const CompilerVersion = 'quest-growth-authoring-compiler/14'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -927,7 +924,7 @@ function buildQuestGrowthArtifacts(root) {
     },
     runtimePromotion: {
       status: 'blocked',
-      reason: 'R7_SCHEMA_ONLY_PILOT_CONTENT_NOT_AUTHORIZED'
+      reason: 'R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED'
     }
   }
   const independentApprovalPending =
@@ -968,7 +965,7 @@ function buildQuestGrowthArtifacts(root) {
       ...([...decisionRubrics.rubrics.values()].some((item) => item.status !== 'approved')
         ? ['DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED']
         : []),
-      'R7_PILOT_CONTENT_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT'
+      'R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED'
     ]
   }
   return {

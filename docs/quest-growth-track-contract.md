@@ -1,10 +1,10 @@
 # 新人向け成長トラック authoring 契約
 
-最終更新日: 2026-08-01
+最終更新日: 2026-08-02
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R7_SCHEMA_ONLY_AUTHORIZED_CONTENT_DECISION_PACKET_READY`
+Status: `R7_PILOT_CONTENT_AUTHORIZED_TWO_DRAFTS_AUTHORED`
 
 ## モデル境界
 
@@ -194,8 +194,8 @@ compiler version、input digest、output digest を固定する。
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
 本データで上書きしない。R6 lineage は exact commit
 `6b52e143af9fcab1dbb00b74f7e89bcf695e5e38` を別の audit snapshot として保持する。
-`R7_PILOT_CONTENT_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT` を downstream stop に固定し、pure evaluator、adapter、
-UI のいずれからも具体的 route を出力してはならない。
+`R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED` を downstream stop に固定し、authoring catalog の2 draft を
+pure evaluator、adapter、UI、runtime bundle のいずれへも出力してはならない。
 
 ## 予定する完了順序
 
@@ -214,18 +214,18 @@ UI のいずれからも具体的 route を出力してはならない。
    装備、分岐条件として表示する。未審査・失効・条件不明は引き続き fail closed とする。
 
 R7 の実装前判断は [`quest-growth-r7-decision-packet.md`](quest-growth-r7-decision-packet.md) に分離した。
-現在は `r7-schema-output-class` だけを semantic digest に固定して承認し、遠征・資源・周期任務と
-基礎対潜を初期 pilot に選択した。空 catalog、validator、匿名 fixture だけを生成し、残る5 gate は
-`not-authorized`、concrete route artifact と runtime eligible は0件である。
+現在は `r7-schema-output-class` と `r7-pilot-content-authoring` をそれぞれ semantic digest に固定して
+承認し、遠征05の資源ループと1-5の3戦撤退対潜練習を各1件 `draft` として authoring した。
+残る4 gate は `not-authorized`、reviewed route と runtime eligible は0件である。
 
-具体的 route authoring の開始には `r7-pilot-content-authoring` の追加承認を必要とする。renderer、
+具体的 route の `reviewed` 昇格には route 単位の独立 semantic-digest approval を必要とする。renderer、
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や
 R6 の pure evaluation artifact はそれらの承認を代替しない。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)
-に記録する。owner 承認までは catalog route count を0件に保つ。
+に記録する。承認範囲は catalog route count 2件、各 family 1件、status `draft` までに固定する。
 
 ## Commands
 

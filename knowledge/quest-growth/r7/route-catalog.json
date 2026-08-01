@@ -1,20 +1,157 @@
 {
   "authoringSchema": "QuestGrowthConcreteRouteCatalog/1alpha",
-  "catalogVersion": "1.0.0-alpha.1",
-  "status": "schema-only",
+  "catalogVersion": "1.0.0-alpha.2",
+  "status": "draft",
   "sourceSnapshot": {
-    "auditedBaseCommit": "c5cb8425ffd0f240ce49b644a0b1339e9ecd772b",
-    "checkedAt": "2026-08-01T17:57:38.441Z"
+    "auditedBaseCommit": "5df613898c62a52f8429102d1997724e44059011",
+    "checkedAt": "2026-08-01T18:34:55.864Z"
   },
   "decisionRequestRef": {
     "id": "decision:quest-growth-r7-0",
     "revision": 1,
     "schemaGateDigest": "sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed"
   },
-  "selectedPilotFamilies": [
-    "expedition-resource-periodic-loop",
-    "anti-submarine-foundation"
-  ],
+  "selectedPilotFamilies": ["expedition-resource-periodic-loop", "anti-submarine-foundation"],
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
-  "routes": []
+  "routes": [
+    {
+      "routeId": "route:expedition-05-resource-loop:draft-1",
+      "lineageRef": {
+        "id": "growth-lineage:expedition-resource-periodic-loop",
+        "revision": 1
+      },
+      "routeFamily": "expedition-resource-periodic-loop",
+      "revision": 1,
+      "status": "draft",
+      "outputClass": "manual-check-route",
+      "title": "遠征05「海上護衛任務」資源ループ（手動確認）",
+      "summary": "燃料と弾薬を同時に補う初期遠征候補。開始前に解放、編成、補給を毎回確認する草案です。",
+      "applicability": [
+        "現在の重点として資源循環を選んでいる。",
+        "遠征05が現在の遠征一覧に表示されている。",
+        "履歴上の成功ではなく、今回の編成条件を手動確認できる。"
+      ],
+      "segments": [
+        {
+          "segmentId": "segment:expedition-05-maritime-escort",
+          "actionCategory": "expedition",
+          "mapKey": null,
+          "targetNodes": ["expedition:05"],
+          "fleetConstraints": [
+            "4隻編成にする。",
+            "旗艦をLv3以上にする。",
+            "軽巡1隻と駆逐艦または海防艦3隻を編成する。"
+          ],
+          "equipmentConstraints": [],
+          "formations": [],
+          "airState": null,
+          "branchConditions": [
+            "遠征02と03を完了し、遠征05が解放済みであることを画面で確認する。",
+            "出発前に4隻全員の燃料と弾薬を補給する。"
+          ],
+          "sortieInstructions": [
+            "遠征05「海上護衛任務」を選択し、表示された所要時間が1時間30分であることを確認する。",
+            "条件を満たす4隻を選択して遠征を開始する。",
+            "帰投後に成功表示と基本報酬（燃料200、弾薬200、鋼材20、ボーキサイト20）を確認する。",
+            "不足資源と再補給コストを見て、同じ遠征を続けるか手動で判断する。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:expedition-resource-loop",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:8b6c18d36ad668e77797316416adee2dac4a5bef135665cdee9c432d4ee7720a"
+            },
+            {
+              "claimRef": "claim:expedition-resource-loop",
+              "independenceGroupId": "group:kcwiki-zh",
+              "sourceDigest": "sha256:f5fef0c728f91601bbcae077b8d0bf4481bd70d641cff1bc01ba1214a2e414a3"
+            }
+          ],
+          "fallback": "遠征05が未解放、編成条件が不明、または補給できない場合は開始せず、遠征画面の条件と不足資源を再確認する。"
+        }
+      ],
+      "currentness": {
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "fallback": "条件、報酬または所要時間が証拠快照と異なる場合はこの草案を利用せず、再審査へ戻す。",
+      "review": {
+        "author": "codex-r7-pilot-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      }
+    },
+    {
+      "routeId": "route:1-5-basic-asw-three-battle:draft-1",
+      "lineageRef": {
+        "id": "growth-lineage:anti-submarine-foundation",
+        "revision": 1
+      },
+      "routeFamily": "anti-submarine-foundation",
+      "revision": 1,
+      "status": "draft",
+      "outputClass": "manual-check-route",
+      "title": "1-5 3戦撤退・基礎対潜練習（手動確認）",
+      "summary": "軽巡・駆逐・海防艦を1-5の潜水艦戦で育成し、3戦目直後に撤退する条件付き草案です。",
+      "applicability": [
+        "1-5が解放済みで、基礎対潜能力の確認または育成を選んでいる。",
+        "主対象は司令部Lv60未満。Lv60以上では先制対潜の可否を別途確認する。",
+        "疲労と損傷を確認しながら手動で交代・撤退できる。"
+      ],
+      "segments": [
+        {
+          "segmentId": "segment:1-5-ade-adf-three-battle",
+          "actionCategory": "sortie",
+          "mapKey": "1-5",
+          "targetNodes": ["A", "D", "E", "F"],
+          "fleetConstraints": [
+            "6隻の例として軽巡2隻と駆逐艦または海防艦4隻を編成する。",
+            "育成対象の軽巡、駆逐艦または海防艦を旗艦に置く。",
+            "疲労または損傷が進んだ艦は交代する。"
+          ],
+          "equipmentConstraints": [
+            "最低限、旗艦に使用可能なソナーまたは爆雷系の対潜装備を載せる。",
+            "司令部Lv60以上では、先制対潜可能な艦がない場合に適性を断定しない。"
+          ],
+          "formations": ["line-abreast"],
+          "airState": null,
+          "branchConditions": [
+            "想定経路はA-D-EまたはA-D-Fで、いずれも3戦目まで潜水艦戦である。",
+            "EまたはFの戦闘終了後は進撃せず撤退する。"
+          ],
+          "sortieInstructions": [
+            "1-5へ出撃し、A、D、EまたはFの各潜水艦戦で単横陣を選択する。",
+            "3戦目のEまたはFを終えたら必ず撤退する。",
+            "大破艦が出た場合や想定外の経路・敵編成になった場合は直ちに進撃を止める。",
+            "帰投後に疲労と損傷を確認し、必要なら交代または入渠してから次周を判断する。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:conditional-leveling-maps",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:8cfbec47c26f6808e06aa79fe488924b0fb1e45a1238c9b8a7ace55a922155df"
+            },
+            {
+              "claimRef": "claim:conditional-leveling-maps",
+              "independenceGroupId": "group:zekamashi",
+              "sourceDigest": "sha256:000e7e32bc81b6fd115d98eddb3d7087853ed70096eac286fe0438359240ec35"
+            }
+          ],
+          "fallback": "司令部レベル、先制対潜、装備、経路または損傷条件を確認できない場合は周回せず、1回ずつ手動確認するか別の安全な育成手段へ切り替える。"
+        }
+      ],
+      "currentness": {
+        "reviewBy": "2026-09-30T00:00:00.000Z",
+        "validUntil": "2026-12-31T00:00:00.000Z"
+      },
+      "fallback": "1-5の分岐、敵編成または司令部条件が証拠快照と異なる場合はこの草案を利用せず、再審査へ戻す。",
+      "review": {
+        "author": "codex-r7-pilot-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      }
+    }
+  ]
 }

@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const R7DecisionCompilerVersion = 'quest-growth-r7-decision-compiler/1'
+const R7DecisionCompilerVersion = 'quest-growth-r7-decision-compiler/2'
 const R7DecisionOutputFilenames = ['r7-authorization-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -79,9 +79,7 @@ function oneOf(value, allowed, description) {
 
 function semanticDigest(value, excludedKeys = []) {
   const excluded = new Set(excludedKeys)
-  const payload = Object.fromEntries(
-    Object.entries(value).filter(([key]) => !excluded.has(key))
-  )
+  const payload = Object.fromEntries(Object.entries(value).filter(([key]) => !excluded.has(key)))
   return digest(canonicalJson(payload))
 }
 
@@ -95,9 +93,7 @@ function authorizationRequestSemanticDigest(value) {
     canonicalJson({
       ...payload,
       authorizationGates: payload.authorizationGates.map((gate) =>
-        Object.fromEntries(
-          Object.entries(gate).filter(([key]) => key !== 'authorizationState')
-        )
+        Object.fromEntries(Object.entries(gate).filter(([key]) => key !== 'authorizationState'))
       ),
       pilotProposal: {
         selectionState: 'owner-decision-required',
@@ -160,9 +156,7 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
   if (value.r6ApprovalBasis.packetStatus !== routeApprovalPacket.status) {
     throw new Error('R7 request R6 packet status mismatch')
   }
-  if (
-    value.r6ApprovalBasis.packetDigest !== digest(canonicalJson(routeApprovalPacket))
-  ) {
+  if (value.r6ApprovalBasis.packetDigest !== digest(canonicalJson(routeApprovalPacket))) {
     throw new Error('R7 request R6 approval packet digest mismatch')
   }
   if (
@@ -220,12 +214,7 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
     value.authorizationRecords,
     'R7 authorization records',
     (record, description) => {
-      exactKeys(
-        record,
-        ['gateId', 'approver', 'reviewedAt', 'approvalDigest'],
-        [],
-        description
-      )
+      exactKeys(record, ['gateId', 'approver', 'reviewedAt', 'approvalDigest'], [], description)
       const gateId = identifier(record.gateId, `${description} gate id`)
       const gate = gates.get(gateId)
       if (!gate) throw new Error(`${description} references unknown gate`)
@@ -243,10 +232,11 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
     .filter((gate) => gate.authorizationState === 'authorized')
     .map((gate) => gate.gateId)
   if (
-    authorizedGateIds.length !== 1 ||
-    authorizedGateIds[0] !== 'r7-schema-output-class'
+    authorizedGateIds.length !== 2 ||
+    authorizedGateIds[0] !== 'r7-schema-output-class' ||
+    authorizedGateIds[1] !== 'r7-pilot-content-authoring'
   ) {
-    throw new Error('only the R7 schema gate is authorized')
+    throw new Error('only the R7 schema and pilot content authoring gates are authorized')
   }
   for (const gate of gates.values()) {
     const hasRecord = authorizationRecords.has(gate.gateId)
@@ -283,7 +273,12 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
     identifier,
     1
   )
-  for (const field of ['mapKey', 'fleetConstraints', 'equipmentConstraints', 'sortieInstructions']) {
+  for (const field of [
+    'mapKey',
+    'fleetConstraints',
+    'equipmentConstraints',
+    'sortieInstructions'
+  ]) {
     if (!concreteFields.includes(field)) throw new Error(`R7 concrete field missing ${field}`)
   }
   const prohibited = unique(
@@ -298,7 +293,8 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
     'runtime-web-scraping',
     'account-data-export'
   ]) {
-    if (!prohibited.includes(behavior)) throw new Error(`R7 prohibited behavior missing ${behavior}`)
+    if (!prohibited.includes(behavior))
+      throw new Error(`R7 prohibited behavior missing ${behavior}`)
   }
   if (value.proposedOutputContract.unknownPolicy !== 'fallback') {
     throw new Error('R7 unknown policy must be fallback')
@@ -346,11 +342,7 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
       if (candidate.r6ContentDecision !== audit.contentDecision) {
         throw new Error(`${description} R6 content decision mismatch`)
       }
-      oneOf(
-        candidate.disposition,
-        ['recommended-wave-a', 'defer'],
-        `${description} disposition`
-      )
+      oneOf(candidate.disposition, ['recommended-wave-a', 'defer'], `${description} disposition`)
       requiredText(candidate.reason, `${description} reason`)
       candidates.set(routeFamily, candidate)
       return routeFamily
@@ -428,6 +420,11 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
     routeApprovalPacket,
     routeEligibilityReport
   )
+  const catalog = JSON.parse(fs.readFileSync(path.join(base, 'r7', 'route-catalog.json')))
+  const concreteRouteArtifactCount = Array.isArray(catalog.routes) ? catalog.routes.length : 0
+  if (concreteRouteArtifactCount > 2) {
+    throw new Error('R7 pilot content authoring exceeds the approved route limit')
+  }
   const runtimeEligibleCount = routeEligibilityReport.routeUnitAudits.filter(
     (audit) => audit.effectiveState === 'RUNTIME_ELIGIBLE'
   ).length
@@ -440,7 +437,7 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
     requestId: request.value.requestId,
     revision: request.value.revision,
     generatedAt: request.value.sourceSnapshot.checkedAt,
-    status: 'SCHEMA_ONLY_AUTHORIZED',
+    status: 'PILOT_CONTENT_AUTHORING_AUTHORIZED',
     scope: request.value.scope,
     requestDigest: digest(requestRaw),
     semanticDigest: request.semanticDigest,
@@ -456,8 +453,8 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
       recommendedFamilies: request.recommendedFamilies,
       selectedInitialFamilies: request.selectedInitialFamilies
     },
-    implementationAuthorization: 'R7_SCHEMA_ONLY_AUTHORIZED',
-    concreteRouteArtifactCount: 0,
+    implementationAuthorization: 'R7_DRAFT_CONTENT_AUTHORING_AUTHORIZED',
+    concreteRouteArtifactCount,
     runtimeEligibleCount
   }
   return {
@@ -468,7 +465,7 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
       r7AuthorizedGateCount: request.authorizationRecords.size,
       r7PilotCandidateCount: request.candidates.size,
       r7RecommendedPilotFamilyCount: request.recommendedFamilies.length,
-      r7ConcreteRouteArtifactCount: 0
+      r7ConcreteRouteArtifactCount: concreteRouteArtifactCount
     }
   }
 }

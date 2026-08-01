@@ -1,8 +1,8 @@
 {
-  "authorizationState": "not-authorized",
-  "compilerVersion": "quest-growth-r7-content-decision-compiler/1",
-  "currentCatalogRouteCount": 0,
-  "draftConcreteRouteArtifactCount": 0,
+  "authorizationState": "authorized",
+  "compilerVersion": "quest-growth-r7-content-decision-compiler/2",
+  "currentCatalogRouteCount": 2,
+  "draftConcreteRouteArtifactCount": 2,
   "gateId": "r7-pilot-content-authoring",
   "gateSemanticDigest": "sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3",
   "generatedAt": "2026-08-01T18:21:30.465Z",
@@ -38,7 +38,7 @@
     }
   ],
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
-  "requestDigest": "sha256:f932089c8770f8d739335a3a17e8737249e5712b38a2bdbf1265fc32521686f6",
+  "requestDigest": "sha256:e952cc1d4e7ab563e69bd9bd91838d889788f1029780dcb23530cbcc1ac16961",
   "requestId": "decision:quest-growth-r7-pilot-content",
   "requiredEvidenceRuleCount": 5,
   "requiredReviewRuleCount": 3,
@@ -52,7 +52,7 @@
     "anti-submarine-foundation"
   ],
   "semanticDigest": "sha256:d2c474af9b09a959cb9e9a1532ba954e1f11da8669feb2fc5049421715a972fc",
-  "status": "OWNER_DECISION_REQUIRED",
+  "status": "CONTENT_AUTHORING_AUTHORIZED_DRAFT_ONLY",
   "stillProhibited": [
     "content-outside-selected-pilots",
     "reviewed-status-without-route-approval",

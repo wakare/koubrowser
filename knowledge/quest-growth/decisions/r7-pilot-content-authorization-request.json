@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7PilotContentAuthorizationRequest/1alpha",
   "requestId": "decision:quest-growth-r7-pilot-content",
   "revision": 1,
-  "status": "draft",
+  "status": "approved",
   "scope": "R7_PILOT_CONTENT_AUTHORING_REVIEW_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "e5cb218630756e722b4e64369e0af620ff0320d3",
@@ -18,7 +18,7 @@
   },
   "requestedAuthorization": {
     "gateId": "r7-pilot-content-authoring",
-    "authorizationState": "owner-decision-required",
+    "authorizationState": "authorized",
     "maximumRouteArtifacts": 2,
     "maximumRouteArtifactsPerFamily": 1,
     "maximumAuthoringStatus": "draft",
@@ -89,8 +89,8 @@
   ],
   "review": {
     "author": "codex-r7-content-decision-author",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-01T18:34:55.864Z",
+    "approvalDigest": "sha256:d2c474af9b09a959cb9e9a1532ba954e1f11da8669feb2fc5049421715a972fc"
   }
 }

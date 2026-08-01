@@ -2,16 +2,24 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const R7ContentDecisionCompilerVersion = 'quest-growth-r7-content-decision-compiler/1'
+const R7ContentDecisionCompilerVersion = 'quest-growth-r7-content-decision-compiler/2'
 const R7ContentDecisionOutputFilenames = ['r7-pilot-content-authorization-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
-const SelectedPilotFamilies = [
-  'expedition-resource-periodic-loop',
-  'anti-submarine-foundation'
-]
+const SelectedPilotFamilies = ['expedition-resource-periodic-loop', 'anti-submarine-foundation']
+const ApprovedContentSemanticDigest =
+  'sha256:d2c474af9b09a959cb9e9a1532ba954e1f11da8669feb2fc5049421715a972fc'
+const ApprovedContentBasis = {
+  authorizationRequestDigest:
+    'sha256:1c068752121f6de81e82e2dc54ab8c5f9443c1e66f744d370065bcb3439ec72a',
+  schemaGateDigest: 'sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed',
+  pilotContentGateDigest: 'sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3',
+  authoringSchemaDigest: 'sha256:660baa094b6a493a12de1bcedb26d26e455f8ee2c4a4dc6e8b9f08de58835b68',
+  emptyCatalogDigest: 'sha256:2c431964a73b1c9d6b736bb914fe9a6d5b96ec4e967093d249f18841579b9043',
+  r6ApprovalPacketDigest: 'sha256:9982237824796126a35a5490d7a7e39fec839552624b130f37f8b4ae75cf0164'
+}
 
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize)
@@ -128,11 +136,8 @@ function validateR7ContentAuthorizationRequest(
   }
   identifier(value.requestId, 'R7 content request id')
   if (value.revision !== 1) throw new Error('invalid R7 content request revision')
-  if (
-    value.status !== 'draft' ||
-    value.scope !== 'R7_PILOT_CONTENT_AUTHORING_REVIEW_ONLY'
-  ) {
-    throw new Error('R7 content request must remain draft and review-only')
+  if (value.status !== 'approved' || value.scope !== 'R7_PILOT_CONTENT_AUTHORING_REVIEW_ONLY') {
+    throw new Error('R7 content request must be approved and remain review-only')
   }
   exactKeys(value.sourceSnapshot, ['auditedBaseCommit', 'checkedAt'], 'R7 content source snapshot')
   if (!CommitPattern.test(value.sourceSnapshot.auditedBaseCommit)) {
@@ -155,35 +160,25 @@ function validateR7ContentAuthorizationRequest(
   for (const [key, item] of Object.entries(value.approvalBasis)) {
     if (!DigestPattern.test(item)) throw new Error(`invalid R7 content approval basis ${key}`)
   }
-  const authorizationRequestRaw = fs.readFileSync(
-    path.join(base, 'decisions', 'r7-authorization-request.json')
-  )
-  const authoringSchemaRaw = fs.readFileSync(path.join(base, 'r7-authoring-schema-1alpha.json'))
-  const catalogRaw = fs.readFileSync(path.join(base, 'r7', 'route-catalog.json'))
   const contentGate = r7AuthorizationReport.authorizationGates.find(
     (gate) => gate.gateId === 'r7-pilot-content-authoring'
   )
   const schemaGate = r7AuthorizationReport.authorizationGates.find(
     (gate) => gate.gateId === 'r7-schema-output-class'
   )
-  const expectedBasis = {
-    authorizationRequestDigest: digest(authorizationRequestRaw),
-    schemaGateDigest: schemaGate?.semanticDigest,
-    pilotContentGateDigest: contentGate?.semanticDigest,
-    authoringSchemaDigest: digest(authoringSchemaRaw),
-    emptyCatalogDigest: digest(catalogRaw),
-    r6ApprovalPacketDigest: digest(canonicalJson(routeApprovalPacket))
-  }
-  if (!same(value.approvalBasis, expectedBasis)) {
+  if (!same(value.approvalBasis, ApprovedContentBasis)) {
     throw new Error('R7 content approval basis mismatch')
+  }
+  if (digest(canonicalJson(routeApprovalPacket)) !== ApprovedContentBasis.r6ApprovalPacketDigest) {
+    throw new Error('R7 content R6 approval packet digest mismatch')
   }
   if (
     schemaGate?.authorizationState !== 'authorized' ||
-    contentGate?.authorizationState !== 'not-authorized' ||
-    r7SchemaReport.status !== 'SCHEMA_GATE_VALIDATED_CONTENT_GATE_BLOCKED' ||
-    r7SchemaReport.catalogRouteCount !== 0
+    contentGate?.authorizationState !== 'authorized' ||
+    r7SchemaReport.status !== 'CONTENT_AUTHORING_AUTHORIZED_DRAFT_ONLY' ||
+    r7SchemaReport.catalogRouteCount > 2
   ) {
-    throw new Error('R7 content approval prerequisites are not fail-closed')
+    throw new Error('R7 content authoring approval prerequisites are invalid')
   }
 
   exactKeys(
@@ -200,7 +195,7 @@ function validateR7ContentAuthorizationRequest(
   )
   if (
     value.requestedAuthorization.gateId !== 'r7-pilot-content-authoring' ||
-    value.requestedAuthorization.authorizationState !== 'owner-decision-required' ||
+    value.requestedAuthorization.authorizationState !== 'authorized' ||
     value.requestedAuthorization.maximumRouteArtifacts !== 2 ||
     value.requestedAuthorization.maximumRouteArtifactsPerFamily !== 1 ||
     value.requestedAuthorization.maximumAuthoringStatus !== 'draft' ||
@@ -224,12 +219,20 @@ function validateR7ContentAuthorizationRequest(
     )
     validateVersionedBinding(
       binding.lineage,
-      { id: lineage?.routeLineageId, revision: lineage?.revision, semanticDigest: lineage?.semanticDigest },
+      {
+        id: lineage?.routeLineageId,
+        revision: lineage?.revision,
+        semanticDigest: lineage?.semanticDigest
+      },
       `${routeFamily} lineage`
     )
     validateVersionedBinding(
       binding.routeUnit,
-      { id: routeUnit?.routeUnitId, revision: routeUnit?.revision, semanticDigest: routeUnit?.semanticDigest },
+      {
+        id: routeUnit?.routeUnitId,
+        revision: routeUnit?.revision,
+        semanticDigest: routeUnit?.semanticDigest
+      },
       `${routeFamily} route unit`
     )
   }
@@ -276,19 +279,29 @@ function validateR7ContentAuthorizationRequest(
     'runtime-web-scraping',
     'account-data-export'
   ]) {
-    if (!prohibited.includes(required)) throw new Error(`R7 prohibited behavior missing ${required}`)
+    if (!prohibited.includes(required))
+      throw new Error(`R7 prohibited behavior missing ${required}`)
   }
 
-  exactKeys(value.review, ['author', 'approver', 'reviewedAt', 'approvalDigest'], 'R7 content review')
+  exactKeys(
+    value.review,
+    ['author', 'approver', 'reviewedAt', 'approvalDigest'],
+    'R7 content review'
+  )
   identifier(value.review.author, 'R7 content review author')
+  identifier(value.review.approver, 'R7 content review approver')
+  timestamp(value.review.reviewedAt, 'R7 content review reviewedAt')
   if (
-    value.review.approver !== null ||
-    value.review.reviewedAt !== null ||
-    value.review.approvalDigest !== null
+    value.review.author === value.review.approver ||
+    value.review.approvalDigest !== ApprovedContentSemanticDigest
   ) {
-    throw new Error('draft R7 content request must not claim owner approval')
+    throw new Error('R7 content approval review mismatch')
   }
-  return { value, semanticDigest: contentAuthorizationSemanticDigest(value) }
+  const semanticDigest = contentAuthorizationSemanticDigest(value)
+  if (semanticDigest !== ApprovedContentSemanticDigest) {
+    throw new Error('R7 content approval semantic digest mismatch')
+  }
+  return { value, semanticDigest }
 }
 
 function buildR7ContentDecisionArtifacts({
@@ -309,7 +322,7 @@ function buildR7ContentDecisionArtifacts({
     schemaVersion: 1,
     compilerVersion: R7ContentDecisionCompilerVersion,
     generatedAt: request.value.sourceSnapshot.checkedAt,
-    status: 'OWNER_DECISION_REQUIRED',
+    status: 'CONTENT_AUTHORING_AUTHORIZED_DRAFT_ONLY',
     scope: request.value.scope,
     requestId: request.value.requestId,
     revision: request.value.revision,
@@ -317,7 +330,7 @@ function buildR7ContentDecisionArtifacts({
     semanticDigest: request.semanticDigest,
     gateId: request.value.requestedAuthorization.gateId,
     gateSemanticDigest: request.value.approvalBasis.pilotContentGateDigest,
-    authorizationState: 'not-authorized',
+    authorizationState: 'authorized',
     selectedPilotFamilies: request.value.requestedAuthorization.selectedPilotFamilies,
     maximumRouteArtifacts: request.value.requestedAuthorization.maximumRouteArtifacts,
     maximumRouteArtifactsPerFamily:
@@ -327,8 +340,8 @@ function buildR7ContentDecisionArtifacts({
     requiredEvidenceRuleCount: request.value.authoringRequirements.requiredEvidenceRules.length,
     requiredReviewRuleCount: request.value.authoringRequirements.requiredReviewRules.length,
     stillProhibited: request.value.stillProhibited,
-    currentCatalogRouteCount: 0,
-    draftConcreteRouteArtifactCount: 0,
+    currentCatalogRouteCount: r7SchemaReport.catalogRouteCount,
+    draftConcreteRouteArtifactCount: r7SchemaReport.concreteRouteArtifactCount,
     reviewedConcreteRouteArtifactCount: 0,
     runtimeEligibleCount: 0,
     publicationAuthorization: 'R7_NOT_AUTHORIZED'
@@ -338,9 +351,9 @@ function buildR7ContentDecisionArtifacts({
     source: { r7PilotContentAuthorizationRequestDigest: digest(requestRaw) },
     output: {
       r7PilotContentDecisionGateCount: 1,
-      r7PilotContentAuthorizedGateCount: 0,
+      r7PilotContentAuthorizedGateCount: 1,
       r7PilotContentMaximumRouteArtifactCount: report.maximumRouteArtifacts,
-      r7PilotContentCurrentRouteArtifactCount: 0
+      r7PilotContentCurrentRouteArtifactCount: report.currentCatalogRouteCount
     }
   }
 }
