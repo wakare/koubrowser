@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R1_Evidence_Ledger_and_Milestone_Contract`
 
-Status: `AUTHORING_CONTRACT_DRAFT_RUNTIME_BLOCKED`
+Status: `AUTHORING_AND_OBSERVABILITY_AUDITED_RUNTIME_BLOCKED`
 
 ## モデル境界
 
@@ -27,11 +27,11 @@ GrowthMilestone から QuestRouteUnit への参照は一方向とする。`manua
 本 Wave は authoring と audit artifact だけを作る。
 
 ```text
-evidence-ledger.json ──┐
-milestone-candidates.json ── strict validation
-synthetic fixtures ───┘             │
-                                    ├─ source-manifest.json
-                                    └─ conflict-and-gap-report.json
+evidence-ledger.json ──────┐
+milestone-candidates.json ─┼─ strict validation
+observability-map.json ────┤          │
+synthetic fixtures ────────┘          ├─ source-manifest.json
+                                      └─ conflict-and-gap-report.json
 ```
 
 次は生成しない。
@@ -73,7 +73,8 @@ claim は URL、title、site、language、分類、可読性、独立性、suppo
 - author / approver 分離
 
 `approved` は approver と reviewedAt を必須とし、author と approver が同じ場合は validation を
-失敗させる。現行8件はすべて `draft` である。
+失敗させる。現行8件はすべて `draft` である。29 observable の local source は監査済みだが、
+complete 18、partial 9、unavailable 2 であり、監査完了は runtime 利用可能を意味しない。
 
 ## Unknown と fallback
 
@@ -124,7 +125,8 @@ coverage 推定には使用しない。
 
 ## Generated artifact identity
 
-`source-manifest.json` は authoring file と各 fixture の SHA-256 digest を記録する。
+`source-manifest.json` は evidence、milestone、observability authoring file と各 fixture の SHA-256
+digest を記録する。
 `auditedBaseCommit` は調査時に固定した repository base であり、生成ファイル自身を含む commit と
 偽らない。authoring data を release へ昇格する場合は、release record 側で実際の publish commit、
 compiler version、input digest、output digest を固定する。
@@ -140,4 +142,5 @@ npm run data:quest-growth:verify
 ```
 
 `compile` は source manifest と conflict/gap report を決定的に生成する。`verify` は checked-in artifact
-との byte equality を確認する。
+との byte equality を確認する。observability audit の path、policy、全 predicate coverage も compiler
+が検証する。

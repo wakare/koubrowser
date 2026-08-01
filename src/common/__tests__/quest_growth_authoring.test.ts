@@ -9,7 +9,8 @@ const {
   buildQuestGrowthArtifacts,
   validateEvidenceLedger,
   validateFixture,
-  validateMilestoneCatalog
+  validateMilestoneCatalog,
+  validateObservabilityAudit
 } = require('../../../scripts/compile-quest-growth.js') as {
   buildQuestGrowthArtifacts: (root: string) => Record<string, unknown>
   validateEvidenceLedger: (value: unknown) => {
@@ -22,6 +23,10 @@ const {
     value: unknown,
     evidence: ReturnType<typeof validateEvidenceLedger>
   ) => { value: unknown; milestones: Map<string, unknown> }
+  validateObservabilityAudit: (
+    value: unknown,
+    root: string
+  ) => { value: unknown; observables: Map<string, unknown> }
 }
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
@@ -39,11 +44,12 @@ describe('quest growth authoring contract', () => {
     )
 
     expect(output).toContain(
-      '14 sources, 9 claims, 8 draft milestones, 6 fixtures, 0 runtime-eligible'
+      '14 sources, 9 claims, 8 draft milestones, 6 fixtures, ' +
+        '29 observables (18 complete, 9 partial, 2 unavailable), 0 runtime-eligible'
     )
   })
 
-  it('keeps every candidate in draft until independent approval and observability audit', () => {
+  it('keeps every candidate blocked after the completed audit exposes observability gaps', () => {
     const report = read<{
       runtimePromotionStatus: string
       milestoneGaps: { milestoneId: string; reasonCodes: string[] }[]
@@ -59,10 +65,74 @@ describe('quest growth authoring contract', () => {
     ).toBe(true)
     expect(
       report.milestoneGaps.every((gap) =>
-        gap.reasonCodes.includes('LOCAL_OBSERVABILITY_NOT_AUDITED')
+        gap.reasonCodes.some((reason) => reason.startsWith('OBSERVABLE_'))
       )
     ).toBe(true)
+    expect(
+      report.milestoneGaps.some((gap) =>
+        gap.reasonCodes.includes('LOCAL_OBSERVABILITY_NOT_AUDITED')
+      )
+    ).toBe(false)
     expect(report.globalStops).toContain('NO_RUNTIME_BUNDLE_IN_WAVE_1')
+    expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
+    expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
+  })
+
+  it('audits every referenced observable without adding communication hooks or data export', () => {
+    const audit = read<{
+      policy: {
+        newCommunicationHooksAllowed: boolean
+        accountDataExportAllowed: boolean
+        prohibitedData: string[]
+      }
+      observables: {
+        id: string
+        coverage: 'complete' | 'partial' | 'unavailable'
+        runtimeUse: 'candidate' | 'fallback-only' | 'blocked'
+        unknownFallback: string
+      }[]
+    }>('authoring', 'observability-map.json')
+    const validated = validateObservabilityAudit(audit, process.cwd())
+    const catalog = read<{
+      milestones: {
+        requiredObservables: string[]
+        prerequisites: { observable: string }[]
+        triggers: { observable: string }[]
+      }[]
+    }>('authoring', 'milestone-candidates.json')
+    const referenced = new Set(
+      catalog.milestones.flatMap((milestone) => [
+        ...milestone.requiredObservables,
+        ...milestone.prerequisites.map((predicate) => predicate.observable),
+        ...milestone.triggers.map((predicate) => predicate.observable)
+      ])
+    )
+
+    expect(validated.observables.size).toBe(29)
+    expect(new Set(validated.observables.keys())).toEqual(referenced)
+    expect(audit.policy.newCommunicationHooksAllowed).toBe(false)
+    expect(audit.policy.accountDataExportAllowed).toBe(false)
+    expect(audit.policy.prohibitedData).toEqual(
+      expect.arrayContaining(['account-identifier', 'raw-game-payload', 'cookie-or-session'])
+    )
+    expect(audit.observables.every((observable) => observable.unknownFallback.trim())).toBe(true)
+
+    const practice = audit.observables.find(
+      (observable) => observable.id === 'practice.available-count'
+    )!
+    expect(practice.coverage).toBe('unavailable')
+    expect(practice.runtimeUse).toBe('fallback-only')
+    const eventOverlay = audit.observables.find(
+      (observable) => observable.id === 'event.overlay-status'
+    )!
+    expect(eventOverlay.coverage).toBe('unavailable')
+    expect(eventOverlay.runtimeUse).toBe('blocked')
+
+    const manifest = read<{
+      source: { observabilityAuditedBaseCommit: string; observabilityAuditDigest: string }
+    }>('generated', 'source-manifest.json')
+    expect(manifest.source.observabilityAuditedBaseCommit).toMatch(/^[0-9a-f]{40}$/)
+    expect(manifest.source.observabilityAuditDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
   })
 
   it('does not count prompt-only NGA observations as independent readable evidence', () => {
@@ -116,6 +186,27 @@ describe('quest growth authoring contract', () => {
     unsafeFixture.privacy.containsAccountIdentifier = true
     expect(() => validateFixture(unsafeFixture, 'unsafe.json')).toThrow(
       'contains prohibited identifying or raw data'
+    )
+  })
+
+  it('rejects an observability audit that permits new hooks or exports account state', () => {
+    const audit = read<{
+      policy: {
+        newCommunicationHooksAllowed: boolean
+        accountDataExportAllowed: boolean
+      }
+    }>('authoring', 'observability-map.json')
+    audit.policy.newCommunicationHooksAllowed = true
+    expect(() => validateObservabilityAudit(audit, process.cwd())).toThrow(
+      'must not allow new communication hooks'
+    )
+
+    const exportable = read<{
+      policy: { accountDataExportAllowed: boolean }
+    }>('authoring', 'observability-map.json')
+    exportable.policy.accountDataExportAllowed = true
+    expect(() => validateObservabilityAudit(exportable, process.cwd())).toThrow(
+      'must not allow account data export'
     )
   })
 })

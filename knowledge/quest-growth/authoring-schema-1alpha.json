@@ -4,7 +4,11 @@
   "title": "QuestGrowthAuthoring/1alpha",
   "description": "Authoring contract for evidence-led, offline newcomer growth milestones. Runtime promotion is intentionally out of scope.",
   "type": "object",
-  "oneOf": [{ "$ref": "#/$defs/evidenceLedger" }, { "$ref": "#/$defs/milestoneCatalog" }],
+  "oneOf": [
+    { "$ref": "#/$defs/evidenceLedger" },
+    { "$ref": "#/$defs/milestoneCatalog" },
+    { "$ref": "#/$defs/observabilityAudit" }
+  ],
   "$defs": {
     "identifier": {
       "type": "string",
@@ -246,6 +250,106 @@
         "catalogVersion": { "type": "string", "minLength": 1 },
         "sourceSnapshot": { "$ref": "#/$defs/sourceSnapshot" },
         "milestones": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/milestone" } }
+      }
+    },
+    "observableEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "symbol", "role"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "symbol": { "type": "string", "minLength": 1 },
+        "role": { "type": "string", "minLength": 1 }
+      }
+    },
+    "observable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "coverage",
+        "origins",
+        "freshness",
+        "runtimeUse",
+        "derivation",
+        "evidence",
+        "limitations",
+        "unknownFallback"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "coverage": { "enum": ["complete", "partial", "unavailable"] },
+        "origins": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "renderer-readonly-state",
+              "local-record-query",
+              "bundled-knowledge",
+              "pure-composite",
+              "none"
+            ]
+          }
+        },
+        "freshness": {
+          "enum": ["live-session", "cached-session", "historical", "release-bound", "none"]
+        },
+        "runtimeUse": { "enum": ["candidate", "fallback-only", "blocked"] },
+        "derivation": { "type": "string", "minLength": 1 },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/observableEvidence" }
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "unknownFallback": { "type": "string", "minLength": 1 }
+      }
+    },
+    "observabilityAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authoringSchema", "auditVersion", "sourceSnapshot", "policy", "observables"],
+      "properties": {
+        "authoringSchema": { "const": "QuestGrowthObservabilityAudit/1alpha" },
+        "auditVersion": { "type": "string", "minLength": 1 },
+        "sourceSnapshot": { "$ref": "#/$defs/sourceSnapshot" },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "newCommunicationHooksAllowed",
+            "accountDataExportAllowed",
+            "permittedOrigins",
+            "prohibitedData"
+          ],
+          "properties": {
+            "newCommunicationHooksAllowed": { "const": false },
+            "accountDataExportAllowed": { "const": false },
+            "permittedOrigins": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "prohibitedData": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "observables": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/observable" }
+        }
       }
     }
   }

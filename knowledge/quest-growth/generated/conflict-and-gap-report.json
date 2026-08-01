@@ -77,11 +77,11 @@
       "readableIndependentSourceIds": []
     }
   ],
-  "compilerVersion": "quest-growth-authoring-compiler/1",
+  "compilerVersion": "quest-growth-authoring-compiler/2",
   "globalStops": [
     "NO_RUNTIME_BUNDLE_IN_WAVE_1",
     "INDEPENDENT_APPROVER_REQUIRED",
-    "LOCAL_OBSERVABILITY_AUDIT_REQUIRED",
+    "OBSERVABILITY_GAPS_REMAIN",
     "QUEST_STRATEGY_LINEAGE_GATE_UNRESOLVED"
   ],
   "milestoneGaps": [
@@ -89,57 +89,452 @@
       "milestoneId": "growth:safety-executable",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+        "OBSERVABLE_PARTIAL:modernization.material-summary",
+        "OBSERVABLE_PARTIAL:fleet.safety-state"
       ]
     },
     {
       "milestoneId": "growth:system-fleet-unlock",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+        "OBSERVABLE_PARTIAL:quest.visible-chain"
       ]
     },
     {
       "milestoneId": "growth:experience-modernization-loop",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+        "OBSERVABLE_UNAVAILABLE:practice.available-count"
       ]
     },
     {
       "milestoneId": "growth:resource-periodic-loop",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+        "OBSERVABLE_PARTIAL:resources.bands"
       ]
     },
     {
       "milestoneId": "growth:anti-submarine-foundation",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+        "OBSERVABLE_PARTIAL:ships.asw-capable-summary"
       ]
     },
     {
       "milestoneId": "growth:surface-air-los-foundation",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+        "OBSERVABLE_PARTIAL:capability.surface-air-los-gaps"
       ]
     },
     {
       "milestoneId": "growth:normal-map-eo-blueprint-loop",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+        "OBSERVABLE_PARTIAL:maps.unlocked-eo",
+        "OBSERVABLE_PARTIAL:maps.eo-affordability"
       ]
     },
     {
       "milestoneId": "growth:event-readiness-overlay",
       "reasonCodes": [
         "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
-        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+        "OBSERVABLE_UNAVAILABLE:event.overlay-status",
+        "OBSERVABLE_RUNTIME_BLOCKED:event.overlay-status",
+        "OBSERVABLE_PARTIAL:capability.breadth-summary",
+        "OBSERVABLE_PARTIAL:resources.bands"
       ]
+    }
+  ],
+  "observableAudits": [
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Escaped or otherwise unavailable ships must remain unknown instead of healthy."
+      ],
+      "observableId": "fleet.damage-summary",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to check fleet damage before suggesting a sortie."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Air-base supply is outside this fleet-only observable."
+      ],
+      "observableId": "fleet.supply-summary",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to check fuel and ammunition before suggesting a sortie."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "A dock list not loaded in the current session must be unknown."
+      ],
+      "observableId": "dock.repair-summary",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to check repair capacity manually."
+    },
+    {
+      "coverage": "partial",
+      "freshness": "live-session",
+      "limitations": [
+        "Lock state alone cannot identify rare, unique, quest-required, or otherwise important ships.",
+        "Automatic material recommendations are prohibited."
+      ],
+      "observableId": "modernization.material-summary",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "Show only a manual safety checklist for modernization materials."
+    },
+    {
+      "coverage": "partial",
+      "freshness": "live-session",
+      "limitations": [
+        "Material safety remains manual, so the composite cannot assert a fully safe state."
+      ],
+      "observableId": "fleet.safety-state",
+      "origins": [
+        "pure-composite"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "Keep sortie guidance blocked and show the safety checklist."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Missing basic data must not be interpreted as one unlocked fleet."
+      ],
+      "observableId": "fleet.unlocked-count",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to confirm how many fleets are unlocked."
+    },
+    {
+      "coverage": "partial",
+      "freshness": "cached-session",
+      "limitations": [
+        "The visible quest list is tab/session dependent and curated relationship coverage is incomplete."
+      ],
+      "observableId": "quest.visible-chain",
+      "origins": [
+        "renderer-readonly-state",
+        "bundled-knowledge"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "Show only currently visible unlock quests and label the chain incomplete."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "An unloaded mission list remains unknown."
+      ],
+      "observableId": "expedition.unlocked-ids",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to open the expedition screen before ranking expeditions."
+    },
+    {
+      "coverage": "unavailable",
+      "freshness": "none",
+      "limitations": [
+        "Cumulative practice totals and the last result cannot determine current remaining opportunities."
+      ],
+      "observableId": "practice.available-count",
+      "origins": [
+        "none"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "Suggest checking the practice screen manually; do not display a count."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Band boundaries remain authoring policy and require independent review."
+      ],
+      "observableId": "ships.level-bands",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to review low-level ship groups without naming an optimal map."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "The evaluator must report level-ready and material-ready separately."
+      ],
+      "observableId": "ships.remodel-ready",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Show remodel readiness as unknown until master and inventory data are loaded."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Luck, HP, and ASW exceptions must be reported separately from normal modernization."
+      ],
+      "observableId": "modernization.gaps",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to check the modernization screen for the selected ship."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "historical",
+      "limitations": [
+        "Historical success does not prove the currently selected fleet meets the conditions."
+      ],
+      "observableId": "expedition.known-success",
+      "origins": [
+        "renderer-readonly-state",
+        "local-record-query"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Prefer expeditions marked cleared and ask the user to verify the current fleet check."
+    },
+    {
+      "coverage": "partial",
+      "freshness": "live-session",
+      "limitations": [
+        "Low/medium/high thresholds are strategic policy and are not yet independently approved."
+      ],
+      "observableId": "resources.bands",
+      "origins": [
+        "renderer-readonly-state",
+        "local-record-query"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "Show raw local totals and ask the user to choose a conservation posture."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "cached-session",
+      "limitations": [
+        "The list can be incomplete until all relevant quest tabs have been opened."
+      ],
+      "observableId": "quest.active-ids",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to open all quest tabs before combining quest advice."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Map info must be loaded in the current session or cache."
+      ],
+      "observableId": "maps.unlocked",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to open the sortie map screen."
+    },
+    {
+      "coverage": "partial",
+      "freshness": "live-session",
+      "limitations": [
+        "A universal ASW-capable threshold would be false; map and mechanic-specific thresholds remain policy."
+      ],
+      "observableId": "ships.asw-capable-summary",
+      "origins": [
+        "renderer-readonly-state",
+        "pure-composite"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "Show the measured ASW inputs and ask the user to confirm the target mechanic."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Counts do not assert compatibility with a particular fleet."
+      ],
+      "observableId": "equipment.asw-category-counts",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to check owned ASW equipment categories."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Level bands indicate breadth, not readiness for a named event or map."
+      ],
+      "observableId": "ships.type-level-bands",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Show only fleet-type counts until level data are loaded."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Category counts do not calculate map-specific air superiority."
+      ],
+      "observableId": "equipment.air-category-counts",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to inspect fighter and reconnaissance stock."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Counts do not substitute for a map-specific LOS formula."
+      ],
+      "observableId": "equipment.los-category-counts",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to check radar and reconnaissance equipment."
+    },
+    {
+      "coverage": "partial",
+      "freshness": "release-bound",
+      "limitations": [
+        "No independently approved gap thresholds exist yet."
+      ],
+      "observableId": "capability.surface-air-los-gaps",
+      "origins": [
+        "pure-composite",
+        "bundled-knowledge"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "Present measured category counts and let the user select one area to inspect."
+    },
+    {
+      "coverage": "partial",
+      "freshness": "release-bound",
+      "limitations": [
+        "A reviewed bundled EO identity catalog has not yet been authored for this module."
+      ],
+      "observableId": "maps.unlocked-eo",
+      "origins": [
+        "renderer-readonly-state",
+        "bundled-knowledge"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "List unlocked maps without labeling EO eligibility."
+    },
+    {
+      "coverage": "partial",
+      "freshness": "release-bound",
+      "limitations": [
+        "Per-EO affordability thresholds and route conditions are not yet reviewed."
+      ],
+      "observableId": "maps.eo-affordability",
+      "origins": [
+        "pure-composite",
+        "bundled-knowledge"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "Show EO as a long-term option, not an executable recommendation."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Missing use-item data must remain unknown rather than zero."
+      ],
+      "observableId": "inventory.medal-count",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to open the item list."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Missing use-item data must remain unknown rather than zero."
+      ],
+      "observableId": "inventory.blueprint-count",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "Ask the user to open the item list."
+    },
+    {
+      "coverage": "complete",
+      "freshness": "live-session",
+      "limitations": [
+        "Demand count must not become an automatic priority order."
+      ],
+      "observableId": "ships.blueprint-demand",
+      "origins": [
+        "renderer-readonly-state"
+      ],
+      "runtimeUse": "candidate",
+      "unknownFallback": "List blueprint demand as unknown until master data are loaded."
+    },
+    {
+      "coverage": "unavailable",
+      "freshness": "none",
+      "limitations": [
+        "No reviewed event overlay package exists.",
+        "Event specifics must never be inferred from evergreen milestones."
+      ],
+      "observableId": "event.overlay-status",
+      "origins": [
+        "bundled-knowledge"
+      ],
+      "runtimeUse": "blocked",
+      "unknownFallback": "Hide event-specific advice and show only evergreen preparation categories."
+    },
+    {
+      "coverage": "partial",
+      "freshness": "release-bound",
+      "limitations": [
+        "No independently approved evergreen breadth rubric exists yet."
+      ],
+      "observableId": "capability.breadth-summary",
+      "origins": [
+        "pure-composite",
+        "renderer-readonly-state",
+        "bundled-knowledge"
+      ],
+      "runtimeUse": "fallback-only",
+      "unknownFallback": "Show category coverage only and avoid declaring event readiness."
     }
   ],
   "runtimePromotionStatus": "blocked",

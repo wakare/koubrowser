@@ -1,15 +1,19 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/1",
+  "compilerVersion": "quest-growth-authoring-compiler/2",
   "output": {
     "approvedMilestoneCount": 0,
     "claimCount": 9,
     "eligibleForRuntimeCount": 0,
     "fixtureCount": 6,
+    "fullyObservedCount": 18,
     "milestoneCount": 8,
-    "sourceCount": 14
+    "observableCount": 29,
+    "partiallyObservedCount": 9,
+    "sourceCount": 14,
+    "unavailableObservableCount": 2
   },
   "runtimePromotion": {
-    "reason": "WAVE_1_AUTHORING_ONLY",
+    "reason": "AUTHORING_AND_OBSERVABILITY_AUDIT_ONLY",
     "status": "blocked"
   },
   "schemaVersion": 1,
@@ -25,6 +29,9 @@
       "resource-low.json": "sha256:699822f69cf694afc12d16f76405a48be2d630da31ffeac2feec3b0294bce6f1",
       "unknown-state.json": "sha256:fa9ea91a843c0153a5ac237ab0119d040a6330604a0a08c2cba117937671eeec"
     },
-    "milestoneCandidatesDigest": "sha256:ebf0ba991b8203515fbdc16161b3330ffaf326b06cc5fd5397b97116d0359c20"
+    "milestoneCandidatesDigest": "sha256:ebf0ba991b8203515fbdc16161b3330ffaf326b06cc5fd5397b97116d0359c20",
+    "observabilityAuditDigest": "sha256:5aaa2b35d8d314d7342214b6aa91994dda6af4ba1d40fe0045c9d6fdd856f182",
+    "observabilityAuditedBaseCommit": "148e2022a941cd9b11b58b60ad201ca4b138307f",
+    "observabilityCheckedAt": "2026-08-01T00:00:00.000Z"
   }
 }

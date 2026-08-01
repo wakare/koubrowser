@@ -1,0 +1,614 @@
+{
+  "authoringSchema": "QuestGrowthObservabilityAudit/1alpha",
+  "auditVersion": "2026-08-01.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "148e2022a941cd9b11b58b60ad201ca4b138307f",
+    "checkedAt": "2026-08-01T00:00:00.000Z"
+  },
+  "policy": {
+    "newCommunicationHooksAllowed": false,
+    "accountDataExportAllowed": false,
+    "permittedOrigins": [
+      "renderer-readonly-state",
+      "local-record-query",
+      "bundled-knowledge",
+      "pure-composite",
+      "none"
+    ],
+    "prohibitedData": [
+      "account-identifier",
+      "raw-game-payload",
+      "cookie-or-session",
+      "remote-account-snapshot"
+    ]
+  },
+  "observables": [
+    {
+      "id": "fleet.damage-summary",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Aggregate HP states for ships in currently visible deck ports; do not retain ship identities.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiShip.api_nowhp/api_maxhp and KcsUtil.shipHpState",
+          "role": "Existing HP state and damage classification"
+        },
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData.deckPorts/SvData.ship",
+          "role": "Existing local fleet membership"
+        }
+      ],
+      "limitations": [
+        "Escaped or otherwise unavailable ships must remain unknown instead of healthy."
+      ],
+      "unknownFallback": "Ask the user to check fleet damage before suggesting a sortie."
+    },
+    {
+      "id": "fleet.supply-summary",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Compare each visible deck ship's fuel and ammunition with its master maximum.",
+      "evidence": [
+        {
+          "path": "src/renderer/src/components/TitleBar.vue",
+          "symbol": "isNotSupplyDeckCheck",
+          "role": "Existing read-only unsupplied-fleet warning"
+        },
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiShip.api_fuel/api_bull and MstShip.api_fuel_max/api_bull_max",
+          "role": "Existing supply inputs"
+        }
+      ],
+      "limitations": ["Air-base supply is outside this fleet-only observable."],
+      "unknownFallback": "Ask the user to check fuel and ammunition before suggesting a sortie."
+    },
+    {
+      "id": "dock.repair-summary",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Count unlocked repair docks by state and summarize occupied completion times without ship identity.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData.ndocks and ApiNDock",
+          "role": "Existing local repair-dock state"
+        },
+        {
+          "path": "src/renderer/src/components/NDockList.vue",
+          "symbol": "ApiNDockState rendering",
+          "role": "Existing renderer consumption"
+        }
+      ],
+      "limitations": ["A dock list not loaded in the current session must be unknown."],
+      "unknownFallback": "Ask the user to check repair capacity manually."
+    },
+    {
+      "id": "modernization.material-summary",
+      "coverage": "partial",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "fallback-only",
+      "derivation": "Count unlocked ships and visible modernization yields, but never infer that a ship is safe to consume.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiShip.api_locked and MstShip.api_powup",
+          "role": "Existing candidate and modernization-yield inputs"
+        }
+      ],
+      "limitations": [
+        "Lock state alone cannot identify rare, unique, quest-required, or otherwise important ships.",
+        "Automatic material recommendations are prohibited."
+      ],
+      "unknownFallback": "Show only a manual safety checklist for modernization materials."
+    },
+    {
+      "id": "fleet.safety-state",
+      "coverage": "partial",
+      "origins": ["pure-composite"],
+      "freshness": "live-session",
+      "runtimeUse": "fallback-only",
+      "derivation": "Combine damage, supply, repair, and modernization-material summaries using fail-closed unknown handling.",
+      "evidence": [
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "fleet.damage-summary/fleet.supply-summary/dock.repair-summary/modernization.material-summary",
+          "role": "Audited component observables"
+        }
+      ],
+      "limitations": [
+        "Material safety remains manual, so the composite cannot assert a fully safe state."
+      ],
+      "unknownFallback": "Keep sortie guidance blocked and show the safety checklist."
+    },
+    {
+      "id": "fleet.unlocked-count",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Read the unlocked deck count, with visible deck ports as a consistency check.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiBasic.api_count_deck and SvData.deckPorts",
+          "role": "Existing unlocked-fleet state"
+        }
+      ],
+      "limitations": ["Missing basic data must not be interpreted as one unlocked fleet."],
+      "unknownFallback": "Ask the user to confirm how many fleets are unlocked."
+    },
+    {
+      "id": "quest.visible-chain",
+      "coverage": "partial",
+      "origins": ["renderer-readonly-state", "bundled-knowledge"],
+      "freshness": "cached-session",
+      "runtimeUse": "fallback-only",
+      "derivation": "Intersect visible quest IDs with locally curated prerequisite relationships; never invent hidden prerequisites.",
+      "evidence": [
+        {
+          "path": "src/renderer/src/components/QuestGuide.vue",
+          "symbol": "sourceQuestList and buildQuestGoalPlan",
+          "role": "Existing live/cache quest view and curated plan"
+        },
+        {
+          "path": "src/common/quest_knowledge.ts",
+          "symbol": "curated quest prerequisite data",
+          "role": "Existing bundled relationship knowledge"
+        }
+      ],
+      "limitations": [
+        "The visible quest list is tab/session dependent and curated relationship coverage is incomplete."
+      ],
+      "unknownFallback": "Show only currently visible unlock quests and label the chain incomplete."
+    },
+    {
+      "id": "expedition.unlocked-ids",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "List mission IDs returned in the existing member mission state.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData.missions and ApiMission",
+          "role": "Existing unlocked expedition state"
+        }
+      ],
+      "limitations": ["An unloaded mission list remains unknown."],
+      "unknownFallback": "Ask the user to open the expedition screen before ranking expeditions."
+    },
+    {
+      "id": "practice.available-count",
+      "coverage": "unavailable",
+      "origins": ["none"],
+      "freshness": "none",
+      "runtimeUse": "fallback-only",
+      "derivation": "No existing state provides a trustworthy count of remaining practice opponents for the current refresh window.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiBasic practice totals and SvData.practiceBattleResult",
+          "role": "Existing cumulative/result data is insufficient for remaining availability"
+        }
+      ],
+      "limitations": [
+        "Cumulative practice totals and the last result cannot determine current remaining opportunities."
+      ],
+      "unknownFallback": "Suggest checking the practice screen manually; do not display a count."
+    },
+    {
+      "id": "ships.level-bands",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Aggregate owned ship levels into anonymous configured bands.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData.ships and ApiShip.api_lv",
+          "role": "Existing owned-ship level state"
+        }
+      ],
+      "limitations": ["Band boundaries remain authoring policy and require independent review."],
+      "unknownFallback": "Ask the user to review low-level ship groups without naming an optimal map."
+    },
+    {
+      "id": "ships.remodel-ready",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Match owned ship level and current master ID against remodel level and upgrade material requirements.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "MstShip.api_afterlv/api_aftershipid and MstShipupgrade",
+          "role": "Existing remodel level and special-item requirements"
+        },
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiShip.api_lv and SvData.apiData.api_mst_shipupgrade",
+          "role": "Existing owned-ship and master upgrade state"
+        }
+      ],
+      "limitations": ["The evaluator must report level-ready and material-ready separately."],
+      "unknownFallback": "Show remodel readiness as unknown until master and inventory data are loaded."
+    },
+    {
+      "id": "modernization.gaps",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Aggregate remaining firepower, torpedo, anti-air, and armor gaps from current/max ship stats.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiShip.api_karyoku/api_raisou/api_taiku/api_soukou and api_kyouka",
+          "role": "Existing modernization state"
+        }
+      ],
+      "limitations": [
+        "Luck, HP, and ASW exceptions must be reported separately from normal modernization."
+      ],
+      "unknownFallback": "Ask the user to check the modernization screen for the selected ship."
+    },
+    {
+      "id": "expedition.known-success",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state", "local-record-query"],
+      "freshness": "historical",
+      "runtimeUse": "candidate",
+      "derivation": "Use cleared mission state, optionally backed by successful local mission records, without retaining fleet identity.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiMission.api_state and ApiMissionState.cleared",
+          "role": "Existing cleared expedition state"
+        },
+        {
+          "path": "src/common/record.ts",
+          "symbol": "MissionRecord.clearResult",
+          "role": "Existing local success history"
+        },
+        {
+          "path": "src/preload/index.ts",
+          "symbol": "queryDb",
+          "role": "Existing read-only renderer query bridge"
+        }
+      ],
+      "limitations": [
+        "Historical success does not prove the currently selected fleet meets the conditions."
+      ],
+      "unknownFallback": "Prefer expeditions marked cleared and ask the user to verify the current fleet check."
+    },
+    {
+      "id": "resources.bands",
+      "coverage": "partial",
+      "origins": ["renderer-readonly-state", "local-record-query"],
+      "freshness": "live-session",
+      "runtimeUse": "fallback-only",
+      "derivation": "Aggregate current fuel, ammunition, steel, bauxite, and repair buckets; history may show trend only.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData material getters and ApiMaterial",
+          "role": "Existing current resources"
+        },
+        {
+          "path": "src/common/record.ts",
+          "symbol": "PortRecord",
+          "role": "Existing local resource history"
+        }
+      ],
+      "limitations": [
+        "Low/medium/high thresholds are strategic policy and are not yet independently approved."
+      ],
+      "unknownFallback": "Show raw local totals and ask the user to choose a conservation posture."
+    },
+    {
+      "id": "quest.active-ids",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "cached-session",
+      "runtimeUse": "candidate",
+      "derivation": "Collect in-progress quest IDs from the existing live or cached quest list.",
+      "evidence": [
+        {
+          "path": "src/renderer/src/components/QuestGuide.vue",
+          "symbol": "sourceQuestList and ApiQuestState.in_progress",
+          "role": "Existing active-quest projection"
+        }
+      ],
+      "limitations": ["The list can be incomplete until all relevant quest tabs have been opened."],
+      "unknownFallback": "Ask the user to open all quest tabs before combining quest advice."
+    },
+    {
+      "id": "maps.unlocked",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Treat map IDs present in member map info as unlocked and map them through master map data.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData.mapinfos/mapinfo and ApiMapInfo",
+          "role": "Existing unlocked/cleared map state"
+        },
+        {
+          "path": "src/renderer/src/components/QuestGuide.vue",
+          "symbol": "availableMapKeys",
+          "role": "Existing renderer projection"
+        }
+      ],
+      "limitations": ["Map info must be loaded in the current session or cache."],
+      "unknownFallback": "Ask the user to open the sortie map screen."
+    },
+    {
+      "id": "ships.asw-capable-summary",
+      "coverage": "partial",
+      "origins": ["renderer-readonly-state", "pure-composite"],
+      "freshness": "live-session",
+      "runtimeUse": "fallback-only",
+      "derivation": "Aggregate ship type, level, ASW stat, and compatible equipped ASW categories without exposing ship identity.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiShip.api_taisen/api_lv/api_slot and MstShip.api_stype",
+          "role": "Existing ASW capability inputs"
+        },
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SlotitemType.Sonar/DepthCharge/ASBAircraft",
+          "role": "Existing ASW equipment taxonomy"
+        }
+      ],
+      "limitations": [
+        "A universal ASW-capable threshold would be false; map and mechanic-specific thresholds remain policy."
+      ],
+      "unknownFallback": "Show the measured ASW inputs and ask the user to confirm the target mechanic."
+    },
+    {
+      "id": "equipment.asw-category-counts",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Count owned sonar, depth-charge, large-sonar, autogyro, and ASW-aircraft categories from master types.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData.slotitems/mstSlotitem and SlotitemType",
+          "role": "Existing equipment inventory and taxonomy"
+        },
+        {
+          "path": "src/renderer/src/components/QuestGuide.vue",
+          "symbol": "equipmentStock and strategyEquipmentTypeCounts",
+          "role": "Existing anonymous equipment aggregation"
+        }
+      ],
+      "limitations": ["Counts do not assert compatibility with a particular fleet."],
+      "unknownFallback": "Ask the user to check owned ASW equipment categories."
+    },
+    {
+      "id": "ships.type-level-bands",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Aggregate owned ship counts by master ship type and anonymous level band.",
+      "evidence": [
+        {
+          "path": "src/renderer/src/components/QuestGuide.vue",
+          "symbol": "strategyShipTypeCounts",
+          "role": "Existing anonymous ship-type aggregation"
+        },
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "MstShip.api_stype and ApiShip.api_lv",
+          "role": "Existing type and level inputs"
+        }
+      ],
+      "limitations": ["Level bands indicate breadth, not readiness for a named event or map."],
+      "unknownFallback": "Show only fleet-type counts until level data are loaded."
+    },
+    {
+      "id": "equipment.air-category-counts",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Count owned fighter, seaplane-fighter, bomber, attacker, and land-air categories from master types.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SlotitemType air categories and SvData.slotitems",
+          "role": "Existing equipment inventory and taxonomy"
+        }
+      ],
+      "limitations": ["Category counts do not calculate map-specific air superiority."],
+      "unknownFallback": "Ask the user to inspect fighter and reconnaissance stock."
+    },
+    {
+      "id": "equipment.los-category-counts",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Count owned radar and reconnaissance categories from master equipment types.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SlotitemType radar/reconnaissance categories and KcsUtil.hasRadar",
+          "role": "Existing LOS equipment taxonomy"
+        }
+      ],
+      "limitations": ["Counts do not substitute for a map-specific LOS formula."],
+      "unknownFallback": "Ask the user to check radar and reconnaissance equipment."
+    },
+    {
+      "id": "capability.surface-air-los-gaps",
+      "coverage": "partial",
+      "origins": ["pure-composite", "bundled-knowledge"],
+      "freshness": "release-bound",
+      "runtimeUse": "fallback-only",
+      "derivation": "Compare type/level and air/LOS category summaries only against independently reviewed milestone thresholds.",
+      "evidence": [
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "ships.type-level-bands/equipment.air-category-counts/equipment.los-category-counts",
+          "role": "Audited component observables"
+        }
+      ],
+      "limitations": ["No independently approved gap thresholds exist yet."],
+      "unknownFallback": "Present measured category counts and let the user select one area to inspect."
+    },
+    {
+      "id": "maps.unlocked-eo",
+      "coverage": "partial",
+      "origins": ["renderer-readonly-state", "bundled-knowledge"],
+      "freshness": "release-bound",
+      "runtimeUse": "fallback-only",
+      "derivation": "Intersect unlocked map IDs with a versioned bundled EO catalog.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData.mapinfos and MstMapinfo.api_maparea_id/api_no",
+          "role": "Existing map identity and unlock state"
+        }
+      ],
+      "limitations": [
+        "A reviewed bundled EO identity catalog has not yet been authored for this module."
+      ],
+      "unknownFallback": "List unlocked maps without labeling EO eligibility."
+    },
+    {
+      "id": "maps.eo-affordability",
+      "coverage": "partial",
+      "origins": ["pure-composite", "bundled-knowledge"],
+      "freshness": "release-bound",
+      "runtimeUse": "fallback-only",
+      "derivation": "Combine unlocked EO, resource, damage, and capability summaries with reviewed per-EO conditions.",
+      "evidence": [
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "maps.unlocked-eo/resources.bands/fleet.damage-summary/capability summaries",
+          "role": "Audited component observables"
+        }
+      ],
+      "limitations": ["Per-EO affordability thresholds and route conditions are not yet reviewed."],
+      "unknownFallback": "Show EO as a long-term option, not an executable recommendation."
+    },
+    {
+      "id": "inventory.medal-count",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Read the local use-item count for medals.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiItemId.medal and SvData.useitems",
+          "role": "Existing local item inventory"
+        }
+      ],
+      "limitations": ["Missing use-item data must remain unknown rather than zero."],
+      "unknownFallback": "Ask the user to open the item list."
+    },
+    {
+      "id": "inventory.blueprint-count",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Read the local use-item count for remodel blueprints.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "ApiItemId.remodel_blueprint and SvData.useitems",
+          "role": "Existing local item inventory"
+        }
+      ],
+      "limitations": ["Missing use-item data must remain unknown rather than zero."],
+      "unknownFallback": "Ask the user to open the item list."
+    },
+    {
+      "id": "ships.blueprint-demand",
+      "coverage": "complete",
+      "origins": ["renderer-readonly-state"],
+      "freshness": "live-session",
+      "runtimeUse": "candidate",
+      "derivation": "Aggregate owned ships whose next upgrade declares drawing requirements, separating level-ready from future demand.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "MstShipupgrade.api_current_ship_id/api_upgrade_level/api_drawing_count",
+          "role": "Existing blueprint requirement master data"
+        },
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData.ships and SvData.apiData.api_mst_shipupgrade",
+          "role": "Existing owned-ship and upgrade inputs"
+        }
+      ],
+      "limitations": ["Demand count must not become an automatic priority order."],
+      "unknownFallback": "List blueprint demand as unknown until master data are loaded."
+    },
+    {
+      "id": "event.overlay-status",
+      "coverage": "unavailable",
+      "origins": ["bundled-knowledge"],
+      "freshness": "none",
+      "runtimeUse": "blocked",
+      "derivation": "Require a signed-off, versioned, expiring local event overlay; current event detection alone is insufficient.",
+      "evidence": [
+        {
+          "path": "src/common/kcs.ts",
+          "symbol": "SvData.inEvent",
+          "role": "Existing event-presence signal does not provide strategy overlay currentness"
+        }
+      ],
+      "limitations": [
+        "No reviewed event overlay package exists.",
+        "Event specifics must never be inferred from evergreen milestones."
+      ],
+      "unknownFallback": "Hide event-specific advice and show only evergreen preparation categories."
+    },
+    {
+      "id": "capability.breadth-summary",
+      "coverage": "partial",
+      "origins": ["pure-composite", "renderer-readonly-state", "bundled-knowledge"],
+      "freshness": "release-bound",
+      "runtimeUse": "fallback-only",
+      "derivation": "Combine anonymous ship-type, level, equipment-category, and resource summaries against an approved evergreen breadth rubric.",
+      "evidence": [
+        {
+          "path": "src/renderer/src/components/QuestGuide.vue",
+          "symbol": "strategyShipTypeCounts and strategyEquipmentTypeCounts",
+          "role": "Existing anonymous breadth inputs"
+        },
+        {
+          "path": "knowledge/quest-growth/authoring/observability-map.json",
+          "symbol": "ships.type-level-bands/equipment category counts/resources.bands",
+          "role": "Audited component observables"
+        }
+      ],
+      "limitations": ["No independently approved evergreen breadth rubric exists yet."],
+      "unknownFallback": "Show category coverage only and avoid declaring event readiness."
+    }
+  ]
+}

@@ -127,6 +127,7 @@ Wave 2 へ進む前に、次を満たす必要がある。
 
 1. author と approver が分離している。
 2. hard mechanic の claim に独立して読める資料が二つ以上ある。
-3. 各 predicate の local observable が既存の安全な read-only state から得られる。
+3. 各 predicate の local observable audit で `complete` とされた入力だけを自動判定に使い、
+   `partial` / `unavailable` は manual fallback に固定する。
 4. unknown、conflicted、expired、partial の場合も三カードが空にならない。
 5. quest strategy generated artifacts の `0505bc...` lineage gap を解決または明示的に受理する。

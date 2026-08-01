@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/1'
+const CompilerVersion = 'quest-growth-authoring-compiler/2'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -383,6 +383,168 @@ function validateMilestoneCatalog(value, evidence) {
   return { value, milestones }
 }
 
+function milestoneObservableIds(milestone) {
+  return [
+    ...milestone.requiredObservables,
+    ...milestone.prerequisites.map((predicate) => predicate.observable),
+    ...milestone.triggers.map((predicate) => predicate.observable)
+  ]
+}
+
+function validateObservabilityAudit(value, root) {
+  exactKeys(
+    value,
+    ['authoringSchema', 'auditVersion', 'sourceSnapshot', 'policy', 'observables'],
+    [],
+    'observability audit'
+  )
+  if (value.authoringSchema !== 'QuestGrowthObservabilityAudit/1alpha') {
+    throw new Error('unsupported observability audit schema')
+  }
+  text(value.auditVersion, 'observability audit version')
+  validateSnapshot(value.sourceSnapshot, 'observability audit source snapshot')
+  exactKeys(
+    value.policy,
+    [
+      'newCommunicationHooksAllowed',
+      'accountDataExportAllowed',
+      'permittedOrigins',
+      'prohibitedData'
+    ],
+    [],
+    'observability policy'
+  )
+  if (value.policy.newCommunicationHooksAllowed !== false) {
+    throw new Error('observability audit must not allow new communication hooks')
+  }
+  if (value.policy.accountDataExportAllowed !== false) {
+    throw new Error('observability audit must not allow account data export')
+  }
+  const allowedOrigins = [
+    'renderer-readonly-state',
+    'local-record-query',
+    'bundled-knowledge',
+    'pure-composite',
+    'none'
+  ]
+  const permittedOrigins = unique(
+    value.policy.permittedOrigins,
+    'observability policy permittedOrigins',
+    (origin, description) => oneOf(origin, allowedOrigins, description),
+    1
+  )
+  if (
+    permittedOrigins.length !== allowedOrigins.length ||
+    allowedOrigins.some((origin) => !permittedOrigins.includes(origin))
+  ) {
+    throw new Error('observability policy permittedOrigins is incomplete')
+  }
+  const prohibitedData = unique(
+    value.policy.prohibitedData,
+    'observability policy prohibitedData',
+    text,
+    1
+  )
+  for (const required of [
+    'account-identifier',
+    'raw-game-payload',
+    'cookie-or-session',
+    'remote-account-snapshot'
+  ]) {
+    if (!prohibitedData.includes(required)) {
+      throw new Error(`observability policy does not prohibit ${required}`)
+    }
+  }
+
+  const observables = new Map()
+  unique(
+    value.observables,
+    'observability entries',
+    (observable, description) => {
+      exactKeys(
+        observable,
+        [
+          'id',
+          'coverage',
+          'origins',
+          'freshness',
+          'runtimeUse',
+          'derivation',
+          'evidence',
+          'limitations',
+          'unknownFallback'
+        ],
+        [],
+        description
+      )
+      const id = identifier(observable.id, `${description} id`)
+      const coverage = oneOf(
+        observable.coverage,
+        ['complete', 'partial', 'unavailable'],
+        `${description} coverage`
+      )
+      const origins = unique(
+        observable.origins,
+        `${description} origins`,
+        (origin, originDescription) => oneOf(origin, permittedOrigins, originDescription),
+        1
+      )
+      oneOf(
+        observable.freshness,
+        ['live-session', 'cached-session', 'historical', 'release-bound', 'none'],
+        `${description} freshness`
+      )
+      const runtimeUse = oneOf(
+        observable.runtimeUse,
+        ['candidate', 'fallback-only', 'blocked'],
+        `${description} runtimeUse`
+      )
+      text(observable.derivation, `${description} derivation`)
+      unique(
+        observable.evidence,
+        `${description} evidence`,
+        (entry, evidenceDescription) => {
+          exactKeys(entry, ['path', 'symbol', 'role'], [], evidenceDescription)
+          const evidencePath = text(entry.path, `${evidenceDescription} path`)
+          if (
+            path.isAbsolute(evidencePath) ||
+            evidencePath.includes('\\') ||
+            evidencePath.split('/').includes('..')
+          ) {
+            throw new Error(`invalid ${evidenceDescription} repository path`)
+          }
+          const resolved = path.resolve(root, evidencePath)
+          if (
+            !resolved.startsWith(`${path.resolve(root)}${path.sep}`) ||
+            !fs.existsSync(resolved)
+          ) {
+            throw new Error(`missing ${evidenceDescription} repository path ${evidencePath}`)
+          }
+          text(entry.symbol, `${evidenceDescription} symbol`)
+          text(entry.role, `${evidenceDescription} role`)
+          return `${evidencePath}:${entry.symbol}`
+        },
+        1
+      )
+      unique(observable.limitations, `${description} limitations`, text, 1)
+      text(observable.unknownFallback, `${description} unknownFallback`)
+      if (origins.includes('none') && (origins.length !== 1 || coverage !== 'unavailable')) {
+        throw new Error(`${description} none origin is only valid for unavailable coverage`)
+      }
+      if (coverage === 'unavailable' && runtimeUse === 'candidate') {
+        throw new Error(`${description} unavailable observable cannot be a runtime candidate`)
+      }
+      if (runtimeUse === 'candidate' && coverage !== 'complete') {
+        throw new Error(`${description} runtime candidate must have complete coverage`)
+      }
+      observables.set(id, observable)
+      return id
+    },
+    1
+  )
+  return { value, observables }
+}
+
 function claimAudit(claim, sources) {
   const readableIndependent = claim.sourceIds.filter((sourceId) => {
     const source = sources.get(sourceId)
@@ -440,10 +602,26 @@ function buildQuestGrowthArtifacts(root) {
   const base = path.join(root, 'knowledge', 'quest-growth')
   const ledgerPath = path.join(base, 'authoring', 'evidence-ledger.json')
   const milestonesPath = path.join(base, 'authoring', 'milestone-candidates.json')
+  const observabilityPath = path.join(base, 'authoring', 'observability-map.json')
   const ledgerRaw = fs.readFileSync(ledgerPath)
   const milestonesRaw = fs.readFileSync(milestonesPath)
+  const observabilityRaw = fs.readFileSync(observabilityPath)
   const evidence = validateEvidenceLedger(JSON.parse(ledgerRaw))
   const catalog = validateMilestoneCatalog(JSON.parse(milestonesRaw), evidence)
+  const observability = validateObservabilityAudit(JSON.parse(observabilityRaw), root)
+  const referencedObservableIds = new Set(
+    [...catalog.milestones.values()].flatMap(milestoneObservableIds)
+  )
+  for (const observableId of referencedObservableIds) {
+    if (!observability.observables.has(observableId)) {
+      throw new Error(`milestone references unaudited observable ${observableId}`)
+    }
+  }
+  for (const observableId of observability.observables.keys()) {
+    if (!referencedObservableIds.has(observableId)) {
+      throw new Error(`observability audit contains unused observable ${observableId}`)
+    }
+  }
   const fixtureDirectory = path.join(base, 'fixtures')
   const fixtureFiles = fs
     .readdirSync(fixtureDirectory)
@@ -465,7 +643,17 @@ function buildQuestGrowthArtifacts(root) {
   for (const milestone of catalog.milestones.values()) {
     const reasonCodes = []
     if (milestone.status !== 'approved') reasonCodes.push('MILESTONE_NOT_INDEPENDENTLY_APPROVED')
-    reasonCodes.push('LOCAL_OBSERVABILITY_NOT_AUDITED')
+    for (const observableId of new Set(milestoneObservableIds(milestone))) {
+      const observable = observability.observables.get(observableId)
+      if (observable.coverage === 'partial') {
+        reasonCodes.push(`OBSERVABLE_PARTIAL:${observableId}`)
+      } else if (observable.coverage === 'unavailable') {
+        reasonCodes.push(`OBSERVABLE_UNAVAILABLE:${observableId}`)
+      }
+      if (observable.runtimeUse === 'blocked') {
+        reasonCodes.push(`OBSERVABLE_RUNTIME_BLOCKED:${observableId}`)
+      }
+    }
     for (const claimRef of milestone.claimRefs) {
       const audit = claims.find((item) => item.claimId === claimRef)
       if (audit.blockers.length > 0) reasonCodes.push(`EVIDENCE_BLOCKED:${claimRef}`)
@@ -481,8 +669,11 @@ function buildQuestGrowthArtifacts(root) {
     source: {
       auditedBaseCommit: evidence.value.sourceSnapshot.auditedBaseCommit,
       checkedAt: evidence.value.sourceSnapshot.checkedAt,
+      observabilityAuditedBaseCommit: observability.value.sourceSnapshot.auditedBaseCommit,
+      observabilityCheckedAt: observability.value.sourceSnapshot.checkedAt,
       evidenceLedgerDigest: sha256(ledgerRaw),
       milestoneCandidatesDigest: sha256(milestonesRaw),
+      observabilityAuditDigest: sha256(observabilityRaw),
       fixtureDigests
     },
     output: {
@@ -493,11 +684,21 @@ function buildQuestGrowthArtifacts(root) {
         (item) => item.status === 'approved'
       ).length,
       eligibleForRuntimeCount,
-      fixtureCount: fixtureFiles.length
+      fixtureCount: fixtureFiles.length,
+      observableCount: observability.observables.size,
+      fullyObservedCount: [...observability.observables.values()].filter(
+        (item) => item.coverage === 'complete'
+      ).length,
+      partiallyObservedCount: [...observability.observables.values()].filter(
+        (item) => item.coverage === 'partial'
+      ).length,
+      unavailableObservableCount: [...observability.observables.values()].filter(
+        (item) => item.coverage === 'unavailable'
+      ).length
     },
     runtimePromotion: {
       status: 'blocked',
-      reason: 'WAVE_1_AUTHORING_ONLY'
+      reason: 'AUTHORING_AND_OBSERVABILITY_AUDIT_ONLY'
     }
   }
   const conflictAndGapReport = {
@@ -505,11 +706,24 @@ function buildQuestGrowthArtifacts(root) {
     compilerVersion: CompilerVersion,
     runtimePromotionStatus: eligibleForRuntimeCount > 0 ? 'review-required' : 'blocked',
     claimAudits: claims,
+    observableAudits: [...observability.observables.values()].map((observable) => ({
+      observableId: observable.id,
+      coverage: observable.coverage,
+      origins: observable.origins,
+      freshness: observable.freshness,
+      runtimeUse: observable.runtimeUse,
+      limitations: observable.limitations,
+      unknownFallback: observable.unknownFallback
+    })),
     milestoneGaps,
     globalStops: [
       'NO_RUNTIME_BUNDLE_IN_WAVE_1',
       'INDEPENDENT_APPROVER_REQUIRED',
-      'LOCAL_OBSERVABILITY_AUDIT_REQUIRED',
+      ...([...observability.observables.values()].some(
+        (item) => item.coverage !== 'complete' || item.runtimeUse !== 'candidate'
+      )
+        ? ['OBSERVABILITY_GAPS_REMAIN']
+        : []),
       'QUEST_STRATEGY_LINEAGE_GATE_UNRESOLVED'
     ]
   }
@@ -543,6 +757,9 @@ function main() {
     `Quest growth authoring ${check ? 'verified' : 'compiled'}: ` +
       `${output.sourceCount} sources, ${output.claimCount} claims, ` +
       `${output.milestoneCount} draft milestones, ${output.fixtureCount} fixtures, ` +
+      `${output.observableCount} observables ` +
+      `(${output.fullyObservedCount} complete, ${output.partiallyObservedCount} partial, ` +
+      `${output.unavailableObservableCount} unavailable), ` +
       `${output.eligibleForRuntimeCount} runtime-eligible`
   )
 }
@@ -554,5 +771,6 @@ module.exports = {
   canonicalJson,
   validateEvidenceLedger,
   validateFixture,
-  validateMilestoneCatalog
+  validateMilestoneCatalog,
+  validateObservabilityAudit
 }
