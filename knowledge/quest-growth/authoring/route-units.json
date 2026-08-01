@@ -1,0 +1,443 @@
+{
+  "authoringSchema": "QuestGrowthRouteUnits/1alpha",
+  "catalogVersion": "1.0.0-alpha.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "6b52e143af9fcab1dbb00b74f7e89bcf695e5e38",
+    "checkedAt": "2026-08-01T08:22:58.133Z"
+  },
+  "units": [
+    {
+      "routeUnitId": "growth-route:system-fleet-unlock:baseline",
+      "lineageRef": { "id": "growth-lineage:system-fleet-unlock", "revision": 1 },
+      "revision": 1,
+      "status": "draft",
+      "objective": {
+        "kind": "system-unlock",
+        "summary": "确认舰队与远征解锁信息是否足以继续判断。"
+      },
+      "applicability": ["goal:system-unlock-selected"],
+      "prerequisites": ["global-safety-gate:manual-check", "quest-screen:loaded"],
+      "requiredObservables": [
+        {
+          "observableId": "fleet.unlocked-count",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "quest.visible-chain",
+          "role": "partial-chain",
+          "use": "manual-context",
+          "unknownPolicy": "manual-check"
+        },
+        {
+          "observableId": "expedition.unlocked-ids",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        }
+      ],
+      "unknownPolicy": "manual-check",
+      "stepCategories": ["data-acquisition", "stop-and-reassess"],
+      "benefits": ["区分已观察到的解锁事实与未审查的完整前置链。"],
+      "costs": ["需要用户打开任务与远征画面确认。"],
+      "risks": ["可见任务链可能不完整。"],
+      "stopConditions": ["quest-visible-chain-incomplete", "curated-relation-missing"],
+      "fallback": "打开任务与远征画面确认当前可见关系；信息不足时停止，不生成任务顺序。",
+      "evidenceRefs": ["claim:expedition-resource-loop"],
+      "gameVersion": "kancolle-2026-08-01-evergreen-review",
+      "eventScope": null,
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "eligibilityPolicyRef": "policy:quest-growth-route-r6",
+      "questStrategyRefs": [],
+      "publicationClass": "reviewed-authoring-only"
+    },
+    {
+      "routeUnitId": "growth-route:experience-remodel-modernization:baseline",
+      "lineageRef": { "id": "growth-lineage:experience-remodel-modernization", "revision": 1 },
+      "revision": 1,
+      "status": "draft",
+      "objective": {
+        "kind": "experience-remodel-modernization",
+        "summary": "确认练度、改造与通常近代化循环的当前事实。"
+      },
+      "applicability": ["goal:experience-loop-selected"],
+      "prerequisites": ["global-safety-gate:manual-check", "material-safety:manual-check"],
+      "requiredObservables": [
+        {
+          "observableId": "practice.available-count",
+          "role": "manual-opportunity",
+          "use": "manual-context",
+          "unknownPolicy": "manual-check"
+        },
+        {
+          "observableId": "ships.level-bands",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "ships.remodel-ready",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "modernization.gaps",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "modernization.material-summary",
+          "role": "material-safety",
+          "use": "manual-context",
+          "unknownPolicy": "manual-check"
+        }
+      ],
+      "unknownPolicy": "manual-check",
+      "stepCategories": [
+        "manual-safety-check",
+        "training",
+        "remodel",
+        "modernization",
+        "stop-and-reassess"
+      ],
+      "benefits": ["把经验、改造和通常近代化事实放在同一审查单元。"],
+      "costs": ["需要用户确认演习机会与素材安全。"],
+      "risks": ["不能由聚合数据判断具体素材舰是否安全。"],
+      "stopConditions": [
+        "practice-state-unknown",
+        "material-safety-unknown",
+        "target-not-selected"
+      ],
+      "fallback": "确认演习画面和近代化素材安全；未知时只保留检查项，不给出练级海域或舰娘优先级。",
+      "evidenceRefs": [
+        "claim:exercise-low-repair-training",
+        "claim:modernization-before-after-remodel"
+      ],
+      "gameVersion": "kancolle-2026-08-01-evergreen-review",
+      "eventScope": null,
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "eligibilityPolicyRef": "policy:quest-growth-route-r6",
+      "questStrategyRefs": [],
+      "publicationClass": "reviewed-authoring-only"
+    },
+    {
+      "routeUnitId": "growth-route:expedition-resource-periodic-loop:baseline",
+      "lineageRef": { "id": "growth-lineage:expedition-resource-periodic-loop", "revision": 1 },
+      "revision": 1,
+      "status": "draft",
+      "objective": {
+        "kind": "resource-loop",
+        "summary": "确认远征、资源与周期任务循环的当前事实。"
+      },
+      "applicability": ["goal:resource-loop-selected", "resource-posture:user-declared"],
+      "prerequisites": [
+        "global-safety-gate:manual-check",
+        "current-expedition-condition:manual-check"
+      ],
+      "requiredObservables": [
+        {
+          "observableId": "expedition.unlocked-ids",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "expedition.known-success",
+          "role": "historical-fact",
+          "use": "fallback-context",
+          "unknownPolicy": "fallback"
+        },
+        {
+          "observableId": "resources.bands",
+          "role": "raw-resource-context",
+          "use": "manual-context",
+          "unknownPolicy": "manual-check"
+        },
+        {
+          "observableId": "quest.active-ids",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        }
+      ],
+      "unknownPolicy": "manual-check",
+      "stepCategories": [
+        "data-acquisition",
+        "expedition",
+        "resource-management",
+        "stop-and-reassess"
+      ],
+      "benefits": ["区分远征解锁、历史成功和当前资源上下文。"],
+      "costs": ["需要用户确认当前舰队条件与资源方针。"],
+      "risks": ["历史成功可能被误解为当前可执行。"],
+      "stopConditions": ["current-fleet-condition-unknown", "resource-posture-unknown-or-stale"],
+      "fallback": "确认当前远征条件和资源方针；不得由历史成功推断当前成功，也不选择最佳远征。",
+      "evidenceRefs": ["claim:expedition-resource-loop", "claim:adaptive-growth-priorities"],
+      "gameVersion": "kancolle-2026-08-01-evergreen-review",
+      "eventScope": null,
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "eligibilityPolicyRef": "policy:quest-growth-route-r6",
+      "questStrategyRefs": [],
+      "publicationClass": "reviewed-authoring-only"
+    },
+    {
+      "routeUnitId": "growth-route:anti-submarine-foundation:baseline",
+      "lineageRef": { "id": "growth-lineage:anti-submarine-foundation", "revision": 1 },
+      "revision": 1,
+      "status": "draft",
+      "objective": {
+        "kind": "anti-submarine-foundation",
+        "summary": "确认对潜相关舰队与装备事实是否足以继续审查。"
+      },
+      "applicability": ["goal:anti-submarine-selected", "target-context:required"],
+      "prerequisites": ["global-safety-gate:manual-check", "target-mechanic:reviewed"],
+      "requiredObservables": [
+        {
+          "observableId": "maps.unlocked",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "ships.asw-capable-summary",
+          "role": "capability-context",
+          "use": "manual-context",
+          "unknownPolicy": "manual-check"
+        },
+        {
+          "observableId": "equipment.asw-category-counts",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "quest.active-ids",
+          "role": "fact",
+          "use": "fallback-context",
+          "unknownPolicy": "fallback"
+        }
+      ],
+      "unknownPolicy": "manual-check",
+      "stepCategories": [
+        "data-acquisition",
+        "training",
+        "equipment-development",
+        "stop-and-reassess"
+      ],
+      "benefits": ["将对潜装备类别事实与目标规则分开。"],
+      "costs": ["需要明确目标上下文并人工确认能力。"],
+      "risks": ["类别存在不等于特定目标达标。"],
+      "stopConditions": [
+        "target-context-missing",
+        "target-mechanic-not-reviewed",
+        "asw-readiness-unknown"
+      ],
+      "fallback": "选择一个目标上下文并确认对潜类别事实；缺少审查规则时不判断达标，不给出舰娘或装备组合。",
+      "evidenceRefs": ["claim:conditional-leveling-maps"],
+      "gameVersion": "kancolle-2026-08-01-evergreen-review",
+      "eventScope": null,
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-09-30T00:00:00.000Z",
+        "validUntil": "2026-12-31T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "eligibilityPolicyRef": "policy:quest-growth-route-r6",
+      "questStrategyRefs": [],
+      "publicationClass": "reviewed-authoring-only"
+    },
+    {
+      "routeUnitId": "growth-route:surface-air-los-foundation:baseline",
+      "lineageRef": { "id": "growth-lineage:surface-air-los-foundation", "revision": 1 },
+      "revision": 1,
+      "status": "draft",
+      "objective": {
+        "kind": "surface-air-los-foundation",
+        "summary": "确认水面、航空与索敌能力宽度的匿名事实。"
+      },
+      "applicability": ["goal:fleet-breadth-selected", "target-context:required"],
+      "prerequisites": ["global-safety-gate:manual-check", "target-formula:reviewed"],
+      "requiredObservables": [
+        {
+          "observableId": "maps.unlocked",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "ships.type-level-bands",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "equipment.air-category-counts",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "equipment.los-category-counts",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "capability.surface-air-los-gaps",
+          "role": "manual-gap-context",
+          "use": "manual-context",
+          "unknownPolicy": "manual-check"
+        }
+      ],
+      "unknownPolicy": "manual-check",
+      "stepCategories": [
+        "data-acquisition",
+        "training",
+        "equipment-development",
+        "equipment-improvement",
+        "stop-and-reassess"
+      ],
+      "benefits": ["展示匿名类别与范围事实而不推断能力缺口。"],
+      "costs": ["需要用户选择目标上下文。"],
+      "risks": ["公式与目标条件缺失时容易产生误断。"],
+      "stopConditions": [
+        "target-context-missing",
+        "versioned-formula-missing",
+        "route-variant-missing"
+      ],
+      "fallback": "确认目标上下文和现有类别事实；公式或适用条件未审查时不判断制空或索敌达标。",
+      "evidenceRefs": ["claim:adaptive-growth-priorities", "claim:event-readiness-breadth"],
+      "gameVersion": "kancolle-2026-08-01-evergreen-review",
+      "eventScope": null,
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "eligibilityPolicyRef": "policy:quest-growth-route-r6",
+      "questStrategyRefs": [],
+      "publicationClass": "reviewed-authoring-only"
+    },
+    {
+      "routeUnitId": "growth-route:normal-map-eo-blueprint-loop:baseline",
+      "lineageRef": { "id": "growth-lineage:normal-map-eo-blueprint-loop", "revision": 1 },
+      "revision": 1,
+      "status": "draft",
+      "objective": {
+        "kind": "normal-map-eo-blueprint-loop",
+        "summary": "确认 EO、勋章、设计图与改造需求事实。"
+      },
+      "applicability": ["goal:eo-blueprint-selected", "time-context:user-confirmed"],
+      "prerequisites": ["global-safety-gate:manual-check", "eo-route-knowledge:reviewed"],
+      "requiredObservables": [
+        {
+          "observableId": "maps.unlocked-eo",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "maps.eo-affordability",
+          "role": "manual-affordability",
+          "use": "manual-context",
+          "unknownPolicy": "manual-check"
+        },
+        {
+          "observableId": "inventory.medal-count",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "inventory.blueprint-count",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        },
+        {
+          "observableId": "ships.blueprint-demand",
+          "role": "fact",
+          "use": "gate",
+          "unknownPolicy": "block"
+        }
+      ],
+      "unknownPolicy": "manual-check",
+      "stepCategories": [
+        "data-acquisition",
+        "normal-map-progression",
+        "eo-assessment",
+        "stop-and-reassess"
+      ],
+      "benefits": ["将兑换 mechanic 与 EO 可负担性、设计图优先级分开。"],
+      "costs": ["需要用户确认时间、资源与安全条件。"],
+      "risks": ["勋章数量不能证明某个 EO 可负担。"],
+      "stopConditions": [
+        "eo-route-knowledge-missing",
+        "affordability-unknown",
+        "time-or-safety-unknown"
+      ],
+      "fallback": "确认已解锁 EO、资源、时间与安全条件；缺少审查路线时不推荐具体 EO，也不给设计图绝对优先级。",
+      "evidenceRefs": ["claim:eo-medal-blueprint-loop", "claim:adaptive-growth-priorities"],
+      "gameVersion": "kancolle-2026-08-01-eo-review",
+      "eventScope": null,
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-08-31T00:00:00.000Z",
+        "validUntil": "2026-09-30T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "eligibilityPolicyRef": "policy:quest-growth-route-r6",
+      "questStrategyRefs": [],
+      "publicationClass": "reviewed-authoring-only"
+    }
+  ]
+}

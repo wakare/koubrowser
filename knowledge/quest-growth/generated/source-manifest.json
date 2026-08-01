@@ -1,21 +1,30 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/8",
+  "compilerVersion": "quest-growth-authoring-compiler/9",
   "output": {
     "approvedDecisionRubricCount": 8,
     "approvedMilestoneCount": 8,
     "claimCount": 9,
+    "claimSupportCount": 16,
     "decisionRubricCount": 8,
     "eligibleForRuntimeCount": 0,
     "fixtureCount": 6,
     "fullyObservedCount": 19,
+    "independenceGroupCount": 5,
+    "manualCheckOnlyCount": 6,
     "milestoneCount": 8,
     "observableCount": 29,
     "partiallyObservedCount": 8,
+    "r7CandidateCount": 0,
+    "reviewedRouteUnitCount": 0,
+    "routeLineageCount": 6,
+    "routeRuntimeEligibleCount": 0,
+    "routeUnitCount": 6,
+    "routeValidationCaseCount": 8,
     "sourceCount": 14,
     "unavailableObservableCount": 2
   },
   "runtimePromotion": {
-    "reason": "EXISTING_OBSERVATION_CONTEXT_UI_ONLY_NO_ROUTE_OUTPUT",
+    "reason": "R6_AUTHORING_ONLY_R7_NOT_AUTHORIZED",
     "status": "blocked"
   },
   "schemaVersion": 1,
@@ -24,6 +33,7 @@
     "checkedAt": "2026-08-01T00:00:00.000Z",
     "decisionRubricsDigest": "sha256:2e833de8a3e4e0b6a9182bd065cc42db0c69c6cd6ccde1fbcf423e41f079726e",
     "evidenceLedgerDigest": "sha256:9bf921d02429a5bef0126df39bd21042141041af8e25b3a4ec57cd871ff7f948",
+    "evidenceLineageDigest": "sha256:dc988fcb5754d282c09ddb46def09407c36023035361e0fcb6ebaad4d86790d6",
     "fixtureDigests": {
       "asw-missing.json": "sha256:c98d591b6b7d554281c48bb6fc76424348611e28c71d7fb0260b586bc7e64862",
       "early-maps-only.json": "sha256:5b98e72fc2446e29bfc9b76e65ebb58d8901afd6f8ff987dfc138a0a4e33e31a",
@@ -32,9 +42,14 @@
       "resource-conservation-posture.json": "sha256:eec83fa0e5f318a7fb8e3dee33035ff81ef8e9d89f79fc216c2da88756f00bf5",
       "unknown-state.json": "sha256:c5d4fa83660a79c05c70ade35826781920375532bb62d383f2b937071246f917"
     },
+    "fixturesDigest": "sha256:c61a046d82c6f0261f70651b22000f975d85c644346d26a0f90a13bc9e73c8a9",
+    "lineagesDigest": "sha256:1174bbc649e35fe281c0f36eff180e1405f570facaada05a1d12a19f379b8e7e",
     "milestoneCandidatesDigest": "sha256:16da5c915689307c201362f612f0634e838f4d481086487c86deb9d18a4e6c33",
     "observabilityAuditDigest": "sha256:83f4241a7f1c6c7db2799848d84851f6ae7e3657b949ca93648fe1b3c4f66096",
     "observabilityAuditedBaseCommit": "148e2022a941cd9b11b58b60ad201ca4b138307f",
-    "observabilityCheckedAt": "2026-08-01T00:00:00.000Z"
+    "observabilityCheckedAt": "2026-08-01T00:00:00.000Z",
+    "policyDigest": "sha256:19ce02baffe22698da7108b44b0581a8a675d797ac3c771fa4ae2b342b8e1141",
+    "schemaDigest": "sha256:3ff863c1063459cbf5a9e8780ddf95f0fdcf9a9c2e0ecc8c69d2776475c57682",
+    "unitsDigest": "sha256:3fbe67de6a034251f4ec0dd5cd385d59e46ad782b827bcafa846aa1a4d952eda"
   }
 }

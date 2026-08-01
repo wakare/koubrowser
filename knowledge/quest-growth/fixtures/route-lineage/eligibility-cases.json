@@ -1,0 +1,146 @@
+{
+  "authoringSchema": "QuestGrowthRouteEligibilityFixtures/1alpha",
+  "fixtureVersion": "1.0.0-alpha.1",
+  "privacy": {
+    "containsAccountIdentifier": false,
+    "containsRawPayload": false
+  },
+  "cases": [
+    {
+      "caseId": "valid-r6-reviewed-r7-blocked",
+      "axes": {
+        "schema": "pass",
+        "evidence": "pass",
+        "observability": "pass",
+        "conflict": "pass",
+        "approval": "pass"
+      },
+      "publicationAuthorization": "R7_NOT_AUTHORIZED",
+      "forbiddenFields": [],
+      "expected": {
+        "contentDecision": "R7_CANDIDATE",
+        "effectiveState": "BLOCKED_R7_NOT_AUTHORIZED",
+        "reasonCodes": ["R7_AUTHORIZATION_MISSING"]
+      }
+    },
+    {
+      "caseId": "prompt-only-source",
+      "axes": {
+        "schema": "pass",
+        "evidence": "insufficient",
+        "observability": "pass",
+        "conflict": "pass",
+        "approval": "pass"
+      },
+      "publicationAuthorization": "R7_NOT_AUTHORIZED",
+      "forbiddenFields": [],
+      "expected": {
+        "contentDecision": "MANUAL_CHECK_ONLY",
+        "effectiveState": "BLOCKED",
+        "reasonCodes": ["SOURCE_PROMPT_SUPPLIED_ONLY"]
+      }
+    },
+    {
+      "caseId": "same-independence-group",
+      "axes": {
+        "schema": "pass",
+        "evidence": "insufficient",
+        "observability": "pass",
+        "conflict": "pass",
+        "approval": "pass"
+      },
+      "publicationAuthorization": "R7_NOT_AUTHORIZED",
+      "forbiddenFields": [],
+      "expected": {
+        "contentDecision": "MANUAL_CHECK_ONLY",
+        "effectiveState": "BLOCKED",
+        "reasonCodes": ["INDEPENDENCE_GROUP_DUPLICATE"]
+      }
+    },
+    {
+      "caseId": "partial-observable-used-as-gate",
+      "axes": {
+        "schema": "pass",
+        "evidence": "pass",
+        "observability": "insufficient",
+        "conflict": "pass",
+        "approval": "pass"
+      },
+      "publicationAuthorization": "R7_NOT_AUTHORIZED",
+      "forbiddenFields": [],
+      "expected": {
+        "contentDecision": "MANUAL_CHECK_ONLY",
+        "effectiveState": "BLOCKED",
+        "reasonCodes": ["OBSERVABLE_PARTIAL_GATE_FORBIDDEN"]
+      }
+    },
+    {
+      "caseId": "unavailable-observable",
+      "axes": {
+        "schema": "pass",
+        "evidence": "pass",
+        "observability": "fail",
+        "conflict": "pass",
+        "approval": "pass"
+      },
+      "publicationAuthorization": "R7_NOT_AUTHORIZED",
+      "forbiddenFields": [],
+      "expected": {
+        "contentDecision": "MANUAL_CHECK_ONLY",
+        "effectiveState": "BLOCKED",
+        "reasonCodes": ["OBSERVABLE_UNAVAILABLE"]
+      }
+    },
+    {
+      "caseId": "hard-mechanic-conflict",
+      "axes": {
+        "schema": "pass",
+        "evidence": "pass",
+        "observability": "pass",
+        "conflict": "fail",
+        "approval": "pass"
+      },
+      "publicationAuthorization": "R7_NOT_AUTHORIZED",
+      "forbiddenFields": [],
+      "expected": {
+        "contentDecision": "INELIGIBLE",
+        "effectiveState": "BLOCKED",
+        "reasonCodes": ["HARD_MECHANIC_CONFLICT"]
+      }
+    },
+    {
+      "caseId": "missing-independent-approver",
+      "axes": {
+        "schema": "pass",
+        "evidence": "pass",
+        "observability": "pass",
+        "conflict": "pass",
+        "approval": "insufficient"
+      },
+      "publicationAuthorization": "R7_NOT_AUTHORIZED",
+      "forbiddenFields": [],
+      "expected": {
+        "contentDecision": "MANUAL_CHECK_ONLY",
+        "effectiveState": "BLOCKED",
+        "reasonCodes": ["APPROVER_MISSING"]
+      }
+    },
+    {
+      "caseId": "forbidden-concrete-map-field",
+      "axes": {
+        "schema": "invalid",
+        "evidence": "pass",
+        "observability": "pass",
+        "conflict": "pass",
+        "approval": "pass"
+      },
+      "publicationAuthorization": "R7_NOT_AUTHORIZED",
+      "forbiddenFields": ["mapKey"],
+      "expected": {
+        "contentDecision": "INELIGIBLE",
+        "effectiveState": "BLOCKED",
+        "reasonCodes": ["FORBIDDEN_R6_CONCRETE_STEP_FIELD"]
+      }
+    }
+  ]
+}

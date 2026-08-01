@@ -2,9 +2,9 @@
 
 最終更新日: 2026-08-01
 
-Task ID: `QGROWTH-R5_2_Breadth_Local_Facts`
+Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `BREADTH_LOCAL_FACTS_IMPLEMENTED_ROUTE_OUTPUT_BLOCKED`
+Status: `R6_AUTHORING_IMPLEMENTED_R7_NOT_AUTHORIZED`
 
 ## モデル境界
 
@@ -25,18 +25,20 @@ GrowthMilestone から QuestRouteUnit への参照は一方向とする。`manua
 ## 現在の固定境界
 
 Wave 1 は authoring と audit artifact、Wave 2 は pure fallback evaluator、Wave 3 は read-only
-snapshot adapter、Wave 4 は read-only fallback UI、Wave 5 は session-only context、Wave 6 は
-focused local facts を固定した。現 Wave は新しい観測を追加せず、`capability.breadth-summary` に
-匿名の保有艦数、艦種カテゴリ数、練度範囲、装備カテゴリ数、資源観測状態を追加するところまでを
-許可する。
+snapshot adapter、Wave 4 は read-only fallback UI、Wave 5 は session-only context、Wave 5.2 は
+focused local facts を固定した。R6 は route lineage の authoring schema、証拠の独立 group、6 route
+family、6つの非実行 route unit、eligibility policy、正反例 matrix を追加する。新しい通信観測と
+runtime route は追加しない。
 
 ```text
 evidence-ledger.json ──────┐
 milestone-candidates.json ─┼─ strict validation
 observability-map.json ────┤          │
 decision-rubrics.json ─────┤          ├─ source-manifest.json
-synthetic fixtures ────────┘          │
-                                      └─ conflict-and-gap-report.json
+route evidence / policy ───┤          ├─ conflict-and-gap-report.json
+route lineages / units ────┤          ├─ route-lineage-manifest.json
+synthetic fixtures ────────┘          ├─ route-eligibility-report.json
+                                      └─ route-validation-matrix.json
 ```
 
 次は生成・接続しない。
@@ -46,6 +48,10 @@ synthetic fixtures ────────┘          │
 - real-account fixture
 - concrete route output
 - snapshot persistence / export
+
+R6 の route unit は目標、適用条件、必要な観測、抽象 step category、利点、費用、危険、停止条件、
+fallback だけを保持する。`mapKey`、具体的海域・分岐・編成・艦娘・装備・陣形・資源量・成功率などを
+表す field は schema と compiler の両方で拒否する。
 
 ## Evidence gate
 
@@ -80,8 +86,9 @@ claim は URL、title、site、language、分類、可読性、独立性、suppo
 `approved` は approver と reviewedAt を必須とし、author と approver が同じ場合は validation を
 失敗させる。現行8件と対応する8 rubric の現在の意味は project owner が 2026-08-01 に承認した。
 最初の承認は pure fallback evaluator、その後の承認は匿名 read-only local snapshot adapter、さらに
-fallback UI 接続までを許可する。runtime route、snapshot 保存・外送、または route eligibility は
-承認しない。
+fallback UI 接続までを許可する。project owner は 2026-08-01 に R6 authoring と eligibility evaluator
+の実装を追加承認したが、各 policy / lineage / unit の独立承認、runtime route、snapshot 保存・外送、
+R7 の concrete route UI は承認していない。
 29 observable の local source は監査済みだが、complete 19、partial 8、unavailable 2 であり、
 監査・意味承認・adapter 実装の完了は runtime 利用可能を意味しない。
 
@@ -110,8 +117,8 @@ fallback evaluator input へ匿名集約する。ship / equipment instance ID、
 payload は結果型に持たず、I/O、local DB query、保存、外送、network、game communication を行わない。
 
 未ロード状態は `unknown`、演習残数と event overlay は常に `unavailable` とする。resource は自動
-band 化せず測定値だけを保持する。route lineage 延期中のため EO の `reviewedRouteKnowledge` は adapter
-で常に `false` とし、具体的 route を生成できない状態を維持する。
+band 化せず測定値だけを保持する。R6 authoring は runtime へ接続しないため、EO の
+`reviewedRouteKnowledge` は adapter で常に `false` とし、具体的 route を生成できない状態を維持する。
 
 `resourcePosture` と `focus` は renderer の一時 state とし、localStorage、DB、設定ファイルへ保存せず、
 外送もしない。選択は対象 observable の確認順と user-declared context だけを変更する。審査済み rule、
@@ -184,9 +191,10 @@ digest を記録する。
 compiler version、input digest、output digest を固定する。
 
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
-本データで上書きしない。route lineage は project owner の判断により延期し、
-`QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT` として downstream stop に残す。延期中は pure
-evaluator、adapter、UI のいずれからも具体的 route を出力してはならない。
+本データで上書きしない。R6 lineage は exact commit
+`6b52e143af9fcab1dbb00b74f7e89bcf695e5e38` を別の audit snapshot として保持する。
+`R7_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT` を downstream stop に固定し、pure evaluator、adapter、
+UI のいずれからも具体的 route を出力してはならない。
 
 ## 予定する完了順序
 
@@ -197,12 +205,14 @@ evaluator、adapter、UI のいずれからも具体的 route を出力しては
 2. `R5 Existing-Observation Context`: 新しい通信観測を追加せず、既存 local state と利用者選択で
    判定できる context を増やす。資源方針と成長重点の session-only 選択、および選択重点に対応する
    匿名のローカル事実要約を実装済み。「艦隊能力の幅」は5項目の実測要約を表示する。
-3. `R6 Reviewed Route Lineage`: 中日コミュニティの複数資料を route 単位で交差確認し、参照元、
-   確認日、game version、適用条件、失効条件を固定する。
+3. `R6 Reviewed Route Lineage`: authoring schema、claim 単位の独立 group、6 route family、6つの
+   非実行 route unit、eligibility evaluator、8件の validation case を実装済み。policy / lineage /
+   unit は draft のため全6件が `MANUAL_CHECK_ONLY`、runtime eligible は0件。独立 approver の審査待ち。
 4. `R7 Reviewed Concrete Route UI`: lineage と適用条件を満たす route だけを具体的な海域、編成、
    装備、分岐条件として表示する。未審査・失効・条件不明は引き続き fail closed とする。
 
-`R6` と `R7` の実装開始には、route lineage schema と runtime eligibility gate の追加承認を必要とする。
+`R7` の実装開始には、R6 policy / lineage / unit の独立承認、実アカウント受入確認、route publication
+authorization の追加承認を必要とする。R6 の pure evaluation artifact は R7 の承認を代替しない。
 
 ## Commands
 

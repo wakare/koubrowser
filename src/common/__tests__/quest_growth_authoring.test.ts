@@ -33,6 +33,9 @@ const {
     root: string
   ) => { value: unknown; rubrics: Map<string, unknown> }
 }
+const { findForbiddenFields } = require('../../../scripts/quest-growth-route-lineage.js') as {
+  findForbiddenFields: (value: unknown, forbiddenFields: Set<string>) => string[]
+}
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -51,7 +54,8 @@ describe('quest growth authoring contract', () => {
     expect(output).toContain(
       '14 sources, 9 claims, 8/8 approved milestones, 6 fixtures, ' +
         '29 observables (19 complete, 8 partial, 2 unavailable), ' +
-        '8/8 approved rubrics, 0 runtime-eligible'
+        '8/8 approved rubrics, 6 route lineages, 6 route units ' +
+        '(6 manual-check-only), 0 runtime-eligible'
     )
   })
 
@@ -77,7 +81,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'EXISTING_OBSERVATION_CONTEXT_UI_ONLY_NO_ROUTE_OUTPUT'
+      reason: 'R6_AUTHORING_ONLY_R7_NOT_AUTHORIZED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -98,9 +102,79 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
-    expect(report.globalStops).toContain('QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT')
+    expect(report.globalStops).toContain('R7_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT')
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
+  })
+
+  it('keeps every R6 route unit non-executable until independent review and R7 approval', () => {
+    const manifest = read<{
+      output: {
+        independenceGroupCount: number
+        claimSupportCount: number
+        routeLineageCount: number
+        routeUnitCount: number
+        reviewedRouteUnitCount: number
+        manualCheckOnlyCount: number
+        r7CandidateCount: number
+        runtimeEligibleCount: number
+        validationCaseCount: number
+      }
+      publicationAuthorization: string
+    }>('generated', 'route-lineage-manifest.json')
+    const report = read<{
+      policyStatus: string
+      publicationAuthorization: string
+      routeUnitAudits: {
+        contentDecision: string
+        effectiveState: string
+        reasonCodes: string[]
+        fallback: string
+      }[]
+    }>('generated', 'route-eligibility-report.json')
+    const matrix = read<{ passed: boolean; cases: { passed: boolean }[] }>(
+      'generated',
+      'route-validation-matrix.json'
+    )
+
+    expect(manifest.output).toEqual({
+      independenceGroupCount: 5,
+      claimSupportCount: 16,
+      routeLineageCount: 6,
+      routeUnitCount: 6,
+      reviewedRouteUnitCount: 0,
+      manualCheckOnlyCount: 6,
+      r7CandidateCount: 0,
+      runtimeEligibleCount: 0,
+      validationCaseCount: 8
+    })
+    expect(manifest.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.policyStatus).toBe('draft')
+    expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.routeUnitAudits).toHaveLength(6)
+    expect(
+      report.routeUnitAudits.every(
+        (audit) =>
+          audit.contentDecision === 'MANUAL_CHECK_ONLY' &&
+          audit.effectiveState === 'BLOCKED' &&
+          audit.reasonCodes.includes('R7_AUTHORIZATION_MISSING') &&
+          audit.fallback.trim().length > 0
+      )
+    ).toBe(true)
+    expect(matrix.passed).toBe(true)
+    expect(matrix.cases).toHaveLength(8)
+    expect(matrix.cases.every((item) => item.passed)).toBe(true)
+  })
+
+  it('rejects concrete route fields from the R6 authoring surface', () => {
+    const policy = read<{ forbiddenFields: string[] }>('authoring', 'route-eligibility-policy.json')
+    const units = read<{ units: unknown[] }>('authoring', 'route-units.json')
+    const forbidden = new Set(policy.forbiddenFields)
+
+    expect(findForbiddenFields(units.units, forbidden)).toEqual([])
+    expect(findForbiddenFields([{ objective: 'invalid', mapKey: '1-5' }], forbidden)).toEqual([
+      '$[0].mapKey'
+    ])
   })
 
   it('audits every referenced observable without adding communication hooks or data export', () => {

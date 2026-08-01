@@ -1,0 +1,210 @@
+{
+  "authoringSchema": "QuestGrowthRouteLineages/1alpha",
+  "catalogVersion": "1.0.0-alpha.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "6b52e143af9fcab1dbb00b74f7e89bcf695e5e38",
+    "checkedAt": "2026-08-01T08:22:58.133Z"
+  },
+  "lineages": [
+    {
+      "routeLineageId": "growth-lineage:system-fleet-unlock",
+      "revision": 1,
+      "status": "draft",
+      "routeFamily": "system-fleet-unlock",
+      "scopeClass": "evergreen",
+      "goal": "判断是否应先确认舰队与远征解锁能力。",
+      "milestoneRefs": [{ "id": "growth:system-fleet-unlock", "revision": 1 }],
+      "rubricRefs": ["rubric:visible-quest-chain"],
+      "claimRefs": ["claim:expedition-resource-loop"],
+      "applicabilityEnvelope": ["用户选择系统解锁作为当前重点。", "可见任务链不等于完整前置链。"],
+      "routeUnitRefs": [{ "id": "growth-route:system-fleet-unlock:baseline", "revision": 1 }],
+      "supersedes": null,
+      "changeSummary": "",
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "gameVersionScope": "kancolle-2026-08-01-evergreen-review",
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "boundaryPolicyRef": "policy:quest-growth-route-r6",
+      "concreteOutputAllowed": false
+    },
+    {
+      "routeLineageId": "growth-lineage:experience-remodel-modernization",
+      "revision": 1,
+      "status": "draft",
+      "routeFamily": "experience-remodel-modernization",
+      "scopeClass": "evergreen",
+      "goal": "判断当前应先确认练度、改造还是通常近代化能力。",
+      "milestoneRefs": [{ "id": "growth:experience-modernization-loop", "revision": 1 }],
+      "rubricRefs": ["rubric:modernization-material-safety"],
+      "claimRefs": [
+        "claim:exercise-low-repair-training",
+        "claim:modernization-before-after-remodel"
+      ],
+      "applicabilityEnvelope": [
+        "用户选择经验与改造循环作为当前重点。",
+        "演习次数与素材安全未知时只允许人工确认。"
+      ],
+      "routeUnitRefs": [
+        { "id": "growth-route:experience-remodel-modernization:baseline", "revision": 1 }
+      ],
+      "supersedes": null,
+      "changeSummary": "",
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "gameVersionScope": "kancolle-2026-08-01-evergreen-review",
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "boundaryPolicyRef": "policy:quest-growth-route-r6",
+      "concreteOutputAllowed": false
+    },
+    {
+      "routeLineageId": "growth-lineage:expedition-resource-periodic-loop",
+      "revision": 1,
+      "status": "draft",
+      "routeFamily": "expedition-resource-periodic-loop",
+      "scopeClass": "evergreen",
+      "goal": "判断当前应先确认远征解锁、资源循环还是周期任务状态。",
+      "milestoneRefs": [{ "id": "growth:resource-periodic-loop", "revision": 1 }],
+      "rubricRefs": ["rubric:resource-posture"],
+      "claimRefs": ["claim:expedition-resource-loop", "claim:adaptive-growth-priorities"],
+      "applicabilityEnvelope": [
+        "用户选择资源循环作为当前重点。",
+        "历史成功不证明当前远征条件满足。"
+      ],
+      "routeUnitRefs": [
+        { "id": "growth-route:expedition-resource-periodic-loop:baseline", "revision": 1 }
+      ],
+      "supersedes": null,
+      "changeSummary": "",
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "gameVersionScope": "kancolle-2026-08-01-evergreen-review",
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "boundaryPolicyRef": "policy:quest-growth-route-r6",
+      "concreteOutputAllowed": false
+    },
+    {
+      "routeLineageId": "growth-lineage:anti-submarine-foundation",
+      "revision": 1,
+      "status": "draft",
+      "routeFamily": "anti-submarine-foundation",
+      "scopeClass": "evergreen",
+      "goal": "判断是否需要进一步确认基础对潜能力。",
+      "milestoneRefs": [{ "id": "growth:anti-submarine-foundation", "revision": 1 }],
+      "rubricRefs": ["rubric:asw-capability-facts"],
+      "claimRefs": ["claim:conditional-leveling-maps"],
+      "applicabilityEnvelope": [
+        "用户选择对潜能力作为当前重点。",
+        "没有审查后的目标规则时不判断达标。"
+      ],
+      "routeUnitRefs": [{ "id": "growth-route:anti-submarine-foundation:baseline", "revision": 1 }],
+      "supersedes": null,
+      "changeSummary": "",
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "gameVersionScope": "kancolle-2026-08-01-evergreen-review",
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "boundaryPolicyRef": "policy:quest-growth-route-r6",
+      "concreteOutputAllowed": false
+    },
+    {
+      "routeLineageId": "growth-lineage:surface-air-los-foundation",
+      "revision": 1,
+      "status": "draft",
+      "routeFamily": "surface-air-los-foundation",
+      "scopeClass": "evergreen",
+      "goal": "判断下一步应确认水面、航空还是索敌能力。",
+      "milestoneRefs": [{ "id": "growth:surface-air-los-foundation", "revision": 1 }],
+      "rubricRefs": ["rubric:surface-air-los-gaps"],
+      "claimRefs": ["claim:adaptive-growth-priorities", "claim:event-readiness-breadth"],
+      "applicabilityEnvelope": [
+        "用户选择舰队能力宽度作为当前重点。",
+        "缺少目标上下文与公式时不判断能力缺口。"
+      ],
+      "routeUnitRefs": [
+        { "id": "growth-route:surface-air-los-foundation:baseline", "revision": 1 }
+      ],
+      "supersedes": null,
+      "changeSummary": "",
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "gameVersionScope": "kancolle-2026-08-01-evergreen-review",
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "boundaryPolicyRef": "policy:quest-growth-route-r6",
+      "concreteOutputAllowed": false
+    },
+    {
+      "routeLineageId": "growth-lineage:normal-map-eo-blueprint-loop",
+      "revision": 1,
+      "status": "draft",
+      "routeFamily": "normal-map-eo-blueprint-loop",
+      "scopeClass": "eo",
+      "goal": "判断是否应继续确认通常海域、EO、勋章与设计图循环。",
+      "milestoneRefs": [{ "id": "growth:normal-map-eo-blueprint-loop", "revision": 1 }],
+      "rubricRefs": ["rubric:eo-affordability"],
+      "claimRefs": ["claim:eo-medal-blueprint-loop", "claim:adaptive-growth-priorities"],
+      "applicabilityEnvelope": [
+        "用户选择 EO 与设计图循环作为长期重点。",
+        "EO 可负担性与具体路线未知时只允许人工确认。"
+      ],
+      "routeUnitRefs": [
+        { "id": "growth-route:normal-map-eo-blueprint-loop:baseline", "revision": 1 }
+      ],
+      "supersedes": null,
+      "changeSummary": "",
+      "currentness": {
+        "reviewedAt": "2026-08-01T08:22:58.133Z",
+        "reviewBy": "2026-08-31T00:00:00.000Z",
+        "validUntil": "2026-09-30T00:00:00.000Z"
+      },
+      "gameVersionScope": "kancolle-2026-08-01-eo-review",
+      "review": {
+        "author": "codex-r6-route-author",
+        "approver": null,
+        "reviewedAt": null,
+        "approvalDigest": null
+      },
+      "boundaryPolicyRef": "policy:quest-growth-route-r6",
+      "concreteOutputAllowed": false
+    }
+  ]
+}

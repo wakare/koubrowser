@@ -77,7 +77,7 @@
       "readableIndependentSourceIds": []
     }
   ],
-  "compilerVersion": "quest-growth-authoring-compiler/8",
+  "compilerVersion": "quest-growth-authoring-compiler/9",
   "decisionRubricAudits": [
     {
       "acceptanceTestCount": 2,
@@ -147,7 +147,7 @@
   "globalStops": [
     "NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE",
     "OBSERVABILITY_GAPS_REMAIN",
-    "QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT"
+    "R7_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT"
   ],
   "milestoneGaps": [
     {
@@ -591,6 +591,337 @@
       ],
       "runtimeUse": "fallback-only",
       "unknownFallback": "Show category coverage only and avoid declaring event readiness."
+    }
+  ],
+  "routeLineageAudits": [
+    {
+      "claimAudits": [
+        {
+          "accessibleIndependentGroups": [
+            "group:kcwiki-zh",
+            "group:wikiwiki-ja"
+          ],
+          "blockers": [],
+          "claimRef": "claim:expedition-resource-loop",
+          "supportCount": 2
+        }
+      ],
+      "contentDecision": "MANUAL_CHECK_ONLY",
+      "effectiveState": "BLOCKED",
+      "fallback": "打开任务与远征画面确认当前可见关系；信息不足时停止，不生成任务顺序。",
+      "observableAudits": [
+        {
+          "coverage": "complete",
+          "observableId": "fleet.unlocked-count",
+          "use": "gate"
+        },
+        {
+          "coverage": "partial",
+          "observableId": "quest.visible-chain",
+          "use": "manual-context"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "expedition.unlocked-ids",
+          "use": "gate"
+        }
+      ],
+      "reasonCodes": [
+        "POLICY_OWNER_APPROVAL_MISSING",
+        "ROUTE_NOT_REVIEWED",
+        "APPROVER_MISSING",
+        "R7_AUTHORIZATION_MISSING"
+      ],
+      "routeFamily": "system-fleet-unlock",
+      "routeLineageId": "growth-lineage:system-fleet-unlock",
+      "routeUnitId": "growth-route:system-fleet-unlock:baseline"
+    },
+    {
+      "claimAudits": [
+        {
+          "accessibleIndependentGroups": [
+            "group:kcwiki-zh",
+            "group:wikiwiki-ja"
+          ],
+          "blockers": [],
+          "claimRef": "claim:exercise-low-repair-training",
+          "supportCount": 2
+        },
+        {
+          "accessibleIndependentGroups": [
+            "group:kcwiki-zh",
+            "group:wikiwiki-ja"
+          ],
+          "blockers": [],
+          "claimRef": "claim:modernization-before-after-remodel",
+          "supportCount": 2
+        }
+      ],
+      "contentDecision": "MANUAL_CHECK_ONLY",
+      "effectiveState": "BLOCKED",
+      "fallback": "确认演习画面和近代化素材安全；未知时只保留检查项，不给出练级海域或舰娘优先级。",
+      "observableAudits": [
+        {
+          "coverage": "unavailable",
+          "observableId": "practice.available-count",
+          "use": "manual-context"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "ships.level-bands",
+          "use": "gate"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "ships.remodel-ready",
+          "use": "gate"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "modernization.gaps",
+          "use": "gate"
+        },
+        {
+          "coverage": "partial",
+          "observableId": "modernization.material-summary",
+          "use": "manual-context"
+        }
+      ],
+      "reasonCodes": [
+        "POLICY_OWNER_APPROVAL_MISSING",
+        "ROUTE_NOT_REVIEWED",
+        "APPROVER_MISSING",
+        "OBSERVABLE_UNAVAILABLE",
+        "R7_AUTHORIZATION_MISSING"
+      ],
+      "routeFamily": "experience-remodel-modernization",
+      "routeLineageId": "growth-lineage:experience-remodel-modernization",
+      "routeUnitId": "growth-route:experience-remodel-modernization:baseline"
+    },
+    {
+      "claimAudits": [
+        {
+          "accessibleIndependentGroups": [
+            "group:kcwiki-zh",
+            "group:wikiwiki-ja"
+          ],
+          "blockers": [],
+          "claimRef": "claim:expedition-resource-loop",
+          "supportCount": 2
+        },
+        {
+          "accessibleIndependentGroups": [
+            "group:kcwiki-zh",
+            "group:yongou"
+          ],
+          "blockers": [],
+          "claimRef": "claim:adaptive-growth-priorities",
+          "supportCount": 2
+        }
+      ],
+      "contentDecision": "MANUAL_CHECK_ONLY",
+      "effectiveState": "BLOCKED",
+      "fallback": "确认当前远征条件和资源方针；不得由历史成功推断当前成功，也不选择最佳远征。",
+      "observableAudits": [
+        {
+          "coverage": "complete",
+          "observableId": "expedition.unlocked-ids",
+          "use": "gate"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "expedition.known-success",
+          "use": "fallback-context"
+        },
+        {
+          "coverage": "partial",
+          "observableId": "resources.bands",
+          "use": "manual-context"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "quest.active-ids",
+          "use": "gate"
+        }
+      ],
+      "reasonCodes": [
+        "POLICY_OWNER_APPROVAL_MISSING",
+        "ROUTE_NOT_REVIEWED",
+        "APPROVER_MISSING",
+        "R7_AUTHORIZATION_MISSING"
+      ],
+      "routeFamily": "expedition-resource-periodic-loop",
+      "routeLineageId": "growth-lineage:expedition-resource-periodic-loop",
+      "routeUnitId": "growth-route:expedition-resource-periodic-loop:baseline"
+    },
+    {
+      "claimAudits": [
+        {
+          "accessibleIndependentGroups": [
+            "group:kcwiki-zh",
+            "group:zekamashi"
+          ],
+          "blockers": [],
+          "claimRef": "claim:conditional-leveling-maps",
+          "supportCount": 2
+        }
+      ],
+      "contentDecision": "MANUAL_CHECK_ONLY",
+      "effectiveState": "BLOCKED",
+      "fallback": "选择一个目标上下文并确认对潜类别事实；缺少审查规则时不判断达标，不给出舰娘或装备组合。",
+      "observableAudits": [
+        {
+          "coverage": "complete",
+          "observableId": "maps.unlocked",
+          "use": "gate"
+        },
+        {
+          "coverage": "partial",
+          "observableId": "ships.asw-capable-summary",
+          "use": "manual-context"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "equipment.asw-category-counts",
+          "use": "gate"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "quest.active-ids",
+          "use": "fallback-context"
+        }
+      ],
+      "reasonCodes": [
+        "POLICY_OWNER_APPROVAL_MISSING",
+        "ROUTE_NOT_REVIEWED",
+        "APPROVER_MISSING",
+        "R7_AUTHORIZATION_MISSING"
+      ],
+      "routeFamily": "anti-submarine-foundation",
+      "routeLineageId": "growth-lineage:anti-submarine-foundation",
+      "routeUnitId": "growth-route:anti-submarine-foundation:baseline"
+    },
+    {
+      "claimAudits": [
+        {
+          "accessibleIndependentGroups": [
+            "group:kcwiki-zh",
+            "group:yongou"
+          ],
+          "blockers": [],
+          "claimRef": "claim:adaptive-growth-priorities",
+          "supportCount": 2
+        },
+        {
+          "accessibleIndependentGroups": [
+            "group:wikiwiki-ja",
+            "group:yongou"
+          ],
+          "blockers": [],
+          "claimRef": "claim:event-readiness-breadth",
+          "supportCount": 2
+        }
+      ],
+      "contentDecision": "MANUAL_CHECK_ONLY",
+      "effectiveState": "BLOCKED",
+      "fallback": "确认目标上下文和现有类别事实；公式或适用条件未审查时不判断制空或索敌达标。",
+      "observableAudits": [
+        {
+          "coverage": "complete",
+          "observableId": "maps.unlocked",
+          "use": "gate"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "ships.type-level-bands",
+          "use": "gate"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "equipment.air-category-counts",
+          "use": "gate"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "equipment.los-category-counts",
+          "use": "gate"
+        },
+        {
+          "coverage": "partial",
+          "observableId": "capability.surface-air-los-gaps",
+          "use": "manual-context"
+        }
+      ],
+      "reasonCodes": [
+        "POLICY_OWNER_APPROVAL_MISSING",
+        "ROUTE_NOT_REVIEWED",
+        "APPROVER_MISSING",
+        "R7_AUTHORIZATION_MISSING"
+      ],
+      "routeFamily": "surface-air-los-foundation",
+      "routeLineageId": "growth-lineage:surface-air-los-foundation",
+      "routeUnitId": "growth-route:surface-air-los-foundation:baseline"
+    },
+    {
+      "claimAudits": [
+        {
+          "accessibleIndependentGroups": [
+            "group:kcwiki-zh",
+            "group:wikiwiki-ja"
+          ],
+          "blockers": [],
+          "claimRef": "claim:eo-medal-blueprint-loop",
+          "supportCount": 2
+        },
+        {
+          "accessibleIndependentGroups": [
+            "group:kcwiki-zh",
+            "group:yongou"
+          ],
+          "blockers": [],
+          "claimRef": "claim:adaptive-growth-priorities",
+          "supportCount": 2
+        }
+      ],
+      "contentDecision": "MANUAL_CHECK_ONLY",
+      "effectiveState": "BLOCKED",
+      "fallback": "确认已解锁 EO、资源、时间与安全条件；缺少审查路线时不推荐具体 EO，也不给设计图绝对优先级。",
+      "observableAudits": [
+        {
+          "coverage": "complete",
+          "observableId": "maps.unlocked-eo",
+          "use": "gate"
+        },
+        {
+          "coverage": "partial",
+          "observableId": "maps.eo-affordability",
+          "use": "manual-context"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "inventory.medal-count",
+          "use": "gate"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "inventory.blueprint-count",
+          "use": "gate"
+        },
+        {
+          "coverage": "complete",
+          "observableId": "ships.blueprint-demand",
+          "use": "gate"
+        }
+      ],
+      "reasonCodes": [
+        "POLICY_OWNER_APPROVAL_MISSING",
+        "ROUTE_NOT_REVIEWED",
+        "APPROVER_MISSING",
+        "R7_AUTHORIZATION_MISSING"
+      ],
+      "routeFamily": "normal-map-eo-blueprint-loop",
+      "routeLineageId": "growth-lineage:normal-map-eo-blueprint-loop",
+      "routeUnitId": "growth-route:normal-map-eo-blueprint-loop:baseline"
     }
   ],
   "runtimePromotionStatus": "blocked",

@@ -1,0 +1,469 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wakare/koubrowser/knowledge/quest-growth/authoring-schema-2alpha.json",
+  "title": "QuestGrowthRouteAuthoring/2alpha",
+  "description": "R6-only route lineage authoring contract. Concrete route output and R7 publication remain prohibited.",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/evidenceLineage" },
+    { "$ref": "#/$defs/lineageCatalog" },
+    { "$ref": "#/$defs/unitCatalog" },
+    { "$ref": "#/$defs/eligibilityPolicy" },
+    { "$ref": "#/$defs/fixturePacket" }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "nullableTimestamp": { "type": ["string", "null"], "format": "date-time" },
+    "sourceSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auditedBaseCommit", "checkedAt"],
+      "properties": {
+        "auditedBaseCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "checkedAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["author", "approver", "reviewedAt", "approvalDigest"],
+      "properties": {
+        "author": { "$ref": "#/$defs/identifier" },
+        "approver": { "type": ["string", "null"] },
+        "reviewedAt": { "$ref": "#/$defs/nullableTimestamp" },
+        "approvalDigest": { "type": ["string", "null"] }
+      }
+    },
+    "currentness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewedAt", "reviewBy", "validUntil"],
+      "properties": {
+        "reviewedAt": { "$ref": "#/$defs/timestamp" },
+        "reviewBy": { "$ref": "#/$defs/timestamp" },
+        "validUntil": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "independenceGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["independenceGroupId", "label", "sourceRefs", "upstreamGroupRefs", "notes"],
+      "properties": {
+        "independenceGroupId": { "$ref": "#/$defs/identifier" },
+        "label": { "type": "string", "minLength": 1 },
+        "sourceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "upstreamGroupRefs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "notes": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "claimSupport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claimSupportId",
+        "claimRef",
+        "sourceRef",
+        "supportKind",
+        "minimumClaim",
+        "independenceGroupId",
+        "derivationKind",
+        "accessibilityAtReview",
+        "reviewedAt",
+        "reviewBy",
+        "validUntil",
+        "reviewer",
+        "notes"
+      ],
+      "properties": {
+        "claimSupportId": { "$ref": "#/$defs/identifier" },
+        "claimRef": { "$ref": "#/$defs/identifier" },
+        "sourceRef": { "$ref": "#/$defs/identifier" },
+        "supportKind": { "enum": ["direct", "conditional", "contradicts", "historical"] },
+        "minimumClaim": { "type": "string", "minLength": 1 },
+        "independenceGroupId": { "$ref": "#/$defs/identifier" },
+        "derivationKind": {
+          "enum": [
+            "original",
+            "translation",
+            "excerpt",
+            "reprint",
+            "same-editorial-ecosystem",
+            "unknown"
+          ]
+        },
+        "accessibilityAtReview": {
+          "enum": ["independently-readable", "unreadable", "prompt-supplied-observation"]
+        },
+        "reviewedAt": { "$ref": "#/$defs/timestamp" },
+        "reviewBy": { "$ref": "#/$defs/timestamp" },
+        "validUntil": { "$ref": "#/$defs/timestamp" },
+        "reviewer": { "$ref": "#/$defs/identifier" },
+        "notes": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "evidenceLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authoringSchema",
+        "lineageVersion",
+        "sourceSnapshot",
+        "independenceGroups",
+        "claimSupports"
+      ],
+      "properties": {
+        "authoringSchema": { "const": "QuestGrowthRouteEvidenceLineage/1alpha" },
+        "lineageVersion": { "type": "string", "minLength": 1 },
+        "sourceSnapshot": { "$ref": "#/$defs/sourceSnapshot" },
+        "independenceGroups": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/independenceGroup" }
+        },
+        "claimSupports": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/claimSupport" }
+        }
+      }
+    },
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "revision": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeLineageId",
+        "revision",
+        "status",
+        "routeFamily",
+        "scopeClass",
+        "goal",
+        "milestoneRefs",
+        "rubricRefs",
+        "claimRefs",
+        "applicabilityEnvelope",
+        "routeUnitRefs",
+        "supersedes",
+        "changeSummary",
+        "currentness",
+        "gameVersionScope",
+        "review",
+        "boundaryPolicyRef",
+        "concreteOutputAllowed"
+      ],
+      "properties": {
+        "routeLineageId": { "$ref": "#/$defs/identifier" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["draft", "reviewed", "withdrawn"] },
+        "routeFamily": { "$ref": "#/$defs/identifier" },
+        "scopeClass": { "enum": ["evergreen", "normal-map", "eo", "event-overlay"] },
+        "goal": { "type": "string", "minLength": 1 },
+        "milestoneRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/versionedRef" }
+        },
+        "rubricRefs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "claimRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "applicabilityEnvelope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "routeUnitRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/versionedRef" }
+        },
+        "supersedes": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/versionedRef" }] },
+        "changeSummary": { "type": "string" },
+        "currentness": { "$ref": "#/$defs/currentness" },
+        "gameVersionScope": { "type": "string", "minLength": 1 },
+        "review": { "$ref": "#/$defs/review" },
+        "boundaryPolicyRef": { "$ref": "#/$defs/identifier" },
+        "concreteOutputAllowed": { "const": false }
+      }
+    },
+    "lineageCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authoringSchema", "catalogVersion", "sourceSnapshot", "lineages"],
+      "properties": {
+        "authoringSchema": { "const": "QuestGrowthRouteLineages/1alpha" },
+        "catalogVersion": { "type": "string", "minLength": 1 },
+        "sourceSnapshot": { "$ref": "#/$defs/sourceSnapshot" },
+        "lineages": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/lineage" } }
+      }
+    },
+    "observableRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observableId", "role", "use", "unknownPolicy"],
+      "properties": {
+        "observableId": { "$ref": "#/$defs/identifier" },
+        "role": { "type": "string", "minLength": 1 },
+        "use": { "enum": ["gate", "manual-context", "fallback-context"] },
+        "unknownPolicy": { "enum": ["block", "manual-check", "fallback"] }
+      }
+    },
+    "unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeUnitId",
+        "lineageRef",
+        "revision",
+        "status",
+        "objective",
+        "applicability",
+        "prerequisites",
+        "requiredObservables",
+        "unknownPolicy",
+        "stepCategories",
+        "benefits",
+        "costs",
+        "risks",
+        "stopConditions",
+        "fallback",
+        "evidenceRefs",
+        "gameVersion",
+        "eventScope",
+        "currentness",
+        "review",
+        "eligibilityPolicyRef",
+        "questStrategyRefs",
+        "publicationClass"
+      ],
+      "properties": {
+        "routeUnitId": { "$ref": "#/$defs/identifier" },
+        "lineageRef": { "$ref": "#/$defs/versionedRef" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["draft", "reviewed", "withdrawn"] },
+        "objective": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "summary"],
+          "properties": {
+            "kind": { "$ref": "#/$defs/identifier" },
+            "summary": { "type": "string", "minLength": 1 }
+          }
+        },
+        "applicability": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "prerequisites": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "requiredObservables": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/observableRequirement" }
+        },
+        "unknownPolicy": { "enum": ["block", "manual-check", "fallback"] },
+        "stepCategories": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "benefits": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "costs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "risks": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "stopConditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "fallback": { "type": "string", "minLength": 1 },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "gameVersion": { "type": "string", "minLength": 1 },
+        "eventScope": { "type": ["string", "null"] },
+        "currentness": { "$ref": "#/$defs/currentness" },
+        "review": { "$ref": "#/$defs/review" },
+        "eligibilityPolicyRef": { "$ref": "#/$defs/identifier" },
+        "questStrategyRefs": { "type": "array", "items": { "$ref": "#/$defs/versionedRef" } },
+        "publicationClass": { "const": "reviewed-authoring-only" }
+      }
+    },
+    "unitCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authoringSchema", "catalogVersion", "sourceSnapshot", "units"],
+      "properties": {
+        "authoringSchema": { "const": "QuestGrowthRouteUnits/1alpha" },
+        "catalogVersion": { "type": "string", "minLength": 1 },
+        "sourceSnapshot": { "$ref": "#/$defs/sourceSnapshot" },
+        "units": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/unit" } }
+      }
+    },
+    "eligibilityPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authoringSchema",
+        "policyId",
+        "policyVersion",
+        "status",
+        "sourceSnapshot",
+        "evaluationAsOf",
+        "publicationAuthorization",
+        "globalSafetyMilestoneRef",
+        "evidenceThresholds",
+        "freshnessMaximumDays",
+        "routeFamilies",
+        "stepCategories",
+        "forbiddenFields",
+        "failureReasons",
+        "review"
+      ],
+      "properties": {
+        "authoringSchema": { "const": "QuestGrowthRouteEligibilityPolicy/1alpha" },
+        "policyId": { "$ref": "#/$defs/identifier" },
+        "policyVersion": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["draft", "approved", "withdrawn"] },
+        "sourceSnapshot": { "$ref": "#/$defs/sourceSnapshot" },
+        "evaluationAsOf": { "$ref": "#/$defs/timestamp" },
+        "publicationAuthorization": { "const": "R7_NOT_AUTHORIZED" },
+        "globalSafetyMilestoneRef": { "$ref": "#/$defs/versionedRef" },
+        "evidenceThresholds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["evergreenMechanicGroups", "routeMechanicGroups", "editorialGroups"],
+          "properties": {
+            "evergreenMechanicGroups": { "type": "integer", "minimum": 2 },
+            "routeMechanicGroups": { "type": "integer", "minimum": 2 },
+            "editorialGroups": { "type": "integer", "minimum": 2 }
+          }
+        },
+        "freshnessMaximumDays": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 1 }
+        },
+        "routeFamilies": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "stepCategories": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "forbiddenFields": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "failureReasons": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "review": { "$ref": "#/$defs/review" }
+      }
+    },
+    "fixtureCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caseId", "axes", "publicationAuthorization", "forbiddenFields", "expected"],
+      "properties": {
+        "caseId": { "$ref": "#/$defs/identifier" },
+        "axes": {
+          "type": "object",
+          "additionalProperties": { "enum": ["pass", "fail", "insufficient", "invalid"] },
+          "minProperties": 1
+        },
+        "publicationAuthorization": { "enum": ["R7_NOT_AUTHORIZED", "R7_AUTHORIZED"] },
+        "forbiddenFields": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["contentDecision", "effectiveState", "reasonCodes"],
+          "properties": {
+            "contentDecision": { "enum": ["INELIGIBLE", "MANUAL_CHECK_ONLY", "R7_CANDIDATE"] },
+            "effectiveState": {
+              "enum": ["BLOCKED", "BLOCKED_R7_NOT_AUTHORIZED", "RUNTIME_ELIGIBLE"]
+            },
+            "reasonCodes": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/identifier" }
+            }
+          }
+        }
+      }
+    },
+    "fixturePacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authoringSchema", "fixtureVersion", "privacy", "cases"],
+      "properties": {
+        "authoringSchema": { "const": "QuestGrowthRouteEligibilityFixtures/1alpha" },
+        "fixtureVersion": { "type": "string", "minLength": 1 },
+        "privacy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["containsAccountIdentifier", "containsRawPayload"],
+          "properties": {
+            "containsAccountIdentifier": { "const": false },
+            "containsRawPayload": { "const": false }
+          }
+        },
+        "cases": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fixtureCase" } }
+      }
+    }
+  }
+}

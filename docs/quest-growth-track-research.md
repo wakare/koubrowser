@@ -2,9 +2,9 @@
 
 最終更新日: 2026-08-01
 
-Task ID: `QGROWTH-R1_Evidence_Ledger_and_Milestone_Contract`
+Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `WAVE_1_AUTHORING_ONLY`
+Status: `R6_AUTHORING_IMPLEMENTED_R7_NOT_AUTHORIZED`
 
 ## 目的
 
@@ -18,10 +18,14 @@ Status: `WAVE_1_AUTHORING_ONLY`
 Codex 側でも取得可否と主張範囲を再確認した。
 
 - Web Pro discussion: https://chatgpt.com/c/WEB:fe82dda2-5e1b-42a5-8d4a-b4578ec291a4
+- R6 Web Pro review: https://chatgpt.com/c/WEB:ad2e8942-0cfa-4225-b405-a13bee6bcda8
 - audited repository base: `33abf8ff2534deaa7ce12007c001e1e1ea18837f`
+- R6 audited repository base: `6b52e143af9fcab1dbb00b74f7e89bcf695e5e38`
 
-Web Pro の画面は Pro を示したが、backend route と no-fallback は証明できない。モデル名や
-応答時間を evidence として扱わない。
+両 Web Pro review の画面は Pro を示した。R6 の回答は `GPT-5.6 Pro` と自己申告したが、backend
+route と no-fallback は証明できないため、分類は
+`UI_PRO_AND_SELF_REPORT_PRO_ROUTE_UNVERIFIED / ROUTING_ATTESTATION_UNAVAILABLE` とする。モデル名や
+応答時間を攻略 evidence として扱わない。
 
 ## 調査方法
 
@@ -109,8 +113,26 @@ hard mechanic は原則として、独立して読める二つ以上の資料を
 7. 通常海域・EO・改装設計図ループ。
 8. 活動期だけ有効な短期 overlay。
 
-8件の現在の意味は project owner が承認したが、local observability gap と延期された route lineage
-が残るため runtime へ含めない。
+8件の現在の意味は project owner が承認した。R6 では安全 gate を route family に含めず、残り6件を
+非実行 route lineage として authoring した。活動 overlay も短期性が高いため pilot から除外する。
+local observability gap と R7 publication block が残るため runtime へ含めない。
+
+## R6 route family と証拠血縁
+
+R6 pilot は次の6 family に限定する。
+
+1. system / fleet unlock
+2. experience / remodel / modernization
+3. expedition / resource / periodic loop
+4. anti-submarine foundation
+5. surface / air / LoS foundation
+6. normal map / EO / blueprint loop
+
+独立性は URL 数ではなく claim 単位の editorial ecosystem で数える。同じ Wiki の複数ページは一つの
+group、転載・同じ上流は一つの group とし、NGA の browser observation は調査候補として保持しても
+独立可読 evidence に数えない。現 pilot は KCWiki、攻略 Wiki、ぜかまし、よんごうの5 group と16件の
+claim support を記録する。各 route unit は具体的 route を持たず、policy / lineage / unit が draft の
+間は `MANUAL_CHECK_ONLY` へ fail closed する。
 
 ## プライバシーとゲーム通信
 
@@ -124,13 +146,13 @@ hard mechanic は原則として、独立して読める二つ以上の資料を
 ## Wave 2 判断結果
 
 author / approver 分離と local observability audit は完了し、partial / unavailable は manual fallback
-に固定した。route lineage は解決せず明示的に延期したため、Wave 2 は具体的 route を返さない pure
-fallback evaluator に限定する。
+に固定した。R6 authoring と pure eligibility evaluator は追加したが、独立承認と R7 authorization は
+未完了のため、引き続き具体的 route を返さない。
 
 1. author と approver が分離している。
 2. hard mechanic の claim に独立して読める資料が二つ以上ある。
 3. 各 predicate の local observable audit で `complete` とされた入力だけを自動判定に使い、
    `partial` / `unavailable` は manual fallback に固定する。
 4. unknown、conflicted、expired、partial の場合も三カードが空にならない。
-5. quest strategy generated artifacts の `0505bc...` lineage gap を解決または明示的に受理する
-   （現状は延期・route output 禁止として受理）。
+5. quest strategy generated artifacts の `0505bc...` lineage gap は R6 の別 schema で上書きせず、
+   R7 publication block として明示的に受理する。

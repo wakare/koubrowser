@@ -1,0 +1,26 @@
+{
+  "compilerVersion": "quest-growth-route-lineage-compiler/1",
+  "output": {
+    "claimSupportCount": 16,
+    "independenceGroupCount": 5,
+    "manualCheckOnlyCount": 6,
+    "r7CandidateCount": 0,
+    "reviewedRouteUnitCount": 0,
+    "routeLineageCount": 6,
+    "routeUnitCount": 6,
+    "runtimeEligibleCount": 0,
+    "validationCaseCount": 8
+  },
+  "publicationAuthorization": "R7_NOT_AUTHORIZED",
+  "schemaVersion": 1,
+  "source": {
+    "auditedBaseCommit": "6b52e143af9fcab1dbb00b74f7e89bcf695e5e38",
+    "evaluationAsOf": "2026-08-01T08:22:58.133Z",
+    "evidenceLineageDigest": "sha256:dc988fcb5754d282c09ddb46def09407c36023035361e0fcb6ebaad4d86790d6",
+    "fixturesDigest": "sha256:c61a046d82c6f0261f70651b22000f975d85c644346d26a0f90a13bc9e73c8a9",
+    "lineagesDigest": "sha256:1174bbc649e35fe281c0f36eff180e1405f570facaada05a1d12a19f379b8e7e",
+    "policyDigest": "sha256:19ce02baffe22698da7108b44b0581a8a675d797ac3c771fa4ae2b342b8e1141",
+    "schemaDigest": "sha256:3ff863c1063459cbf5a9e8780ddf95f0fdcf9a9c2e0ecc8c69d2776475c57682",
+    "unitsDigest": "sha256:3fbe67de6a034251f4ec0dd5cd385d59e46ad782b827bcafa846aa1a4d952eda"
+  }
+}

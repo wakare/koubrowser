@@ -1,0 +1,111 @@
+{
+  "authoringSchema": "QuestGrowthRouteEligibilityPolicy/1alpha",
+  "policyId": "policy:quest-growth-route-r6",
+  "policyVersion": "1.0.0-alpha.1",
+  "status": "draft",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "6b52e143af9fcab1dbb00b74f7e89bcf695e5e38",
+    "checkedAt": "2026-08-01T08:22:58.133Z"
+  },
+  "evaluationAsOf": "2026-08-01T08:22:58.133Z",
+  "publicationAuthorization": "R7_NOT_AUTHORIZED",
+  "globalSafetyMilestoneRef": {
+    "id": "growth:safety-executable",
+    "revision": 1
+  },
+  "evidenceThresholds": {
+    "evergreenMechanicGroups": 2,
+    "routeMechanicGroups": 2,
+    "editorialGroups": 2
+  },
+  "freshnessMaximumDays": {
+    "evergreen-mechanic-review": 180,
+    "evergreen-mechanic-valid": 365,
+    "evergreen-editorial-review": 90,
+    "evergreen-editorial-valid": 180,
+    "normal-map-review": 60,
+    "normal-map-valid": 120,
+    "eo-review": 30,
+    "eo-valid": 60,
+    "event-overlay-review": 7,
+    "event-overlay-valid": 14
+  },
+  "routeFamilies": [
+    "system-fleet-unlock",
+    "experience-remodel-modernization",
+    "expedition-resource-periodic-loop",
+    "anti-submarine-foundation",
+    "surface-air-los-foundation",
+    "normal-map-eo-blueprint-loop"
+  ],
+  "stepCategories": [
+    "manual-safety-check",
+    "data-acquisition",
+    "training",
+    "remodel",
+    "modernization",
+    "expedition",
+    "resource-management",
+    "equipment-development",
+    "equipment-improvement",
+    "normal-map-progression",
+    "eo-assessment",
+    "stop-and-reassess"
+  ],
+  "forbiddenFields": [
+    "steps",
+    "mapKey",
+    "routeLabels",
+    "targetNodes",
+    "fleet",
+    "shipIds",
+    "shipNames",
+    "equipment",
+    "equipmentIds",
+    "equipmentNames",
+    "formations",
+    "airState",
+    "sortieInstruction",
+    "exactResourceCost",
+    "successProbability"
+  ],
+  "failureReasons": [
+    "ROUTE_SCHEMA_VERSION_UNSUPPORTED",
+    "REQUIRED_FIELD_MISSING",
+    "UNKNOWN_FIELD",
+    "FORBIDDEN_R6_CONCRETE_STEP_FIELD",
+    "REFERENCE_NOT_FOUND",
+    "REFERENCE_REVISION_MISMATCH",
+    "SOURCE_UNREADABLE",
+    "SOURCE_PROMPT_SUPPLIED_ONLY",
+    "CLAIM_NOT_PROMOTION_CANDIDATE",
+    "CLAIM_CONFIDENCE_INSUFFICIENT",
+    "INDEPENDENCE_GROUP_DUPLICATE",
+    "DERIVATIVE_SOURCE_NOT_INDEPENDENT",
+    "MINIMUM_MECHANIC_EVIDENCE_NOT_MET",
+    "MINIMUM_EDITORIAL_EVIDENCE_NOT_MET",
+    "OBSERVABLE_NOT_AUDITED",
+    "OBSERVABLE_PARTIAL_GATE_FORBIDDEN",
+    "OBSERVABLE_UNAVAILABLE",
+    "OBSERVABLE_RUNTIME_BLOCKED",
+    "REQUIRED_RUBRIC_MISSING",
+    "REVIEW_DUE",
+    "EVIDENCE_EXPIRED",
+    "HARD_MECHANIC_CONFLICT",
+    "APPROVER_MISSING",
+    "AUTHOR_APPROVER_NOT_SEPARATED",
+    "FALLBACK_EMPTY",
+    "QUEST_STRATEGY_FACT_DUPLICATED",
+    "POLICY_OWNER_APPROVAL_MISSING",
+    "ROUTE_NOT_REVIEWED",
+    "R7_AUTHORIZATION_MISSING",
+    "REAL_ACCOUNT_ACCEPTANCE_MISSING",
+    "OUTPUT_NOT_REPRODUCIBLE"
+  ],
+  "review": {
+    "author": "codex-r6-contract-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

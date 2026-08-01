@@ -1,12 +1,17 @@
 const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
+const { RouteOutputFilenames, buildRouteLineageArtifacts } = require('./quest-growth-route-lineage')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/8'
+const CompilerVersion = 'quest-growth-authoring-compiler/9'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
-const OutputFilenames = ['source-manifest.json', 'conflict-and-gap-report.json']
+const OutputFilenames = [
+  'source-manifest.json',
+  'conflict-and-gap-report.json',
+  ...RouteOutputFilenames
+]
 
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize)
@@ -794,6 +799,15 @@ function buildQuestGrowthArtifacts(root) {
     fixtureDigests[filename] = sha256(raw)
   }
 
+  const routeLineage = buildRouteLineageArtifacts({
+    root,
+    base,
+    evidence,
+    catalog,
+    observability,
+    decisionRubrics
+  })
+
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
     ...claimAudit(claim, evidence.sources)
@@ -839,6 +853,7 @@ function buildQuestGrowthArtifacts(root) {
       milestoneCandidatesDigest: sha256(milestonesRaw),
       observabilityAuditDigest: sha256(observabilityRaw),
       decisionRubricsDigest: sha256(decisionRubricsRaw),
+      ...routeLineage.source,
       fixtureDigests
     },
     output: {
@@ -863,11 +878,20 @@ function buildQuestGrowthArtifacts(root) {
       decisionRubricCount: decisionRubrics.rubrics.size,
       approvedDecisionRubricCount: [...decisionRubrics.rubrics.values()].filter(
         (item) => item.status === 'approved'
-      ).length
+      ).length,
+      independenceGroupCount: routeLineage.output.independenceGroupCount,
+      claimSupportCount: routeLineage.output.claimSupportCount,
+      routeLineageCount: routeLineage.output.routeLineageCount,
+      routeUnitCount: routeLineage.output.routeUnitCount,
+      reviewedRouteUnitCount: routeLineage.output.reviewedRouteUnitCount,
+      manualCheckOnlyCount: routeLineage.output.manualCheckOnlyCount,
+      r7CandidateCount: routeLineage.output.r7CandidateCount,
+      routeRuntimeEligibleCount: routeLineage.output.runtimeEligibleCount,
+      routeValidationCaseCount: routeLineage.output.validationCaseCount
     },
     runtimePromotion: {
       status: 'blocked',
-      reason: 'EXISTING_OBSERVATION_CONTEXT_UI_ONLY_NO_ROUTE_OUTPUT'
+      reason: 'R6_AUTHORING_ONLY_R7_NOT_AUTHORIZED'
     }
   }
   const independentApprovalPending =
@@ -895,6 +919,7 @@ function buildQuestGrowthArtifacts(root) {
       fallback: rubric.fallback,
       acceptanceTestCount: rubric.acceptanceTests.length
     })),
+    routeLineageAudits: routeLineage.eligibilityReport.routeUnitAudits,
     milestoneGaps,
     globalStops: [
       'NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE',
@@ -907,12 +932,13 @@ function buildQuestGrowthArtifacts(root) {
       ...([...decisionRubrics.rubrics.values()].some((item) => item.status !== 'approved')
         ? ['DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED']
         : []),
-      'QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT'
+      'R7_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT'
     ]
   }
   return {
     'source-manifest.json': sourceManifest,
-    'conflict-and-gap-report.json': conflictAndGapReport
+    'conflict-and-gap-report.json': conflictAndGapReport,
+    ...routeLineage.artifacts
   }
 }
 
@@ -945,6 +971,8 @@ function main() {
       `(${output.fullyObservedCount} complete, ${output.partiallyObservedCount} partial, ` +
       `${output.unavailableObservableCount} unavailable), ` +
       `${output.approvedDecisionRubricCount}/${output.decisionRubricCount} approved rubrics, ` +
+      `${output.routeLineageCount} route lineages, ${output.routeUnitCount} route units ` +
+      `(${output.manualCheckOnlyCount} manual-check-only), ` +
       `${output.eligibleForRuntimeCount} runtime-eligible`
   )
 }
