@@ -1066,6 +1066,11 @@ describe('account restore transaction', () => {
 
   it('selects the newest valid rollback for the current account', async () => {
     await installRestore()
+    rewriteRollbackMetadata(
+      rollbackDirectory(),
+      BundleId,
+      '2026-07-30T00:00:00.000Z'
+    )
     const newerBundleId = '33333333-3333-4333-8333-333333333333'
     const newerDirectory = path.join(
       appDataRoot,
