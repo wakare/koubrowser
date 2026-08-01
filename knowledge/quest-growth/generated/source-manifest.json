@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/6",
+  "compilerVersion": "quest-growth-authoring-compiler/7",
   "output": {
     "approvedDecisionRubricCount": 8,
     "approvedMilestoneCount": 8,
@@ -15,7 +15,7 @@
     "unavailableObservableCount": 2
   },
   "runtimePromotion": {
-    "reason": "READONLY_LOCAL_SNAPSHOT_ADAPTER_NO_UI_NO_ROUTE_OUTPUT",
+    "reason": "READONLY_FALLBACK_UI_ONLY_NO_ROUTE_OUTPUT",
     "status": "blocked"
   },
   "schemaVersion": 1,

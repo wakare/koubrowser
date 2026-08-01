@@ -9,6 +9,7 @@ function source(path: string): string {
 describe('quest strategy route UI wiring', () => {
   const questGuide = source('src/renderer/src/components/QuestGuide.vue')
   const strategyRoute = source('src/renderer/src/components/QuestStrategyRoute.vue')
+  const growthCheck = source('src/renderer/src/components/QuestGrowthCheck.vue')
 
   it('connects anonymous local aggregates to the read-only route component', () => {
     expect(questGuide).toContain('import QuestStrategyRoute from')
@@ -25,6 +26,16 @@ describe('quest strategy route UI wiring', () => {
     expect(questGuide).toContain(
       'svdata.mstSlotitems.length === 0 || svdata.slotitems.length === 0'
     )
+  })
+
+  it('connects the readonly growth snapshot to a non-route fallback UI', () => {
+    expect(questGuide).toContain('import QuestGrowthCheck from')
+    expect(questGuide).toContain('buildQuestGrowthLocalSnapshot(svdata)')
+    expect(questGuide).toContain('<QuestGrowthCheck')
+    expect(questGuide).toContain(':inputs="growthSnapshot.inputs"')
+    expect(growthCheck).toContain('evaluateQuestGrowthFallback(input)')
+    expect(growthCheck).toContain('data-route-output="prohibited"')
+    expect(growthCheck).not.toContain('buildQuestStrategyRoutePlan')
   })
 
   it('uses localization for app-owned UI and opens only reviewed evidence externally', () => {

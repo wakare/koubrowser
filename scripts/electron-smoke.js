@@ -6144,6 +6144,9 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
           const zeroReady = route.querySelector('.quest-strategy-zero-ready')
           const controls = route.querySelector('.quest-strategy-controls')
           const audit = route.querySelector('.quest-strategy-summary')
+          const growth = document.querySelector('.quest-growth-check')
+          const growthDetails = growth?.querySelector('.quest-growth-details')
+          const growthHtml = growth?.outerHTML ?? ''
           const forbidden = [
             /admiral/i,
             /member.?id/i,
@@ -6159,7 +6162,19 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
                 selectionCollapsed: controls ? !controls.open : zeroReady ? true : null,
                 auditCollapsed: audit ? !audit.open : true,
                 clientWidth: route.clientWidth,
-                scrollWidth: route.scrollWidth
+                scrollWidth: route.scrollWidth,
+                growth: growth
+                  ? {
+                      routeOutput: growth.dataset.routeOutput ?? null,
+                      priorityCount: growth.querySelectorAll('.quest-growth-priority li').length,
+                      detailsCollapsed: growthDetails ? !growthDetails.open : null,
+                      forbiddenIdentifiers: forbidden
+                        .filter((pattern) => pattern.test(growthHtml))
+                        .map((pattern) => String(pattern)),
+                      clientWidth: growth.clientWidth,
+                      scrollWidth: growth.scrollWidth
+                    }
+                  : null
               }
             : null
         })()`),
@@ -6173,7 +6188,12 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       strategyResult.actionState === null ||
       strategyResult.selectionCollapsed !== true ||
       (strategyResult.auditCollapsed !== null && strategyResult.auditCollapsed !== true) ||
-      strategyResult.scrollWidth > strategyResult.clientWidth + 1
+      strategyResult.scrollWidth > strategyResult.clientWidth + 1 ||
+      strategyResult.growth?.routeOutput !== 'prohibited' ||
+      strategyResult.growth?.priorityCount < 1 ||
+      strategyResult.growth?.detailsCollapsed !== true ||
+      strategyResult.growth?.forbiddenIdentifiers.length > 0 ||
+      strategyResult.growth?.scrollWidth > strategyResult.growth?.clientWidth + 1
     ) {
       throw new Error(
         `Quest-strategy view failed privacy or layout checks: ` +

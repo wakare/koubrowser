@@ -52,9 +52,11 @@ import {
   normalizeQuestGoalViewMode,
   type QuestGoalViewMode
 } from '@renderer/common/quest-goal-view'
+import { buildQuestGrowthLocalSnapshot } from '@renderer/common/quest-growth-snapshot'
 import { normalizeQuestStrategyVisibility } from '@renderer/common/quest-strategy-view'
 import { getQuestCategoryText } from '@renderer/common/quest-view'
 import { translateApp } from '@renderer/store/global_setting'
+import QuestGrowthCheck from '@renderer/components/QuestGrowthCheck.vue'
 import QuestStrategyRoute from '@renderer/components/QuestStrategyRoute.vue'
 
 const WikiSourceStorageKey = 'questGuideWikiSource:v1'
@@ -291,6 +293,7 @@ const strategyEquipmentTypeCounts = computed<Readonly<Record<string, number>> | 
   return result
 })
 const strategyMapDataAvailable = computed(() => svdata.mstMapInfos.length > 0)
+const growthSnapshot = computed(() => buildQuestGrowthLocalSnapshot(svdata))
 const consumableStock = computed<QuestGuideConsumableStockEntry[] | undefined>(() => {
   if (svdata.useitems.length === 0) {
     return undefined
@@ -978,6 +981,7 @@ function equipmentKindText(
           )
         }}
       </button>
+      <QuestGrowthCheck v-if="showStrategyRoute" :inputs="growthSnapshot.inputs" />
       <QuestStrategyRoute
         v-if="showStrategyRoute"
         :recommendations="recommendations"

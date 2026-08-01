@@ -2,9 +2,9 @@
 
 最終更新日: 2026-08-01
 
-Task ID: `QGROWTH-R3_Readonly_Local_Snapshot_Adapter`
+Task ID: `QGROWTH-R4_Readonly_Fallback_UI`
 
-Status: `READONLY_LOCAL_SNAPSHOT_ADAPTER_IMPLEMENTED_UI_RUNTIME_BLOCKED`
+Status: `READONLY_FALLBACK_UI_IMPLEMENTED_ROUTE_OUTPUT_BLOCKED`
 
 ## モデル境界
 
@@ -24,8 +24,9 @@ GrowthMilestone から QuestRouteUnit への参照は一方向とする。`manua
 
 ## 現在の固定境界
 
-Wave 1 は authoring と audit artifact、Wave 2 は pure fallback evaluator を固定した。現 Wave は
-既存 renderer state を匿名集約する read-only snapshot adapter までを許可する。
+Wave 1 は authoring と audit artifact、Wave 2 は pure fallback evaluator、Wave 3 は read-only
+snapshot adapter を固定した。現 Wave は adapter の結果を非実行チェックとして renderer に表示する
+read-only fallback UI までを許可する。
 
 ```text
 evidence-ledger.json ──────┐
@@ -38,8 +39,7 @@ synthetic fixtures ────────┘          │
 
 次は生成・接続しない。
 
-- production runtime bundle
-- renderer UI
+- route-knowledge production runtime bundle
 - network fetcher
 - real-account fixture
 - concrete route output
@@ -77,8 +77,9 @@ claim は URL、title、site、language、分類、可読性、独立性、suppo
 
 `approved` は approver と reviewedAt を必須とし、author と approver が同じ場合は validation を
 失敗させる。現行8件と対応する8 rubric の現在の意味は project owner が 2026-08-01 に承認した。
-最初の承認は pure fallback evaluator、その後の承認は匿名 read-only local snapshot adapter までを
-許可する。runtime route、UI 接続、snapshot 保存・外送、または route eligibility は承認しない。
+最初の承認は pure fallback evaluator、その後の承認は匿名 read-only local snapshot adapter、さらに
+fallback UI 接続までを許可する。runtime route、snapshot 保存・外送、または route eligibility は
+承認しない。
 29 observable の local source は監査済みだが、complete 19、partial 8、unavailable 2 であり、
 監査・意味承認・adapter 実装の完了は runtime 利用可能を意味しない。
 
@@ -112,7 +113,7 @@ band 化せず測定値だけを保持する。route lineage 延期中のため 
 
 ## Unknown と fallback
 
-unknown state でも空画面にしない。将来の UI は最低限次を表示する。
+unknown state でも空画面にしない。現在の fallback UI は最低限次を表示する。
 
 ### 今やること
 
@@ -174,6 +175,21 @@ compiler version、input digest、output digest を固定する。
 本データで上書きしない。route lineage は project owner の判断により延期し、
 `QUEST_STRATEGY_LINEAGE_DEFERRED_NO_ROUTE_OUTPUT` として downstream stop に残す。延期中は pure
 evaluator、adapter、UI のいずれからも具体的 route を出力してはならない。
+
+## 予定する完了順序
+
+現行の作業順を変えず、具体的な攻略 route は審査工程を経た後段へ追加する。
+
+1. `R4 Readonly Fallback UI`: 匿名 snapshot の `manual-check` / `data-acquisition` を、
+   情報不足と次の確認行動として renderer に表示する。具体的 route は表示しない。
+2. `R5 Existing-Observation Context`: 新しい通信観測を追加せず、既存 local state と利用者選択で
+   判定できる context を増やす。
+3. `R6 Reviewed Route Lineage`: 中日コミュニティの複数資料を route 単位で交差確認し、参照元、
+   確認日、game version、適用条件、失効条件を固定する。
+4. `R7 Reviewed Concrete Route UI`: lineage と適用条件を満たす route だけを具体的な海域、編成、
+   装備、分岐条件として表示する。未審査・失効・条件不明は引き続き fail closed とする。
+
+`R6` と `R7` の実装開始には、route lineage schema と runtime eligibility gate の追加承認を必要とする。
 
 ## Commands
 

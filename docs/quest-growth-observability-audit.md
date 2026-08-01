@@ -93,10 +93,11 @@ fallback は全 observable で非空とする。
 - local DB を使う場合も既存 `queryDb` の read-only projection から匿名集約し、履歴明細を UI へ
   流さない。
 
-## Read-only adapter gate の結果
+## Read-only fallback UI gate の結果
 
 pure fallback evaluator gate の完了後、project owner は匿名 read-only local snapshot adapter まで
-追加承認した。adapter は既存 `SvData` を集約するだけで、新しい観測や I/O を追加しない。
+追加承認し、その後に非実行 fallback UI の接続を承認した。adapter は既存 `SvData` を集約するだけで、
+UI は evaluator の `manual-check` / `data-acquisition` だけを表示し、新しい観測や I/O を追加しない。
 
 1. revision 2 を含む8 partial observable の判断境界を project owner が承認した。
 2. 2 unavailable observable は新規観測で補わず、manual fallback を evaluator test に固定した。
@@ -104,5 +105,5 @@ pure fallback evaluator gate の完了後、project owner は匿名 read-only lo
 4. quest strategy route lineage は延期し、延期中の具体的 route 出力を禁止した。
 5. unknown、stale、unavailable、blocked と manual-check / data-acquisition の shared contract を固定した。
 
-adapter の renderer UI 接続、snapshot 保存・外送、runtime bundle はこの gate に含まれない。
-route lineage は引き続き延期し、具体的 route output を禁止する。
+snapshot 保存・外送、route-knowledge runtime bundle はこの gate に含まれない。route lineage は
+引き続き延期し、具体的 route output を禁止する。
