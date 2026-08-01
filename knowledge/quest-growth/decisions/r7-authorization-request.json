@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7AuthorizationRequest/1alpha",
   "requestId": "decision:quest-growth-r7-0",
   "revision": 1,
-  "status": "draft",
+  "status": "partially-approved",
   "scope": "R7_DECISION_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "09a9ae0af19979f07a908ae93fc739c9600fb14c",
@@ -16,7 +16,7 @@
   "authorizationGates": [
     {
       "gateId": "r7-schema-output-class",
-      "authorizationState": "not-authorized",
+      "authorizationState": "authorized",
       "summary": "允许定义可表达具体海域、节点、编成、装备与条件的版本化 R7 schema。",
       "requiredEvidence": [
         "schema rejects unknown fields and unsupported versions",
@@ -75,6 +75,14 @@
       ]
     }
   ],
+  "authorizationRecords": [
+    {
+      "gateId": "r7-schema-output-class",
+      "approver": "project-owner",
+      "reviewedAt": "2026-08-01T17:57:38.441Z",
+      "approvalDigest": "sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed"
+    }
+  ],
   "proposedOutputContract": {
     "outputClasses": [
       "reviewed-concrete-route",
@@ -103,8 +111,17 @@
     "unknownPolicy": "fallback"
   },
   "pilotProposal": {
-    "selectionState": "owner-decision-required",
+    "selectionState": "selected",
     "maximumInitialFamilies": 2,
+    "selectedInitialFamilies": [
+      "expedition-resource-periodic-loop",
+      "anti-submarine-foundation"
+    ],
+    "selectionReview": {
+      "approver": "project-owner",
+      "reviewedAt": "2026-08-01T17:57:38.441Z",
+      "approvalBasisDigest": "sha256:29a541841298790180ab782eafc5555668d915b8fbf81405f8bb61d572b70ae9"
+    },
     "candidates": [
       {
         "routeFamily": "system-fleet-unlock",

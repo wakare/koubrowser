@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wakare/koubrowser/knowledge/quest-growth/r7-authoring-schema-1alpha.json",
+  "title": "QuestGrowthConcreteRouteAuthoring/1alpha",
+  "description": "Schema-only R7 contract. Concrete content, renderer integration and runtime publication remain unauthorized.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "authoringSchema",
+    "catalogVersion",
+    "status",
+    "sourceSnapshot",
+    "decisionRequestRef",
+    "selectedPilotFamilies",
+    "publicationAuthorization",
+    "routes"
+  ],
+  "properties": {
+    "authoringSchema": { "const": "QuestGrowthConcreteRouteCatalog/1alpha" },
+    "catalogVersion": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["schema-only", "draft", "reviewed", "withdrawn"] },
+    "sourceSnapshot": { "$ref": "#/$defs/sourceSnapshot" },
+    "decisionRequestRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "schemaGateDigest"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "schemaGateDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "selectedPilotFamilies": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifier" }
+    },
+    "publicationAuthorization": { "const": "R7_NOT_AUTHORIZED" },
+    "routes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/concreteRoute" }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "sourceSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auditedBaseCommit", "checkedAt"],
+      "properties": {
+        "auditedBaseCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "checkedAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "revision": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claimRef", "independenceGroupId", "sourceDigest"],
+      "properties": {
+        "claimRef": { "$ref": "#/$defs/identifier" },
+        "independenceGroupId": { "$ref": "#/$defs/identifier" },
+        "sourceDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "concreteSegment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "segmentId",
+        "actionCategory",
+        "mapKey",
+        "targetNodes",
+        "fleetConstraints",
+        "equipmentConstraints",
+        "formations",
+        "airState",
+        "branchConditions",
+        "sortieInstructions",
+        "concreteEvidenceRefs",
+        "fallback"
+      ],
+      "properties": {
+        "segmentId": { "$ref": "#/$defs/identifier" },
+        "actionCategory": {
+          "enum": ["manual-check", "expedition", "sortie", "stop-and-reassess"]
+        },
+        "mapKey": { "type": ["string", "null"] },
+        "targetNodes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "fleetConstraints": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "equipmentConstraints": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "formations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "airState": { "type": ["string", "null"] },
+        "branchConditions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "sortieInstructions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "concreteEvidenceRefs": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/evidenceRef" }
+        },
+        "fallback": { "type": "string", "minLength": 1 }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["author", "approver", "reviewedAt", "approvalDigest"],
+      "properties": {
+        "author": { "$ref": "#/$defs/identifier" },
+        "approver": { "type": ["string", "null"] },
+        "reviewedAt": { "type": ["string", "null"], "format": "date-time" },
+        "approvalDigest": { "type": ["string", "null"] }
+      }
+    },
+    "concreteRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeId",
+        "lineageRef",
+        "routeFamily",
+        "revision",
+        "status",
+        "outputClass",
+        "title",
+        "summary",
+        "applicability",
+        "segments",
+        "currentness",
+        "fallback",
+        "review"
+      ],
+      "properties": {
+        "routeId": { "$ref": "#/$defs/identifier" },
+        "lineageRef": { "$ref": "#/$defs/versionedRef" },
+        "routeFamily": { "$ref": "#/$defs/identifier" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["draft", "reviewed", "withdrawn"] },
+        "outputClass": {
+          "enum": [
+            "reviewed-concrete-route",
+            "manual-check-route",
+            "objective-only",
+            "knowledge-insufficient",
+            "withdrawn"
+          ]
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "applicability": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/concreteSegment" }
+        },
+        "currentness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reviewBy", "validUntil"],
+          "properties": {
+            "reviewBy": { "$ref": "#/$defs/timestamp" },
+            "validUntil": { "$ref": "#/$defs/timestamp" }
+          }
+        },
+        "fallback": { "type": "string", "minLength": 1 },
+        "review": { "$ref": "#/$defs/review" }
+      }
+    }
+  }
+}

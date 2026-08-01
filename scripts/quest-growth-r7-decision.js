@@ -8,6 +8,8 @@ const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+const InitialDecisionSemanticDigest =
+  'sha256:29a541841298790180ab782eafc5555668d915b8fbf81405f8bb61d572b70ae9'
 
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize)
@@ -85,7 +87,9 @@ function semanticDigest(value, excludedKeys = []) {
 
 function authorizationRequestSemanticDigest(value) {
   const payload = Object.fromEntries(
-    Object.entries(value).filter(([key]) => key !== 'status' && key !== 'review')
+    Object.entries(value).filter(
+      ([key]) => key !== 'status' && key !== 'review' && key !== 'authorizationRecords'
+    )
   )
   return digest(
     canonicalJson({
@@ -94,7 +98,12 @@ function authorizationRequestSemanticDigest(value) {
         Object.fromEntries(
           Object.entries(gate).filter(([key]) => key !== 'authorizationState')
         )
-      )
+      ),
+      pilotProposal: {
+        selectionState: 'owner-decision-required',
+        maximumInitialFamilies: payload.pilotProposal.maximumInitialFamilies,
+        candidates: payload.pilotProposal.candidates
+      }
     })
   )
 }
@@ -111,6 +120,7 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
       'sourceSnapshot',
       'r6ApprovalBasis',
       'authorizationGates',
+      'authorizationRecords',
       'proposedOutputContract',
       'pilotProposal',
       'requiredSequence',
@@ -126,8 +136,8 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
   if (!Number.isInteger(value.revision) || value.revision < 1) {
     throw new Error('invalid R7 request revision')
   }
-  if (value.status !== 'draft' || value.scope !== 'R7_DECISION_ONLY') {
-    throw new Error('R7-0 must remain a draft decision-only request')
+  if (value.status !== 'partially-approved' || value.scope !== 'R7_DECISION_ONLY') {
+    throw new Error('R7 schema-only request must remain partially approved and decision-only')
   }
   exactKeys(value.sourceSnapshot, ['auditedBaseCommit', 'checkedAt'], [], 'R7 source snapshot')
   if (!CommitPattern.test(value.sourceSnapshot.auditedBaseCommit)) {
@@ -174,9 +184,11 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
         description
       )
       const gateId = identifier(gate.gateId, `${description} id`)
-      if (gate.authorizationState !== 'not-authorized') {
-        throw new Error(`${description} is authorized before owner decision`)
-      }
+      oneOf(
+        gate.authorizationState,
+        ['not-authorized', 'authorized'],
+        `${description} authorization state`
+      )
       requiredText(gate.summary, `${description} summary`)
       unique(gate.requiredEvidence, `${description} required evidence`, requiredText, 2)
       gates.set(gateId, {
@@ -201,6 +213,46 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
   }
   if (JSON.stringify(value.requiredSequence) !== JSON.stringify(requiredGateIds)) {
     throw new Error('R7 required sequence mismatch')
+  }
+
+  const authorizationRecords = new Map()
+  unique(
+    value.authorizationRecords,
+    'R7 authorization records',
+    (record, description) => {
+      exactKeys(
+        record,
+        ['gateId', 'approver', 'reviewedAt', 'approvalDigest'],
+        [],
+        description
+      )
+      const gateId = identifier(record.gateId, `${description} gate id`)
+      const gate = gates.get(gateId)
+      if (!gate) throw new Error(`${description} references unknown gate`)
+      identifier(record.approver, `${description} approver`)
+      timestamp(record.reviewedAt, `${description} reviewedAt`)
+      if (record.approvalDigest !== gate.semanticDigest) {
+        throw new Error(`${description} approval digest mismatch`)
+      }
+      authorizationRecords.set(gateId, record)
+      return gateId
+    },
+    1
+  )
+  const authorizedGateIds = [...gates.values()]
+    .filter((gate) => gate.authorizationState === 'authorized')
+    .map((gate) => gate.gateId)
+  if (
+    authorizedGateIds.length !== 1 ||
+    authorizedGateIds[0] !== 'r7-schema-output-class'
+  ) {
+    throw new Error('only the R7 schema gate is authorized')
+  }
+  for (const gate of gates.values()) {
+    const hasRecord = authorizationRecords.has(gate.gateId)
+    if ((gate.authorizationState === 'authorized') !== hasRecord) {
+      throw new Error(`R7 authorization record mismatch ${gate.gateId}`)
+    }
   }
 
   exactKeys(
@@ -254,12 +306,18 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
 
   exactKeys(
     value.pilotProposal,
-    ['selectionState', 'maximumInitialFamilies', 'candidates'],
+    [
+      'selectionState',
+      'maximumInitialFamilies',
+      'selectedInitialFamilies',
+      'selectionReview',
+      'candidates'
+    ],
     [],
     'R7 pilot proposal'
   )
-  if (value.pilotProposal.selectionState !== 'owner-decision-required') {
-    throw new Error('R7 pilot must require an owner decision')
+  if (value.pilotProposal.selectionState !== 'selected') {
+    throw new Error('R7 schema-only stage requires an owner-selected pilot')
   }
   if (
     !Number.isInteger(value.pilotProposal.maximumInitialFamilies) ||
@@ -314,6 +372,32 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
   ) {
     throw new Error('R7 recommended pilot family count exceeds the decision boundary')
   }
+  const selectedInitialFamilies = unique(
+    value.pilotProposal.selectedInitialFamilies,
+    'R7 selected initial families',
+    identifier,
+    1
+  )
+  if (
+    selectedInitialFamilies.length > value.pilotProposal.maximumInitialFamilies ||
+    selectedInitialFamilies.some((routeFamily) => !candidates.has(routeFamily))
+  ) {
+    throw new Error('R7 selected pilot family is outside the approved candidate boundary')
+  }
+  if (JSON.stringify(selectedInitialFamilies) !== JSON.stringify(recommendedFamilies)) {
+    throw new Error('R7 selected pilot families do not match the owner-approved proposal')
+  }
+  exactKeys(
+    value.pilotProposal.selectionReview,
+    ['approver', 'reviewedAt', 'approvalBasisDigest'],
+    [],
+    'R7 pilot selection review'
+  )
+  identifier(value.pilotProposal.selectionReview.approver, 'R7 pilot selection approver')
+  timestamp(value.pilotProposal.selectionReview.reviewedAt, 'R7 pilot selection reviewedAt')
+  if (value.pilotProposal.selectionReview.approvalBasisDigest !== InitialDecisionSemanticDigest) {
+    throw new Error('R7 pilot selection approval basis mismatch')
+  }
 
   exactKeys(value.review, ['author', 'approver', 'reviewedAt', 'approvalDigest'], [], 'R7 review')
   identifier(value.review.author, 'R7 review author')
@@ -328,8 +412,10 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
   return {
     value,
     gates,
+    authorizationRecords,
     candidates,
     recommendedFamilies,
+    selectedInitialFamilies,
     semanticDigest: authorizationRequestSemanticDigest(value)
   }
 }
@@ -354,7 +440,7 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
     requestId: request.value.requestId,
     revision: request.value.revision,
     generatedAt: request.value.sourceSnapshot.checkedAt,
-    status: 'OWNER_DECISION_REQUIRED',
+    status: 'SCHEMA_ONLY_AUTHORIZED',
     scope: request.value.scope,
     requestDigest: digest(requestRaw),
     semanticDigest: request.semanticDigest,
@@ -368,9 +454,9 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
       selectionState: request.value.pilotProposal.selectionState,
       maximumInitialFamilies: request.value.pilotProposal.maximumInitialFamilies,
       recommendedFamilies: request.recommendedFamilies,
-      selectedInitialFamilies: []
+      selectedInitialFamilies: request.selectedInitialFamilies
     },
-    implementationAuthorization: 'R7_NOT_AUTHORIZED',
+    implementationAuthorization: 'R7_SCHEMA_ONLY_AUTHORIZED',
     concreteRouteArtifactCount: 0,
     runtimeEligibleCount
   }
@@ -379,7 +465,7 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
     source: { r7AuthorizationRequestDigest: digest(requestRaw) },
     output: {
       r7DecisionGateCount: request.gates.size,
-      r7AuthorizedGateCount: 0,
+      r7AuthorizedGateCount: request.authorizationRecords.size,
       r7PilotCandidateCount: request.candidates.size,
       r7RecommendedPilotFamilyCount: request.recommendedFamilies.length,
       r7ConcreteRouteArtifactCount: 0

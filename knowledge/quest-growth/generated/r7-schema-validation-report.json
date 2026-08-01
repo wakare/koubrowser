@@ -1,0 +1,56 @@
+{
+  "catalogDigest": "sha256:2c431964a73b1c9d6b736bb914fe9a6d5b96ec4e967093d249f18841579b9043",
+  "catalogRouteCount": 0,
+  "compilerVersion": "quest-growth-r7-schema-validator/1",
+  "concreteRouteArtifactCount": 0,
+  "fixtureCaseCount": 4,
+  "fixtureDigest": "sha256:d7b84372b10103d5849e1278fbe6799268e08fd6f7b27d6141a83c920c1483b6",
+  "fixtureResults": [
+    {
+      "caseId": "schema-valid-content-gate-blocked",
+      "contentDecision": "BLOCKED",
+      "reasonCodes": [
+        "R7_PILOT_CONTENT_NOT_AUTHORIZED"
+      ],
+      "schemaDecision": "VALID"
+    },
+    {
+      "caseId": "missing-concrete-evidence",
+      "contentDecision": "BLOCKED",
+      "reasonCodes": [
+        "CONCRETE_FIELD_EVIDENCE_MISSING"
+      ],
+      "schemaDecision": "INVALID"
+    },
+    {
+      "caseId": "unknown-route-field",
+      "contentDecision": "BLOCKED",
+      "reasonCodes": [
+        "UNKNOWN_FIELD"
+      ],
+      "schemaDecision": "INVALID"
+    },
+    {
+      "caseId": "identifying-fixture-rejected",
+      "contentDecision": "BLOCKED",
+      "reasonCodes": [
+        "FIXTURE_PRIVACY_VIOLATION"
+      ],
+      "schemaDecision": "INVALID"
+    }
+  ],
+  "fixtureValidationPassed": true,
+  "generatedAt": "2026-08-01T17:57:38.441Z",
+  "pilotContentAuthorization": "not-authorized",
+  "publicationAuthorization": "R7_NOT_AUTHORIZED",
+  "runtimeEligibleCount": 0,
+  "schemaDigest": "sha256:660baa094b6a493a12de1bcedb26d26e455f8ee2c4a4dc6e8b9f08de58835b68",
+  "schemaGateAuthorization": "authorized",
+  "schemaTitle": "QuestGrowthConcreteRouteAuthoring/1alpha",
+  "schemaVersion": 1,
+  "selectedPilotFamilies": [
+    "expedition-resource-periodic-loop",
+    "anti-submarine-foundation"
+  ],
+  "status": "SCHEMA_GATE_VALIDATED_CONTENT_GATE_BLOCKED"
+}

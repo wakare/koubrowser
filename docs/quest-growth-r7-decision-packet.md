@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-0_CONCRETE_ROUTE_DECISION_PACKET`
 
-Status: `OWNER_DECISION_REQUIRED_R7_NOT_AUTHORIZED`
+Status: `SCHEMA_GATE_APPROVED_PILOT_SELECTED_CONTENT_NOT_AUTHORIZED`
 
 ## 目的
 
@@ -41,7 +41,10 @@ R6 basis は次に固定する。
 6. `r7-default-enablement`
    - publication 後も、既定有効化は別の release 判断とする。
 
-現在は6件すべて `not-authorized` である。前段の承認は後段の承認へ自動変換しない。
+`r7-schema-output-class` だけを project owner が gate semantic digest
+`sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed`
+に固定して 2026-08-01T17:57:38.441Z に承認した。残り5件は `not-authorized` のままであり、
+前段の承認は後段の承認へ自動変換しない。
 
 ## 提案する output class
 
@@ -60,8 +63,7 @@ R7 の承認状態に関係なく禁止する。
 
 ## 初期 pilot の提案
 
-初期 family は最大2件とする。compiler は6 family をすべて候補表に保持し、owner が選ぶまで
-`selectedInitialFamilies` を空に固定する。
+初期 family は最大2件とする。compiler は6 family をすべて候補表に保持する。
 
 | Family | R6 state | 提案 | 理由 |
 | --- | --- | --- | --- |
@@ -72,32 +74,33 @@ R7 の承認状態に関係なく禁止する。
 | surface / air / LoS foundation | `R7_CANDIDATE` | defer | versioned formula と route variant が先に必要 |
 | normal map / EO / blueprint loop | `R7_CANDIDATE` | defer | route と affordability の review window が短い |
 
-推奨する Wave A は次の2件である。
+project owner は初期 pilot として次の2件を選択した。
 
 - `expedition-resource-periodic-loop`
 - `anti-submarine-foundation`
 
-これは選択案であり、具体的攻略内容の承認ではない。
+この選択は schema fixture の対象範囲だけを定め、具体的攻略内容を承認しない。
+
+## 承認済みの schema-only 成果物
+
+- [`r7-authoring-schema-1alpha.json`](../knowledge/quest-growth/r7-authoring-schema-1alpha.json)
+- [`route-catalog.json`](../knowledge/quest-growth/r7/route-catalog.json)（`routes: []`）
+- [`schema-cases.json`](../knowledge/quest-growth/fixtures/r7-schema/schema-cases.json)（匿名 synthetic）
+- [`r7-schema-validation-report.json`](../knowledge/quest-growth/generated/r7-schema-validation-report.json)
+
+validator は schema gate の digest、選択した2 pilot、空 catalog、匿名 fixture を検証する。
+`r7-pilot-content-authoring` が未承認の間は、catalog に1件でも route が入ると compile error にする。
 
 ## 次に必要な owner 判断
 
-最小の次段階は schema gate と pilot 選択だけを承認し、空 schema、validator、匿名 fixture までを
-許可することとする。具体的 route authoring は次の独立判断まで開始しない。
-
-承認する場合の推奨文面:
-
-> `r7-authorization-report.json` の `r7-schema-output-class` gate semantic digest に固定して
-> schema gate を承認し、初期 pilot として
-> `expedition-resource-periodic-loop` と `anti-submarine-foundation` を選択する。
-> 承認範囲は空の schema、validator、匿名 synthetic fixture までとする。具体的 route content、
-> renderer integration、real-account acceptance、runtime publication、default enablement は承認しない。
-
-別 family を選ぶ場合は、最大2件を route family ID で指定する。
+次の独立 gate は `r7-pilot-content-authoring` である。承認されるまでは具体的な海域、編成、装備、
+分岐条件、出撃手順を authoring しない。renderer、実アカウント受入、runtime publication、
+default enablement も引き続き未承認である。
 
 ## Fail-closed 条件
 
 - R6 approval packet の digest が変わった場合は request を再作成する。
 - authorization gate が owner review なしで変更された場合は compiler error とする。
 - pilot candidate の R6 decision が generated report と一致しない場合は compiler error とする。
-- concrete route artifact count と runtime eligible count は R7-0 では常に0とする。
+- content gate が未承認の間、concrete route artifact count と runtime eligible count は常に0とする。
 - R6 authoring schema は引き続き concrete field を拒否する。

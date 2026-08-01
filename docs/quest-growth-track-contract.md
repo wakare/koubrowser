@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R6_AUTHORING_IMPLEMENTED_R7_NOT_AUTHORIZED`
+Status: `R7_SCHEMA_ONLY_AUTHORIZED_CONTENT_NOT_AUTHORIZED`
 
 ## モデル境界
 
@@ -194,7 +194,7 @@ compiler version、input digest、output digest を固定する。
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
 本データで上書きしない。R6 lineage は exact commit
 `6b52e143af9fcab1dbb00b74f7e89bcf695e5e38` を別の audit snapshot として保持する。
-`R7_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT` を downstream stop に固定し、pure evaluator、adapter、
+`R7_PILOT_CONTENT_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT` を downstream stop に固定し、pure evaluator、adapter、
 UI のいずれからも具体的 route を出力してはならない。
 
 ## 予定する完了順序
@@ -209,16 +209,18 @@ UI のいずれからも具体的 route を出力してはならない。
 3. `R6 Reviewed Route Lineage`: authoring schema、claim 単位の独立 group、6 route family、6つの
    非実行 route unit、eligibility evaluator、8件の validation case を実装済み。policy / lineage /
    unit の13項目は semantic digest に固定して project owner が R6 authoring review として承認済み。
-   R7 authorization は未承認であり、runtime eligible は0件に固定する。
+   R7 の schema gate だけを承認済みとし、runtime eligible は0件に固定する。
 4. `R7 Reviewed Concrete Route UI`: lineage と適用条件を満たす route だけを具体的な海域、編成、
    装備、分岐条件として表示する。未審査・失効・条件不明は引き続き fail closed とする。
 
 R7 の実装前判断は [`quest-growth-r7-decision-packet.md`](quest-growth-r7-decision-packet.md) に分離した。
-現在は decision-only request と compiler gate だけを生成し、6 authorization gate はすべて
+現在は `r7-schema-output-class` だけを semantic digest に固定して承認し、遠征・資源・周期任務と
+基礎対潜を初期 pilot に選択した。空 catalog、validator、匿名 fixture だけを生成し、残る5 gate は
 `not-authorized`、concrete route artifact と runtime eligible は0件である。
 
-`R7` の実装開始には、R6 policy / lineage / unit の独立承認、実アカウント受入確認、route publication
-authorization の追加承認を必要とする。R6 の pure evaluation artifact は R7 の承認を代替しない。
+具体的 route authoring の開始には `r7-pilot-content-authoring` の追加承認を必要とする。renderer、
+実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や
+R6 の pure evaluation artifact はそれらの承認を代替しない。
 
 ## Commands
 

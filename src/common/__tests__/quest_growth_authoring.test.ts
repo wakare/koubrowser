@@ -51,6 +51,15 @@ const { authorizationRequestSemanticDigest, validateR7AuthorizationRequest } =
       routeEligibilityReport: Record<string, unknown>
     ) => { recommendedFamilies: string[]; semanticDigest: string }
   }
+const { validateCatalog, validateFixturePacket } =
+  require('../../../scripts/quest-growth-r7-schema.js') as {
+    validateCatalog: (
+      catalog: Record<string, unknown>,
+      request: Record<string, unknown>,
+      report: Record<string, unknown>
+    ) => Record<string, unknown>
+    validateFixturePacket: (value: Record<string, unknown>) => Record<string, unknown>[]
+  }
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -96,7 +105,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R6_AUTHORING_ONLY_R7_NOT_AUTHORIZED'
+      reason: 'R7_SCHEMA_ONLY_PILOT_CONTENT_NOT_AUTHORIZED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -117,7 +126,9 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
-    expect(report.globalStops).toContain('R7_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT')
+    expect(report.globalStops).toContain(
+      'R7_PILOT_CONTENT_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT'
+    )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
@@ -236,7 +247,7 @@ describe('quest growth authoring contract', () => {
     })
   })
 
-  it('generates an R7 decision packet without authorizing implementation or publication', () => {
+  it('authorizes only the R7 schema gate and records the selected pilots', () => {
     const report = read<{
       status: string
       scope: string
@@ -258,33 +269,41 @@ describe('quest growth authoring contract', () => {
       runtimeEligibleCount: number
     }>('generated', 'r7-authorization-report.json')
 
-    expect(report.status).toBe('OWNER_DECISION_REQUIRED')
+    expect(report.status).toBe('SCHEMA_ONLY_AUTHORIZED')
     expect(report.scope).toBe('R7_DECISION_ONLY')
     expect(report.requestDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(report.authorizationGates).toHaveLength(6)
+    expect(report.authorizationGates[0]).toEqual({
+      gateId: 'r7-schema-output-class',
+      authorizationState: 'authorized',
+      semanticDigest: 'sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed'
+    })
     expect(
-      report.authorizationGates.every(
+      report.authorizationGates.slice(1).every(
         (gate) =>
           gate.authorizationState === 'not-authorized' &&
           /^sha256:[0-9a-f]{64}$/.test(gate.semanticDigest)
       )
     ).toBe(true)
     expect(report.pilotProposal).toEqual({
-      selectionState: 'owner-decision-required',
+      selectionState: 'selected',
       maximumInitialFamilies: 2,
       recommendedFamilies: [
         'expedition-resource-periodic-loop',
         'anti-submarine-foundation'
       ],
-      selectedInitialFamilies: []
+      selectedInitialFamilies: [
+        'expedition-resource-periodic-loop',
+        'anti-submarine-foundation'
+      ]
     })
-    expect(report.implementationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.implementationAuthorization).toBe('R7_SCHEMA_ONLY_AUTHORIZED')
     expect(report.concreteRouteArtifactCount).toBe(0)
     expect(report.runtimeEligibleCount).toBe(0)
   })
 
-  it('fails closed if an R7 gate is marked authorized before owner approval', () => {
+  it('fails closed if another R7 gate is marked authorized without owner approval', () => {
     const request = read<Record<string, unknown> & {
       authorizationGates: { authorizationState: string }[]
     }>('decisions', 'r7-authorization-request.json')
@@ -297,14 +316,70 @@ describe('quest growth authoring contract', () => {
       'route-eligibility-report.json'
     )
     const tampered = structuredClone(request)
-    tampered.authorizationGates[0].authorizationState = 'authorized'
+    tampered.authorizationGates[1].authorizationState = 'authorized'
 
     expect(authorizationRequestSemanticDigest(tampered)).toBe(
       authorizationRequestSemanticDigest(request)
     )
     expect(() =>
       validateR7AuthorizationRequest(tampered, approvalPacket, eligibilityReport)
-    ).toThrow('is authorized before owner decision')
+    ).toThrow('only the R7 schema gate is authorized')
+  })
+
+  it('validates an empty R7 catalog and anonymous schema fixtures only', () => {
+    const report = read<Record<string, unknown> & {
+      status: string
+      selectedPilotFamilies: string[]
+      catalogRouteCount: number
+      concreteRouteArtifactCount: number
+      fixtureCaseCount: number
+      fixtureValidationPassed: boolean
+      publicationAuthorization: string
+      runtimeEligibleCount: number
+    }>('generated', 'r7-schema-validation-report.json')
+    const catalog = read<Record<string, unknown> & { routes: unknown[] }>(
+      'r7',
+      'route-catalog.json'
+    )
+    const fixtures = read<Record<string, unknown>>(
+      'fixtures',
+      'r7-schema',
+      'schema-cases.json'
+    )
+
+    expect(report.status).toBe('SCHEMA_GATE_VALIDATED_CONTENT_GATE_BLOCKED')
+    expect(report.selectedPilotFamilies).toEqual([
+      'expedition-resource-periodic-loop',
+      'anti-submarine-foundation'
+    ])
+    expect(catalog.routes).toEqual([])
+    expect(report.catalogRouteCount).toBe(0)
+    expect(report.concreteRouteArtifactCount).toBe(0)
+    expect(report.fixtureCaseCount).toBe(4)
+    expect(report.fixtureValidationPassed).toBe(true)
+    expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.runtimeEligibleCount).toBe(0)
+    expect(validateFixturePacket(fixtures)).toHaveLength(4)
+  })
+
+  it('rejects R7 concrete route content while the content gate is not authorized', () => {
+    const request = read<Record<string, unknown>>('decisions', 'r7-authorization-request.json')
+    const report = read<Record<string, unknown>>('generated', 'r7-authorization-report.json')
+    const catalog = read<Record<string, unknown> & { routes: unknown[] }>(
+      'r7',
+      'route-catalog.json'
+    )
+    const fixtures = read<{ baseRoute: Record<string, unknown> }>(
+      'fixtures',
+      'r7-schema',
+      'schema-cases.json'
+    )
+    const tampered = structuredClone(catalog)
+    tampered.routes.push(fixtures.baseRoute)
+
+    expect(() => validateCatalog(tampered, request, report)).toThrow(
+      'R7 pilot content is not authorized; route catalog must be empty'
+    )
   })
 
   it('binds approval to semantic content while excluding approval metadata', () => {

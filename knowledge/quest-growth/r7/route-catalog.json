@@ -1,0 +1,20 @@
+{
+  "authoringSchema": "QuestGrowthConcreteRouteCatalog/1alpha",
+  "catalogVersion": "1.0.0-alpha.1",
+  "status": "schema-only",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "c5cb8425ffd0f240ce49b644a0b1339e9ecd772b",
+    "checkedAt": "2026-08-01T17:57:38.441Z"
+  },
+  "decisionRequestRef": {
+    "id": "decision:quest-growth-r7-0",
+    "revision": 1,
+    "schemaGateDigest": "sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed"
+  },
+  "selectedPilotFamilies": [
+    "expedition-resource-periodic-loop",
+    "anti-submarine-foundation"
+  ],
+  "publicationAuthorization": "R7_NOT_AUTHORIZED",
+  "routes": []
+}

@@ -6,8 +6,12 @@ const {
   R7DecisionOutputFilenames,
   buildR7DecisionArtifacts
 } = require('./quest-growth-r7-decision')
+const {
+  R7SchemaOutputFilenames,
+  buildR7SchemaArtifacts
+} = require('./quest-growth-r7-schema')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/11'
+const CompilerVersion = 'quest-growth-authoring-compiler/12'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -15,7 +19,8 @@ const OutputFilenames = [
   'source-manifest.json',
   'conflict-and-gap-report.json',
   ...RouteOutputFilenames,
-  ...R7DecisionOutputFilenames
+  ...R7DecisionOutputFilenames,
+  ...R7SchemaOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -817,6 +822,10 @@ function buildQuestGrowthArtifacts(root) {
     routeApprovalPacket: routeLineage.artifacts['route-approval-packet.json'],
     routeEligibilityReport: routeLineage.eligibilityReport
   })
+  const r7Schema = buildR7SchemaArtifacts({
+    base,
+    r7DecisionReport: r7Decision.artifacts['r7-authorization-report.json']
+  })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -865,6 +874,7 @@ function buildQuestGrowthArtifacts(root) {
       decisionRubricsDigest: sha256(decisionRubricsRaw),
       ...routeLineage.source,
       ...r7Decision.source,
+      ...r7Schema.source,
       fixtureDigests
     },
     output: {
@@ -899,11 +909,12 @@ function buildQuestGrowthArtifacts(root) {
       r7CandidateCount: routeLineage.output.r7CandidateCount,
       routeRuntimeEligibleCount: routeLineage.output.runtimeEligibleCount,
       routeValidationCaseCount: routeLineage.output.validationCaseCount,
-      ...r7Decision.output
+      ...r7Decision.output,
+      ...r7Schema.output
     },
     runtimePromotion: {
       status: 'blocked',
-      reason: 'R6_AUTHORING_ONLY_R7_NOT_AUTHORIZED'
+      reason: 'R7_SCHEMA_ONLY_PILOT_CONTENT_NOT_AUTHORIZED'
     }
   }
   const independentApprovalPending =
@@ -944,14 +955,15 @@ function buildQuestGrowthArtifacts(root) {
       ...([...decisionRubrics.rubrics.values()].some((item) => item.status !== 'approved')
         ? ['DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED']
         : []),
-      'R7_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT'
+      'R7_PILOT_CONTENT_NOT_AUTHORIZED_NO_CONCRETE_ROUTE_OUTPUT'
     ]
   }
   return {
     'source-manifest.json': sourceManifest,
     'conflict-and-gap-report.json': conflictAndGapReport,
     ...routeLineage.artifacts,
-    ...r7Decision.artifacts
+    ...r7Decision.artifacts,
+    ...r7Schema.artifacts
   }
 }
 

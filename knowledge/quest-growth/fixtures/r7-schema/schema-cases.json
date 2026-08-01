@@ -1,0 +1,102 @@
+{
+  "authoringSchema": "QuestGrowthR7SchemaFixtures/1alpha",
+  "fixtureVersion": "1.0.0-alpha.1",
+  "privacy": {
+    "containsAccountIdentifier": false,
+    "containsRawPayload": false
+  },
+  "baseRoute": {
+    "routeId": "fixture:route:anti-submarine",
+    "lineageRef": {
+      "id": "growth-lineage:anti-submarine-foundation",
+      "revision": 1
+    },
+    "routeFamily": "anti-submarine-foundation",
+    "revision": 1,
+    "status": "draft",
+    "outputClass": "manual-check-route",
+    "title": "Synthetic anti-submarine route",
+    "summary": "Schema-only fixture with no real map, ship or equipment identity.",
+    "applicability": ["fixture:target-context-confirmed"],
+    "segments": [
+      {
+        "segmentId": "fixture:segment:1",
+        "actionCategory": "sortie",
+        "mapKey": "fixture:map",
+        "targetNodes": ["fixture:node"],
+        "fleetConstraints": ["fixture fleet condition"],
+        "equipmentConstraints": ["fixture equipment condition"],
+        "formations": ["fixture:formation"],
+        "airState": null,
+        "branchConditions": ["fixture branch condition"],
+        "sortieInstructions": ["fixture instruction"],
+        "concreteEvidenceRefs": [
+          {
+            "claimRef": "fixture:claim:mechanic",
+            "independenceGroupId": "fixture:group:a",
+            "sourceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+          },
+          {
+            "claimRef": "fixture:claim:mechanic",
+            "independenceGroupId": "fixture:group:b",
+            "sourceDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000002"
+          }
+        ],
+        "fallback": "Stop and confirm the synthetic target context."
+      }
+    ],
+    "currentness": {
+      "reviewBy": "2026-09-01T00:00:00.000Z",
+      "validUntil": "2026-10-01T00:00:00.000Z"
+    },
+    "fallback": "No synthetic route is published.",
+    "review": {
+      "author": "fixture-author",
+      "approver": null,
+      "reviewedAt": null,
+      "approvalDigest": null
+    }
+  },
+  "cases": [
+    {
+      "caseId": "schema-valid-content-gate-blocked",
+      "mutation": "none",
+      "containsAccountIdentifier": false,
+      "expected": {
+        "schemaDecision": "VALID",
+        "contentDecision": "BLOCKED",
+        "reasonCodes": ["R7_PILOT_CONTENT_NOT_AUTHORIZED"]
+      }
+    },
+    {
+      "caseId": "missing-concrete-evidence",
+      "mutation": "remove-concrete-evidence",
+      "containsAccountIdentifier": false,
+      "expected": {
+        "schemaDecision": "INVALID",
+        "contentDecision": "BLOCKED",
+        "reasonCodes": ["CONCRETE_FIELD_EVIDENCE_MISSING"]
+      }
+    },
+    {
+      "caseId": "unknown-route-field",
+      "mutation": "add-unknown-field",
+      "containsAccountIdentifier": false,
+      "expected": {
+        "schemaDecision": "INVALID",
+        "contentDecision": "BLOCKED",
+        "reasonCodes": ["UNKNOWN_FIELD"]
+      }
+    },
+    {
+      "caseId": "identifying-fixture-rejected",
+      "mutation": "none",
+      "containsAccountIdentifier": true,
+      "expected": {
+        "schemaDecision": "INVALID",
+        "contentDecision": "BLOCKED",
+        "reasonCodes": ["FIXTURE_PRIVACY_VIOLATION"]
+      }
+    }
+  ]
+}

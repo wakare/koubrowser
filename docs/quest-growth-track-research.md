@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R6_AUTHORING_APPROVED_R7_DECISION_PACKET_PENDING`
+Status: `R7_SCHEMA_ONLY_AUTHORIZED_CONTENT_NOT_AUTHORIZED`
 
 ## 目的
 
@@ -147,7 +147,8 @@ claim support を記録する。各 route unit は具体的 route を持たず�
 
 author / approver 分離と local observability audit は完了し、partial / unavailable は manual fallback
 に固定した。R6 policy、lineage、route unit は project owner が current semantic digest に固定して
-承認した。R7 は decision packet の審査中であり、authorization gate はすべて未承認のため、
+承認した。R7 は schema gate だけを承認し、遠征・資源・周期任務と基礎対潜を初期 pilot に選択した。
+具体的 content、renderer、実アカウント受入、publication、default enablement は未承認のため、
 引き続き具体的 route を返さない。
 
 1. author と approver が分離している。
