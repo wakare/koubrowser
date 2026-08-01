@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6-1_INDEPENDENT_APPROVAL_PACKET`
 
-Status: `R6_APPROVAL_PACKET_READY_OWNER_DECISION_PENDING`
+Status: `R6_AUTHORING_APPROVED_R7_NOT_AUTHORIZED`
 
 ## 判断
 
@@ -57,6 +57,7 @@ authoritative backend route / fallback attestation は提供されなかった�
 R6 policy、pilot authoring revision、evidence lineage と generated digest の独立レビュー packet を
 生成した。author と approver は分離し、承認は exact revision と canonical semantic digest に固定する。
 承認対象と範囲は [`quest-growth-r6-approval-checklist.md`](quest-growth-r6-approval-checklist.md) に示す。
-現在は owner decision pending であり、authoring data の status と approver は変更していない。
+project owner は 2026-08-01T17:06:53.674Z に current semantic digest の policy 1件、lineage
+6件、route unit 6件を R6 authoring review に限って承認した。
 R6 完了後も、R7 schema、output class、real-account read-only acceptance、release enablement は
 それぞれ独立した owner 判断を必要とする。

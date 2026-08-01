@@ -1061,12 +1061,18 @@ function buildRouteLineageArtifacts({
     passed: fixtureResults.every((item) => item.passed),
     cases: fixtureResults
   }
+  const r6AuthoringApproved =
+    policy.value.status === 'approved' &&
+    [...lineages.lineages.values()].every((lineage) => lineage.status === 'reviewed') &&
+    [...units.units.values()].every((unit) => unit.status === 'reviewed')
   const routeApprovalPacket = {
     schemaVersion: 1,
     compilerVersion: RouteCompilerVersion,
     packetVersion: '1.0.0-alpha.1',
     generatedAt: policy.value.evaluationAsOf,
-    status: 'AWAITING_PROJECT_OWNER_REVIEW',
+    status: r6AuthoringApproved
+      ? 'R6_AUTHORING_APPROVED'
+      : 'AWAITING_PROJECT_OWNER_REVIEW',
     scope: 'R6_AUTHORING_REVIEW_ONLY',
     publicationAuthorization: policy.value.publicationAuthorization,
     evidenceLineageDigest: inputDigests.evidenceLineageDigest,

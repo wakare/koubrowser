@@ -61,7 +61,7 @@ describe('quest growth authoring contract', () => {
       '14 sources, 9 claims, 8/8 approved milestones, 6 fixtures, ' +
         '29 observables (19 complete, 8 partial, 2 unavailable), ' +
         '8/8 approved rubrics, 6 route lineages, 6 route units ' +
-        '(6 manual-check-only), 0 runtime-eligible'
+        '(1 manual-check-only), 0 runtime-eligible'
     )
   })
 
@@ -113,7 +113,7 @@ describe('quest growth authoring contract', () => {
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
 
-  it('keeps every R6 route unit non-executable until independent review and R7 approval', () => {
+  it('keeps reviewed R6 route units non-executable until separate R7 approval', () => {
     const manifest = read<{
       output: {
         independenceGroupCount: number
@@ -148,21 +148,26 @@ describe('quest growth authoring contract', () => {
       claimSupportCount: 16,
       routeLineageCount: 6,
       routeUnitCount: 6,
-      reviewedRouteUnitCount: 0,
-      manualCheckOnlyCount: 6,
-      r7CandidateCount: 0,
+      reviewedRouteUnitCount: 6,
+      manualCheckOnlyCount: 1,
+      r7CandidateCount: 5,
       runtimeEligibleCount: 0,
       validationCaseCount: 8
     })
     expect(manifest.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
-    expect(report.policyStatus).toBe('draft')
+    expect(report.policyStatus).toBe('approved')
     expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
     expect(report.routeUnitAudits).toHaveLength(6)
     expect(
+      report.routeUnitAudits.filter((audit) => audit.contentDecision === 'R7_CANDIDATE')
+    ).toHaveLength(5)
+    expect(
+      report.routeUnitAudits.filter((audit) => audit.contentDecision === 'MANUAL_CHECK_ONLY')
+    ).toHaveLength(1)
+    expect(
       report.routeUnitAudits.every(
         (audit) =>
-          audit.contentDecision === 'MANUAL_CHECK_ONLY' &&
-          audit.effectiveState === 'BLOCKED' &&
+          audit.effectiveState !== 'RUNTIME_ELIGIBLE' &&
           audit.reasonCodes.includes('R7_AUTHORIZATION_MISSING') &&
           audit.fallback.trim().length > 0
       )
@@ -202,16 +207,16 @@ describe('quest growth authoring contract', () => {
       }
     }>('generated', 'route-approval-packet.json')
 
-    expect(packet.status).toBe('AWAITING_PROJECT_OWNER_REVIEW')
+    expect(packet.status).toBe('R6_AUTHORING_APPROVED')
     expect(packet.scope).toBe('R6_AUTHORING_REVIEW_ONLY')
     expect(packet.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
     expect(packet.evidenceLineageDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
-    expect(packet.policy.currentStatus).toBe('draft')
+    expect(packet.policy.currentStatus).toBe('approved')
     expect(packet.policy.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(packet.lineages).toHaveLength(6)
     expect(packet.routeUnits).toHaveLength(6)
-    expect(packet.lineages.every((item) => item.currentStatus === 'draft')).toBe(true)
-    expect(packet.routeUnits.every((item) => item.currentStatus === 'draft')).toBe(true)
+    expect(packet.lineages.every((item) => item.currentStatus === 'reviewed')).toBe(true)
+    expect(packet.routeUnits.every((item) => item.currentStatus === 'reviewed')).toBe(true)
     expect(packet.approvalRequirements).toEqual({
       requiredApprover: 'project-owner',
       authorApproverMustDiffer: true,

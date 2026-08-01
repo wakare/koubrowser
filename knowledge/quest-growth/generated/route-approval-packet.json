@@ -12,37 +12,37 @@
   "generatedAt": "2026-08-01T08:22:58.133Z",
   "lineages": [
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeLineageId": "growth-lineage:system-fleet-unlock",
       "semanticDigest": "sha256:edda3e0bbf4ebe0ab1b6f6299f8d2047d2a603f06fc8ebc239c47aee8b80e682"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeLineageId": "growth-lineage:experience-remodel-modernization",
       "semanticDigest": "sha256:64a6b5a75fb468a2833d1efa9f42a69025b35ad22aca1eea650116ae26dfba5b"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeLineageId": "growth-lineage:expedition-resource-periodic-loop",
       "semanticDigest": "sha256:5b94ab240c29f314f5a8abb83b7afa6a8ef1eacfca0d6e1311aff9ea673c5eaa"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeLineageId": "growth-lineage:anti-submarine-foundation",
       "semanticDigest": "sha256:563da2a96f2f4b4dbe2324939e8f5f9f3182a7bfd2b738503510342971878951"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeLineageId": "growth-lineage:surface-air-los-foundation",
       "semanticDigest": "sha256:1bc2cffeddd2716812bacdea6ed4afea82c46b802ebeb30ab383d7a357551a96"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeLineageId": "growth-lineage:normal-map-eo-blueprint-loop",
       "semanticDigest": "sha256:38d3e0c1fda344a86f7a8b898bfd06bc9d7413885b7674f5102a546e0a5d2f21"
@@ -50,7 +50,7 @@
   ],
   "packetVersion": "1.0.0-alpha.1",
   "policy": {
-    "currentStatus": "draft",
+    "currentStatus": "approved",
     "policyId": "policy:quest-growth-route-r6",
     "policyVersion": "1.0.0-alpha.1",
     "semanticDigest": "sha256:b711ffdb93a0fdb4dd7b0556f4851e8d0c7a75a9c915b1f7b443bee129b2b20a"
@@ -58,37 +58,37 @@
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
   "routeUnits": [
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeUnitId": "growth-route:system-fleet-unlock:baseline",
       "semanticDigest": "sha256:15600d2f62b1bfee7dcbb04eb2f7bbeebf78f57ea17cb9b5d9ba04094f3bf3ce"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeUnitId": "growth-route:experience-remodel-modernization:baseline",
       "semanticDigest": "sha256:c80efc511d8483a8c595b17e9a8ff350a042d076ded6333a20ddcfe517bc1451"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeUnitId": "growth-route:expedition-resource-periodic-loop:baseline",
       "semanticDigest": "sha256:89fb168f03870eb705274b523d0f82d6466b908438e1cd798f6b7ef6cc0d21da"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeUnitId": "growth-route:anti-submarine-foundation:baseline",
       "semanticDigest": "sha256:7daa5b339ceafdf26d77f19c908719ed653cad4f1e7e72ab4727d275ee4f019b"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeUnitId": "growth-route:surface-air-los-foundation:baseline",
       "semanticDigest": "sha256:009ef084565157f7514d513d5a75a27b9ea6ea784f7ea619f5d3cfa78a171489"
     },
     {
-      "currentStatus": "draft",
+      "currentStatus": "reviewed",
       "revision": 1,
       "routeUnitId": "growth-route:normal-map-eo-blueprint-loop:baseline",
       "semanticDigest": "sha256:a607c234cab5afd5c27105f77cef2dcd819e43e5285a7f6da38a81f26a35be81"
@@ -96,5 +96,5 @@
   ],
   "schemaVersion": 1,
   "scope": "R6_AUTHORING_REVIEW_ONLY",
-  "status": "AWAITING_PROJECT_OWNER_REVIEW"
+  "status": "R6_AUTHORING_APPROVED"
 }

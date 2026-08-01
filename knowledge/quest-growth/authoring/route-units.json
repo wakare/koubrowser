@@ -10,7 +10,7 @@
       "routeUnitId": "growth-route:system-fleet-unlock:baseline",
       "lineageRef": { "id": "growth-lineage:system-fleet-unlock", "revision": 1 },
       "revision": 1,
-      "status": "draft",
+      "status": "reviewed",
       "objective": {
         "kind": "system-unlock",
         "summary": "确认舰队与远征解锁信息是否足以继续判断。"
@@ -54,9 +54,9 @@
       },
       "review": {
         "author": "codex-r6-route-author",
-        "approver": null,
-        "reviewedAt": null,
-        "approvalDigest": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T17:06:53.674Z",
+        "approvalDigest": "sha256:15600d2f62b1bfee7dcbb04eb2f7bbeebf78f57ea17cb9b5d9ba04094f3bf3ce"
       },
       "eligibilityPolicyRef": "policy:quest-growth-route-r6",
       "questStrategyRefs": [],
@@ -66,7 +66,7 @@
       "routeUnitId": "growth-route:experience-remodel-modernization:baseline",
       "lineageRef": { "id": "growth-lineage:experience-remodel-modernization", "revision": 1 },
       "revision": 1,
-      "status": "draft",
+      "status": "reviewed",
       "objective": {
         "kind": "experience-remodel-modernization",
         "summary": "确认练度、改造与通常近代化循环的当前事实。"
@@ -135,9 +135,9 @@
       },
       "review": {
         "author": "codex-r6-route-author",
-        "approver": null,
-        "reviewedAt": null,
-        "approvalDigest": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T17:06:53.674Z",
+        "approvalDigest": "sha256:c80efc511d8483a8c595b17e9a8ff350a042d076ded6333a20ddcfe517bc1451"
       },
       "eligibilityPolicyRef": "policy:quest-growth-route-r6",
       "questStrategyRefs": [],
@@ -147,7 +147,7 @@
       "routeUnitId": "growth-route:expedition-resource-periodic-loop:baseline",
       "lineageRef": { "id": "growth-lineage:expedition-resource-periodic-loop", "revision": 1 },
       "revision": 1,
-      "status": "draft",
+      "status": "reviewed",
       "objective": {
         "kind": "resource-loop",
         "summary": "确认远征、资源与周期任务循环的当前事实。"
@@ -205,9 +205,9 @@
       },
       "review": {
         "author": "codex-r6-route-author",
-        "approver": null,
-        "reviewedAt": null,
-        "approvalDigest": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T17:06:53.674Z",
+        "approvalDigest": "sha256:89fb168f03870eb705274b523d0f82d6466b908438e1cd798f6b7ef6cc0d21da"
       },
       "eligibilityPolicyRef": "policy:quest-growth-route-r6",
       "questStrategyRefs": [],
@@ -217,7 +217,7 @@
       "routeUnitId": "growth-route:anti-submarine-foundation:baseline",
       "lineageRef": { "id": "growth-lineage:anti-submarine-foundation", "revision": 1 },
       "revision": 1,
-      "status": "draft",
+      "status": "reviewed",
       "objective": {
         "kind": "anti-submarine-foundation",
         "summary": "确认对潜相关舰队与装备事实是否足以继续审查。"
@@ -276,9 +276,9 @@
       },
       "review": {
         "author": "codex-r6-route-author",
-        "approver": null,
-        "reviewedAt": null,
-        "approvalDigest": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T17:06:53.674Z",
+        "approvalDigest": "sha256:7daa5b339ceafdf26d77f19c908719ed653cad4f1e7e72ab4727d275ee4f019b"
       },
       "eligibilityPolicyRef": "policy:quest-growth-route-r6",
       "questStrategyRefs": [],
@@ -288,7 +288,7 @@
       "routeUnitId": "growth-route:surface-air-los-foundation:baseline",
       "lineageRef": { "id": "growth-lineage:surface-air-los-foundation", "revision": 1 },
       "revision": 1,
-      "status": "draft",
+      "status": "reviewed",
       "objective": {
         "kind": "surface-air-los-foundation",
         "summary": "确认水面、航空与索敌能力宽度的匿名事实。"
@@ -354,9 +354,9 @@
       },
       "review": {
         "author": "codex-r6-route-author",
-        "approver": null,
-        "reviewedAt": null,
-        "approvalDigest": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T17:06:53.674Z",
+        "approvalDigest": "sha256:009ef084565157f7514d513d5a75a27b9ea6ea784f7ea619f5d3cfa78a171489"
       },
       "eligibilityPolicyRef": "policy:quest-growth-route-r6",
       "questStrategyRefs": [],
@@ -366,7 +366,7 @@
       "routeUnitId": "growth-route:normal-map-eo-blueprint-loop:baseline",
       "lineageRef": { "id": "growth-lineage:normal-map-eo-blueprint-loop", "revision": 1 },
       "revision": 1,
-      "status": "draft",
+      "status": "reviewed",
       "objective": {
         "kind": "normal-map-eo-blueprint-loop",
         "summary": "确认 EO、勋章、设计图与改造需求事实。"
@@ -431,9 +431,9 @@
       },
       "review": {
         "author": "codex-r6-route-author",
-        "approver": null,
-        "reviewedAt": null,
-        "approvalDigest": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-01T17:06:53.674Z",
+        "approvalDigest": "sha256:a607c234cab5afd5c27105f77cef2dcd819e43e5285a7f6da38a81f26a35be81"
       },
       "eligibilityPolicyRef": "policy:quest-growth-route-r6",
       "questStrategyRefs": [],

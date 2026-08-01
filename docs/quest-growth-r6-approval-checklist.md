@@ -4,7 +4,9 @@
 
 Task ID: `QGROWTH-R6-1_INDEPENDENT_APPROVAL_PACKET`
 
-Status: `OWNER_DECISION_PENDING`
+Status: `APPROVED_R6_AUTHORING_ONLY`
+
+Project owner approval recorded at: `2026-08-01T17:06:53.674Z`
 
 ## 承認対象
 
@@ -55,6 +57,9 @@ risk、stop condition、非空 fallback だけを持つ。具体的攻略 route 
 - 新しい通信観測、runtime scraping、保存、外送
 
 ## Project owner の判断形式
+
+project owner は current semantic digest に固定された13項目を承認した。承認範囲は R6
+authoring review のみで、R7、runtime publication、real-account acceptance は含まない。
 
 承認する場合は、次の範囲を明記する。
 

@@ -208,8 +208,8 @@ UI のいずれからも具体的 route を出力してはならない。
    匿名のローカル事実要約を実装済み。「艦隊能力の幅」は5項目の実測要約を表示する。
 3. `R6 Reviewed Route Lineage`: authoring schema、claim 単位の独立 group、6 route family、6つの
    非実行 route unit、eligibility evaluator、8件の validation case を実装済み。policy / lineage /
-   unit は draft のため全6件が `MANUAL_CHECK_ONLY`、runtime eligible は0件。semantic digest に固定した
-   13項目の approval packet を生成済みで、project owner の独立判断待ち。
+   unit の13項目は semantic digest に固定して project owner が R6 authoring review として承認済み。
+   R7 authorization は未承認であり、runtime eligible は0件に固定する。
 4. `R7 Reviewed Concrete Route UI`: lineage と適用条件を満たす route だけを具体的な海域、編成、
    装備、分岐条件として表示する。未審査・失効・条件不明は引き続き fail closed とする。
 

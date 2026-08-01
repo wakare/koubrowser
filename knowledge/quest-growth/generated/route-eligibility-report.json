@@ -2,11 +2,10 @@
   "compilerVersion": "quest-growth-route-lineage-compiler/2",
   "evaluationAsOf": "2026-08-01T08:22:58.133Z",
   "globalStops": [
-    "POLICY_OWNER_APPROVAL_MISSING",
     "R7_AUTHORIZATION_MISSING"
   ],
   "policyId": "policy:quest-growth-route-r6",
-  "policyStatus": "draft",
+  "policyStatus": "approved",
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
   "routeUnitAudits": [
     {
@@ -21,8 +20,8 @@
           "supportCount": 2
         }
       ],
-      "contentDecision": "MANUAL_CHECK_ONLY",
-      "effectiveState": "BLOCKED",
+      "contentDecision": "R7_CANDIDATE",
+      "effectiveState": "BLOCKED_R7_NOT_AUTHORIZED",
       "fallback": "打开任务与远征画面确认当前可见关系；信息不足时停止，不生成任务顺序。",
       "observableAudits": [
         {
@@ -42,9 +41,6 @@
         }
       ],
       "reasonCodes": [
-        "POLICY_OWNER_APPROVAL_MISSING",
-        "ROUTE_NOT_REVIEWED",
-        "APPROVER_MISSING",
         "R7_AUTHORIZATION_MISSING"
       ],
       "routeFamily": "system-fleet-unlock",
@@ -103,9 +99,6 @@
         }
       ],
       "reasonCodes": [
-        "POLICY_OWNER_APPROVAL_MISSING",
-        "ROUTE_NOT_REVIEWED",
-        "APPROVER_MISSING",
         "OBSERVABLE_UNAVAILABLE",
         "R7_AUTHORIZATION_MISSING"
       ],
@@ -134,8 +127,8 @@
           "supportCount": 2
         }
       ],
-      "contentDecision": "MANUAL_CHECK_ONLY",
-      "effectiveState": "BLOCKED",
+      "contentDecision": "R7_CANDIDATE",
+      "effectiveState": "BLOCKED_R7_NOT_AUTHORIZED",
       "fallback": "确认当前远征条件和资源方针；不得由历史成功推断当前成功，也不选择最佳远征。",
       "observableAudits": [
         {
@@ -160,9 +153,6 @@
         }
       ],
       "reasonCodes": [
-        "POLICY_OWNER_APPROVAL_MISSING",
-        "ROUTE_NOT_REVIEWED",
-        "APPROVER_MISSING",
         "R7_AUTHORIZATION_MISSING"
       ],
       "routeFamily": "expedition-resource-periodic-loop",
@@ -181,8 +171,8 @@
           "supportCount": 2
         }
       ],
-      "contentDecision": "MANUAL_CHECK_ONLY",
-      "effectiveState": "BLOCKED",
+      "contentDecision": "R7_CANDIDATE",
+      "effectiveState": "BLOCKED_R7_NOT_AUTHORIZED",
       "fallback": "选择一个目标上下文并确认对潜类别事实；缺少审查规则时不判断达标，不给出舰娘或装备组合。",
       "observableAudits": [
         {
@@ -207,9 +197,6 @@
         }
       ],
       "reasonCodes": [
-        "POLICY_OWNER_APPROVAL_MISSING",
-        "ROUTE_NOT_REVIEWED",
-        "APPROVER_MISSING",
         "R7_AUTHORIZATION_MISSING"
       ],
       "routeFamily": "anti-submarine-foundation",
@@ -237,8 +224,8 @@
           "supportCount": 2
         }
       ],
-      "contentDecision": "MANUAL_CHECK_ONLY",
-      "effectiveState": "BLOCKED",
+      "contentDecision": "R7_CANDIDATE",
+      "effectiveState": "BLOCKED_R7_NOT_AUTHORIZED",
       "fallback": "确认目标上下文和现有类别事实；公式或适用条件未审查时不判断制空或索敌达标。",
       "observableAudits": [
         {
@@ -268,9 +255,6 @@
         }
       ],
       "reasonCodes": [
-        "POLICY_OWNER_APPROVAL_MISSING",
-        "ROUTE_NOT_REVIEWED",
-        "APPROVER_MISSING",
         "R7_AUTHORIZATION_MISSING"
       ],
       "routeFamily": "surface-air-los-foundation",
@@ -298,8 +282,8 @@
           "supportCount": 2
         }
       ],
-      "contentDecision": "MANUAL_CHECK_ONLY",
-      "effectiveState": "BLOCKED",
+      "contentDecision": "R7_CANDIDATE",
+      "effectiveState": "BLOCKED_R7_NOT_AUTHORIZED",
       "fallback": "确认已解锁 EO、资源、时间与安全条件；缺少审查路线时不推荐具体 EO，也不给设计图绝对优先级。",
       "observableAudits": [
         {
@@ -329,9 +313,6 @@
         }
       ],
       "reasonCodes": [
-        "POLICY_OWNER_APPROVAL_MISSING",
-        "ROUTE_NOT_REVIEWED",
-        "APPROVER_MISSING",
         "R7_AUTHORIZATION_MISSING"
       ],
       "routeFamily": "normal-map-eo-blueprint-loop",
