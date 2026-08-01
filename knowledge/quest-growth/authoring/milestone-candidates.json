@@ -1,0 +1,529 @@
+{
+  "authoringSchema": "QuestGrowthMilestones/1alpha",
+  "catalogVersion": "2026-08-01.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "33abf8ff2534deaa7ce12007c001e1e1ea18837f",
+    "checkedAt": "2026-08-01T00:00:00.000Z"
+  },
+  "milestones": [
+    {
+      "id": "growth:safety-executable",
+      "revision": 1,
+      "status": "draft",
+      "phase": "safety",
+      "goal": "安全に実行できる状態を先に作る",
+      "rationale": "補給不足、損傷、入渠、素材誤使用を無視した推薦は、成長より先に損失を増やす。",
+      "decisionKind": "mixed",
+      "requiredObservables": [
+        "fleet.damage-summary",
+        "fleet.supply-summary",
+        "dock.repair-summary",
+        "modernization.material-summary"
+      ],
+      "prerequisites": [],
+      "triggers": [
+        {
+          "observable": "fleet.safety-state",
+          "condition": "状態が不明、または既存の警告がある",
+          "unknownPolicy": "fallback"
+        }
+      ],
+      "guidance": {
+        "now": "既存の補給・損傷・入渠警告を確認し、重要艦や重要装備を素材にしない。",
+        "next": "安全状態が確認できたら、経験または資源ループへ進む。",
+        "longTerm": "どの成長推薦でも出撃前の安全条件を共通 gate として再利用する。",
+        "fallback": "状態を確認できないため具体的な出撃先は示さず、補給、損傷、入渠、素材艦を手動確認する。"
+      },
+      "expectedBenefits": [
+        "無意味な出撃失敗と修理負担を避ける。",
+        "不完全な観測から安全を断定しない。"
+      ],
+      "costs": ["状態確認が終わるまで出撃推薦を保留する。"],
+      "risks": ["現在のアプリが必要な安全状態をすべて観測できるとは未確認である。"],
+      "stopConditions": [
+        "STATE_UNKNOWN",
+        "DAMAGE_WARNING",
+        "SUPPLY_WARNING",
+        "MATERIAL_SAFETY_UNKNOWN"
+      ],
+      "questLinks": [],
+      "claimRefs": ["claim:modernization-before-after-remodel"],
+      "confidence": "conditional",
+      "currentness": {
+        "checkedAt": "2026-08-01T00:00:00.000Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-08-01T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-with-web-pro-advisory",
+        "approver": null,
+        "reviewedAt": null
+      }
+    },
+    {
+      "id": "growth:system-fleet-unlock",
+      "revision": 1,
+      "status": "draft",
+      "phase": "system-unlock",
+      "goal": "艦隊枠と遠征の選択肢を増やす",
+      "rationale": "追加艦隊と遠征の開放は、自然回復だけに依存しない資源循環の前提になる。",
+      "decisionKind": "mixed",
+      "requiredObservables": [
+        "fleet.unlocked-count",
+        "quest.visible-chain",
+        "expedition.unlocked-ids"
+      ],
+      "prerequisites": [
+        {
+          "observable": "quest.visible-chain",
+          "condition": "現在表示できる解放系任務がある",
+          "unknownPolicy": "manual-check"
+        }
+      ],
+      "triggers": [
+        {
+          "observable": "fleet.unlocked-count",
+          "condition": "追加艦隊または遠征用艦隊が不足している",
+          "unknownPolicy": "fallback"
+        }
+      ],
+      "guidance": {
+        "now": "ローカルに見えている艦隊拡張・遠征解放の任務だけを確認する。",
+        "next": "解放済み遠征の成功条件を満たす艦隊を一つ作る。",
+        "longTerm": "複数艦隊で資源不足に応じた遠征を並行できる状態を目指す。",
+        "fallback": "完全な任務前提チェーンを確認できない場合は quest ID を断定せず、演習と既に開放済みの遠征を続ける。"
+      },
+      "expectedBenefits": ["遠征の並行数と資源獲得機会を増やす。"],
+      "costs": ["解放任務に特定艦や前提任務が必要になる場合がある。"],
+      "risks": ["完全な解放任務チェーンは本 Wave で canonical fact 化していない。"],
+      "stopConditions": [
+        "QUEST_CHAIN_UNKNOWN",
+        "REQUIRED_SHIP_UNAVAILABLE",
+        "EXPEDITION_CONDITION_UNKNOWN"
+      ],
+      "questLinks": [],
+      "claimRefs": ["claim:expedition-resource-loop"],
+      "confidence": "conditional",
+      "currentness": {
+        "checkedAt": "2026-08-01T00:00:00.000Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-08-01T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-with-web-pro-advisory",
+        "approver": null,
+        "reviewedAt": null
+      }
+    },
+    {
+      "id": "growth:experience-modernization-loop",
+      "revision": 1,
+      "status": "draft",
+      "phase": "experience-loop",
+      "goal": "低修理負担の経験・改造・近代化ループを作る",
+      "rationale": "演習で複数艦種を育て、改造時期と近代化素材の投入を合わせると、初期の攻略負担を抑えやすい。",
+      "decisionKind": "mixed",
+      "requiredObservables": [
+        "practice.available-count",
+        "ships.level-bands",
+        "ships.remodel-ready",
+        "modernization.gaps"
+      ],
+      "prerequisites": [],
+      "triggers": [
+        {
+          "observable": "practice.available-count",
+          "condition": "演習機会が残っている",
+          "unknownPolicy": "fallback"
+        },
+        {
+          "observable": "ships.remodel-ready",
+          "condition": "改造が近い艦または基礎能力不足の艦がある",
+          "unknownPolicy": "manual-check"
+        }
+      ],
+      "guidance": {
+        "now": "演習機会があれば、海域で育てにくい艦種と改造が近い艦を優先候補にする。",
+        "next": "改造が近い艦は通常近代化素材の大量投入を待ち、改造後の不足能力を補う。",
+        "longTerm": "一部の主力だけでなく複数艦種に改造済み・基礎近代化済みの層を作る。",
+        "fallback": "相手編成や改造状態が分からない場合は、勝利や最適編成を断定せず演習参加と素材保留だけを案内する。"
+      },
+      "expectedBenefits": [
+        "修理負担を抑えながら複数艦種の経験を得る。",
+        "改造で失われる通常近代化素材の浪費を減らす。"
+      ],
+      "costs": [
+        "演習でも燃料と弾薬を消費する。",
+        "強化を待つ間に現在の海域攻略が遅れる場合がある。"
+      ],
+      "risks": [
+        "対戦相手の構成によって勝利と経験効率は変わる。",
+        "運、対潜、耐久の継承例外を通常能力と混同してはならない。"
+      ],
+      "stopConditions": ["PRACTICE_STATE_UNKNOWN", "REMODEL_STATE_UNKNOWN", "RARE_MATERIAL_RISK"],
+      "questLinks": [],
+      "claimRefs": [
+        "claim:exercise-low-repair-training",
+        "claim:modernization-before-after-remodel"
+      ],
+      "confidence": "high",
+      "currentness": {
+        "checkedAt": "2026-08-01T00:00:00.000Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-08-01T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-with-web-pro-advisory",
+        "approver": null,
+        "reviewedAt": null
+      }
+    },
+    {
+      "id": "growth:resource-periodic-loop",
+      "revision": 1,
+      "status": "draft",
+      "phase": "resource-loop",
+      "goal": "成長行動が資源を一方的に減らさない循環を作る",
+      "rationale": "遠征と有益な周期任務を現在の不足資源に合わせ、任務欄を埋めること自体を目的にしない。",
+      "decisionKind": "mixed",
+      "requiredObservables": [
+        "expedition.unlocked-ids",
+        "expedition.known-success",
+        "resources.bands",
+        "quest.active-ids"
+      ],
+      "prerequisites": [
+        {
+          "observable": "expedition.unlocked-ids",
+          "condition": "一つ以上の遠征が開放済みである",
+          "unknownPolicy": "fallback"
+        }
+      ],
+      "triggers": [
+        {
+          "observable": "resources.bands",
+          "condition": "燃料、弾薬、鋼材、ボーキサイト、修復材のいずれかが不足帯にある",
+          "unknownPolicy": "manual-check"
+        }
+      ],
+      "guidance": {
+        "now": "成功条件をローカルに確認でき、不足資源を補う開放済み遠征を選ぶ。",
+        "next": "現在の出撃または育成計画と同時に進む周期任務だけを候補にする。",
+        "longTerm": "資源帯に応じて遠征を切り替え、活動や EO に備えられる余力を作る。",
+        "fallback": "条件が不明な遠征を推測せず、過去に成功確認済みの遠征と演習を案内する。"
+      },
+      "expectedBenefits": [
+        "不足資源への継続的な補給を作る。",
+        "低利益な任務消化のための余計な出撃を減らす。"
+      ],
+      "costs": ["遠征中の艦隊は他用途に使えない。", "補給とキラ付けの負担が発生する場合がある。"],
+      "risks": [
+        "成功条件を満たさない遠征は時間と資源を失う。",
+        "NGA の具体的定期任務組合せはまだ runtime evidence ではない。"
+      ],
+      "stopConditions": [
+        "EXPEDITION_CONDITION_UNKNOWN",
+        "RESOURCE_STATE_UNKNOWN",
+        "QUEST_EVIDENCE_CONFLICT"
+      ],
+      "questLinks": [],
+      "claimRefs": ["claim:expedition-resource-loop", "claim:adaptive-growth-priorities"],
+      "confidence": "medium",
+      "currentness": {
+        "checkedAt": "2026-08-01T00:00:00.000Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-08-01T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-with-web-pro-advisory",
+        "approver": null,
+        "reviewedAt": null
+      }
+    },
+    {
+      "id": "growth:anti-submarine-foundation",
+      "revision": 1,
+      "status": "draft",
+      "phase": "capability",
+      "goal": "最初の専門能力として基礎対潜を作る",
+      "rationale": "軽巡・駆逐・海防と対潜装備の層は、1-5、周期任務、後続海域や活動の潜水艦対策につながる。",
+      "decisionKind": "mixed",
+      "requiredObservables": [
+        "maps.unlocked",
+        "ships.asw-capable-summary",
+        "equipment.asw-category-counts",
+        "quest.active-ids"
+      ],
+      "prerequisites": [
+        {
+          "observable": "maps.unlocked",
+          "condition": "1-5 が開放済みである",
+          "unknownPolicy": "fallback"
+        }
+      ],
+      "triggers": [
+        {
+          "observable": "equipment.asw-category-counts",
+          "condition": "対潜装備カテゴリまたは対潜可能艦の不足がある",
+          "unknownPolicy": "manual-check"
+        }
+      ],
+      "guidance": {
+        "now": "条件が揃う場合だけ 1-5 を低消費の育成・任務候補として提示する。",
+        "next": "軽巡・駆逐・海防と水中聴音機・爆雷系カテゴリの不足を一つずつ補う。",
+        "longTerm": "潜水艦を含む海域や活動ノードに対応できる複数艦の対潜層を作る。",
+        "fallback": "1-5、司令部条件、艦種、装備のいずれかが不明なら、演習育成と対潜カテゴリ不足の確認だけを案内する。"
+      },
+      "expectedBenefits": [
+        "1-5 と一部周期任務を低消費で進める選択肢を得る。",
+        "後続の潜水艦対策へつながる。"
+      ],
+      "costs": ["対潜装備と対応艦の育成が必要になる。"],
+      "risks": [
+        "司令部レベル、装備、編成で 1-5 の難度と効率が変わる。",
+        "1-5 を全新人の最適練度上げと表現してはならない。"
+      ],
+      "stopConditions": [
+        "MAP_LOCKED",
+        "ASW_EQUIPMENT_MISSING",
+        "HEADQUARTERS_CONDITION_UNKNOWN",
+        "ROUTE_EVIDENCE_EXPIRED"
+      ],
+      "questLinks": [
+        {
+          "questId": 261,
+          "stageIndex": 0,
+          "routeId": "normal-1-5-periodic-asw",
+          "eligibility": "route-ready-only"
+        },
+        {
+          "questId": 265,
+          "stageIndex": 0,
+          "routeId": "normal-1-5-periodic-asw",
+          "eligibility": "route-ready-only"
+        },
+        {
+          "questId": 893,
+          "stageIndex": 0,
+          "routeId": "normal-1-5-periodic-asw",
+          "eligibility": "manual-partial"
+        }
+      ],
+      "claimRefs": ["claim:conditional-leveling-maps"],
+      "confidence": "medium",
+      "currentness": {
+        "checkedAt": "2026-08-01T00:00:00.000Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-08-01T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-with-web-pro-advisory",
+        "approver": null,
+        "reviewedAt": null
+      }
+    },
+    {
+      "id": "growth:surface-air-los-foundation",
+      "revision": 1,
+      "status": "draft",
+      "phase": "capability",
+      "goal": "水上戦、制空、索敵と艦種の基礎幅を作る",
+      "rationale": "少数の高練度艦だけでなく、空母、軽巡、駆逐、偵察機、電探などの能力カテゴリが通常海域と活動の選択肢を広げる。",
+      "decisionKind": "editorial-community",
+      "requiredObservables": [
+        "maps.unlocked",
+        "ships.type-level-bands",
+        "equipment.air-category-counts",
+        "equipment.los-category-counts"
+      ],
+      "prerequisites": [],
+      "triggers": [
+        {
+          "observable": "capability.surface-air-los-gaps",
+          "condition": "艦種、制空、索敵のいずれかに明確な不足カテゴリがある",
+          "unknownPolicy": "fallback"
+        }
+      ],
+      "guidance": {
+        "now": "固定個数ではなく、現在欠けている艦種または装備カテゴリを一つ選ぶ。",
+        "next": "海域開放と能力不足に合う育成候補を選び、具体的編成は審査済み route unit がある場合だけ参照する。",
+        "longTerm": "通常海域と活動に必要な水上、航空、索敵、輸送の能力面を複数艦で支えられる状態を作る。",
+        "fallback": "カテゴリ数を安全に集計できない場合は固定装備数を示さず、既存艦の演習育成と海域進行を案内する。"
+      },
+      "expectedBenefits": [
+        "通常海域の編成選択肢を増やす。",
+        "活動準備を少数主力への過集中から能力面の不足補完へ変える。"
+      ],
+      "costs": ["開発、改修、育成には資源と時間が必要になる。"],
+      "risks": [
+        "固定装備数や固定艦娘優先順位はアカウント条件を無視する。",
+        "装備カテゴリのローカル観測可否は未監査である。"
+      ],
+      "stopConditions": [
+        "CAPABILITY_STATE_UNKNOWN",
+        "RESOURCE_LOW",
+        "ROUTE_NOT_REVIEWED",
+        "EVIDENCE_EXPIRED"
+      ],
+      "questLinks": [
+        {
+          "questId": 229,
+          "stageIndex": 0,
+          "routeId": "normal-4-2-western-periodic",
+          "eligibility": "route-ready-only"
+        },
+        {
+          "questId": 264,
+          "stageIndex": 0,
+          "routeId": "normal-4-2-western-periodic",
+          "eligibility": "route-ready-only"
+        },
+        {
+          "questId": 845,
+          "stageIndex": 1,
+          "routeId": "normal-4-2-western-periodic",
+          "eligibility": "manual-partial"
+        }
+      ],
+      "claimRefs": ["claim:adaptive-growth-priorities", "claim:event-readiness-breadth"],
+      "confidence": "medium",
+      "currentness": {
+        "checkedAt": "2026-08-01T00:00:00.000Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-08-01T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-with-web-pro-advisory",
+        "approver": null,
+        "reviewedAt": null
+      }
+    },
+    {
+      "id": "growth:normal-map-eo-blueprint-loop",
+      "revision": 1,
+      "status": "draft",
+      "phase": "normal-map-and-eo",
+      "goal": "通常海域進行を勲章と改装設計図の循環へつなげる",
+      "rationale": "攻略可能な EO を段階的に増やすと、勲章と設計図を継続取得できるが、全 EO 強制は資源負担を無視する。",
+      "decisionKind": "mixed",
+      "requiredObservables": [
+        "maps.unlocked-eo",
+        "maps.eo-affordability",
+        "inventory.medal-count",
+        "inventory.blueprint-count",
+        "ships.blueprint-demand"
+      ],
+      "prerequisites": [
+        {
+          "observable": "maps.unlocked-eo",
+          "condition": "一つ以上の EO が開放済みである",
+          "unknownPolicy": "fallback"
+        }
+      ],
+      "triggers": [
+        {
+          "observable": "maps.eo-affordability",
+          "condition": "現在の艦隊と資源で攻略可能と確認できる EO がある",
+          "unknownPolicy": "manual-check"
+        }
+      ],
+      "guidance": {
+        "now": "現在の艦隊と資源で負担を説明できる EO だけを候補にする。",
+        "next": "勲章4個と設計図1枚の交換を記録し、設計図が補う能力不足を比較する。",
+        "longTerm": "毎月無理なく継続できる EO と設計図取得の循環を作る。",
+        "fallback": "EO の負担を判断できない場合は攻略を強制せず、通常海域進行、演習、遠征を続ける。"
+      },
+      "expectedBenefits": [
+        "勲章と改装設計図の継続取得手段を得る。",
+        "改二改装による能力拡張につなげる。"
+      ],
+      "costs": ["EO 攻略には資源、修復材、装備と時間が必要になる。"],
+      "risks": [
+        "高難度 EO の強制は新人資源を過度に消耗させる。",
+        "設計図の絶対優先リストは持有艦と活動目標を無視する。"
+      ],
+      "stopConditions": [
+        "EO_LOCKED",
+        "EO_AFFORDABILITY_UNKNOWN",
+        "RESOURCE_LOW",
+        "BLUEPRINT_PRIORITY_UNREVIEWED"
+      ],
+      "questLinks": [],
+      "claimRefs": ["claim:eo-medal-blueprint-loop", "claim:adaptive-growth-priorities"],
+      "confidence": "high",
+      "currentness": {
+        "checkedAt": "2026-08-01T00:00:00.000Z",
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-08-01T00:00:00.000Z"
+      },
+      "review": {
+        "author": "codex-with-web-pro-advisory",
+        "approver": null,
+        "reviewedAt": null
+      }
+    },
+    {
+      "id": "growth:event-readiness-overlay",
+      "revision": 1,
+      "status": "draft",
+      "phase": "event-readiness",
+      "goal": "活動期だけ成長優先度を短期的に組み替える",
+      "rationale": "活動参加は艦種、装備、資源の幅を要求するが、個別海域の札、特効、難易度は短命な情報であり恒久ルートへ混ぜられない。",
+      "decisionKind": "editorial-community",
+      "requiredObservables": [
+        "event.overlay-status",
+        "capability.breadth-summary",
+        "resources.bands"
+      ],
+      "prerequisites": [
+        {
+          "observable": "event.overlay-status",
+          "condition": "審査済みの活動 overlay が有効期限内である",
+          "unknownPolicy": "block"
+        }
+      ],
+      "triggers": [
+        {
+          "observable": "event.overlay-status",
+          "condition": "活動が開催中で、利用者が活動参加を目標に選んでいる",
+          "unknownPolicy": "fallback"
+        }
+      ],
+      "guidance": {
+        "now": "短期 overlay が有効な場合だけ、最も不足する艦種・装備・資源カテゴリを一つ示す。",
+        "next": "現在の能力で完遂可能な目標と撤退条件を決め、最高難度を自動目標にしない。",
+        "longTerm": "活動終了後は通常海域、演習、遠征、EO の恒久成長ループへ戻す。",
+        "fallback": "活動情報がない、失効した、または能力判定できない場合は活動ルートを示さず、通常の経験・資源・能力不足補完へ戻る。"
+      },
+      "expectedBenefits": [
+        "活動中に不足能力へ集中しやすくする。",
+        "活動終了後に古い特効・札情報を残さない。"
+      ],
+      "costs": ["通常海域や長期改修の優先度を一時的に下げる。"],
+      "risks": [
+        "活動情報は更新が速く、終了日や後段情報が不確定な場合がある。",
+        "過期情報は誤編成と資源浪費につながる。"
+      ],
+      "stopConditions": [
+        "EVENT_OVERLAY_MISSING",
+        "EVENT_OVERLAY_EXPIRED",
+        "EVENT_GOAL_UNSET",
+        "CAPABILITY_STATE_UNKNOWN"
+      ],
+      "questLinks": [],
+      "claimRefs": ["claim:event-readiness-breadth", "claim:adaptive-growth-priorities"],
+      "confidence": "conditional",
+      "currentness": {
+        "checkedAt": "2026-08-01T00:00:00.000Z",
+        "reviewBy": "2026-08-08T00:00:00.000Z",
+        "validUntil": "2026-08-31T00:00:00.000Z",
+        "expireOnEventEnd": true
+      },
+      "review": {
+        "author": "codex-with-web-pro-advisory",
+        "approver": null,
+        "reviewedAt": null
+      }
+    }
+  ]
+}

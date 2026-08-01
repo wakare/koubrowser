@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "growth-fixture:event-active-not-ready",
+  "observables": {
+    "event.overlay-status": "active",
+    "capability.breadth-summary": "insufficient",
+    "resources.bands": "low",
+    "event.goal": "participate-without-overextension"
+  },
+  "privacy": {
+    "containsAccountIdentifier": false,
+    "containsRawPayload": false
+  },
+  "expectations": {
+    "nonEmptyFallbackRequired": true
+  }
+}

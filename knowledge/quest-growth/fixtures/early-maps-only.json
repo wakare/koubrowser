@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "growth-fixture:early-maps-only",
+  "observables": {
+    "maps.unlocked": ["1-1", "1-2", "1-3", "1-4"],
+    "fleet.unlocked-count": 2,
+    "practice.available-count": 5,
+    "expedition.unlocked-ids": [1, 2, 3]
+  },
+  "privacy": {
+    "containsAccountIdentifier": false,
+    "containsRawPayload": false
+  },
+  "expectations": {
+    "nonEmptyFallbackRequired": true
+  }
+}

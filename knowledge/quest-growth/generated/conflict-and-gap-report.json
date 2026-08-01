@@ -1,0 +1,147 @@
+{
+  "claimAudits": [
+    {
+      "blockers": [],
+      "claimId": "claim:exercise-low-repair-training",
+      "readableIndependentSourceIds": [
+        "source:kcwiki-leveling",
+        "source:wikiwiki-newcomer"
+      ]
+    },
+    {
+      "blockers": [],
+      "claimId": "claim:expedition-resource-loop",
+      "readableIndependentSourceIds": [
+        "source:kcwiki-expedition",
+        "source:wikiwiki-expedition",
+        "source:wikiwiki-newcomer"
+      ]
+    },
+    {
+      "blockers": [],
+      "claimId": "claim:modernization-before-after-remodel",
+      "readableIndependentSourceIds": [
+        "source:kcwiki-modernization",
+        "source:wikiwiki-newcomer"
+      ]
+    },
+    {
+      "blockers": [],
+      "claimId": "claim:conditional-leveling-maps",
+      "readableIndependentSourceIds": [
+        "source:kcwiki-leveling",
+        "source:zekamashi-leveling"
+      ]
+    },
+    {
+      "blockers": [],
+      "claimId": "claim:eo-medal-blueprint-loop",
+      "readableIndependentSourceIds": [
+        "source:kcwiki-blueprint",
+        "source:wikiwiki-blueprint"
+      ]
+    },
+    {
+      "blockers": [],
+      "claimId": "claim:adaptive-growth-priorities",
+      "readableIndependentSourceIds": [
+        "source:kcwiki-leveling",
+        "source:yongou-light-guidance"
+      ]
+    },
+    {
+      "blockers": [],
+      "claimId": "claim:event-readiness-breadth",
+      "readableIndependentSourceIds": [
+        "source:wikiwiki-event-faq",
+        "source:yongou-light-guidance"
+      ]
+    },
+    {
+      "blockers": [
+        "CLAIM_NOT_PROMOTION_CANDIDATE",
+        "CLAIM_LACKS_TWO_INDEPENDENT_READABLE_SOURCES",
+        "CLAIM_HAS_UNRESOLVED_CONDITIONS_OR_CONTRADICTIONS"
+      ],
+      "claimId": "claim:nga-current-guide-structure",
+      "readableIndependentSourceIds": []
+    },
+    {
+      "blockers": [
+        "CLAIM_NOT_PROMOTION_CANDIDATE",
+        "CLAIM_CONFIDENCE_INSUFFICIENT",
+        "CLAIM_LACKS_TWO_INDEPENDENT_READABLE_SOURCES",
+        "CLAIM_HAS_UNRESOLVED_CONDITIONS_OR_CONTRADICTIONS"
+      ],
+      "claimId": "claim:nga-periodic-map-combinations",
+      "readableIndependentSourceIds": []
+    }
+  ],
+  "compilerVersion": "quest-growth-authoring-compiler/1",
+  "globalStops": [
+    "NO_RUNTIME_BUNDLE_IN_WAVE_1",
+    "INDEPENDENT_APPROVER_REQUIRED",
+    "LOCAL_OBSERVABILITY_AUDIT_REQUIRED",
+    "QUEST_STRATEGY_LINEAGE_GATE_UNRESOLVED"
+  ],
+  "milestoneGaps": [
+    {
+      "milestoneId": "growth:safety-executable",
+      "reasonCodes": [
+        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
+        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+      ]
+    },
+    {
+      "milestoneId": "growth:system-fleet-unlock",
+      "reasonCodes": [
+        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
+        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+      ]
+    },
+    {
+      "milestoneId": "growth:experience-modernization-loop",
+      "reasonCodes": [
+        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
+        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+      ]
+    },
+    {
+      "milestoneId": "growth:resource-periodic-loop",
+      "reasonCodes": [
+        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
+        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+      ]
+    },
+    {
+      "milestoneId": "growth:anti-submarine-foundation",
+      "reasonCodes": [
+        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
+        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+      ]
+    },
+    {
+      "milestoneId": "growth:surface-air-los-foundation",
+      "reasonCodes": [
+        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
+        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+      ]
+    },
+    {
+      "milestoneId": "growth:normal-map-eo-blueprint-loop",
+      "reasonCodes": [
+        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
+        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+      ]
+    },
+    {
+      "milestoneId": "growth:event-readiness-overlay",
+      "reasonCodes": [
+        "MILESTONE_NOT_INDEPENDENTLY_APPROVED",
+        "LOCAL_OBSERVABILITY_NOT_AUDITED"
+      ]
+    }
+  ],
+  "runtimePromotionStatus": "blocked",
+  "schemaVersion": 1
+}

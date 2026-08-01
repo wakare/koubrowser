@@ -23,6 +23,8 @@
     "data:quest-strategy:cadence:verify": "vite-node --config vitest.config.ts scripts/import-quest-strategy-cadence.ts --check",
     "data:quest-strategy:compile": "vite-node --config vitest.config.ts scripts/compile-quest-strategy-v2.ts",
     "data:quest-strategy:compile:verify": "vite-node --config vitest.config.ts scripts/compile-quest-strategy-v2.ts --check",
+    "data:quest-growth:compile": "node scripts/compile-quest-growth.js",
+    "data:quest-growth:verify": "node scripts/compile-quest-growth.js --check",
     "data:release:record": "node scripts/create-data-update-release-record.js",
     "data:release:verify": "node scripts/verify-data-update-release-record.js",
     "copy-dev-code": "node scripts/copy-dev-code.js",

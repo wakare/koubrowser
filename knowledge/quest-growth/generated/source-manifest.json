@@ -1,0 +1,30 @@
+{
+  "compilerVersion": "quest-growth-authoring-compiler/1",
+  "output": {
+    "approvedMilestoneCount": 0,
+    "claimCount": 9,
+    "eligibleForRuntimeCount": 0,
+    "fixtureCount": 6,
+    "milestoneCount": 8,
+    "sourceCount": 14
+  },
+  "runtimePromotion": {
+    "reason": "WAVE_1_AUTHORING_ONLY",
+    "status": "blocked"
+  },
+  "schemaVersion": 1,
+  "source": {
+    "auditedBaseCommit": "33abf8ff2534deaa7ce12007c001e1e1ea18837f",
+    "checkedAt": "2026-08-01T00:00:00.000Z",
+    "evidenceLedgerDigest": "sha256:9bf921d02429a5bef0126df39bd21042141041af8e25b3a4ec57cd871ff7f948",
+    "fixtureDigests": {
+      "asw-missing.json": "sha256:080e13b003cb6be8ecd9e844fc1316fd4d34b56c46b6cdb0dc25a665e5f8f1e2",
+      "early-maps-only.json": "sha256:d1b02ea9d36471c430014bbc4fee0eb28926cc2e8fb143044447cf38d485e20f",
+      "event-active-not-ready.json": "sha256:bccb3f7046da4ab4b66b8d49c72d55e1542db3f73d5be809a3069a3d9de6747b",
+      "map-rich-equipment-poor.json": "sha256:da95f94b200618ccf788673256882baabe9732b65c0c8c380f25d72ed43a9dcc",
+      "resource-low.json": "sha256:699822f69cf694afc12d16f76405a48be2d630da31ffeac2feec3b0294bce6f1",
+      "unknown-state.json": "sha256:fa9ea91a843c0153a5ac237ab0119d040a6330604a0a08c2cba117937671eeec"
+    },
+    "milestoneCandidatesDigest": "sha256:ebf0ba991b8203515fbdc16161b3330ffaf326b06cc5fd5397b97116d0359c20"
+  }
+}

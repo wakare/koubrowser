@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "growth-fixture:map-rich-equipment-poor",
+  "observables": {
+    "maps.unlocked": ["1-5", "2-5", "3-5", "4-4"],
+    "ships.type-level-bands": "broad",
+    "equipment.air-category-counts": "insufficient",
+    "equipment.los-category-counts": "insufficient"
+  },
+  "privacy": {
+    "containsAccountIdentifier": false,
+    "containsRawPayload": false
+  },
+  "expectations": {
+    "nonEmptyFallbackRequired": true
+  }
+}

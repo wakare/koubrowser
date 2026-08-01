@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "growth-fixture:resource-low",
+  "observables": {
+    "resources.bands": {
+      "fuel": "low",
+      "ammunition": "low",
+      "steel": "normal",
+      "bauxite": "normal"
+    },
+    "expedition.unlocked-ids": [1, 2, 3, 5, 6],
+    "expedition.known-success": [1, 2, 3]
+  },
+  "privacy": {
+    "containsAccountIdentifier": false,
+    "containsRawPayload": false
+  },
+  "expectations": {
+    "nonEmptyFallbackRequired": true
+  }
+}

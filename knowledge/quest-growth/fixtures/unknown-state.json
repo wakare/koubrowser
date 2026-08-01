@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "growth-fixture:unknown-state",
+  "observables": {
+    "fleet.safety-state": "unknown",
+    "maps.unlocked": "unknown",
+    "resources.bands": "unknown"
+  },
+  "privacy": {
+    "containsAccountIdentifier": false,
+    "containsRawPayload": false
+  },
+  "expectations": {
+    "nonEmptyFallbackRequired": true
+  }
+}

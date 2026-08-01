@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wakare/koubrowser/knowledge/quest-growth/authoring-schema-1alpha.json",
+  "title": "QuestGrowthAuthoring/1alpha",
+  "description": "Authoring contract for evidence-led, offline newcomer growth milestones. Runtime promotion is intentionally out of scope.",
+  "type": "object",
+  "oneOf": [{ "$ref": "#/$defs/evidenceLedger" }, { "$ref": "#/$defs/milestoneCatalog" }],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "sourceSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auditedBaseCommit", "checkedAt"],
+      "properties": {
+        "auditedBaseCommit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "checkedAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "url",
+        "title",
+        "site",
+        "language",
+        "evidenceClass",
+        "accessibility",
+        "independence",
+        "supportedClaims",
+        "checkedAt",
+        "reviewBy",
+        "validUntil",
+        "currentnessRisk",
+        "notes"
+      ],
+      "properties": {
+        "sourceId": { "$ref": "#/$defs/identifier" },
+        "url": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "title": { "type": "string", "minLength": 1 },
+        "site": { "type": "string", "minLength": 1 },
+        "author": { "type": "string", "minLength": 1 },
+        "language": { "enum": ["zh-CN", "ja-JP"] },
+        "evidenceClass": { "enum": ["mechanic", "editorial", "historical", "mixed"] },
+        "accessibility": {
+          "enum": ["independently-readable", "unreadable", "prompt-supplied-observation"]
+        },
+        "independence": {
+          "enum": ["independent", "same-editorial-ecosystem", "derivative", "unknown"]
+        },
+        "publishedAt": { "$ref": "#/$defs/timestamp" },
+        "updatedAt": { "$ref": "#/$defs/timestamp" },
+        "supportedClaims": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "checkedAt": { "$ref": "#/$defs/timestamp" },
+        "reviewBy": { "$ref": "#/$defs/timestamp" },
+        "validUntil": { "$ref": "#/$defs/timestamp" },
+        "currentnessRisk": { "enum": ["low", "medium", "high"] },
+        "notes": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claimId",
+        "classification",
+        "summary",
+        "sourceIds",
+        "confidence",
+        "promotionStatus",
+        "conditions",
+        "contradictions"
+      ],
+      "properties": {
+        "claimId": { "$ref": "#/$defs/identifier" },
+        "classification": { "enum": ["mechanic", "editorial", "historical"] },
+        "summary": { "type": "string", "minLength": 1 },
+        "sourceIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "confidence": { "enum": ["high", "medium", "conditional", "insufficient"] },
+        "promotionStatus": { "enum": ["candidate", "research-only", "rejected"] },
+        "conditions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "contradictions": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "evidenceLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authoringSchema", "ledgerVersion", "sourceSnapshot", "claims", "sources"],
+      "properties": {
+        "authoringSchema": { "const": "QuestGrowthEvidenceLedger/1alpha" },
+        "ledgerVersion": { "type": "string", "minLength": 1 },
+        "sourceSnapshot": { "$ref": "#/$defs/sourceSnapshot" },
+        "claims": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/claim" } },
+        "sources": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/source" } }
+      }
+    },
+    "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observable", "condition", "unknownPolicy"],
+      "properties": {
+        "observable": { "$ref": "#/$defs/identifier" },
+        "condition": { "type": "string", "minLength": 1 },
+        "unknownPolicy": { "enum": ["block", "fallback", "manual-check"] }
+      }
+    },
+    "questLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questId", "stageIndex", "eligibility"],
+      "properties": {
+        "questId": { "type": "integer", "minimum": 1 },
+        "stageIndex": { "type": "integer", "minimum": 0 },
+        "routeId": { "$ref": "#/$defs/identifier" },
+        "eligibility": { "enum": ["route-ready-only", "manual-partial"] }
+      }
+    },
+    "milestone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "status",
+        "phase",
+        "goal",
+        "rationale",
+        "decisionKind",
+        "requiredObservables",
+        "prerequisites",
+        "triggers",
+        "guidance",
+        "expectedBenefits",
+        "costs",
+        "risks",
+        "stopConditions",
+        "questLinks",
+        "claimRefs",
+        "confidence",
+        "currentness",
+        "review"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "revision": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["draft", "approved", "withdrawn"] },
+        "phase": {
+          "enum": [
+            "safety",
+            "system-unlock",
+            "experience-loop",
+            "resource-loop",
+            "capability",
+            "normal-map-and-eo",
+            "event-readiness"
+          ]
+        },
+        "goal": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 },
+        "decisionKind": { "enum": ["deterministic-mechanic", "editorial-community", "mixed"] },
+        "requiredObservables": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "prerequisites": { "type": "array", "items": { "$ref": "#/$defs/predicate" } },
+        "triggers": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/predicate" } },
+        "guidance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["now", "next", "longTerm", "fallback"],
+          "properties": {
+            "now": { "type": "string", "minLength": 1 },
+            "next": { "type": "string", "minLength": 1 },
+            "longTerm": { "type": "string", "minLength": 1 },
+            "fallback": { "type": "string", "minLength": 1 }
+          }
+        },
+        "expectedBenefits": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "costs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "risks": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "stopConditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "questLinks": { "type": "array", "items": { "$ref": "#/$defs/questLink" } },
+        "claimRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "confidence": { "enum": ["high", "medium", "conditional", "insufficient"] },
+        "currentness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["checkedAt", "reviewBy", "validUntil"],
+          "properties": {
+            "checkedAt": { "$ref": "#/$defs/timestamp" },
+            "reviewBy": { "$ref": "#/$defs/timestamp" },
+            "validUntil": { "$ref": "#/$defs/timestamp" },
+            "expireOnEventEnd": { "type": "boolean" }
+          }
+        },
+        "review": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["author", "approver", "reviewedAt"],
+          "properties": {
+            "author": { "$ref": "#/$defs/identifier" },
+            "approver": { "type": ["string", "null"] },
+            "reviewedAt": { "type": ["string", "null"], "format": "date-time" }
+          }
+        }
+      }
+    },
+    "milestoneCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authoringSchema", "catalogVersion", "sourceSnapshot", "milestones"],
+      "properties": {
+        "authoringSchema": { "const": "QuestGrowthMilestones/1alpha" },
+        "catalogVersion": { "type": "string", "minLength": 1 },
+        "sourceSnapshot": { "$ref": "#/$defs/sourceSnapshot" },
+        "milestones": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/milestone" } }
+      }
+    }
+  }
+}

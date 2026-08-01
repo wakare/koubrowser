@@ -1,0 +1,399 @@
+{
+  "authoringSchema": "QuestGrowthEvidenceLedger/1alpha",
+  "ledgerVersion": "2026-08-01.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "33abf8ff2534deaa7ce12007c001e1e1ea18837f",
+    "checkedAt": "2026-08-01T00:00:00.000Z"
+  },
+  "claims": [
+    {
+      "claimId": "claim:exercise-low-repair-training",
+      "classification": "mechanic",
+      "summary": "演習は全艦種の経験獲得に利用でき、演習中の損傷を入渠修理へ持ち越さないため、日常育成の低修理負担な選択肢になる。",
+      "sourceIds": ["source:kcwiki-leveling", "source:wikiwiki-newcomer"],
+      "confidence": "high",
+      "promotionStatus": "candidate",
+      "conditions": ["対戦相手と自艦隊の構成に応じて勝敗および消費は変化する。"],
+      "contradictions": []
+    },
+    {
+      "claimId": "claim:expedition-resource-loop",
+      "classification": "mechanic",
+      "summary": "遠征は継続的な資源獲得手段であり、成功には艦種、隻数、レベル、補給などの条件確認が必要になる。",
+      "sourceIds": [
+        "source:kcwiki-expedition",
+        "source:wikiwiki-expedition",
+        "source:wikiwiki-newcomer"
+      ],
+      "confidence": "high",
+      "promotionStatus": "candidate",
+      "conditions": ["唯一の最適遠征は固定せず、開放状況と不足資源に合わせる。"],
+      "contradictions": []
+    },
+    {
+      "claimId": "claim:modernization-before-after-remodel",
+      "classification": "mechanic",
+      "summary": "通常の火力・雷装・対空・装甲の近代化改修値は改造後に引き継がれないため、改造が近い場合は素材投入時期を考慮する。",
+      "sourceIds": ["source:kcwiki-modernization", "source:wikiwiki-newcomer"],
+      "confidence": "high",
+      "promotionStatus": "candidate",
+      "conditions": [
+        "運、対潜、耐久には例外がある。",
+        "現在の攻略が止まっている場合の小規模強化は否定しない。"
+      ],
+      "contradictions": []
+    },
+    {
+      "claimId": "claim:conditional-leveling-maps",
+      "classification": "editorial",
+      "summary": "1-5、2-2、4-4 などは条件を満たす艦隊の育成候補だが、全新人に共通する最適ルートではない。",
+      "sourceIds": ["source:kcwiki-leveling", "source:zekamashi-leveling"],
+      "confidence": "medium",
+      "promotionStatus": "candidate",
+      "conditions": ["司令部レベル、開放海域、艦種、対潜・航空装備、資源と入渠余力を確認する。"],
+      "contradictions": []
+    },
+    {
+      "claimId": "claim:eo-medal-blueprint-loop",
+      "classification": "mechanic",
+      "summary": "毎月復活する通常海域最深部などから勲章を得て、勲章4個を改装設計図1枚へ交換できる。",
+      "sourceIds": ["source:kcwiki-blueprint", "source:wikiwiki-blueprint"],
+      "confidence": "high",
+      "promotionStatus": "candidate",
+      "conditions": ["EO の攻略負担は海域と艦隊状況で異なるため、全 EO の毎月完遂を必須にしない。"],
+      "contradictions": []
+    },
+    {
+      "claimId": "claim:adaptive-growth-priorities",
+      "classification": "editorial",
+      "summary": "育成、装備、任務、海域の優先順位は時間、資源、持有艦と能力不足に合わせて段階的に選び、固定の最適順を前提にしない。",
+      "sourceIds": ["source:kcwiki-leveling", "source:yongou-light-guidance"],
+      "confidence": "medium",
+      "promotionStatus": "candidate",
+      "conditions": ["利用者が短期目標または活動目標を選んだ場合は重み付けを変える。"],
+      "contradictions": []
+    },
+    {
+      "claimId": "claim:event-readiness-breadth",
+      "classification": "editorial",
+      "summary": "活動準備は少数の高練度艦だけでなく、艦種、能力、装備、資源の幅を段階的に整える観点が必要になる。",
+      "sourceIds": ["source:wikiwiki-event-faq", "source:yongou-light-guidance"],
+      "confidence": "medium",
+      "promotionStatus": "candidate",
+      "conditions": ["具体的な必要数、難易度、札、特効は活動ごとの短期知識として扱う。"],
+      "contradictions": []
+    },
+    {
+      "claimId": "claim:nga-current-guide-structure",
+      "classification": "editorial",
+      "summary": "NGA の現行ガイドには通常海域、定期任務、基礎知識、更新履歴を横断する目次がある。",
+      "sourceIds": [
+        "source:nga-current-root",
+        "source:nga-update-floor",
+        "source:nga-basics-floor"
+      ],
+      "confidence": "conditional",
+      "promotionStatus": "research-only",
+      "conditions": ["利用者が許可したブラウザで可視だった範囲のみを記録する。"],
+      "contradictions": ["自動調査環境では本文を独立取得できなかった。"]
+    },
+    {
+      "claimId": "claim:nga-periodic-map-combinations",
+      "classification": "editorial",
+      "summary": "NGA の定期任務整理には 2-1、2-2、1-5、3-3、4-4、5-2 などを使う組合せ例がある。",
+      "sourceIds": ["source:nga-periodic-floor"],
+      "confidence": "insufficient",
+      "promotionStatus": "research-only",
+      "conditions": ["各組合せを現在の任務条件および独立した日文資料と個別に再確認する。"],
+      "contradictions": ["独立して読める第2資料による組合せ単位の照合が未完了。"]
+    }
+  ],
+  "sources": [
+    {
+      "sourceId": "source:nga-current-root",
+      "url": "https://bbs.nga.cn/read.php?tid=23451223",
+      "title": "[罗盘娘攻略度：81.0%]梦美的常规图带路 & 出击配置 v3.0[通常海域强化年度]",
+      "site": "NGA玩家社区",
+      "language": "zh-CN",
+      "evidenceClass": "mixed",
+      "accessibility": "prompt-supplied-observation",
+      "independence": "unknown",
+      "supportedClaims": ["claim:nga-current-guide-structure"],
+      "updatedAt": "2026-06-26T00:00:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-08-31T00:00:00.000Z",
+      "validUntil": "2026-11-01T00:00:00.000Z",
+      "currentnessRisk": "high",
+      "notes": [
+        "利用者が許可した Chrome セッションでは本文と目次を確認できた。",
+        "自動調査環境の取得失敗を内容不存在とは扱わない。"
+      ]
+    },
+    {
+      "sourceId": "source:nga-update-floor",
+      "url": "https://bbs.nga.cn/read.php?pid=454450503",
+      "title": "梦美的常规图带路 & 出击配置 v3.0 - 更新记录",
+      "site": "NGA玩家社区",
+      "language": "zh-CN",
+      "evidenceClass": "editorial",
+      "accessibility": "prompt-supplied-observation",
+      "independence": "same-editorial-ecosystem",
+      "supportedClaims": ["claim:nga-current-guide-structure"],
+      "updatedAt": "2026-06-26T00:00:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-08-31T00:00:00.000Z",
+      "validUntil": "2026-11-01T00:00:00.000Z",
+      "currentnessRisk": "high",
+      "notes": [
+        "画面上の最近更新 2026/06/26 と次の 2026/05/29 を確認した。",
+        "変更本文は独立取得していない。"
+      ]
+    },
+    {
+      "sourceId": "source:nga-periodic-floor",
+      "url": "https://bbs.nga.cn/read.php?pid=454450573",
+      "title": "梦美的常规图带路 & 出击配置 v3.0 - 定期任务推荐",
+      "site": "NGA玩家社区",
+      "language": "zh-CN",
+      "evidenceClass": "editorial",
+      "accessibility": "prompt-supplied-observation",
+      "independence": "unknown",
+      "supportedClaims": ["claim:nga-periodic-map-combinations"],
+      "updatedAt": "2026-06-26T00:00:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-08-31T00:00:00.000Z",
+      "validUntil": "2026-11-01T00:00:00.000Z",
+      "currentnessRisk": "high",
+      "notes": [
+        "利用者ブラウザで日・週・月・季・年任務の組合せ例を確認した。",
+        "個別の map combination は runtime へ昇格させない。"
+      ]
+    },
+    {
+      "sourceId": "source:nga-basics-floor",
+      "url": "https://bbs.nga.cn/read.php?pid=454450797",
+      "title": "梦美的常规图带路 & 出击配置 v3.0 - 基础知识",
+      "site": "NGA玩家社区",
+      "language": "zh-CN",
+      "evidenceClass": "mixed",
+      "accessibility": "prompt-supplied-observation",
+      "independence": "same-editorial-ecosystem",
+      "supportedClaims": ["claim:nga-current-guide-structure"],
+      "updatedAt": "2026-06-26T00:00:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-08-31T00:00:00.000Z",
+      "validUntil": "2026-11-01T00:00:00.000Z",
+      "currentnessRisk": "high",
+      "notes": ["基礎項目の索引のみ確認した。", "折り畳み本文の具体的優先順位は推測しない。"]
+    },
+    {
+      "sourceId": "source:kcwiki-leveling",
+      "url": "https://zh.kcwiki.cn/wiki/攻略:练级指南",
+      "title": "攻略:练级指南",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "evidenceClass": "mixed",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": [
+        "claim:exercise-low-repair-training",
+        "claim:conditional-leveling-maps",
+        "claim:adaptive-growth-priorities"
+      ],
+      "updatedAt": "2026-03-03T17:10:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-08-01T00:00:00.000Z",
+      "currentnessRisk": "medium",
+      "notes": [
+        "最適な練度上げは一つではなく、艦種、資源、修復材、時間で選ぶと明記する。",
+        "1-5 と 2-2 は条件付きの新人候補として記載される。",
+        "ページは NGA 資料も参照するため、地図別記述の上流依存を個別確認する。"
+      ]
+    },
+    {
+      "sourceId": "source:kcwiki-expedition",
+      "url": "https://zh.kcwiki.cn/wiki/远征",
+      "title": "远征列表",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "evidenceClass": "mechanic",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": ["claim:expedition-resource-loop"],
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-08-01T00:00:00.000Z",
+      "currentnessRisk": "medium",
+      "notes": [
+        "遠征の開放順、成功条件、報酬表を提供する。",
+        "効率表を唯一の新人優先順とは扱わない。"
+      ]
+    },
+    {
+      "sourceId": "source:kcwiki-modernization",
+      "url": "https://zh.kcwiki.cn/wiki/近代化改修",
+      "title": "近代化改修",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "evidenceClass": "mechanic",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": ["claim:modernization-before-after-remodel"],
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-08-01T00:00:00.000Z",
+      "currentnessRisk": "low",
+      "notes": [
+        "改造前の通常改修値が引き継がれないことと例外を記載する。",
+        "一部説明は日 Wiki コメントを参照するため複雑な式は採用しない。"
+      ]
+    },
+    {
+      "sourceId": "source:kcwiki-blueprint",
+      "url": "https://zh.kcwiki.cn/wiki/改装设计图",
+      "title": "勋章和设计图",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "evidenceClass": "mechanic",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": ["claim:eo-medal-blueprint-loop"],
+      "updatedAt": "2026-01-28T00:00:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-08-01T00:00:00.000Z",
+      "currentnessRisk": "medium",
+      "notes": [
+        "勲章と改装設計図の取得機構に限定して使用する。",
+        "艦娘別の絶対優先順位は採用しない。"
+      ]
+    },
+    {
+      "sourceId": "source:wikiwiki-newcomer",
+      "url": "https://wikiwiki.jp/kancolle/新米提督の手引き",
+      "title": "新米提督の手引き",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki",
+      "language": "ja-JP",
+      "evidenceClass": "mixed",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": [
+        "claim:exercise-low-repair-training",
+        "claim:expedition-resource-loop",
+        "claim:modernization-before-after-remodel"
+      ],
+      "updatedAt": "2026-05-18T00:00:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-08-01T00:00:00.000Z",
+      "currentnessRisk": "medium",
+      "notes": [
+        "演習、遠征、装備、近代化改修と改造の基礎を横断する。",
+        "同じ Wiki 内の別ページ同士は追加の独立資料として二重計上しない。"
+      ]
+    },
+    {
+      "sourceId": "source:wikiwiki-expedition",
+      "url": "https://wikiwiki.jp/kancolle/遠征",
+      "title": "遠征",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki",
+      "language": "ja-JP",
+      "evidenceClass": "mechanic",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": ["claim:expedition-resource-loop"],
+      "updatedAt": "2026-07-21T00:07:17.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-08-01T00:00:00.000Z",
+      "currentnessRisk": "medium",
+      "notes": [
+        "開放要件、成功・大成功条件、報酬を区別する。",
+        "実行時に Web 表を取得せず、審査済みローカル知識だけを利用する。"
+      ]
+    },
+    {
+      "sourceId": "source:wikiwiki-blueprint",
+      "url": "https://wikiwiki.jp/kancolle/アイテム/個別/改装設計図",
+      "title": "アイテム/個別/改装設計図",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki",
+      "language": "ja-JP",
+      "evidenceClass": "mechanic",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": ["claim:eo-medal-blueprint-loop"],
+      "updatedAt": "2026-05-27T07:44:21.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-08-01T00:00:00.000Z",
+      "currentnessRisk": "medium",
+      "notes": [
+        "勲章4個との交換と月次 EO 由来の定期取得を確認する。",
+        "設計図の使用順は証明しない。"
+      ]
+    },
+    {
+      "sourceId": "source:zekamashi-leveling",
+      "url": "https://zekamashi.net/kancolle-kouryaku/levelup-hazimete/",
+      "title": "初心者のレベリング・周回におすすめの海域例",
+      "site": "ぜかましねっと艦これ！",
+      "language": "ja-JP",
+      "evidenceClass": "editorial",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": ["claim:conditional-leveling-maps"],
+      "publishedAt": "2023-06-23T00:00:00.000Z",
+      "updatedAt": "2024-05-23T00:00:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-09-30T00:00:00.000Z",
+      "validUntil": "2026-12-31T00:00:00.000Z",
+      "currentnessRisk": "high",
+      "notes": [
+        "低司令部レベルの初心者を対象に 1-5、2-2、4-4 などの例を挙げる。",
+        "記事年齢と司令部条件により条件付き editorial とする。"
+      ]
+    },
+    {
+      "sourceId": "source:yongou-light-guidance",
+      "url": "https://yongou-iv.com/【艦これ】初心者・復帰勢は何をするべき？ライト勢向け艦隊運営方針/",
+      "title": "初心者・復帰勢向け艦隊運営方針",
+      "site": "よんごうのブログ",
+      "author": "よんごう",
+      "language": "ja-JP",
+      "evidenceClass": "editorial",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": ["claim:adaptive-growth-priorities", "claim:event-readiness-breadth"],
+      "updatedAt": "2026-07-08T00:00:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-08-01T00:00:00.000Z",
+      "currentnessRisk": "medium",
+      "notes": [
+        "最適解ではなく、時間、資源、艦隊状況に合わせて継続的に強化する方針を明記する。",
+        "ライト層向け editorial として扱う。"
+      ]
+    },
+    {
+      "sourceId": "source:wikiwiki-event-faq",
+      "url": "https://wikiwiki.jp/kancolle/FAQ/イベント",
+      "title": "FAQ/イベント",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki",
+      "language": "ja-JP",
+      "evidenceClass": "editorial",
+      "accessibility": "independently-readable",
+      "independence": "independent",
+      "supportedClaims": ["claim:event-readiness-breadth"],
+      "updatedAt": "2026-06-12T00:00:00.000Z",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "reviewBy": "2026-08-31T00:00:00.000Z",
+      "validUntil": "2026-11-01T00:00:00.000Z",
+      "currentnessRisk": "high",
+      "notes": [
+        "活動参加の一般準備に限定して参照する。",
+        "具体的活動ルート、難易度、札、特効は別の短期 evidence が必要になる。"
+      ]
+    }
+  ]
+}
