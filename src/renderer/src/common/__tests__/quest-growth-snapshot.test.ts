@@ -29,7 +29,7 @@ import {
 function ship(
   instanceId: number,
   masterId: number,
-  options: { hp?: number; fuel?: number; ammo?: number; locked?: number } = {}
+  options: { hp?: number; fuel?: number; ammo?: number; locked?: number; level?: number } = {}
 ): ApiShip {
   return {
     api_id: instanceId,
@@ -38,7 +38,8 @@ function ship(
     api_maxhp: 40,
     api_fuel: options.fuel ?? 20,
     api_bull: options.ammo ?? 20,
-    api_locked: options.locked ?? 1
+    api_locked: options.locked ?? 1,
+    api_lv: options.level ?? 1
   } as ApiShip
 }
 
@@ -46,6 +47,7 @@ function masterShip(masterId: number): MstShip {
   return {
     api_id: masterId,
     api_name: `SECRET_SHIP_${masterId}`,
+    api_stype: masterId - 99,
     api_fuel_max: 20,
     api_bull_max: 20
   } as MstShip
@@ -69,8 +71,8 @@ function populatedSvData(): { svdata: SvData; raw: ReturnType<typeof createSvDat
   raw.shipDataOk = true
   raw.slotitemDataOk = true
   raw.apiData.api_ship.push(
-    ship(9001, 101, { locked: 0 }),
-    ship(9002, 102, { hp: 10, fuel: 10, locked: 1 })
+    ship(9001, 101, { locked: 0, level: 12 }),
+    ship(9002, 102, { hp: 10, fuel: 10, locked: 1, level: 55 })
   )
   raw.apiData.api_mst_ship.push(masterShip(101), masterShip(102))
   raw.apiData.api_deck_port.push({
@@ -189,6 +191,15 @@ describe('quest growth local snapshot adapter', () => {
       safety: 'blocked',
       resources: 'unknown',
       capability: 'unknown'
+    })
+    expect(input(snapshot.inputs, 'capability.breadth-summary')).toMatchObject({
+      freshness: 'fresh',
+      ownedShipCount: 2,
+      shipTypeCount: 2,
+      minimumLevel: 12,
+      maximumLevel: 55,
+      equipmentCategoryCount: 4,
+      resourceTotalsAvailable: true
     })
     expect(input(snapshot.inputs, 'practice.available-count').freshness).toBe('unavailable')
     expect(input(snapshot.inputs, 'event.overlay-status')).toMatchObject({

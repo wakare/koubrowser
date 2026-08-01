@@ -81,6 +81,12 @@ const FreshInputs: QuestGrowthFallbackInput[] = [
   {
     observableId: 'capability.breadth-summary',
     freshness: 'fresh',
+    ownedShipCount: 24,
+    shipTypeCount: 8,
+    minimumLevel: 1,
+    maximumLevel: 55,
+    equipmentCategoryCount: 12,
+    resourceTotalsAvailable: true,
     eventGoalSelected: false,
     categorySelected: true
   },
@@ -257,6 +263,21 @@ describe('quest growth pure fallback evaluator', () => {
         posture: 'conserve'
       })
     ).toThrow('Invalid quest growth fallback input: totals.repairBuckets')
+
+    expect(() =>
+      evaluateQuestGrowthFallback({
+        observableId: 'capability.breadth-summary',
+        freshness: 'fresh',
+        ownedShipCount: 10,
+        shipTypeCount: 4,
+        minimumLevel: 99,
+        maximumLevel: 1,
+        equipmentCategoryCount: 6,
+        resourceTotalsAvailable: true,
+        eventGoalSelected: false,
+        categorySelected: true
+      })
+    ).toThrow('Invalid quest growth fallback input: levelRange')
   })
 
   it('has no I/O or renderer dependency in the pure evaluator source', () => {

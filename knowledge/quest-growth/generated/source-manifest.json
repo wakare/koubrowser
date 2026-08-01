@@ -27,7 +27,7 @@
     "fixtureDigests": {
       "asw-missing.json": "sha256:c98d591b6b7d554281c48bb6fc76424348611e28c71d7fb0260b586bc7e64862",
       "early-maps-only.json": "sha256:5b98e72fc2446e29bfc9b76e65ebb58d8901afd6f8ff987dfc138a0a4e33e31a",
-      "event-active-not-ready.json": "sha256:367a2477057a21703ed103f68da54051929171ab01305092df47c4fe2972c6b8",
+      "event-active-not-ready.json": "sha256:f124405f93fd8417f37eee929069f22ee83e22e8f6a5b37db03a3d1a6a5df30b",
       "map-rich-equipment-poor.json": "sha256:0b7d673fbdfb90846efb34ebdc651f1ae603adce546d80e28c6425807f90102f",
       "resource-conservation-posture.json": "sha256:eec83fa0e5f318a7fb8e3dee33035ff81ef8e9d89f79fc216c2da88756f00bf5",
       "unknown-state.json": "sha256:c5d4fa83660a79c05c70ade35826781920375532bb62d383f2b937071246f917"

@@ -50,6 +50,8 @@ Status: `OWNER_APPROVED_FALLBACK_ONLY_RUNTIME_BLOCKED`
 
 partial は推測で埋めない。現在の UI は選択中の重点に対応する匿名集約済み測定値と manual check を
 分けて表示し、自動行動可能とは表現しない。
+`capability.breadth-summary` は保有艦数、艦種カテゴリ数、最小～最大練度、装備カテゴリ数、資源値の
+取得有無を表示するが、イベント適性、カテゴリ不足、攻略優先順位へは変換しない。
 
 external advisory review では、`modernization.material-summary` と `fleet.safety-state` の2件だけが
 authoring/future restricted fallback の範囲で `APPROVE`、残る6件が `REVISE`、runtime candidate は

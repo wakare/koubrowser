@@ -107,6 +107,40 @@ function countEquipmentByType(svdata: SvData, types: ReadonlySet<SlotitemType>):
   return count
 }
 
+function breadthFacts(svdata: SvData): {
+  ownedShipCount: number
+  shipTypeCount: number
+  minimumLevel: number | null
+  maximumLevel: number | null
+  equipmentCategoryCount: number
+} {
+  const shipTypes = new Set<number>()
+  const equipmentCategories = new Set<SlotitemType>()
+  let minimumLevel: number | null = null
+  let maximumLevel: number | null = null
+
+  for (const ship of svdata.ships) {
+    const master = svdata.mstShip(ship.api_ship_id)
+    if (master) shipTypes.add(master.api_stype)
+    if (Number.isSafeInteger(ship.api_lv) && ship.api_lv >= 0) {
+      minimumLevel = minimumLevel === null ? ship.api_lv : Math.min(minimumLevel, ship.api_lv)
+      maximumLevel = maximumLevel === null ? ship.api_lv : Math.max(maximumLevel, ship.api_lv)
+    }
+  }
+  for (const item of svdata.slotitems) {
+    const master = svdata.mstSlotitem(item.api_slotitem_id)
+    if (master) equipmentCategories.add(KcsUtil.slotitemType(master))
+  }
+
+  return {
+    ownedShipCount: svdata.ships.length,
+    shipTypeCount: shipTypes.size,
+    minimumLevel,
+    maximumLevel,
+    equipmentCategoryCount: equipmentCategories.size
+  }
+}
+
 function resourceTotals(svdata: SvData): QuestGrowthResourceTotals | null {
   if (!MainResourceIds.every((id) => svdata.material(id) !== undefined)) return null
   return {
@@ -182,7 +216,16 @@ function evaluatorInputs(
     safety.damage !== 'unknown' && safety.supply !== 'unknown' && safety.repair !== 'unknown'
   const questList = svdata.questlist
   const mapFactsAvailable = svdata.mapinfos.length > 0
-  const breadthFactsAvailable = shipFactsAvailable && equipmentFactsAvailable && resourcesAvailable
+  const breadthFactsAvailable = shipFactsAvailable && equipmentFactsAvailable
+  const breadth = breadthFactsAvailable
+    ? breadthFacts(svdata)
+    : {
+        ownedShipCount: 0,
+        shipTypeCount: 0,
+        minimumLevel: null,
+        maximumLevel: null,
+        equipmentCategoryCount: 0
+      }
   const unlockedEoCount = mapFactsAvailable
     ? svdata.mapinfos.filter((map) => EoMapIds.has(map.api_id)).length
     : 0
@@ -259,6 +302,8 @@ function evaluatorInputs(
     {
       observableId: 'capability.breadth-summary',
       freshness: breadthFactsAvailable ? 'fresh' : 'unknown',
+      ...breadth,
+      resourceTotalsAvailable: resourcesAvailable,
       eventGoalSelected: context.eventGoalSelected ?? false,
       categorySelected: context.evergreenCategorySelected ?? false
     },

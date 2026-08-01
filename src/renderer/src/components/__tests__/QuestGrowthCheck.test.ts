@@ -31,7 +31,7 @@ const Inputs: QuestGrowthFallbackInput[] = [
 
 describe('QuestGrowthCheck.vue', () => {
   async function render(
-    focus: 'unset' | 'resources' | 'asw' = 'unset',
+    focus: 'unset' | 'resources' | 'asw' | 'breadth' = 'unset',
     inputs: QuestGrowthFallbackInput[] = Inputs
   ) {
     const { default: QuestGrowthCheck } = await import('../QuestGrowthCheck.vue')
@@ -101,6 +101,33 @@ describe('QuestGrowthCheck.vue', () => {
     expect(wrapper.findAll('.quest-growth-facts dd')).toHaveLength(1)
     expect(wrapper.get('.quest-growth-facts dd').text()).toBe('quest.growth.fact.state.unknown')
     expect(wrapper.get('.quest-growth-facts').text()).not.toContain('quest.growth.fact.sonarCount')
+  })
+
+  it('shows anonymous fleet breadth facts without claiming event readiness', async () => {
+    const wrapper = await render('breadth', [
+      {
+        observableId: 'capability.breadth-summary',
+        freshness: 'fresh',
+        ownedShipCount: 120,
+        shipTypeCount: 18,
+        minimumLevel: 1,
+        maximumLevel: 99,
+        equipmentCategoryCount: 27,
+        resourceTotalsAvailable: true,
+        eventGoalSelected: false,
+        categorySelected: true
+      }
+    ])
+
+    expect(wrapper.findAll('.quest-growth-facts dd').map((fact) => fact.text())).toEqual([
+      '120',
+      '18',
+      'quest.growth.fact.levelRangeValue:{"minimum":1,"maximum":99}',
+      '27',
+      'quest.growth.fact.state.available'
+    ])
+    expect(wrapper.get('.quest-growth-facts').text()).not.toContain('event-ready')
+    expect(wrapper.attributes('data-route-output')).toBe('prohibited')
   })
 
   it('emits session-only resource posture and growth focus selections', async () => {

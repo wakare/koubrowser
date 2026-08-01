@@ -6148,8 +6148,8 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
           const growthDetails = growth?.querySelector('.quest-growth-details')
           const growthContextSelects = growth?.querySelectorAll('.quest-growth-context select') ?? []
           const growthFocus = growthContextSelects[1]
-          if (growthFocus && growthFocus.value !== 'resources') {
-            growthFocus.value = 'resources'
+          if (growthFocus && growthFocus.value !== 'breadth') {
+            growthFocus.value = 'breadth'
             growthFocus.dispatchEvent(new Event('change', { bubbles: true }))
             return null
           }
@@ -6205,8 +6205,8 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       strategyResult.growth?.routeOutput !== 'prohibited' ||
       strategyResult.growth?.priorityCount < 1 ||
       strategyResult.growth?.contextSelectCount !== 2 ||
-      strategyResult.growth?.factFocus !== 'resources' ||
-      strategyResult.growth?.factCount < 1 ||
+      strategyResult.growth?.factFocus !== 'breadth' ||
+      strategyResult.growth?.factCount !== 5 ||
       strategyResult.growth?.detailsCollapsed !== true ||
       strategyResult.growth?.forbiddenIdentifiers.length > 0 ||
       strategyResult.growth?.scrollWidth > strategyResult.growth?.clientWidth + 1

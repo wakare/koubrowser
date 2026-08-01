@@ -66,6 +66,12 @@ export type QuestGrowthFallbackInput =
     })
   | (BaseInput & {
       observableId: 'capability.breadth-summary'
+      ownedShipCount: number
+      shipTypeCount: number
+      minimumLevel: number | null
+      maximumLevel: number | null
+      equipmentCategoryCount: number
+      resourceTotalsAvailable: boolean
       eventGoalSelected: boolean
       categorySelected: boolean
     })
@@ -188,6 +194,10 @@ function assertCount(value: number, field: string): void {
   }
 }
 
+function assertNullableCount(value: number | null, field: string): void {
+  if (value !== null) assertCount(value, field)
+}
+
 function assertBoolean(value: boolean, field: string): void {
   if (typeof value !== 'boolean') {
     throw new Error(`Invalid quest growth fallback input: ${field}`)
@@ -269,6 +279,20 @@ function validateInput(input: QuestGrowthFallbackInput): void {
       assertEnum(input.time, ['pass', 'blocked', 'unknown'], 'time')
       return
     case 'capability.breadth-summary':
+      assertCount(input.ownedShipCount, 'ownedShipCount')
+      assertCount(input.shipTypeCount, 'shipTypeCount')
+      assertNullableCount(input.minimumLevel, 'minimumLevel')
+      assertNullableCount(input.maximumLevel, 'maximumLevel')
+      if (
+        (input.minimumLevel === null) !== (input.maximumLevel === null) ||
+        (input.minimumLevel !== null &&
+          input.maximumLevel !== null &&
+          input.minimumLevel > input.maximumLevel)
+      ) {
+        throw new Error('Invalid quest growth fallback input: levelRange')
+      }
+      assertCount(input.equipmentCategoryCount, 'equipmentCategoryCount')
+      assertBoolean(input.resourceTotalsAvailable, 'resourceTotalsAvailable')
       assertBoolean(input.eventGoalSelected, 'eventGoalSelected')
       assertBoolean(input.categorySelected, 'categorySelected')
       return

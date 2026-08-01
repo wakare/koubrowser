@@ -8,6 +8,12 @@
     },
     "capability.breadth-summary": {
       "freshness": "fresh",
+      "ownedShipCount": 24,
+      "shipTypeCount": 8,
+      "minimumLevel": 1,
+      "maximumLevel": 55,
+      "equipmentCategoryCount": 12,
+      "resourceTotalsAvailable": true,
       "eventGoalSelected": true,
       "categorySelected": false
     },

@@ -88,7 +88,10 @@ interface GrowthFact {
   value: string
 }
 
-type GrowthFactLabelKey = Extract<AppMessageKey, `quest.growth.fact.${string}`>
+type GrowthFactLabelKey = Exclude<
+  Extract<AppMessageKey, `quest.growth.fact.${string}`>,
+  'quest.growth.fact.levelRangeValue'
+>
 
 const ConstraintStateMessageKeys = {
   pass: 'quest.growth.fact.state.clear',
@@ -217,7 +220,35 @@ const focusedFacts = computed<GrowthFact[]>(() => {
         }
       ]
     case 'capability.breadth-summary':
-      return [availabilityFact(input.freshness)]
+      if (input.freshness !== 'fresh') return [availabilityFact(input.freshness)]
+      return [
+        numberFact('ownedShips', 'quest.growth.fact.ownedShips', input.ownedShipCount),
+        numberFact('shipTypes', 'quest.growth.fact.shipTypes', input.shipTypeCount),
+        {
+          key: 'levelRange',
+          label: translateApp('quest.growth.fact.levelRange'),
+          value:
+            input.minimumLevel === null || input.maximumLevel === null
+              ? translateApp('quest.growth.fact.state.unknown')
+              : translateApp('quest.growth.fact.levelRangeValue', {
+                  params: { minimum: input.minimumLevel, maximum: input.maximumLevel }
+                })
+        },
+        numberFact(
+          'equipmentCategories',
+          'quest.growth.fact.equipmentCategories',
+          input.equipmentCategoryCount
+        ),
+        {
+          key: 'resourceObservation',
+          label: translateApp('quest.growth.fact.resourceObservation'),
+          value: translateApp(
+            input.resourceTotalsAvailable
+              ? 'quest.growth.fact.state.available'
+              : 'quest.growth.fact.state.unavailable'
+          )
+        }
+      ]
     case 'event.overlay-status':
       return [
         {
