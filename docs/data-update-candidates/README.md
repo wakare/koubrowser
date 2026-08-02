@@ -34,3 +34,20 @@ version が決定した後、発行担当者が `data:bundle` へ渡し、別担
 bundle 内の同じ bytes、公開鍵指紋、配布 URL を審査記録へ結び付けてから staging へ
 配置する。保存後の記録は `data:release:verify` で同じ bundle、公開鍵、URL、候補から
 再構成し、完全一致を確認する。
+
+## R7 成長 route 付き署名前入力
+
+`quest-knowledge-r7-reviewed-v1.json` は、上記258 claim と project owner が独立承認した
+`r7.candidate.20260802.1` の2 reviewed route を、publisher が受け付ける
+`QuestKnowledgeUpdate` へ決定的に合成した署名前入力である。生成 command は秘密鍵、公開鍵、
+passphrase、URL、account data を読み込まず、既存 output を上書きしない。
+
+```powershell
+npm run data:quest-growth:r7:materialize -- --output path/to/new-r7-publication-input.json
+```
+
+checked-in JSON は258 claim、2 route、153,920 bytes、SHA-256
+`0b0226c9bfc983b6f0da81684e14ff484ef383596fad0ac92b2302783dd49d14` である。
+route candidate canonical digest は
+`sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c`
+に固定する。この入力も署名済み bundle、runtime publication または default enablement を意味しない。

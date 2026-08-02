@@ -145,6 +145,18 @@ npm run data:quest:export -- --output path/to/new-quest-knowledge-candidate.json
 正式鍵と data version の決定後、この候補を `--quest-knowledge` に指定して bundle を
 発行し、別担当者が候補 SHA-256 と署名済み bundle を確認する。
 
+R7 の reviewed growth route 2件を含む署名前入力は、承認済み route candidate と上記
+reviewed quest knowledge を次の command で決定的に合成する。
+
+```powershell
+npm run data:quest-growth:r7:materialize -- --output path/to/new-r7-publication-input.json
+```
+
+checked-in の
+[`quest-knowledge-r7-reviewed-v1.json`](data-update-candidates/quest-knowledge-r7-reviewed-v1.json)
+と byte 単位で一致することをテストし、publisher と同じ `QuestKnowledgeUpdate` validator を通す。
+この生成処理は鍵、passphrase、URL または外部 endpoint を使用しない。
+
 ## 秘密鍵を使わないオフライン審査
 
 発行担当者とは別の審査者が、bundle directory と公開鍵だけで配布物を検証できる。

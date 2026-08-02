@@ -15,6 +15,7 @@
     "data:key:inspect": "node scripts/inspect-data-update-public-key.js",
     "data:key:rotation:verify": "node scripts/verify-data-update-key-rotation.js",
     "data:quest:export": "vite-node --config vitest.config.ts scripts/export-reviewed-quest-knowledge.ts",
+    "data:quest-growth:r7:materialize": "vite-node --config vitest.config.ts scripts/create-quest-growth-r7-publication-input.ts",
     "data:quest-strategy:contract:verify": "node scripts/validate-quest-strategy-authoring.js",
     "data:quest-strategy:pilot:verify": "node scripts/validate-quest-strategy-authoring.js --manifest knowledge/quest-strategy/pilot-authoring-manifest.json",
     "data:quest-strategy:inventory": "vite-node --config vitest.config.ts scripts/quest-strategy-inventory.ts",
