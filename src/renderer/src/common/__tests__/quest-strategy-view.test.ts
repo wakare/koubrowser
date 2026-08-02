@@ -186,7 +186,8 @@ describe('quest strategy renderer adapter', () => {
     expect(
       result.filter((candidate) => candidate.group === 'route-ready').map((item) => item.questId)
     ).toEqual([
-      226, 229, 241, 242, 243, 257, 261, 264, 265, 280, 284, 822, 845, 861, 862, 873, 893, 894
+      226, 229, 241, 242, 243, 256, 257, 261, 264, 265, 280, 284, 822, 845, 861, 862, 873, 893,
+      894
     ])
     expect(
       result.filter((candidate) => candidate.group === 'partial').map((item) => item.questId)
@@ -294,6 +295,7 @@ describe('quest strategy renderer adapter', () => {
       '4-4': 'unknown',
       '4-5': 'unknown',
       '5-2': 'unknown',
+      '6-1': 'unknown',
       '6-3': 'unknown',
       '7-1': 'unknown',
       '7-2': 'unknown'

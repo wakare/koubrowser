@@ -44,7 +44,7 @@
 - 整数 score、固定 tie-break、入力 fingerprint、`any` 前提の独立 alternative を実装
 - 合成 fixture と production 整合性テストで決定性、降格、失効、競合、
   preference、任務定義との map/rank/count 一致を検証
-- Wiki の現行海域・定期任務ページをレビューし、通常海域 23 recipe を同梱
+- Wiki の現行海域・定期任務ページをレビューし、通常海域 24 recipe を同梱
 - 既存任務指引内へ既定非表示の opt-in UI、score 内訳、次点、確認事項、
   recipe 非表示、実行要約を追加
 - 1～5 任務を最大 512 recipe から限界被覆で選ぶ bounded set-cover と性能 fixture を追加。
@@ -68,6 +68,7 @@
 | `normal-2-4-okinoshima-periodic`        | 226 / 822             | [2-4](https://wikiwiki.jp/kancolle/南西諸島海域/2-4)、[舰娘百科 2-4](https://zh.kcwiki.cn/wiki/2-4)            |
 | `normal-1-6-transport-quarterly`        | 861                   | [1-6](https://wikiwiki.jp/kancolle/鎮守府海域/1-6)、[舰娘百科 1-6](https://zh.kcwiki.cn/wiki/1-6)              |
 | `normal-6-3-aerial-recon-quarterly`     | 862                   | [6-3](https://wikiwiki.jp/kancolle/中部海域/6-3)、[舰娘百科 6-3](https://zh.kcwiki.cn/wiki/中部海域/6-3)       |
+| `normal-6-1-submarine-monthly`          | 256                   | [6-1](https://wikiwiki.jp/kancolle/中部海域/6-1)、[舰娘百科 6-1](https://zh.kcwiki.cn/wiki/中部海域/6-1)       |
 | `normal-3-1-northern-quarterly`         | 873                   | [3-1](https://wikiwiki.jp/kancolle/北方海域/3-1)、[舰娘百科 3-1](https://zh.kcwiki.cn/wiki/3-1)                |
 | `normal-3-2-northern-quarterly`         | 873                   | [3-2](https://wikiwiki.jp/kancolle/北方海域/3-2)、[舰娘百科 3-2](https://zh.kcwiki.cn/wiki/3-2)                |
 | `normal-3-3-northern-weekly`            | 241 / 873             | [3-3](https://wikiwiki.jp/kancolle/北方海域/3-3)、[舰娘百科 3-3](https://zh.kcwiki.cn/wiki/3-3)                |
@@ -116,9 +117,9 @@
 
 ### 現在の actionability baseline
 
-primary denominator 27 件に対し、現行の審査済み 23 route unit が任務全体を完了できるのは
-226、229、241、242、243、257、261、264、265、280、284、822、845、861、862、873、893、894 の 18 件（66.67%）である。partial は
-0 件で、残る 9 件には route unit がない。この値は全利用者の表示任務に
+primary denominator 27 件に対し、現行の審査済み 24 route unit が任務全体を完了できるのは
+226、229、241、242、243、256、257、261、264、265、280、284、822、845、861、862、873、893、894 の 19 件（70.37%）である。partial は
+0 件で、残る 8 件には route unit がない。この値は全利用者の表示任務に
 対する命中率ではなく、canonical recurring normal-sortie inventory 上のデータ充足率である。
 
 1-2、1-3、1-4、2-1、2-2、2-3 の組み合わせにより、#280、#284、#894 は各 stage を失わずに
@@ -151,6 +152,11 @@ Aの能動分岐でCを選ぶA-C-E-F-H-Jを採用し、分岐点係数3の索敵
 敵航空戦力はないが、道中の対潜戦と水雷戦、ボス夜戦を分けて準備し、4戦編成の高い損傷リスクを
 保持する。
 
+#256 は正規空母系1・雷巡1・軽巡1・潜水艦3で6-1のKボスS勝利を3回取る月次計画として
+表示する。C-F-G-H-Kを候補にするが、潜水母艦を含まないためGから約15%でIへ逸れる可能性を
+明示し、完全固定とは扱わない。分岐点係数4の索敵値36以上、Kの航空優勢126以上、単縦陣、
+各戦闘後の損傷確認をactionに残し、高コスト・高リスク候補として扱う。
+
 #241、#242、#243 の週次チェーンは、3-3 の A-C-G-M、4-4 の A-E-I-K、5-2 の
 B-C-E-F-O を一つの順序付き計画として表示する。#241 は正規空母系1・軽空母1・重巡級1・
 軽巡1・駆逐2で北方海域のB勝利以上を5回、#242 は既存4-4編成を再利用してボス勝利、#243 は
@@ -172,7 +178,7 @@ constraint が欠けた recipe は引き続き `route-unreviewed` へ fail close
 そのため本変更では、件数を増やすために未審査 Wiki 情報を取り込まず、まず route-ready
 だけを自動選択する UI と authority を固定する。次のデータ pilot は、代表 snapshot で
 zero-ready の原因を記録し、author と approver を分離できる場合に限り、小さな審査単位で
-追加する。66.67% をもって既定有効化や実用カバレッジ達成とは判断しない。
+追加する。70.37% をもって既定有効化や実用カバレッジ達成とは判断しない。
 
 ## 推奨アーキテクチャ
 

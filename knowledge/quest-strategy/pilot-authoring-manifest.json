@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.10",
+  "manifestVersion": "2026-08-03.11",
   "sourceSnapshot": {
-    "repositoryCommit": "7f7dbfe03c84374079f0c0fcb6bc8b4817a57939",
+    "repositoryCommit": "9df29292663e83a3241c9ec1f25fb44c51a84f43",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -159,6 +159,34 @@
         "author": "codex-r8-weekly-chain-fact-author",
         "approver": "project-owner",
         "reviewedAt": "2026-08-03T04:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:256:objective",
+      "questId": 256,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "9df29292663e83a3241c9ec1f25fb44c51a84f43",
+        "projectionDigest": "sha256:59420101423c035a79285a2cb94366b9d30c836dcc26d8ba7d3afe9bd7924fa6"
+      },
+      "classification": "lossless-v1",
+      "objectiveStages": [
+        {
+          "requiredCount": 3,
+          "targets": [{ "mapKey": "6-1", "result": "S", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-submarine-monthly-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T09:00:00.000Z",
         "reviewBy": "2026-11-03T00:00:00.000Z",
         "validUntil": "2027-02-03T00:00:00.000Z",
         "evidenceReviewIds": ["periodic-sortie-review"]
@@ -898,6 +926,36 @@
       }
     },
     {
+      "templateId": "normal-map:6-1:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "6-1",
+      "routeLabels": ["C-F-G-H-K（Gから約15%でIへ逸れる）"],
+      "targetNodes": ["K"],
+      "fleetConstraintRef": "legacy-recipe:normal-6-1-submarine-monthly",
+      "formations": [{ "formationId": 1, "label": "単縦陣", "when": "C・F・H・Kボス" }],
+      "actions": [
+        "任務256を受注し、6-1のS勝利回数が残っていることを確認する",
+        "正規空母系1・雷巡1・軽巡1・潜水艦3の6隻にし、制空値126以上と分岐点係数4の索敵値36以上に余裕を加える",
+        "C-F-G-H-Kを進む。GからIへ逸れた場合は帰投し、各戦闘後に損傷を確認して大破時は進撃しない",
+        "全戦闘で単縦陣を選び、Kボスは必要なら夜戦してS勝利を取り、進捗を確認して合計3回まで繰り返す"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-submarine-monthly-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T09:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-6-1-wikiwiki-current-review",
+          "map-6-1-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
       "templateId": "normal-map:3-1:r8-reviewed",
       "revision": 1,
       "status": "approved",
@@ -1467,6 +1525,26 @@
       "sourceLabel": "舰娘百科 - 6-3",
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-03T08:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-1-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/中部海域/6-1",
+      "sourceLabel": "艦これ攻略 Wiki - 6-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T09:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-1-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/中部海域/6-1",
+      "sourceLabel": "舰娘百科 - 6-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T09:00:00.000Z",
       "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },

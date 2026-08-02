@@ -1009,6 +1009,113 @@ const recipes = [
   },
   {
     schemaVersion: 1,
+    id: 'normal-6-1-submarine-monthly',
+    revision: 1,
+    title: '6-1 潜水艦隊月次作戦',
+    status: 'approved',
+    questIds: [256],
+    objectives: [{ questId: 256, result: 'S', requiredCount: 3 }],
+    mapKey: '6-1',
+    routeLabels: ['C-F-G-H-K（Gから約15%でIへ逸れる）'],
+    targetNodes: ['K'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 1,
+          maximum: 1,
+          label: '正規空母・装甲空母 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.raijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '重雷装巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.sensuikan, ApiShipType.sensui_kuubo],
+          minimum: 3,
+          maximum: 3,
+          label: '潜水艦・潜水空母 3 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter],
+        minimum: 2,
+        required: false,
+        label: '艦上戦闘機（Kボスの航空優勢126に損耗分の余裕を加える）'
+      },
+      {
+        equipmentTypeIds: [
+          SlotitemType.RecAircraft,
+          SlotitemType.RecSeaplane,
+          SlotitemType.SmallRadar,
+          SlotitemType.LargeRadar,
+          SlotitemType.SubmarineEquipment
+        ],
+        minimum: 2,
+        required: false,
+        label: '彩雲・水偵・電探・潜水艦装備など（分岐点係数4の索敵36以上）'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.Torpedo, SlotitemType.SubmarineTorpedo],
+        minimum: 6,
+        required: false,
+        label: '潜水艦3隻の夜戦カットイン用魚雷'
+      }
+    ],
+    formations: [{ formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'C・F・H・Kボス' }],
+    airState: {
+      target: 'superiority',
+      summary: 'Kボスの航空優勢境界126に、道中の搭載機損耗分を加える'
+    },
+    actions: [
+      '任務256を受注し、6-1のS勝利回数が残っていることを確認する',
+      '正規空母系1・雷巡1・軽巡1・潜水艦3の6隻にし、制空値126以上と分岐点係数4の索敵値36以上に余裕を加える',
+      'C-F-G-H-Kを進む。GからIへ逸れた場合は帰投し、各戦闘後に損傷を確認して大破時は進撃しない',
+      '全戦闘で単縦陣を選び、Kボスは必要なら夜戦してS勝利を取り、進捗を確認して合計3回まで繰り返す'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-6-1-current',
+        sourceLabel: '艦これ攻略 Wiki - 6-1',
+        url: 'https://wikiwiki.jp/kancolle/中部海域/6-1',
+        reviewedAt: '2026-08-03T09:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '空母1・軽巡級2・潜水艦3の高安定編成、C-F-G-H-K、Gの約15%逸れ、索敵36、制空126と任務256のS勝利3回を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-6-1-current',
+        sourceLabel: '舰娘百科 - 6-1',
+        url: 'https://zh.kcwiki.cn/wiki/中部海域/6-1',
+        reviewedAt: '2026-08-03T09:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '空母1・雷巡1・軽巡1・潜水艦3の通常編成、C-F-G-H-K、索敵36、制空126と高いボスS勝利率を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
     id: 'normal-3-1-northern-quarterly',
     revision: 1,
     title: '3-1 北方海域警備',
@@ -1968,6 +2075,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.10',
+  version: '2026-08-03.11',
   recipes
 })
