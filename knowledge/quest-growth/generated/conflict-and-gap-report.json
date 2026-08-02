@@ -77,7 +77,7 @@
       "readableIndependentSourceIds": []
     }
   ],
-  "compilerVersion": "quest-growth-authoring-compiler/23",
+  "compilerVersion": "quest-growth-authoring-compiler/24",
   "decisionRubricAudits": [
     {
       "acceptanceTestCount": 2,
@@ -149,7 +149,8 @@
     "OBSERVABILITY_GAPS_REMAIN",
     "R7_REAL_ACCOUNT_ACCEPTANCE_PASSED_PUBLICATION_NOT_AUTHORIZED",
     "R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_PUBLICATION_NOT_AUTHORIZED",
-    "R7_PUBLICATION_CANDIDATE_APPROVED_SIGNING_NOT_AUTHORIZED"
+    "R7_PUBLICATION_CANDIDATE_APPROVED_SIGNING_NOT_AUTHORIZED",
+    "R7_STAGING_CONFIGURATION_OWNER_FIXED_DIGEST_REQUIRED"
   ],
   "milestoneGaps": [
     {

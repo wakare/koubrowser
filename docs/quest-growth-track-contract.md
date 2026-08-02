@@ -282,6 +282,12 @@ eligible count は0であり、次の固定摘要は review record の approval 
 project owner は review semantic digest を明示承認し、独立 review record は `approved` となった。
 candidate canonical digest は不変で、runtime eligible count は0のままである。次は署名鍵や production
 endpoint を含まない staging configuration decision を別 gate として固定する必要がある。
+project owner の明示許可に基づき、固定2 route、closed JSON Schema、`.invalid` placeholder、鍵 material
+不在の匿名 fixture と offline validator を commit `1ce9d17064f852c0c10b19d99bdc12bd7406d628` で起草した。
+固定摘要と9件の review check は
+[`quest-growth-r7-staging-configuration-decision-packet.md`](quest-growth-r7-staging-configuration-decision-packet.md)
+に記録し、owner fixed-digest decision を待つ。実在 URL、公開鍵・秘密鍵、署名、外部 endpoint、runtime
+publication、default enablement は未承認で、runtime eligible count は0のままである。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

@@ -35,8 +35,12 @@ const {
   R7PublicationCandidateReviewDecisionOutputFilenames,
   buildR7PublicationCandidateReviewDecisionArtifacts
 } = require('./quest-growth-r7-publication-candidate-review-decision')
+const {
+  R7StagingConfigurationDecisionOutputFilenames,
+  buildR7StagingConfigurationDecisionArtifacts
+} = require('./quest-growth-r7-staging-configuration-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/23'
+const CompilerVersion = 'quest-growth-authoring-compiler/24'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -52,7 +56,8 @@ const OutputFilenames = [
   ...R7RealAccountDecisionOutputFilenames,
   ...R7ResponsiveLayoutDecisionOutputFilenames,
   ...R7RuntimePublicationDecisionOutputFilenames,
-  ...R7PublicationCandidateReviewDecisionOutputFilenames
+  ...R7PublicationCandidateReviewDecisionOutputFilenames,
+  ...R7StagingConfigurationDecisionOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -894,6 +899,8 @@ function buildQuestGrowthArtifacts(root) {
   })
   const r7PublicationCandidateReviewDecision =
     buildR7PublicationCandidateReviewDecisionArtifacts({ root, base })
+  const r7StagingConfigurationDecision =
+    buildR7StagingConfigurationDecisionArtifacts({ root })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -950,6 +957,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r7ResponsiveLayoutDecision.source,
       ...r7RuntimePublicationDecision.source,
       ...r7PublicationCandidateReviewDecision.source,
+      ...r7StagingConfigurationDecision.source,
       fixtureDigests
     },
     output: {
@@ -992,7 +1000,8 @@ function buildQuestGrowthArtifacts(root) {
       ...r7RealAccountDecision.output,
       ...r7ResponsiveLayoutDecision.output,
       ...r7RuntimePublicationDecision.output,
-      ...r7PublicationCandidateReviewDecision.output
+      ...r7PublicationCandidateReviewDecision.output,
+      ...r7StagingConfigurationDecision.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -1078,7 +1087,11 @@ function buildQuestGrowthArtifacts(root) {
             : r7PublicationCandidateReviewDecision.output
                 .r7PublicationCandidateReviewApproved
               ? ['R7_PUBLICATION_CANDIDATE_APPROVED_SIGNING_NOT_AUTHORIZED']
-              : [])
+              : []),
+      ...(r7StagingConfigurationDecision.output
+        .r7StagingConfigurationOwnerDecisionRequired
+        ? ['R7_STAGING_CONFIGURATION_OWNER_FIXED_DIGEST_REQUIRED']
+        : [])
     ]
   }
   return {
@@ -1093,7 +1106,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7RealAccountDecision.artifacts,
     ...r7ResponsiveLayoutDecision.artifacts,
     ...r7RuntimePublicationDecision.artifacts,
-    ...r7PublicationCandidateReviewDecision.artifacts
+    ...r7PublicationCandidateReviewDecision.artifacts,
+    ...r7StagingConfigurationDecision.artifacts
   }
 }
 

@@ -1,0 +1,125 @@
+{
+  "authoringSchema": "QuestGrowthR7StagingConfigurationAuthoringRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-staging-configuration-authoring",
+  "revision": 1,
+  "status": "draft-artifacts-authored",
+  "scope": "R7_STAGING_CONFIGURATION_AUTHORING_DRAFT_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "a85c78f74d286562417ee2ed0c15e202e08d60b1",
+    "checkedAt": "2026-08-02T11:39:32.000Z"
+  },
+  "approvalBasis": {
+    "candidateVersion": "r7.candidate.20260802.1",
+    "candidateCanonicalDigest": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c",
+    "candidateFileDigest": "sha256:92cd036faf74f262633edca062b63e7a2ce61081a8cf6666fa7ad697f6beae0b",
+    "candidateReviewSemanticDigest": "sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c",
+    "candidateReviewFileDigest": "sha256:a7f2b499394dc3c35381ae878f5d82bb4657452d25701f8a8638fe08545750ea",
+    "candidateReviewStatus": "approved",
+    "dataUpdateDeploymentDigest": "sha256:5bbc72a8354041753cb2ac47588dc29c079f943c3b3af847657e0461aeec0bd4",
+    "protectedCommunicationDigests": {
+      "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+      "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
+      "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e"
+    }
+  },
+  "requestedAuthorization": {
+    "gateId": "r7-staging-configuration-authoring",
+    "draftingAuthorization": "consumed",
+    "ownerFixedDigestReview": "required",
+    "maximumRouteCount": 2,
+    "authorizedDraftPaths": [
+      "knowledge/quest-growth/r7/staging-configuration.schema.json",
+      "knowledge/quest-growth/r7/fixtures/staging-configuration-anonymous.json",
+      "scripts/quest-growth-r7-staging-configuration.js",
+      "src/common/__tests__/quest_growth_staging_configuration.test.ts"
+    ]
+  },
+  "configurationContract": {
+    "schemaVersion": 1,
+    "configurationId": "r7.staging.anonymous.20260802.1",
+    "mode": "anonymous-authoring-fixture",
+    "candidateVersion": "r7.candidate.20260802.1",
+    "candidateCanonicalDigest": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c",
+    "requiredRouteIds": [
+      "route:expedition-05-resource-loop:draft-1",
+      "route:1-5-basic-asw-three-battle:draft-1"
+    ],
+    "endpointClass": "reserved-invalid-placeholder",
+    "placeholderManifestUrl": "https://r7-staging.invalid/data/manifest.json",
+    "trustAlgorithmLabel": "Ed25519",
+    "keyMaterialState": "absent-separate-gate-required",
+    "fingerprintState": "absent-separate-gate-required",
+    "publicationAuthorized": false,
+    "defaultEnabled": false,
+    "runtimeEligibleCount": 0,
+    "sessionOnly": true,
+    "fallback": "bundled-opt-in-catalog"
+  },
+  "verificationContract": {
+    "offlineOnly": true,
+    "requiredChecks": [
+      "strict-schema-rejects-unknown-fields",
+      "exactly-two-fixed-reviewed-route-bindings",
+      "candidate-version-and-canonical-digest-remain-fixed",
+      "reserved-invalid-placeholder-is-the-only-url",
+      "key-material-and-fingerprint-values-are-absent",
+      "external-connection-and-publication-remain-unauthorized",
+      "default-enabled-remains-false-and-runtime-eligible-count-remains-zero",
+      "session-only-and-bundled-fallback-remain-fixed",
+      "protected-game-communication-digests-remain-fixed"
+    ]
+  },
+  "draftingResult": {
+    "recordedAt": "2026-08-02T11:39:32.000Z",
+    "implementationCommit": "1ce9d17064f852c0c10b19d99bdc12bd7406d628",
+    "changedPathDigests": {
+      "knowledge/quest-growth/r7/staging-configuration.schema.json": "sha256:d62f7197690a034edfd339550e08698152ff023d2854d0447e2a5302829f67d3",
+      "knowledge/quest-growth/r7/fixtures/staging-configuration-anonymous.json": "sha256:194df1cb97abd2af38ff39cf44dda6879ca43b55b10a2bbe45f74f0475271b70",
+      "scripts/quest-growth-r7-staging-configuration.js": "sha256:aa601746a16fc4547221d49a75aca5d9edb2e6037c1e59b42ffaa180277b8b43",
+      "src/common/__tests__/quest_growth_staging_configuration.test.ts": "sha256:7eeddf9f31890e3ce2ddf327cc44f038bbd082e91619fc641892a4b4443ab7db"
+    },
+    "validatorTestCount": 9,
+    "fullTestCount": 1259,
+    "typecheckPassed": true,
+    "genericQuestGrowthCompileCheckPassed": true,
+    "keyMaterialHandled": false,
+    "bundleSigningPerformed": false,
+    "realUrlConfigured": false,
+    "externalEndpointConnected": false,
+    "runtimePublicationPerformed": false,
+    "defaultEnablementChanged": false,
+    "runtimeEligibleCount": 0,
+    "installerBuilt": false,
+    "gameCommunicationChangesMade": false
+  },
+  "executionBoundary": {
+    "keyMaterialHandlingAuthorized": false,
+    "bundleSigningAuthorized": false,
+    "realStagingOrProductionUrlAuthorized": false,
+    "externalEndpointConnectionAuthorized": false,
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false,
+    "otherRouteFamiliesAuthorized": false,
+    "gameCommunicationChangesAuthorized": false,
+    "installerBuildRequiredAtThisGate": false
+  },
+  "stillProhibited": [
+    "key-material",
+    "bundle-signing",
+    "real-staging-or-production-url",
+    "external-endpoint-connection",
+    "runtime-publication",
+    "default-enablement",
+    "other-route-family",
+    "game-communication-mutation",
+    "installer-build"
+  ],
+  "review": {
+    "author": "codex-r7-staging-configuration-author",
+    "requiredReviewerRole": "project-owner",
+    "decision": "fixed-semantic-digest-required",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}
