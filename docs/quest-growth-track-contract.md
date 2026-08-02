@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R8_EO_BUNDLED_OPT_IN_ROUTE_REVIEWED`
+Status: `R8_SURFACE_BUNDLED_OPT_IN_ROUTE_REVIEWED`
 
 ## モデル境界
 
@@ -224,9 +224,13 @@ runtime eligible は0件である。
 R8 は R7 の署名候補や runtime publication を拡張せず、攻略推薦の対象範囲を段階的に増やす。
 初回追加として `normal-map-eo-blueprint-loop` lineage に基づく 1-5 月度 EO 勲章ルートを、
 日本語 WikiWiki と中国語 KcWiki の独立した2情報源で照合し、2026-08-02 に reviewed とした。
-表示は利用者が重点を EO に選び、閉じた攻略ルート section を開いた場合だけである。既定非表示、
+続いて `surface-air-los-foundation` lineage に基づく 2-1 航空・水上基礎ルートを同じく独立した
+2情報源で照合し、2026-08-03 に reviewed とした。2-1 は軽空母2、雷巡1、駆逐3による
+`C-D-H` / `C-E-D-H` と航空優勢境界81を手動確認対象とし、索敵カテゴリの保有事実を
+2-1到達条件や他海域の索敵達成判定へ流用しない。
+表示は利用者が対応する重点を選び、閉じた攻略ルート section を開いた場合だけである。既定非表示、
 session-only、manual-check、runtime publication 未承認、runtime eligible count 0 を維持する。
-この R8 bundled route は R7 の Ed25519 signed candidate 2件には含めない。
+R8 bundled route 2件はいずれも R7 の Ed25519 signed candidate 2件には含めない。
 
 具体的 route の `reviewed` 昇格には route 単位の独立 semantic-digest approval を必要とする。renderer、
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や

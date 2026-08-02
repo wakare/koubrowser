@@ -1,6 +1,6 @@
 # オープン Issue 実装・受け入れ状況
 
-最終確認日: 2026-08-02
+最終確認日: 2026-08-03
 
 この文書は、現在の作業ツリーに含まれる実装と GitHub のオープン Issue
 を対応付けるための受け入れ表である。GitHub 上で Issue が閉じられたことや、
@@ -45,8 +45,8 @@
    - 既存任務指引を常に fallback として維持し、勝率・消費量予測、装備 optimizer、
      イベント即時追従、自動操作、ゲーム通信変更は引き続き非目標とする。
    - 成長攻略チェックは、既存の遠征05資源循環・1-5対潜練習に加え、独立した2情報源で
-     審査した 1-5 月度EO勲章ルートを bundled opt-in として追加した。R7 の署名候補2件、
-     既定無効、session-only、runtime eligible count 0 は変更しない。
+     審査した 1-5 月度EO勲章ルートと 2-1 航空・水上基礎ルートを bundled opt-in として
+     追加した。R7 の署名候補2件、既定無効、session-only、runtime eligible count 0 は変更しない。
 2. **P1: #29 の本番運用決定**
    - 正式 HTTPS 配布 URL、公開鍵・指紋の値、秘密鍵保管とローテーションを決める。
    - [`data-update-key-operations.md`](data-update-key-operations.md) の役割分離、主鍵と

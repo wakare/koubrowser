@@ -1,0 +1,82 @@
+{
+  "authoringSchema": "QuestGrowthR8EvidenceSnapshots/1alpha",
+  "snapshotVersion": "1.0.0-alpha.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "3788c836ca415421910ed40295ac77492ab6da54",
+    "checkedAt": "2026-08-02T15:03:58.374Z"
+  },
+  "sources": [
+    {
+      "sourceId": "source:r8-wikiwiki-2-1-surface-air",
+      "independenceGroupId": "group:wikiwiki-ja",
+      "url": "https://wikiwiki.jp/kancolle/南西諸島海域/2-1",
+      "title": "南西諸島海域/2-1 - 艦隊これくしょん -艦これ- 攻略 Wiki*",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki*",
+      "language": "ja-JP",
+      "accessibility": "independently-readable",
+      "evidenceClass": "mechanic",
+      "checkedAt": "2026-08-02T15:03:58.374Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-01-28T00:00:00.000Z",
+      "supportedClaims": ["claim:adaptive-growth-priorities"],
+      "facts": [
+        {
+          "factId": "fact:r8-2-1-carrier-route",
+          "statement": "航空戦艦と補給艦を含めず、空母系2隻以下かつ戦艦級と空母系の合計4隻以下なら、C-D-HまたはC-E-D-Hでボスへ到達できる。"
+        },
+        {
+          "factId": "fact:r8-2-1-air-thresholds",
+          "statement": "航空優勢の最大境界はDで72、ボスHで81である。"
+        },
+        {
+          "factId": "fact:r8-2-1-enemy-strength",
+          "statement": "司令部レベルにより敵が強化され、ボスには戦艦と最大2隻の空母が出現し得る。"
+        },
+        {
+          "factId": "fact:r8-2-1-damage-stop",
+          "statement": "軽量編成では被害が大きくなり得るため、各戦闘後の損傷確認が必要である。"
+        }
+      ],
+      "notes": [
+        "ページ最終更新は2026-07-19と表示されていた。",
+        "制空値81は最大編成に対する境界であり、搭載機損耗を含む実アカウントの達成保証ではない。"
+      ]
+    },
+    {
+      "sourceId": "source:r8-kcwiki-2-1-surface-air",
+      "independenceGroupId": "group:kcwiki-zh",
+      "url": "https://zh.kcwiki.cn/wiki/2-1",
+      "title": "南西群岛海域/2-1 - 舰娘百科",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "accessibility": "independently-readable",
+      "evidenceClass": "mechanic",
+      "checkedAt": "2026-08-02T15:03:58.374Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-01-28T00:00:00.000Z",
+      "supportedClaims": ["claim:adaptive-growth-priorities"],
+      "facts": [
+        {
+          "factId": "fact:r8-2-1-carrier-route",
+          "statement": "2轻空母、1雷巡、3驱逐是用于日常南西任务的常用配置，符合C-(E)-D-H带路条件。"
+        },
+        {
+          "factId": "fact:r8-2-1-air-thresholds",
+          "statement": "D点航空优势边界为72，Boss H点航空优势边界为81。"
+        },
+        {
+          "factId": "fact:r8-2-1-route-conditions",
+          "statement": "不含航空战舰和补给舰、空母系不超过2艘且战舰系与空母系合计不超过4艘，可沿C-(E)-D-H前进。"
+        },
+        {
+          "factId": "fact:r8-2-1-damage-stop",
+          "statement": "Boss敌编成可能含战舰与两艘精英空母，应在继续进击前检查损伤。"
+        }
+      ],
+      "notes": [
+        "只采用与日文Wiki分歧表和敌编成表一致的路线与制空边界。",
+        "不承诺航空优势、Boss胜利、资源消耗或当前账号可执行性。"
+      ]
+    }
+  ]
+}

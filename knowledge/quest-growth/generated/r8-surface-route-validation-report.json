@@ -1,0 +1,18 @@
+{
+  "catalogDigest": "sha256:5ed82389017cfe18afd526c0bc66b3d7dd06d1b3db47cc48b82b6c91ac97367f",
+  "compilerVersion": "quest-growth-r8-surface-route-validator/1",
+  "defaultVisible": false,
+  "evidenceSnapshotDigest": "sha256:d35fbe4774679252dc2e2425d1ffb0dcda19cede56ecdd9b32fab4c629b471f6",
+  "evidenceSourceCount": 2,
+  "generatedAt": "2026-08-02T15:03:58.374Z",
+  "independentEvidenceGroupCount": 2,
+  "reviewedRouteCount": 1,
+  "routeFamily": "surface-air-los-foundation",
+  "routeId": "route:2-1-surface-air-baseline:draft-1",
+  "routeSemanticDigest": "sha256:6de12b626dacdf252746d21593268167105614242f3158a046a1a126db8e3f86",
+  "runtimeEligibleCount": 0,
+  "runtimePublicationAuthorized": false,
+  "schemaVersion": 1,
+  "sessionOnly": true,
+  "status": "R8_SURFACE_BUNDLED_OPT_IN_ROUTE_REVIEWED"
+}

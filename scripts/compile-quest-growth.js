@@ -59,8 +59,12 @@ const {
   R8EoRouteOutputFilenames,
   buildR8EoRouteArtifacts
 } = require('./quest-growth-r8-eo-route')
+const {
+  R8SurfaceRouteOutputFilenames,
+  buildR8SurfaceRouteArtifacts
+} = require('./quest-growth-r8-surface-route')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/31'
+const CompilerVersion = 'quest-growth-authoring-compiler/32'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -82,7 +86,8 @@ const OutputFilenames = [
   ...R7SignedBundleEvidenceReviewDecisionOutputFilenames,
   ...R7SignedBundleEvidenceReviewExecutionDecisionOutputFilenames,
   ...R7SignedBundleEvidenceReviewResultRecordingDecisionOutputFilenames,
-  ...R8EoRouteOutputFilenames
+  ...R8EoRouteOutputFilenames,
+  ...R8SurfaceRouteOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -935,6 +940,7 @@ function buildQuestGrowthArtifacts(root) {
   const r7SignedBundleEvidenceReviewResultRecordingDecision =
     buildR7SignedBundleEvidenceReviewResultRecordingDecisionArtifacts({ root })
   const r8EoRoute = buildR8EoRouteArtifacts({ root })
+  const r8SurfaceRoute = buildR8SurfaceRouteArtifacts({ root })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -997,6 +1003,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r7SignedBundleEvidenceReviewExecutionDecision.source,
       ...r7SignedBundleEvidenceReviewResultRecordingDecision.source,
       ...r8EoRoute.source,
+      ...r8SurfaceRoute.source,
       fixtureDigests
     },
     output: {
@@ -1045,7 +1052,8 @@ function buildQuestGrowthArtifacts(root) {
       ...r7SignedBundleEvidenceReviewDecision.output,
       ...r7SignedBundleEvidenceReviewExecutionDecision.output,
       ...r7SignedBundleEvidenceReviewResultRecordingDecision.output,
-      ...r8EoRoute.output
+      ...r8EoRoute.output,
+      ...r8SurfaceRoute.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -1180,7 +1188,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7SignedBundleEvidenceReviewDecision.artifacts,
     ...r7SignedBundleEvidenceReviewExecutionDecision.artifacts,
     ...r7SignedBundleEvidenceReviewResultRecordingDecision.artifacts,
-    ...r8EoRoute.artifacts
+    ...r8EoRoute.artifacts,
+    ...r8SurfaceRoute.artifacts
   }
 }
 

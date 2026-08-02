@@ -31,7 +31,7 @@ const Inputs: QuestGrowthFallbackInput[] = [
 
 describe('QuestGrowthCheck.vue', () => {
   async function render(
-    focus: 'unset' | 'resources' | 'asw' | 'eo' | 'breadth' = 'unset',
+    focus: 'unset' | 'resources' | 'asw' | 'surface' | 'eo' | 'breadth' = 'unset',
     inputs: QuestGrowthFallbackInput[] = Inputs
   ) {
     const { default: QuestGrowthCheck } = await import('../QuestGrowthCheck.vue')
@@ -171,6 +171,21 @@ describe('QuestGrowthCheck.vue', () => {
     expect(wrapper.get('.quest-growth-reviewed-route').text()).toContain(
       '月内に4回目の旗艦撃沈'
     )
+  })
+
+  it('shows the reviewed 2-1 surface and air route for the surface focus', async () => {
+    const wrapper = await render('surface')
+    const details = wrapper.get('.quest-growth-reviewed-routes')
+
+    ;(details.element as HTMLDetailsElement).open = true
+    await details.trigger('toggle')
+
+    expect(wrapper.findAll('.quest-growth-reviewed-route')).toHaveLength(1)
+    const route = wrapper.get('.quest-growth-reviewed-route').text()
+    expect(route).toContain('2-1 航空・水上基礎確認（手動確認）')
+    expect(route).toContain('C-D-HまたはC-E-D-H')
+    expect(route).toContain('Hの航空優勢境界81')
+    expect(route).toContain('索敵装備の保有数は別のローカル事実')
   })
 
   it('hides an expired route and requests knowledge review', async () => {

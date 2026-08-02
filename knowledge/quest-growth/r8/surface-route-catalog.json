@@ -1,0 +1,95 @@
+{
+  "authoringSchema": "QuestGrowthR8ConcreteRouteCatalog/1alpha",
+  "catalogVersion": "1.0.0-alpha.1",
+  "status": "reviewed",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "3788c836ca415421910ed40295ac77492ab6da54",
+    "checkedAt": "2026-08-02T15:03:58.374Z"
+  },
+  "selectedFamilies": ["surface-air-los-foundation"],
+  "publicationAuthorization": "R8_BUNDLED_OPT_IN_ONLY",
+  "runtimeContract": {
+    "defaultVisible": false,
+    "sessionOnly": true,
+    "runtimePublicationAuthorized": false,
+    "runtimeEligibleCount": 0
+  },
+  "routes": [
+    {
+      "routeId": "route:2-1-surface-air-baseline:draft-1",
+      "lineageRef": {
+        "id": "growth-lineage:surface-air-los-foundation",
+        "revision": 1
+      },
+      "routeFamily": "surface-air-los-foundation",
+      "revision": 1,
+      "status": "reviewed",
+      "outputClass": "manual-check-route",
+      "title": "2-1 航空・水上基礎確認（手動確認）",
+      "summary": "軽空母2・雷巡1・駆逐3で、制空と水上戦の基礎を確認しながら2-1ボスへ進む候補です。索敵能力は別の事実として扱います。",
+      "applicability": [
+        "現在の重点として水上・航空・索敵能力を選んでいる。",
+        "2-1が海域一覧に表示され、軽空母2隻、雷巡1隻、駆逐3隻を編成できる。",
+        "出撃前に現在の艦載機、搭載数、熟練度を含む制空値を確認できる。",
+        "疲労、損傷、補給を確認し、各戦闘後に手動で進撃可否を判断できる。"
+      ],
+      "segments": [
+        {
+          "segmentId": "segment:2-1-cdeh-surface-air",
+          "actionCategory": "sortie",
+          "mapKey": "2-1",
+          "targetNodes": ["C", "D/E", "H"],
+          "fleetConstraints": [
+            "軽空母2隻、雷巡1隻、駆逐3隻の6隻編成にする。",
+            "航空戦艦と補給艦を編成しない。",
+            "空母系を2隻以下、戦艦級と空母系の合計を4隻以下に保つ。",
+            "疲労または損傷が進んだ艦は交代し、大破艦がいる場合は出撃しない。"
+          ],
+          "equipmentConstraints": [
+            "軽空母の艦戦を含む現在の制空値を計算し、Hの航空優勢境界81に損耗分の余裕を加えて準備する。",
+            "制空値が計算できない、または境界81を下回る場合は航空優勢と断定せず、艦戦配分を再確認する。",
+            "索敵装備の保有数は別のローカル事実として確認し、2-1到達条件や他海域の索敵達成判定に流用しない。"
+          ],
+          "formations": ["line-ahead"],
+          "airState": "air-superiority-81-with-margin-manual-check",
+          "branchConditions": [
+            "想定経路はC-D-HまたはC-E-D-H。Eは高速建造材の資源マスで、EからDを経由してHへ進む。",
+            "航空戦艦、補給艦、空母系3隻以上、または戦艦級と空母系の合計5隻以上になった場合は出撃を中止して編成を再確認する。",
+            "Dの航空優勢境界は72、Hの最大境界は81。航空戦後の表示が想定と異なる場合は次周前に制空値を再計算する。"
+          ],
+          "sortieInstructions": [
+            "2-1へ出撃し、水上戦では単縦陣を選択する。",
+            "C戦後に損傷を確認し、大破艦がいる場合は進撃せず撤退する。",
+            "Dへ進んだ場合は航空戦後の制空状態と損傷を確認する。Eへ進んだ場合は資源取得後にDへ進む。",
+            "Hのボス戦後に勝敗、制空状態、搭載機損耗と損傷を確認して帰投する。",
+            "帰投後に補給し、制空値が81を下回った、または被害が大きい場合は次の出撃を止めて編成と装備を見直す。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:adaptive-growth-priorities",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:db4c226f2d12a591e24a8b0e3cf6b27b6fc5957f32085aaec4cffe2b249e493e"
+            },
+            {
+              "claimRef": "claim:adaptive-growth-priorities",
+              "independenceGroupId": "group:kcwiki-zh",
+              "sourceDigest": "sha256:8701f0655636ee1bdf7e0caa3698ecb6216849a8bdd05794563790b557a318dc"
+            }
+          ],
+          "fallback": "2-1未解放、編成条件不一致、制空値不明、資源不足、疲労または損傷時は出撃せず、海域・艦隊・装備画面を再確認する。"
+        }
+      ],
+      "currentness": {
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "fallback": "分岐、敵編成、制空境界または適用条件が証拠快照と異なる場合はこのルートを表示せず、再審査へ戻す。",
+      "review": {
+        "author": "codex-r8-surface-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-02T15:03:58.374Z",
+        "approvalDigest": "sha256:6de12b626dacdf252746d21593268167105614242f3158a046a1a126db8e3f86"
+      }
+    }
+  ]
+}

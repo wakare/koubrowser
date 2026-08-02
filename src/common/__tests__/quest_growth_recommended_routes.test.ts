@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   QuestGrowthR8EoRouteCatalog,
+  QuestGrowthR8SurfaceRouteCatalog,
   selectQuestGrowthRecommendedRoutes
 } from '../quest_growth_recommended_routes'
 
@@ -40,6 +41,28 @@ describe('quest growth recommended routes', () => {
     })
   })
 
+  it('selects the reviewed bundled 2-1 surface and air route', () => {
+    const selection = selectQuestGrowthRecommendedRoutes('surface', ReviewedAt)
+
+    expect(selection).toMatchObject({
+      state: 'available',
+      routes: [
+        {
+          routeId: 'route:2-1-surface-air-baseline:draft-1',
+          routeFamily: 'surface-air-los-foundation',
+          status: 'reviewed',
+          outputClass: 'manual-check-route'
+        }
+      ]
+    })
+    expect(QuestGrowthR8SurfaceRouteCatalog.runtimeContract).toEqual({
+      defaultVisible: false,
+      sessionOnly: true,
+      runtimePublicationAuthorized: false,
+      runtimeEligibleCount: 0
+    })
+  })
+
   it('fails closed after the knowledge review deadline', () => {
     expect(
       selectQuestGrowthRecommendedRoutes('eo', new Date('2026-08-31T00:00:00.000Z'))
@@ -54,5 +77,19 @@ describe('quest growth recommended routes', () => {
       state: 'knowledge-review-required',
       routes: []
     })
+  })
+
+  it('fails closed when the surface route semantic binding drifts', () => {
+    const changed = structuredClone(QuestGrowthR8SurfaceRouteCatalog)
+    changed.routes[0].segments[0].targetNodes = ['C', 'H']
+
+    expect(
+      selectQuestGrowthRecommendedRoutes(
+        'surface',
+        ReviewedAt,
+        QuestGrowthR8EoRouteCatalog,
+        changed
+      )
+    ).toEqual({ state: 'knowledge-review-required', routes: [] })
   })
 })
