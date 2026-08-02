@@ -44,7 +44,7 @@
 - 整数 score、固定 tie-break、入力 fingerprint、`any` 前提の独立 alternative を実装
 - 合成 fixture と production 整合性テストで決定性、降格、失効、競合、
   preference、任務定義との map/rank/count 一致を検証
-- Wiki の現行海域・定期任務ページをレビューし、通常海域 25 recipe を同梱
+- Wiki の現行海域・定期任務ページをレビューし、通常海域 28 recipe を同梱
 - 既存任務指引内へ既定非表示の opt-in UI、score 内訳、次点、確認事項、
   recipe 非表示、実行要約を追加
 - 1～5 任務を最大 512 recipe から限界被覆で選ぶ bounded set-cover と性能 fixture を追加。
@@ -70,6 +70,9 @@
 | `normal-6-3-aerial-recon-quarterly`     | 854 / 862             | [6-3](https://wikiwiki.jp/kancolle/中部海域/6-3)、[舰娘百科 6-3](https://zh.kcwiki.cn/wiki/中部海域/6-3)       |
 | `normal-6-1-submarine-monthly`          | 256 / 854             | [6-1](https://wikiwiki.jp/kancolle/中部海域/6-1)、[舰娘百科 6-1](https://zh.kcwiki.cn/wiki/中部海域/6-1)       |
 | `normal-6-4-z-operation-quarterly`      | 854                   | [6-4](https://wikiwiki.jp/kancolle/中部海域/6-4)、[舰娘百科 6-4](https://zh.kcwiki.cn/wiki/中部海域/6-4)       |
+| `normal-5-5-z-operation-later-quarterly` | 872                  | [5-5](https://wikiwiki.jp/kancolle/南方海域/5-5)、[舰娘百科 5-5](https://zh.kcwiki.cn/wiki/5-5)                |
+| `normal-6-2-z-operation-later-quarterly` | 872                  | [6-2](https://wikiwiki.jp/kancolle/中部海域/6-2)、[舰娘百科 6-2](https://zh.kcwiki.cn/wiki/6-2)                |
+| `normal-6-5-z-operation-later-quarterly` | 872                  | [6-5](https://wikiwiki.jp/kancolle/中部海域/6-5)、[舰娘百科 6-5](https://zh.kcwiki.cn/wiki/中部海域/6-5)       |
 | `normal-3-1-northern-quarterly`         | 873                   | [3-1](https://wikiwiki.jp/kancolle/北方海域/3-1)、[舰娘百科 3-1](https://zh.kcwiki.cn/wiki/3-1)                |
 | `normal-3-2-northern-quarterly`         | 873                   | [3-2](https://wikiwiki.jp/kancolle/北方海域/3-2)、[舰娘百科 3-2](https://zh.kcwiki.cn/wiki/3-2)                |
 | `normal-3-3-northern-weekly`            | 241 / 873             | [3-3](https://wikiwiki.jp/kancolle/北方海域/3-3)、[舰娘百科 3-3](https://zh.kcwiki.cn/wiki/3-3)                |
@@ -80,7 +83,7 @@
 | `normal-4-5-western-quarterly`          | 845                   | [4-5](https://wikiwiki.jp/kancolle/西方海域/4-5)、[舰娘百科 4-5](https://zh.kcwiki.cn/wiki/4-5)                |
 | `normal-7-1-anchorage-quarterly`        | 893                   | [7-1](https://wikiwiki.jp/kancolle/南西海域/7-1)、[舰娘百科 7-1](https://zh.kcwiki.cn/wiki/7-1)                |
 | `normal-7-2-g-anchorage-quarterly`      | 893                   | [7-2](https://wikiwiki.jp/kancolle/南西海域/7-2)、[舰娘百科 7-2](https://zh.kcwiki.cn/wiki/南西海域/7-2)       |
-| `normal-7-2-m-anchorage-quarterly`      | 893                   | [7-2](https://wikiwiki.jp/kancolle/南西海域/7-2)、[舰娘百科 7-2](https://zh.kcwiki.cn/wiki/南西海域/7-2)       |
+| `normal-7-2-m-anchorage-quarterly`      | 872 / 893             | [7-2](https://wikiwiki.jp/kancolle/南西海域/7-2)、[舰娘百科 7-2](https://zh.kcwiki.cn/wiki/南西海域/7-2)       |
 
 根拠ごとに再審査期限と有効期限を設定し、新規追加分は 2026-11-02 / 2027-02-02 とした。
 再審査期限後は stale penalty と警告を付け、有効期限後は推薦から除外する。
@@ -118,9 +121,9 @@
 
 ### 現在の actionability baseline
 
-primary denominator 27 件に対し、現行の審査済み 25 route unit が任務全体を完了できるのは
-226、229、241、242、243、256、257、261、264、265、280、284、822、845、854、861、862、873、893、894 の 20 件（74.07%）である。partial は
-0 件で、残る 7 件には route unit がない。この値は全利用者の表示任務に
+primary denominator 27 件に対し、現行の審査済み 28 route unit が任務全体を完了できるのは
+226、229、241、242、243、256、257、261、264、265、280、284、822、845、854、861、862、872、873、893、894 の 21 件（77.78%）である。partial は
+0 件で、残る 6 件には route unit がない。この値は全利用者の表示任務に
 対する命中率ではなく、canonical recurring normal-sortie inventory 上のデータ充足率である。
 
 1-2、1-3、1-4、2-1、2-2、2-3 の組み合わせにより、#280、#284、#894 は各 stage を失わずに
@@ -164,6 +167,13 @@ Aの能動分岐でCを選ぶA-C-E-F-H-Jを採用し、分岐点係数3の索敵
 含むため対地装備を分散し、行動半径5以上の基地航空隊を集中する。航空隊を利用できない状態、
 対地装備不足、道中大破を成功可能と読み替えず、高コスト・高リスクの確認事項として残す。
 
+#872 は7-2第二ゲージM、5-5、6-2、6-5で各S勝利を取る4段階のZ作戦後段計画として表示する。
+7-2は既存#893のM向け高速空母機動recipeを共同利用する。5-5はB-K-P-Sの重量編成とし、
+ボス潜水艦への対潜準備、支援艦隊、ゲージ破壊前後の敵編成差を明示する。6-2は
+C-E-J-Kの索敵・航空優勢、6-5は航空戦艦2・航空巡洋艦1・軽巡1・駆逐2のB-F-I-J-Mと
+行動半径5以上の基地航空隊2部隊を確認事項にする。4海域とも高コスト・高リスクであり、
+経路候補や制空目安を成功保証へ読み替えない。
+
 #241、#242、#243 の週次チェーンは、3-3 の A-C-G-M、4-4 の A-E-I-K、5-2 の
 B-C-E-F-O を一つの順序付き計画として表示する。#241 は正規空母系1・軽空母1・重巡級1・
 軽巡1・駆逐2で北方海域のB勝利以上を5回、#242 は既存4-4編成を再利用してボス勝利、#243 は
@@ -185,7 +195,7 @@ constraint が欠けた recipe は引き続き `route-unreviewed` へ fail close
 そのため本変更では、件数を増やすために未審査 Wiki 情報を取り込まず、まず route-ready
 だけを自動選択する UI と authority を固定する。次のデータ pilot は、代表 snapshot で
 zero-ready の原因を記録し、author と approver を分離できる場合に限り、小さな審査単位で
-追加する。74.07% をもって既定有効化や実用カバレッジ達成とは判断しない。
+追加する。77.78% をもって既定有効化や実用カバレッジ達成とは判断しない。
 
 ## 推奨アーキテクチャ
 

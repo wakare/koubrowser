@@ -1234,6 +1234,313 @@ const recipes = [
   },
   {
     schemaVersion: 1,
+    id: 'normal-5-5-z-operation-later-quarterly',
+    revision: 1,
+    title: '5-5 Z作戦後段',
+    status: 'approved',
+    questIds: [872],
+    objectives: [{ questId: 872, result: 'S', requiredCount: 1 }],
+    mapKey: '5-5',
+    routeLabels: ['B-K-P-S'],
+    targetNodes: ['S'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [
+            ApiShipType.kousoku_senkan,
+            ApiShipType.teisoku_senkan,
+            ApiShipType.koukuu_senkan,
+            ApiShipType.tyoudokyuu_senkan
+          ],
+          minimum: 3,
+          maximum: 3,
+          label: '戦艦級 3 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 1,
+          maximum: 1,
+          label: '正規空母系 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.koujyun],
+          minimum: 1,
+          maximum: 1,
+          label: '航空巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter, SlotitemType.SeaplaneFighter],
+        minimum: 5,
+        required: false,
+        label: 'Sボス航空優勢と道中損耗に備える戦闘機・水上戦闘機'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.RecAircraft, SlotitemType.RecSeaplane],
+        minimum: 2,
+        required: false,
+        label: 'P-Sの分岐点係数2で索敵値80以上を確保する偵察装備'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.Sonar, SlotitemType.LargeSonar],
+        minimum: 1,
+        required: false,
+        label: 'BとSボスの潜水艦対策用ソナー'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'B の対潜戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'K・Pと潜水艦なしのSボス' },
+      { formationId: ApiFormation.fukujyuu, label: '複縦陣', when: '潜水艦を含むSボスでS勝利を狙う場合' }
+    ],
+    airState: {
+      target: 'superiority',
+      summary: 'Sボス航空優勢と道中損耗を含め、出撃時制空値430〜440程度を確認する'
+    },
+    actions: [
+      '任務872を受注し、5-5段階が残っていることと第一艦隊で出撃することを確認する',
+      '戦艦級3・正規空母系1・航空巡洋艦1・軽巡洋艦1の6隻にし、出撃時制空値430〜440程度と分岐点係数2の索敵値80以上を確認する',
+      'B-K-P-Sを進み、Bは単横陣、K・Pは単縦陣とする。Pのレ級戦後に損傷を確認し、大破時は進撃しない',
+      '必要なら道中・決戦支援を出し、Sボスに潜水艦がいる場合は対潜装備と複縦陣を使ってS勝利を取る',
+      'ゲージ破壊前は強編成があるため、戦力不足なら先にゲージを破壊してから任務872の進捗を確認する'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-5-5-current',
+        sourceLabel: '艦これ攻略 Wiki - 5-5',
+        url: 'https://wikiwiki.jp/kancolle/南方海域/5-5',
+        reviewedAt: '2026-08-03T11:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          'B-K-P-S、戦艦級と空母系4隻以下でのボス固定、索敵80、制空430〜440、S勝利用の潜水艦対策を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-5-5-current',
+        sourceLabel: '舰娘百科 - 5-5',
+        url: 'https://zh.kcwiki.cn/wiki/5-5',
+        reviewedAt: '2026-08-03T11:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: 'B-K-P-Sの重量編成、索敵・制空・支援艦隊、潜水艦を含むボスS勝利条件を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: { reviewBy: '2026-11-03T00:00:00.000Z' }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-6-2-z-operation-later-quarterly',
+    revision: 1,
+    title: '6-2 Z作戦後段',
+    status: 'approved',
+    questIds: [872],
+    objectives: [{ questId: 872, result: 'S', requiredCount: 1 }],
+    mapKey: '6-2',
+    routeLabels: ['C-E-J-K'],
+    targetNodes: ['K'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.kousoku_senkan],
+          minimum: 1,
+          maximum: 1,
+          label: '高速戦艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 1,
+          maximum: 1,
+          label: '正規空母系 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.koujyun],
+          minimum: 2,
+          maximum: 2,
+          label: '航空巡洋艦 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 2,
+          maximum: 2,
+          label: '駆逐艦 2 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter, SlotitemType.SeaplaneFighter],
+        minimum: 3,
+        required: false,
+        label: 'Jのヲ級改編成を含む道中航空優勢に備える戦闘機・水上戦闘機'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.RecAircraft, SlotitemType.RecSeaplane],
+        minimum: 3,
+        required: false,
+        label: 'E-JとJ-Kの索敵分岐用の偵察装備'
+      }
+    ],
+    formations: [{ formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'C・E・J・Kボス' }],
+    airState: {
+      target: 'superiority',
+      summary: 'Jのヲ級改編成を含む道中で航空優勢を狙い、艦載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務872を受注し、6-2段階が残っていることを確認する',
+      '高速戦艦1・正規空母系1・航空巡洋艦2・駆逐艦2の6隻にし、戦闘機3枠以上と索敵装備を確認する',
+      'C-E-J-Kを進むため分岐点係数3の索敵値43以上に余裕を加え、各戦闘後に損傷を確認して大破時は進撃しない',
+      '全戦闘で単縦陣を選び、Kボスは必要なら夜戦してS勝利を取り、任務872の進捗を確認する'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-6-2-current',
+        sourceLabel: '艦これ攻略 Wiki - 6-2',
+        url: 'https://wikiwiki.jp/kancolle/中部海域/6-2',
+        reviewedAt: '2026-08-03T11:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '戦艦1・空母1・駆逐2・自由枠2のC-E-J-K、索敵分岐、道中航空優勢と高い事故率を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-6-2-current',
+        sourceLabel: '舰娘百科 - 6-2',
+        url: 'https://zh.kcwiki.cn/wiki/6-2',
+        reviewedAt: '2026-08-03T11:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '戦艦1・空母1・巡洋艦2・駆逐2の南側経路と制空・索敵・艦載機損耗を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: { reviewBy: '2026-11-03T00:00:00.000Z' }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-6-5-z-operation-later-quarterly',
+    revision: 1,
+    title: '6-5 Z作戦後段',
+    status: 'approved',
+    questIds: [872],
+    objectives: [{ questId: 872, result: 'S', requiredCount: 1 }],
+    mapKey: '6-5',
+    routeLabels: ['B-F-I-J-M'],
+    targetNodes: ['M'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.koukuu_senkan],
+          minimum: 2,
+          maximum: 2,
+          label: '航空戦艦 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.koujyun],
+          minimum: 1,
+          maximum: 1,
+          label: '航空巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 2,
+          maximum: 2,
+          label: '駆逐艦 2 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.SeaplaneFighter],
+        minimum: 4,
+        required: false,
+        label: '本隊の航空均衡と敵弾着阻止に備える水上戦闘機'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.LandAttackAircraft],
+        minimum: 6,
+        required: false,
+        label: '行動半径5でMへ届く基地航空隊2部隊分の陸攻'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.Sonar, SlotitemType.LargeSonar],
+        minimum: 1,
+        required: false,
+        label: 'Bの潜水艦対策用ソナー'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.RecSeaplane],
+        minimum: 2,
+        required: false,
+        label: 'I-J-Mの索敵分岐と弾着観測用の水上偵察機'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'B の対潜戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'F・I・J夜戦・Mボス' }
+    ],
+    airState: {
+      target: 'parity',
+      summary: '本隊は航空均衡を最低線とし、Mへ集中する基地航空隊2部隊の制空削りを含めて調整する'
+    },
+    actions: [
+      '任務872を受注し、6-5段階が残っていること、基地航空隊が開放済みで2部隊出撃可能なことを確認する',
+      '航空戦艦2・航空巡洋艦1・軽巡洋艦1・駆逐艦2の6隻にし、水上戦闘機・対空・索敵・対潜装備を分担する',
+      '基地航空隊は行動半径5以上の2部隊をMボスへ集中し、航空隊を使えない場合は攻略準備不足として再確認する',
+      'B-F-I-J-Mを進み、Bは単横陣、それ以外は単縦陣とする。各戦闘後に損傷を確認し、大破時は進撃しない',
+      'Mボスは随伴艦隊を昼戦で減らし、必要なら夜戦して敵12隻を全滅させるS勝利を取り、任務872の達成を確認する'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-6-5-current',
+        sourceLabel: '艦これ攻略 Wiki - 6-5',
+        url: 'https://wikiwiki.jp/kancolle/中部海域/6-5',
+        reviewedAt: '2026-08-03T11:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '航戦2・航巡1・軽巡1・駆逐2のB-F-I-J-M、航空均衡、基地航空隊2部隊集中と連合艦隊S勝利を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-6-5-current',
+        sourceLabel: '舰娘百科 - 6-5',
+        url: 'https://zh.kcwiki.cn/wiki/中部海域/6-5',
+        reviewedAt: '2026-08-03T11:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '下回りの軽量水上編成、ボス半径5、基地航空隊2部隊と制空・資源負担を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: { reviewBy: '2026-11-03T00:00:00.000Z' }
+  },
+  {
+    schemaVersion: 1,
     id: 'normal-3-1-northern-quarterly',
     revision: 1,
     title: '3-1 北方海域警備',
@@ -2110,8 +2417,11 @@ const recipes = [
     revision: 1,
     title: '7-2 タウイタウイ泊地沖 第二ゲージ',
     status: 'approved',
-    questIds: [893],
-    objectives: [{ questId: 893, result: 'S', requiredCount: 3 }],
+    questIds: [872, 893],
+    objectives: [
+      { questId: 872, result: 'S', requiredCount: 1 },
+      { questId: 893, result: 'S', requiredCount: 3 }
+    ],
     mapKey: '7-2',
     routeLabels: ['B-C-D-I-M'],
     targetNodes: ['M'],
@@ -2160,10 +2470,10 @@ const recipes = [
       summary: 'Mボス強編成の航空優勢境界359に搭載機損耗分の余裕を加える'
     },
     actions: [
-      '任務893を受注し、当月の第一ゲージを破壊してM側を開放してから7-2のM段階を確認する',
+      '任務872・893のうち表示中の対象を受注し、当月の第一ゲージを破壊してM側を開放してから7-2のM段階を確認する',
       '高速戦艦1・正規空母系1・軽空母1・航空巡洋艦1・駆逐艦2の全艦高速6隻にする',
       '制空値359以上と分岐点係数4の索敵値69以上を目安に装備を確認する',
-      'B-C-D-I-Mを進んで大破時は進撃せず、MボスでS勝利を3回取って任務達成を確認する'
+      'B-C-D-I-Mを進んで大破時は進撃せず、Mボスで任務872はS勝利1回、任務893はS勝利3回まで進捗を確認する'
     ],
     cost: 'high',
     risk: 'high',
@@ -2185,7 +2495,8 @@ const recipes = [
         validUntil: '2027-02-02T00:00:00.000Z',
         confidence: 'supported',
         summary: '高速戦艦1・正規空母1・軽空母1・航巡1・駆逐2の経路と準備値を独立照合'
-      }
+      },
+      PeriodicSortieEvidence
     ],
     validity: { reviewBy: '2026-11-02T00:00:00.000Z' }
   }
@@ -2193,6 +2504,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.12',
+  version: '2026-08-03.13',
   recipes
 })

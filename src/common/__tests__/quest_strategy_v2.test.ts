@@ -43,9 +43,12 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '4-4': 'available',
         '4-5': 'available',
         '5-2': 'available',
+        '5-5': 'available',
         '6-1': 'available',
+        '6-2': 'available',
         '6-3': 'available',
         '6-4': 'available',
+        '6-5': 'available',
         '7-1': 'available',
         '7-2': 'available'
       },
@@ -201,6 +204,19 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(quarterly.contributedStageIndexes).toEqual([0, 1, 2, 3])
     expect(quarterly.remainingStageIndexes).toEqual([])
     expect(plan.steps.map((step) => step.mapKey).sort()).toEqual(['2-4', '6-1', '6-3', '6-4'])
+  })
+
+  it('assembles all four Z operation later-stage maps into one complete quarterly plan', () => {
+    const plan = build([872])
+    const quarterly = plan.questCoverage.find((coverage) => coverage.questId === 872)!
+
+    expect(plan.coveredQuestIds).toEqual([872])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.uncoveredQuestIds).toEqual([])
+    expect(quarterly.contributedStageIndexes).toEqual([0, 1, 2, 3])
+    expect(quarterly.remainingStageIndexes).toEqual([])
+    expect(plan.steps.map((step) => step.mapKey).sort()).toEqual(['5-5', '6-2', '6-5', '7-2'])
+    expect(plan.steps.find((step) => step.mapKey === '7-2')?.targetNodes).toEqual(['M'])
   })
 
   it('assembles all three northern patrol stages and shares 3-3 with the weekly', () => {

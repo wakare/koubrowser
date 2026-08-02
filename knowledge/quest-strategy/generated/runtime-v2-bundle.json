@@ -2546,6 +2546,445 @@
     },
     {
       "actions": [
+        "任務872を受注し、5-5段階が残っていることと第一艦隊で出撃することを確認する",
+        "戦艦級3・正規空母系1・航空巡洋艦1・軽巡洋艦1の6隻にし、出撃時制空値430〜440程度と分岐点係数2の索敵値80以上を確認する",
+        "B-K-P-Sを進み、Bは単横陣、K・Pは単縦陣とする。Pのレ級戦後に損傷を確認し、大破時は進撃しない",
+        "必要なら道中・決戦支援を出し、Sボスに潜水艦がいる場合は対潜装備と複縦陣を使ってS勝利を取る",
+        "ゲージ破壊前は強編成があるため、戦力不足なら先にゲージを破壊してから任務872の進捗を確認する"
+      ],
+      "airState": {
+        "summary": "Sボス航空優勢と道中損耗を含め、出撃時制空値430〜440程度を確認する",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "5-5",
+          "questId": 872,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 1
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6,
+            45
+          ],
+          "label": "Sボス航空優勢と道中損耗に備える戦闘機・水上戦闘機",
+          "minimum": 5,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            9,
+            10
+          ],
+          "label": "P-Sの分岐点係数2で索敵値80以上を確保する偵察装備",
+          "minimum": 2,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            14,
+            40
+          ],
+          "label": "BとSボスの潜水艦対策用ソナー",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T11:00:00.000Z",
+          "sourceId": "wikiwiki-map-5-5-current",
+          "sourceLabel": "艦これ攻略 Wiki - 5-5",
+          "summary": "B-K-P-S、戦艦級と空母系4隻以下でのボス固定、索敵80、制空430〜440、S勝利用の潜水艦対策を確認",
+          "url": "https://wikiwiki.jp/kancolle/南方海域/5-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T11:00:00.000Z",
+          "sourceId": "kcwiki-map-5-5-current",
+          "sourceLabel": "舰娘百科 - 5-5",
+          "summary": "B-K-P-Sの重量編成、索敵・制空・支援艦隊、潜水艦を含むボスS勝利条件を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/5-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "戦艦級 3 隻",
+            "maximum": 3,
+            "minimum": 3,
+            "shipTypeIds": [
+              8,
+              9,
+              10,
+              12
+            ]
+          },
+          {
+            "label": "正規空母系 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              11,
+              18
+            ]
+          },
+          {
+            "label": "航空巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              6
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "B の対潜戦"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "K・Pと潜水艦なしのSボス"
+        },
+        {
+          "formationId": 2,
+          "label": "複縦陣",
+          "when": "潜水艦を含むSボスでS勝利を狙う場合"
+        }
+      ],
+      "mapKey": "5-5",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-5-5-z-operation-later-quarterly",
+      "routeLabels": [
+        "B-K-P-S"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "S"
+      ],
+      "title": "5-5 Z作戦後段",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務872を受注し、6-2段階が残っていることを確認する",
+        "高速戦艦1・正規空母系1・航空巡洋艦2・駆逐艦2の6隻にし、戦闘機3枠以上と索敵装備を確認する",
+        "C-E-J-Kを進むため分岐点係数3の索敵値43以上に余裕を加え、各戦闘後に損傷を確認して大破時は進撃しない",
+        "全戦闘で単縦陣を選び、Kボスは必要なら夜戦してS勝利を取り、任務872の進捗を確認する"
+      ],
+      "airState": {
+        "summary": "Jのヲ級改編成を含む道中で航空優勢を狙い、艦載機損耗分の余裕を加える",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "6-2",
+          "questId": 872,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 2
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6,
+            45
+          ],
+          "label": "Jのヲ級改編成を含む道中航空優勢に備える戦闘機・水上戦闘機",
+          "minimum": 3,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            9,
+            10
+          ],
+          "label": "E-JとJ-Kの索敵分岐用の偵察装備",
+          "minimum": 3,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T11:00:00.000Z",
+          "sourceId": "wikiwiki-map-6-2-current",
+          "sourceLabel": "艦これ攻略 Wiki - 6-2",
+          "summary": "戦艦1・空母1・駆逐2・自由枠2のC-E-J-K、索敵分岐、道中航空優勢と高い事故率を確認",
+          "url": "https://wikiwiki.jp/kancolle/中部海域/6-2",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T11:00:00.000Z",
+          "sourceId": "kcwiki-map-6-2-current",
+          "sourceLabel": "舰娘百科 - 6-2",
+          "summary": "戦艦1・空母1・巡洋艦2・駆逐2の南側経路と制空・索敵・艦載機損耗を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/6-2",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "高速戦艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              8
+            ]
+          },
+          {
+            "label": "正規空母系 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              11,
+              18
+            ]
+          },
+          {
+            "label": "航空巡洋艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              6
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "C・E・J・Kボス"
+        }
+      ],
+      "mapKey": "6-2",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-6-2-z-operation-later-quarterly",
+      "routeLabels": [
+        "C-E-J-K"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "K"
+      ],
+      "title": "6-2 Z作戦後段",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務872を受注し、6-5段階が残っていること、基地航空隊が開放済みで2部隊出撃可能なことを確認する",
+        "航空戦艦2・航空巡洋艦1・軽巡洋艦1・駆逐艦2の6隻にし、水上戦闘機・対空・索敵・対潜装備を分担する",
+        "基地航空隊は行動半径5以上の2部隊をMボスへ集中し、航空隊を使えない場合は攻略準備不足として再確認する",
+        "B-F-I-J-Mを進み、Bは単横陣、それ以外は単縦陣とする。各戦闘後に損傷を確認し、大破時は進撃しない",
+        "Mボスは随伴艦隊を昼戦で減らし、必要なら夜戦して敵12隻を全滅させるS勝利を取り、任務872の達成を確認する"
+      ],
+      "airState": {
+        "summary": "本隊は航空均衡を最低線とし、Mへ集中する基地航空隊2部隊の制空削りを含めて調整する",
+        "target": "parity"
+      },
+      "contributions": [
+        {
+          "mapKey": "6-5",
+          "questId": 872,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 3
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            45
+          ],
+          "label": "本隊の航空均衡と敵弾着阻止に備える水上戦闘機",
+          "minimum": 4,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            47
+          ],
+          "label": "行動半径5でMへ届く基地航空隊2部隊分の陸攻",
+          "minimum": 6,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            14,
+            40
+          ],
+          "label": "Bの潜水艦対策用ソナー",
+          "minimum": 1,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            10
+          ],
+          "label": "I-J-Mの索敵分岐と弾着観測用の水上偵察機",
+          "minimum": 2,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T11:00:00.000Z",
+          "sourceId": "wikiwiki-map-6-5-current",
+          "sourceLabel": "艦これ攻略 Wiki - 6-5",
+          "summary": "航戦2・航巡1・軽巡1・駆逐2のB-F-I-J-M、航空均衡、基地航空隊2部隊集中と連合艦隊S勝利を確認",
+          "url": "https://wikiwiki.jp/kancolle/中部海域/6-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T11:00:00.000Z",
+          "sourceId": "kcwiki-map-6-5-current",
+          "sourceLabel": "舰娘百科 - 6-5",
+          "summary": "下回りの軽量水上編成、ボス半径5、基地航空隊2部隊と制空・資源負担を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/中部海域/6-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "航空戦艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              10
+            ]
+          },
+          {
+            "label": "航空巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              6
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "B の対潜戦"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "F・I・J夜戦・Mボス"
+        }
+      ],
+      "mapKey": "6-5",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-6-5-z-operation-later-quarterly",
+      "routeLabels": [
+        "B-F-I-J-M"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "M"
+      ],
+      "title": "6-5 Z作戦後段",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務873を受注し、3-1段階が残っていることを確認する",
         "正規空母系1・軽空母1・軽巡洋艦1・重巡級1・駆逐艦2の6隻にする",
         "C-F-Gを進み、F戦後に損傷を確認して大破時は進撃しない",
@@ -3781,16 +4220,23 @@
     },
     {
       "actions": [
-        "任務893を受注し、当月の第一ゲージを破壊してM側を開放してから7-2のM段階を確認する",
+        "任務872・893のうち表示中の対象を受注し、当月の第一ゲージを破壊してM側を開放してから7-2のM段階を確認する",
         "高速戦艦1・正規空母系1・軽空母1・航空巡洋艦1・駆逐艦2の全艦高速6隻にする",
         "制空値359以上と分岐点係数4の索敵値69以上を目安に装備を確認する",
-        "B-C-D-I-Mを進んで大破時は進撃せず、MボスでS勝利を3回取って任務達成を確認する"
+        "B-C-D-I-Mを進んで大破時は進撃せず、Mボスで任務872はS勝利1回、任務893はS勝利3回まで進捗を確認する"
       ],
       "airState": {
         "summary": "Mボス強編成の航空優勢境界359に搭載機損耗分の余裕を加える",
         "target": "superiority"
       },
       "contributions": [
+        {
+          "mapKey": "7-2",
+          "questId": 872,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        },
         {
           "mapKey": "7-2",
           "questId": 893,
@@ -3847,6 +4293,15 @@
           "summary": "高速戦艦1・正規空母1・軽空母1・航巡1・駆逐2の経路と準備値を独立照合",
           "url": "https://zh.kcwiki.cn/wiki/南西海域/7-2",
           "validUntil": "2027-02-02T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
         }
       ],
       "fleet": {
@@ -3929,11 +4384,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:a1af1de64c63263cb7c4921acf3e39e88811fb51181575f1b3c6adbfb95d2945",
-    "legacyKnowledgeDigest": "sha256:24ae8bea1a6869f07a4229af9d0d5ee97fca69cc1ea0d9584d9f0ca025c01716",
-    "pilotAuthoringManifestDigest": "sha256:3ca5f99eaa2fc23179793b741df9c407409dcb878ea88c9234c29a98b295f1ee",
+    "inventoryDigest": "sha256:77713ae3ca742faa3e7b03c3819793ac379aeb1f1d6d139dafe922907c4dbaf4",
+    "legacyKnowledgeDigest": "sha256:14cf32d9399b38a719b83cdf0dcd2fbbfb1be2ced8a880cea91cc4a2115ce307",
+    "pilotAuthoringManifestDigest": "sha256:dac2657f4e450956b0edfd86eda2b31b32960a9b9447d9ebda99d0121decb86b",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "ecd9b2a7ac9920341ad1d4736a36dfea96e1f70a"
+    "repositoryCommit": "e2b16a0c2c162ebb7c069bdefebcc6de2c383dee"
   },
-  "version": "2026-08-03.12.v2"
+  "version": "2026-08-03.13.v2"
 }

@@ -1,11 +1,11 @@
 {
   "compilerVersion": "quest-strategy-v2-compiler/2",
   "output": {
-    "bundleDigest": "sha256:89d04fa912d688af262ed5def88f297b77228149980612dc8837848f6c704436",
+    "bundleDigest": "sha256:b9e835ce64d04b4ec32a1511562b3a00fd589724e6f5705dda94184699c563f9",
     "objectiveFactCount": 27,
-    "routeCount": 25,
+    "routeCount": 28,
     "schemaVersion": 2,
-    "stageContributionCount": 45
+    "stageContributionCount": 49
   },
   "schemaVersion": 1,
   "source": {
@@ -13,11 +13,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:a1af1de64c63263cb7c4921acf3e39e88811fb51181575f1b3c6adbfb95d2945",
-    "legacyKnowledgeDigest": "sha256:24ae8bea1a6869f07a4229af9d0d5ee97fca69cc1ea0d9584d9f0ca025c01716",
-    "pilotAuthoringManifestDigest": "sha256:3ca5f99eaa2fc23179793b741df9c407409dcb878ea88c9234c29a98b295f1ee",
+    "inventoryDigest": "sha256:77713ae3ca742faa3e7b03c3819793ac379aeb1f1d6d139dafe922907c4dbaf4",
+    "legacyKnowledgeDigest": "sha256:14cf32d9399b38a719b83cdf0dcd2fbbfb1be2ced8a880cea91cc4a2115ce307",
+    "pilotAuthoringManifestDigest": "sha256:dac2657f4e450956b0edfd86eda2b31b32960a9b9447d9ebda99d0121decb86b",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "ecd9b2a7ac9920341ad1d4736a36dfea96e1f70a"
+    "repositoryCommit": "e2b16a0c2c162ebb7c069bdefebcc6de2c383dee"
   },
   "unsupported": []
 }
