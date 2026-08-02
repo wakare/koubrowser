@@ -1,0 +1,105 @@
+{
+  "authoringSchema": "QuestGrowthR7ResponsiveLayoutFixRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-route-panel-responsive-fix-authoring",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_ROUTE_PANEL_RESPONSIVE_FIX_AUTHORING_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "9305994c9a5c92a6818071c372e68ae8bd69310e",
+    "checkedAt": "2026-08-02T07:42:10.343Z"
+  },
+  "failureBasis": {
+    "acceptanceSemanticDigest": "sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6",
+    "acceptanceReportDigest": "sha256:9160340cfacd68dad68e2232b73166404eccd64b0227064b63ace06b657ea197",
+    "acceptanceResultCommit": "9305994c9a5c92a6818071c372e68ae8bd69310e",
+    "growthComponentDigest": "sha256:c50c847d7b392759d94f65a8dd8bbaea8a047b1d12b5f4a5f6f308cded1e9947",
+    "questGuideDigest": "sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4",
+    "smokeHarnessDigest": "sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400",
+    "reasonCode": "QUEST_STRATEGY_CURRENT_SIZE_HORIZONTAL_OVERFLOW",
+    "layoutDiagnostic": {
+      "clientWidth": 221,
+      "scrollWidth": 257
+    },
+    "protectedCommunicationDigests": {
+      "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+      "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
+      "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e"
+    }
+  },
+  "diagnosis": {
+    "rootCause": "viewport-media-query-does-not-reflect-narrow-workspace-container",
+    "observations": [
+      "quest-growth-panel-was-221px-wide-inside-a-2576px-wide-window",
+      "max-width-760px-viewport-rule-did-not-activate-for-the-narrow-workspace-column",
+      "header-counts-context-grid-and-reviewed-route-header-retained-horizontal-minimums",
+      "route-content-inspection-stopped-before-any-fixed-route-was-accepted"
+    ]
+  },
+  "requestedAuthorization": {
+    "gateId": "r7-route-panel-responsive-fix-authoring",
+    "authorizationState": "not-authorized",
+    "implementationAuthorization": "not-authorized",
+    "authorizedPaths": [
+      "src/renderer/src/components/QuestGrowthCheck.vue",
+      "src/renderer/src/components/__tests__/QuestGrowthCheck.test.ts",
+      "scripts/electron-smoke.js",
+      "src/main/__tests__/electron-smoke-script.test.ts"
+    ]
+  },
+  "changeContract": {
+    "changes": [
+      "add-component-inline-size-containment-to-quest-growth-root",
+      "replace-viewport-only-responsive-collapse-with-container-aware-narrow-layout",
+      "allow-header-counts-context-controls-and-route-badges-to-wrap-without-overflow",
+      "preserve-existing-layout-at-non-narrow-container-widths",
+      "add-anonymous-221px-route-panel-regression-for-resources-asw-and-unset"
+    ],
+    "routeContentChangesAuthorized": false,
+    "localFactSemanticsChangesAuthorized": false,
+    "translationChangesAuthorized": false
+  },
+  "verificationContract": {
+    "minimumPanelWidth": 221,
+    "maximumOverflowTolerance": 1,
+    "anonymousSignedFixtureRequired": true,
+    "requiredChecks": [
+      "closed-route-section-has-no-horizontal-overflow-at-221px",
+      "resources-reviewed-route-has-no-horizontal-overflow-at-221px",
+      "asw-reviewed-route-has-no-horizontal-overflow-at-221px",
+      "unset-fallback-has-no-horizontal-overflow-at-221px",
+      "session-only-focus-and-resource-posture-behavior-is-unchanged",
+      "wide-container-layout-is-unchanged",
+      "typecheck-and-full-tests-pass",
+      "protected-game-communication-digests-remain-fixed"
+    ]
+  },
+  "executionBoundary": {
+    "realAccountExecutionAuthorized": false,
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false,
+    "otherRouteFamiliesAuthorized": false,
+    "mainOrPreloadProductionChangesAuthorized": false,
+    "gameCommunicationChangesAuthorized": false,
+    "automaticGameOperationAuthorized": false,
+    "installerBuildRequiredAtThisAuthoringGate": false
+  },
+  "stillProhibited": [
+    "credential-handling-by-agent",
+    "agent-click-game-start",
+    "real-account-acceptance-execution",
+    "game-operation-after-game-start",
+    "game-communication-mutation",
+    "route-content-mutation",
+    "local-fact-semantics-mutation",
+    "unredacted-account-evidence-retention",
+    "runtime-publication",
+    "default-enablement",
+    "other-route-family-integration"
+  ],
+  "review": {
+    "author": "codex-r7-responsive-layout-fix-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

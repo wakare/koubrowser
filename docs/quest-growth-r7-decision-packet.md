@@ -133,6 +133,11 @@ reviewed route を renderer に表示する範囲と fail-closed 条件は proje
 [`quest-growth-r7-renderer-decision-packet.md`](quest-growth-r7-renderer-decision-packet.md)
 に分離した。renderer eligible route count は2件、runtime eligible count は0件に保つ。
 
+revision 6 の実アカウント受入は client `221` / scroll `257` の route panel overflow で fail closed した。
+次の container-aware renderer fix と匿名 `221px` regression の authoring request は
+[`quest-growth-r7-responsive-layout-fix-decision-packet.md`](quest-growth-r7-responsive-layout-fix-decision-packet.md)
+に分離し、owner decision required とする。実アカウント再実行はこの gate に含めない。
+
 件数、対象、証拠、review 境界を固定した decision-only packet は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)
 に分離する。

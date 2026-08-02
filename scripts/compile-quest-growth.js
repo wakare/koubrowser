@@ -23,8 +23,12 @@ const {
   R7RealAccountDecisionOutputFilenames,
   buildR7RealAccountDecisionArtifacts
 } = require('./quest-growth-r7-real-account-decision')
+const {
+  R7ResponsiveLayoutDecisionOutputFilenames,
+  buildR7ResponsiveLayoutDecisionArtifacts
+} = require('./quest-growth-r7-responsive-layout-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/20'
+const CompilerVersion = 'quest-growth-authoring-compiler/21'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -37,7 +41,8 @@ const OutputFilenames = [
   ...R7ContentDecisionOutputFilenames,
   ...R7RouteReviewDecisionOutputFilenames,
   ...R7RendererDecisionOutputFilenames,
-  ...R7RealAccountDecisionOutputFilenames
+  ...R7RealAccountDecisionOutputFilenames,
+  ...R7ResponsiveLayoutDecisionOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -869,6 +874,10 @@ function buildQuestGrowthArtifacts(root) {
     r7AuthorizationReport: r7Decision.artifacts['r7-authorization-report.json'],
     r7RendererReport: r7RendererDecision.artifacts['r7-renderer-integration-report.json']
   })
+  const r7ResponsiveLayoutDecision = buildR7ResponsiveLayoutDecisionArtifacts({
+    root,
+    base
+  })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -922,6 +931,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r7RouteReviewDecision.source,
       ...r7RendererDecision.source,
       ...r7RealAccountDecision.source,
+      ...r7ResponsiveLayoutDecision.source,
       fixtureDigests
     },
     output: {
@@ -961,7 +971,8 @@ function buildQuestGrowthArtifacts(root) {
       ...r7ContentDecision.output,
       ...r7RouteReviewDecision.output,
       ...r7RendererDecision.output,
-      ...r7RealAccountDecision.output
+      ...r7RealAccountDecision.output,
+      ...r7ResponsiveLayoutDecision.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -1033,7 +1044,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7ContentDecision.artifacts,
     ...r7RouteReviewDecision.artifacts,
     ...r7RendererDecision.artifacts,
-    ...r7RealAccountDecision.artifacts
+    ...r7RealAccountDecision.artifacts,
+    ...r7ResponsiveLayoutDecision.artifacts
   }
 }
 

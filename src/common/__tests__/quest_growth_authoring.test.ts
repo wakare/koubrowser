@@ -123,6 +123,16 @@ const {
     }
   ) => { semanticDigest: string }
 }
+const {
+  responsiveLayoutRequestSemanticDigest,
+  validateR7ResponsiveLayoutFixRequest
+} = require('../../../scripts/quest-growth-r7-responsive-layout-decision.js') as {
+  responsiveLayoutRequestSemanticDigest: (value: Record<string, unknown>) => string
+  validateR7ResponsiveLayoutFixRequest: (
+    value: Record<string, unknown>,
+    dependencies: { root: string; base: string }
+  ) => { semanticDigest: string; approved: boolean }
+}
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -896,6 +906,59 @@ describe('quest growth authoring contract', () => {
     expect(realAccountRequestSemanticDigest(approved)).toBe(
       realAccountRequestSemanticDigest(request)
     )
+  })
+
+  it('keeps the responsive layout fix draft limited to anonymous authoring', () => {
+    const report = read<{
+      status: string
+      semanticDigest: string
+      authorizationState: string
+      implementationAuthorization: string
+      authorizedPaths: string[]
+      reasonCode: string
+      layoutDiagnostic: { clientWidth: number; scrollWidth: number }
+      minimumPanelWidth: number
+      requiredCheckCount: number
+      realAccountExecutionAuthorization: string
+      publicationAuthorization: string
+    }>('generated', 'r7-responsive-layout-fix-report.json')
+
+    expect(report.status).toBe('OWNER_DECISION_REQUIRED_R7_ROUTE_PANEL_RESPONSIVE_FIX')
+    expect(report.authorizationState).toBe('not-authorized')
+    expect(report.implementationAuthorization).toBe('not-authorized')
+    expect(report.authorizedPaths).toEqual([
+      'src/renderer/src/components/QuestGrowthCheck.vue',
+      'src/renderer/src/components/__tests__/QuestGrowthCheck.test.ts',
+      'scripts/electron-smoke.js',
+      'src/main/__tests__/electron-smoke-script.test.ts'
+    ])
+    expect(report.reasonCode).toBe('QUEST_STRATEGY_CURRENT_SIZE_HORIZONTAL_OVERFLOW')
+    expect(report.layoutDiagnostic).toEqual({ clientWidth: 221, scrollWidth: 257 })
+    expect(report.minimumPanelWidth).toBe(221)
+    expect(report.requiredCheckCount).toBe(8)
+    expect(report.realAccountExecutionAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+  })
+
+  it('rejects an expanded responsive layout production path', () => {
+    const request = read<
+      Record<string, unknown> & {
+        requestedAuthorization: { authorizedPaths: string[] }
+      }
+    >('decisions', 'r7-responsive-layout-fix-request.json')
+    const tampered = structuredClone(request)
+    tampered.requestedAuthorization.authorizedPaths.push('src/preload/xhr-hook.ts')
+
+    expect(responsiveLayoutRequestSemanticDigest(tampered)).not.toBe(
+      responsiveLayoutRequestSemanticDigest(request)
+    )
+    expect(() =>
+      validateR7ResponsiveLayoutFixRequest(tampered, {
+        root: process.cwd(),
+        base: GrowthDirectory
+      })
+    ).toThrow('R7 responsive layout authorization mismatch')
   })
 
   it('binds approval to semantic content while excluding approval metadata', () => {
