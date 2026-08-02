@@ -32,11 +32,13 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '2-1': 'available',
         '2-2': 'available',
         '2-3': 'available',
+        '3-3': 'available',
         '4-1': 'available',
         '4-2': 'available',
         '4-3': 'available',
         '4-4': 'available',
         '4-5': 'available',
+        '5-2': 'available',
         '7-1': 'available',
         '7-2': 'available'
       },
@@ -125,6 +127,19 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(quarterly.remainingStageIndexes).toEqual([])
     expect(plan.steps.map((step) => step.mapKey).sort()).toEqual(['4-1', '4-2', '4-3', '4-4', '4-5'])
     expect(plan.steps.every((step) => !step.partialQuestIds.includes(845))).toBe(true)
+  })
+
+  it('assembles the northern, western and coral weeklies into one ordered plan', () => {
+    const plan = build([241, 242, 243])
+
+    expect(plan.coveredQuestIds).toEqual([241, 242, 243])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.uncoveredQuestIds).toEqual([])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual([
+      'normal-3-3-northern-weekly',
+      'normal-4-4-western-quarterly',
+      'normal-5-2-coral-weekly'
+    ])
   })
 
   it('binds the two 7-2 targets to distinct cells and completes task 893', () => {

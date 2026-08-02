@@ -767,6 +767,97 @@ const recipes = [
   },
   {
     schemaVersion: 1,
+    id: 'normal-3-3-northern-weekly',
+    revision: 1,
+    title: '3-3 北方ウィークリー周回',
+    status: 'approved',
+    questIds: [241],
+    objectives: [{ questId: 241, result: 'victory', requiredCount: 5 }],
+    mapKey: '3-3',
+    routeLabels: ['A-C-G-M'],
+    targetNodes: ['M'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 1,
+          maximum: 1,
+          label: '正規空母・装甲空母 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kei_kuubo],
+          minimum: 1,
+          maximum: 1,
+          label: '軽空母 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.jyuujyun, ApiShipType.koujyun],
+          minimum: 2,
+          label: '重巡級 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 2,
+          label: '駆逐艦 2 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter],
+        minimum: 2,
+        required: false,
+        label: '艦上戦闘機（Gの航空優勢78に余裕を加える）'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.SmallRadar, SlotitemType.LargeRadar],
+        minimum: 3,
+        required: false,
+        label: 'Cうずしお軽減用の電探 3 個以上'
+      }
+    ],
+    formations: [{ formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'G・Mボス' }],
+    airState: {
+      target: 'superiority',
+      summary: 'Gの航空優勢境界78に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務241を受注し、3-3・3-4・3-5の合計勝利数が残っていることを確認する',
+      '正規空母系1・軽空母1・重巡級2・駆逐艦2の6隻にし、3隻以上へ電探を載せる',
+      'A-C-G-Mを進み、Cのうずしお後とG戦後に損傷を確認して大破時は進撃しない',
+      'MボスでB勝利以上を取り、合計5勝まで同じ周回を繰り返す'
+    ],
+    cost: 'medium',
+    risk: 'medium',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-3-3-current',
+        sourceLabel: '艦これ攻略 Wiki - 3-3',
+        url: 'https://wikiwiki.jp/kancolle/北方海域/3-3',
+        reviewedAt: '2026-08-03T04:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '正規空母1・大型艦と空母系合計2・駆逐2以上・潜水艦なしのA-C-G-Mと北方任務周回を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-3-3-current',
+        sourceLabel: '舰娘百科 - 3-3',
+        url: 'https://zh.kcwiki.cn/wiki/3-3',
+        reviewedAt: '2026-08-03T04:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '正規空母1・軽空母1・巡洋艦級2・駆逐2の固定経路、制空境界、電探準備を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
     id: 'normal-4-1-western-quarterly',
     revision: 1,
     title: '4-1 西方海域作戦',
@@ -947,11 +1038,14 @@ const recipes = [
   {
     schemaVersion: 1,
     id: 'normal-4-4-western-quarterly',
-    revision: 1,
-    title: '4-4 西方海域作戦',
+    revision: 2,
+    title: '4-4 西方定期任務まとめ',
     status: 'approved',
-    questIds: [845],
-    objectives: [{ questId: 845, result: 'S', requiredCount: 1 }],
+    questIds: [242, 845],
+    objectives: [
+      { questId: 242, result: 'victory', requiredCount: 1 },
+      { questId: 845, result: 'S', requiredCount: 1 }
+    ],
     mapKey: '4-4',
     routeLabels: ['A-E-I-K'],
     targetNodes: ['K'],
@@ -1010,10 +1104,10 @@ const recipes = [
       summary: 'Kボスの航空優勢境界72に搭載機損耗分の余裕を加える'
     },
     actions: [
-      '任務845を受注し、4-4段階が残っていることを確認する',
+      '任務242・845のうち表示中の対象を受注し、4-4段階が残っていることを確認する',
       '正規空母系2・重巡級1・軽巡洋艦1・駆逐艦2の6隻にし、駆逐艦1隻へソナーと爆雷を載せる',
       'A-E-I-Kを進み、各戦闘後に損傷を確認して大破時は進撃しない',
-      '潜水艦を含むボス編成にも備えてKボスでS勝利し、4-4段階の進捗を確認する'
+      '潜水艦を含むボス編成にも備えてKボスでS勝利を狙い、対象任務の進捗を確認する'
     ],
     cost: 'medium',
     risk: 'medium',
@@ -1035,10 +1129,103 @@ const recipes = [
         validUntil: '2027-02-02T00:00:00.000Z',
         confidence: 'supported',
         summary: '空母2・重巡級1〜2・駆逐2のA-E-I-K編成とボス対潜準備を独立照合'
-      }
+      },
+      PeriodicSortieEvidence
     ],
     validity: {
       reviewBy: '2026-11-02T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-5-2-coral-weekly',
+    revision: 1,
+    title: '5-2 珊瑚諸島沖ウィークリー',
+    status: 'approved',
+    questIds: [243],
+    objectives: [{ questId: 243, result: 'S', requiredCount: 2 }],
+    mapKey: '5-2',
+    routeLabels: ['B-C-E-F-O'],
+    targetNodes: ['O'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 2,
+          label: '正規空母・装甲空母 2 隻'
+        },
+        {
+          shipTypeIds: [
+            ApiShipType.kousoku_senkan,
+            ApiShipType.teisoku_senkan,
+            ApiShipType.koukuu_senkan,
+            ApiShipType.tyoudokyuu_senkan
+          ],
+          minimum: 2,
+          label: '戦艦級 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.jyuujyun, ApiShipType.koujyun],
+          minimum: 2,
+          label: '重巡級 2 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter],
+        minimum: 4,
+        required: false,
+        label: '艦上戦闘機（出撃時制空値200以上を確認）'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.RecSeaplane, SlotitemType.RecAircraft],
+        minimum: 3,
+        required: false,
+        label: 'F-O索敵分岐用の偵察装備'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.rinkei, label: '輪形陣', when: 'C の空襲戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'E・F・Oボス' }
+    ],
+    airState: {
+      target: 'superiority',
+      summary: 'Oボスの航空優勢境界176にC空襲戦などの搭載機損耗分を加え、出撃時200以上を確認する'
+    },
+    actions: [
+      '任務243を受注し、5-2のS勝利回数が残っていることを確認する',
+      '正規空母系2・戦艦級2・重巡級2の6隻にし、出撃時制空値200以上と分岐点係数2の索敵値71以上を確認する',
+      'B-C-E-F-Oを進み、C空襲戦と各水上戦後に損傷を確認して大破時は進撃しない',
+      'OボスでS勝利を2回取り、任務243の達成を確認する'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-5-2-current',
+        sourceLabel: '艦これ攻略 Wiki - 5-2',
+        url: 'https://wikiwiki.jp/kancolle/南方海域/5-2',
+        reviewedAt: '2026-08-03T04:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '空母2・戦艦2・重巡級2のB-C-E-F-O、索敵分岐、S勝利向け重量編成と任務回数を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-5-2-current',
+        sourceLabel: '舰娘百科 - 5-2',
+        url: 'https://zh.kcwiki.cn/wiki/5-2',
+        reviewedAt: '2026-08-03T04:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '重量編成のB-C-E-F-O、係数2で索敵71、ボス優勢176と出撃時制空200以上を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
     }
   },
   {
@@ -1362,6 +1549,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.5',
+  version: '2026-08-03.6',
   recipes
 })

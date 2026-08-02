@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.5",
+  "manifestVersion": "2026-08-03.6",
   "sourceSnapshot": {
-    "repositoryCommit": "2ea4f9b1533f47daf862c20544ee1940eac8e040",
+    "repositoryCommit": "971c71d235634a209bf0560c739f824cdc07faeb",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -73,6 +73,94 @@
         "reviewedAt": "2026-07-31T00:00:00.000Z",
         "reviewBy": "2026-10-29T00:00:00.000Z",
         "validUntil": "2027-07-31T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:241:objective",
+      "questId": 241,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "971c71d235634a209bf0560c739f824cdc07faeb",
+        "projectionDigest": "sha256:e5cbe39f193f6536562bfb5787ebacf04e37d9efdd633cf7c510b84ee883c029"
+      },
+      "classification": "lossless-v1",
+      "objectiveStages": [
+        {
+          "requiredCount": 5,
+          "targets": [
+            { "mapKey": "3-3", "result": "victory", "targetCells": [] },
+            { "mapKey": "3-4", "result": "victory", "targetCells": [] },
+            { "mapKey": "3-5", "result": "victory", "targetCells": [] }
+          ]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-weekly-chain-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T04:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:242:objective",
+      "questId": 242,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "971c71d235634a209bf0560c739f824cdc07faeb",
+        "projectionDigest": "sha256:e7d4b0af6348df5579734f4489747a04d20e70a72476121c8f4fe7e2d05a0b88"
+      },
+      "classification": "lossless-v1",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "4-4", "result": "victory", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-weekly-chain-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T04:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:243:objective",
+      "questId": 243,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "971c71d235634a209bf0560c739f824cdc07faeb",
+        "projectionDigest": "sha256:ddf437c222e8045d72d329db69cf4ff071368ed3d9c2c33bdafbaedb9c8d0090"
+      },
+      "classification": "lossless-v1",
+      "objectiveStages": [
+        {
+          "requiredCount": 2,
+          "targets": [{ "mapKey": "5-2", "result": "S", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-weekly-chain-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T04:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
         "evidenceReviewIds": ["periodic-sortie-review"]
       }
     },
@@ -597,6 +685,36 @@
       }
     },
     {
+      "templateId": "normal-map:3-3:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "3-3",
+      "routeLabels": ["A-C-G-M"],
+      "targetNodes": ["M"],
+      "fleetConstraintRef": "legacy-recipe:normal-3-3-northern-weekly",
+      "formations": [{ "formationId": 1, "label": "単縦陣", "when": "G・Mボス" }],
+      "actions": [
+        "任務241を受注し、3-3・3-4・3-5の合計勝利数が残っていることを確認する",
+        "正規空母系1・軽空母1・重巡級2・駆逐艦2の6隻にし、3隻以上へ電探を載せる",
+        "A-C-G-Mを進み、Cのうずしお後とG戦後に損傷を確認して大破時は進撃しない",
+        "MボスでB勝利以上を取り、合計5勝まで同じ周回を繰り返す"
+      ],
+      "cost": "medium",
+      "risk": "medium",
+      "review": {
+        "author": "codex-r8-weekly-chain-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T04:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-3-3-wikiwiki-current-review",
+          "map-3-3-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
       "templateId": "normal-map:4-1:r8-reviewed",
       "revision": 1,
       "status": "approved",
@@ -653,7 +771,7 @@
     },
     {
       "templateId": "normal-map:4-4:r8-reviewed",
-      "revision": 1,
+      "revision": 2,
       "status": "approved",
       "mapKey": "4-4",
       "routeLabels": ["A-E-I-K"],
@@ -664,20 +782,57 @@
         { "formationId": 1, "label": "単縦陣", "when": "I・Kボス" }
       ],
       "actions": [
-        "任務845を受注し、4-4段階が残っていることを確認する",
+        "任務242・845のうち表示中の対象を受注し、4-4段階が残っていることを確認する",
         "正規空母系2・重巡級1・軽巡洋艦1・駆逐艦2の6隻にし、駆逐艦1隻へソナーと爆雷を載せる",
         "A-E-I-Kを進み、各戦闘後に損傷を確認して大破時は進撃しない",
-        "潜水艦を含むボス編成にも備えてKボスでS勝利し、4-4段階の進捗を確認する"
+        "潜水艦を含むボス編成にも備えてKボスでS勝利を狙い、対象任務の進捗を確認する"
       ],
       "cost": "medium",
       "risk": "medium",
       "review": {
-        "author": "codex-r8-western-route-author",
+        "author": "codex-r8-weekly-chain-route-author",
         "approver": "project-owner",
-        "reviewedAt": "2026-08-03T02:00:00.000Z",
+        "reviewedAt": "2026-08-03T04:00:00.000Z",
         "reviewBy": "2026-11-02T00:00:00.000Z",
         "validUntil": "2027-02-02T00:00:00.000Z",
-        "evidenceReviewIds": ["map-4-4-wikiwiki-current-review", "map-4-4-kcwiki-current-review"]
+        "evidenceReviewIds": [
+          "map-4-4-wikiwiki-current-review",
+          "map-4-4-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:5-2:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "5-2",
+      "routeLabels": ["B-C-E-F-O"],
+      "targetNodes": ["O"],
+      "fleetConstraintRef": "legacy-recipe:normal-5-2-coral-weekly",
+      "formations": [
+        { "formationId": 3, "label": "輪形陣", "when": "C の空襲戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "E・F・Oボス" }
+      ],
+      "actions": [
+        "任務243を受注し、5-2のS勝利回数が残っていることを確認する",
+        "正規空母系2・戦艦級2・重巡級2の6隻にし、出撃時制空値200以上と分岐点係数2の索敵値71以上を確認する",
+        "B-C-E-F-Oを進み、C空襲戦と各水上戦後に損傷を確認して大破時は進撃しない",
+        "OボスでS勝利を2回取り、任務243の達成を確認する"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-weekly-chain-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T04:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-5-2-wikiwiki-current-review",
+          "map-5-2-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
       }
     },
     {
@@ -980,6 +1135,46 @@
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-02T16:30:00.000Z",
       "validUntil": "2027-02-01T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-3-3-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/北方海域/3-3",
+      "sourceLabel": "艦これ攻略 Wiki - 3-3",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T04:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-3-3-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/3-3",
+      "sourceLabel": "舰娘百科 - 3-3",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T04:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-5-2-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/南方海域/5-2",
+      "sourceLabel": "艦これ攻略 Wiki - 5-2",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T04:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-5-2-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/5-2",
+      "sourceLabel": "舰娘百科 - 5-2",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T04:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },
     {

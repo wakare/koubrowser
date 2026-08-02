@@ -26,7 +26,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     )
 
-    expect(output).toContain('27 facts, 16 routes, 30 stage contributions, 0 rejected objectives')
+    expect(output).toContain('27 facts, 18 routes, 33 stage contributions, 0 rejected objectives')
   })
 
   it('compiles exact stage contributions without promoting partial multi-stage quests', () => {
@@ -69,6 +69,19 @@ describe('quest strategy runtime v2 compiler', () => {
       { questId: 284, stageIndex: 1, mapKey: '2-1' },
       { questId: 894, stageIndex: 2, mapKey: '2-1' }
     ])
+
+    expect(
+      bundle.routes.find((route) => route.routeId === 'normal-3-3-northern-weekly')?.contributions
+    ).toMatchObject([{ questId: 241, stageIndex: 0, mapKey: '3-3' }])
+    expect(
+      bundle.routes.find((route) => route.routeId === 'normal-4-4-western-quarterly')?.contributions
+    ).toMatchObject([
+      { questId: 242, stageIndex: 0, mapKey: '4-4' },
+      { questId: 845, stageIndex: 3, mapKey: '4-4' }
+    ])
+    expect(
+      bundle.routes.find((route) => route.routeId === 'normal-5-2-coral-weekly')?.contributions
+    ).toMatchObject([{ questId: 243, stageIndex: 0, mapKey: '5-2' }])
   })
 
   it('rejects opaque hard constraints and emits withdrawal dependencies', () => {
@@ -84,7 +97,7 @@ describe('quest strategy runtime v2 compiler', () => {
     expect(manifest.output.bundleDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(manifest.unsupported).toEqual([])
     expect(withdrawals.withdrawals).toEqual([])
-    expect(withdrawals.dependencies).toHaveLength(16)
+    expect(withdrawals.dependencies).toHaveLength(18)
   })
 
   it('binds every runtime route to an approved template and exact objective facts', () => {

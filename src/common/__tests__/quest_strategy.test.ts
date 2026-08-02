@@ -113,8 +113,8 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('loads sixteen reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.5')
+  it('loads eighteen reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.6')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
@@ -125,9 +125,11 @@ describe('quest strategy validation', () => {
       'normal-2-1-southwest-periodic',
       'normal-2-2-carrier-southwest-periodic',
       'normal-2-3-carrier-southwest-periodic',
+      'normal-3-3-northern-weekly',
       'normal-4-1-western-quarterly',
       'normal-4-3-western-quarterly',
       'normal-4-4-western-quarterly',
+      'normal-5-2-coral-weekly',
       'normal-4-5-western-quarterly',
       'normal-7-1-anchorage-quarterly',
       'normal-7-2-g-anchorage-quarterly',
@@ -146,7 +148,9 @@ describe('quest strategy validation', () => {
         item.id.includes('carrier') ||
         item.id.includes('logistics-line') ||
         item.id.includes('2-1') ||
-        item.id.includes('western-quarterly')
+        item.id.includes('western-quarterly') ||
+        item.id.includes('northern-weekly') ||
+        item.id.includes('coral-weekly')
     )) {
       expect(new Set(recipe.evidence.map((evidence) => new URL(evidence.url).hostname))).toEqual(
         new Set(['wikiwiki.jp', 'zh.kcwiki.cn'])
