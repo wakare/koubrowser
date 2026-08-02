@@ -13,6 +13,12 @@ const FixedRendererSemanticDigest =
   'sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363'
 const ApprovedRealAccountSemanticDigest =
   'sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6'
+const FixedGrowthComponentDigest =
+  'sha256:c50c847d7b392759d94f65a8dd8bbaea8a047b1d12b5f4a5f6f308cded1e9947'
+const FixedQuestGuideDigest =
+  'sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4'
+const FixedSmokeHarnessDigest =
+  'sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400'
 const FocusByFamily = {
   'expedition-resource-periodic-loop': 'resources',
   'anti-submarine-foundation': 'asw'
@@ -387,15 +393,9 @@ function validateR7RealAccountAcceptanceRequest(
     routeSelectorDigest: digest(
       fs.readFileSync(path.join(root, 'src', 'common', 'quest_growth_reviewed_routes.ts'))
     ),
-    growthComponentDigest: digest(
-      fs.readFileSync(
-        path.join(root, 'src', 'renderer', 'src', 'components', 'QuestGrowthCheck.vue')
-      )
-    ),
-    questGuideDigest: digest(
-      fs.readFileSync(path.join(root, 'src', 'renderer', 'src', 'components', 'QuestGuide.vue'))
-    ),
-    smokeHarnessDigest: digest(fs.readFileSync(path.join(root, 'scripts', 'electron-smoke.js'))),
+    growthComponentDigest: FixedGrowthComponentDigest,
+    questGuideDigest: FixedQuestGuideDigest,
+    smokeHarnessDigest: FixedSmokeHarnessDigest,
     protectedCommunicationDigests: Object.fromEntries(
       ProtectedPaths.map((item) => [item, digest(fs.readFileSync(path.join(root, ...item.split('/'))))])
     )

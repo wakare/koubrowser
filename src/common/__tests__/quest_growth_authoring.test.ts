@@ -880,6 +880,34 @@ describe('quest growth authoring contract', () => {
     ).toThrow('R7 real-account evidence contract mismatch')
   })
 
+  it('binds the consumed real-account gate to its audited renderer and harness digests', () => {
+    const request = read<
+      Record<string, unknown> & {
+        approvalBasis: { growthComponentDigest: string; smokeHarnessDigest: string }
+      }
+    >('decisions', 'r7-real-account-acceptance-request.json')
+    const tampered = structuredClone(request)
+    tampered.approvalBasis.growthComponentDigest = tampered.approvalBasis.smokeHarnessDigest
+
+    expect(realAccountRequestSemanticDigest(tampered)).not.toBe(
+      realAccountRequestSemanticDigest(request)
+    )
+    expect(() =>
+      validateR7RealAccountAcceptanceRequest(tampered, {
+        root: process.cwd(),
+        base: GrowthDirectory,
+        r7AuthorizationReport: read<Record<string, unknown>>(
+          'generated',
+          'r7-authorization-report.json'
+        ),
+        r7RendererReport: read<Record<string, unknown>>(
+          'generated',
+          'r7-renderer-integration-report.json'
+        )
+      })
+    ).toThrow('R7 real-account approval basis mismatch')
+  })
+
   it('keeps the real-account request digest stable across approval metadata only', () => {
     const request = read<
       Record<string, unknown> & {
