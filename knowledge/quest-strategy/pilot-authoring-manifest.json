@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.13",
+  "manifestVersion": "2026-08-03.14",
   "sourceSnapshot": {
-    "repositoryCommit": "e2b16a0c2c162ebb7c069bdefebcc6de2c383dee",
+    "repositoryCommit": "4d80255f71897303ddde87fe1f2168ef67cf31cc",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -264,6 +264,31 @@
         "reviewedAt": "2026-07-31T00:00:00.000Z",
         "reviewBy": "2026-10-29T00:00:00.000Z",
         "validUntil": "2027-07-31T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:266:objective",
+      "questId": 266,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "4d80255f71897303ddde87fe1f2168ef67cf31cc",
+        "projectionDigest": "sha256:1c79b12b8479ae2409f4e3730db2d569bb5c23bd1125e4fb124b7755544363a7"
+      },
+      "classification": "opaque-constraint",
+      "objectiveStages": [
+        { "requiredCount": 1, "targets": [{ "mapKey": "2-5", "result": "S", "targetCells": [] }] }
+      ],
+      "review": {
+        "author": "codex-r8-surface-counterattack-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T12:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
         "evidenceReviewIds": ["periodic-sortie-review"]
       }
     },
@@ -934,6 +959,37 @@
         "evidenceReviewIds": [
           "map-2-4-wikiwiki-current-review",
           "map-2-4-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:2-5:surface-counterattack-r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "2-5",
+      "routeLabels": ["B-F-E-I-O"],
+      "targetNodes": ["O"],
+      "fleetConstraintRef": "legacy-recipe:normal-2-5-surface-counterattack-monthly",
+      "formations": [{ "formationId": 1, "label": "単縦陣", "when": "F・E・I・Oボス" }],
+      "actions": [
+        "任務266を受注し、駆逐艦が旗艦であることと2-5のS勝利が残っていることを確認する",
+        "駆逐艦4・軽巡洋艦1・重巡洋艦1の6隻にする。航空巡洋艦は任務条件を満たさないため使用しない",
+        "分岐点係数1の索敵値34以上に余裕を加え、可能ならOボス航空優勢42を狙う。索敵装備で夜戦連撃を失わないか確認する",
+        "B-F-E-I-Oを進み、全戦闘で単縦陣を選ぶ。各戦闘後に損傷を確認し、大破時は進撃しない",
+        "Oボスは必要なら夜戦してS勝利を取り、任務266の達成表示を確認する"
+      ],
+      "cost": "medium",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-surface-counterattack-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T12:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-2-5-wikiwiki-surface-counterattack-current-review",
+          "map-2-5-kcwiki-surface-counterattack-current-review",
           "periodic-sortie-review"
         ]
       }
@@ -1702,6 +1758,26 @@
       "sourceLabel": "舰娘百科 - 2-4",
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-03T05:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-2-5-wikiwiki-surface-counterattack-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/南西諸島海域/2-5",
+      "sourceLabel": "艦これ攻略 Wiki - 2-5",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T12:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-2-5-kcwiki-surface-counterattack-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/2-5",
+      "sourceLabel": "舰娘百科 - 2-5",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T12:00:00.000Z",
       "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },

@@ -199,6 +199,20 @@
     },
     {
       "evidenceDependencies": [
+        "wikiwiki-map-2-5-surface-counterattack-current",
+        "kcwiki-map-2-5-surface-counterattack-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 266,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-2-5-surface-counterattack-monthly"
+    },
+    {
+      "evidenceDependencies": [
         "wikiwiki-map-1-6-current",
         "kcwiki-map-1-6-current",
         "wikiwiki-periodic-sortie"

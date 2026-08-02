@@ -2018,6 +2018,140 @@
     },
     {
       "actions": [
+        "任務266を受注し、駆逐艦が旗艦であることと2-5のS勝利が残っていることを確認する",
+        "駆逐艦4・軽巡洋艦1・重巡洋艦1の6隻にする。航空巡洋艦は任務条件を満たさないため使用しない",
+        "分岐点係数1の索敵値34以上に余裕を加え、可能ならOボス航空優勢42を狙う。索敵装備で夜戦連撃を失わないか確認する",
+        "B-F-E-I-Oを進み、全戦闘で単縦陣を選ぶ。各戦闘後に損傷を確認し、大破時は進撃しない",
+        "Oボスは必要なら夜戦してS勝利を取り、任務266の達成表示を確認する"
+      ],
+      "airState": {
+        "summary": "Oボスの空母編成に対する航空優勢境界42を目安にし、索敵と夜戦火力を損なわない範囲で調整する",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "2-5",
+          "questId": 266,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "medium",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            10,
+            11,
+            12,
+            13
+          ],
+          "label": "分岐点係数1の索敵値34以上へ余裕を加える偵察機・電探",
+          "minimum": 4,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            45,
+            11
+          ],
+          "label": "Oボス航空優勢42を狙える場合の水上戦闘機・水上爆撃機",
+          "minimum": 2,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T12:00:00.000Z",
+          "sourceId": "wikiwiki-map-2-5-surface-counterattack-current",
+          "sourceLabel": "艦これ攻略 Wiki - 2-5",
+          "summary": "駆逐旗艦・駆逐4・軽巡1・重巡1、B-F-E-I-O、分岐点係数1の索敵34、軽量艦隊の高いS勝利リスクを確認",
+          "url": "https://wikiwiki.jp/kancolle/南西諸島海域/2-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T12:00:00.000Z",
+          "sourceId": "kcwiki-map-2-5-surface-counterattack-current",
+          "sourceLabel": "舰娘百科 - 2-5",
+          "summary": "駆逐旗艦・駆逐4・軽巡1・重巡1（航巡不可）、B-F-E-I-O、索敵34とO航空優勢42を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/2-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "allowedShipTypeIds": [
+          2,
+          3,
+          5
+        ],
+        "flagshipTypeIds": [
+          2
+        ],
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "旗艦を含む駆逐艦 4 隻",
+            "maximum": 4,
+            "minimum": 4,
+            "shipTypeIds": [
+              2
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "重巡洋艦 1 隻（航空巡洋艦は不可）",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              5
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "F・E・I・Oボス"
+        }
+      ],
+      "mapKey": "2-5",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-2-5-surface-counterattack-monthly",
+      "routeLabels": [
+        "B-F-E-I-O"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "O"
+      ],
+      "title": "2-5 水上反撃部隊",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務861を受注し、1-6到達回数が残っていることを確認する",
         "補給艦2・駆逐艦4の6隻にする。艦種が補給艦の状態であることを確認し、搭載可能なら水上戦闘機や対空カットインを用意する",
         "A-E-Gを進み、GからKへ逸れた場合は撤退して再出撃する。Fへ進んだ場合も各戦闘後に損傷を確認し、大破時は進撃しない",
@@ -4384,11 +4518,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:77713ae3ca742faa3e7b03c3819793ac379aeb1f1d6d139dafe922907c4dbaf4",
-    "legacyKnowledgeDigest": "sha256:14cf32d9399b38a719b83cdf0dcd2fbbfb1be2ced8a880cea91cc4a2115ce307",
-    "pilotAuthoringManifestDigest": "sha256:dac2657f4e450956b0edfd86eda2b31b32960a9b9447d9ebda99d0121decb86b",
+    "inventoryDigest": "sha256:929b77d5e20268145f8ff57ba9987521ca155c697ce5fc2e3a690a4633917308",
+    "legacyKnowledgeDigest": "sha256:c2c8203b47c01ffd3083e5e0738a48471469c4a6ff8f7eaea9d9053553cfcae2",
+    "pilotAuthoringManifestDigest": "sha256:d03053a657833c64fbe37a171ef0abfc2d183c659c486c8eaa734aef5b96c14e",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "e2b16a0c2c162ebb7c069bdefebcc6de2c383dee"
+    "repositoryCommit": "4d80255f71897303ddde87fe1f2168ef67cf31cc"
   },
-  "version": "2026-08-03.13.v2"
+  "version": "2026-08-03.14.v2"
 }

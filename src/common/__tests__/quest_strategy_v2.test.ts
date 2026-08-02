@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { ApiShipType } from '@common/kcs'
 import { BundledQuestStrategyKnowledge } from '@common/quest_strategy_knowledge'
 import {
   auditQuestStrategyRecipeObjective,
@@ -34,6 +35,7 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '2-2': 'available',
         '2-3': 'available',
         '2-4': 'available',
+        '2-5': 'available',
         '3-1': 'available',
         '3-2': 'available',
         '3-3': 'available',
@@ -165,6 +167,48 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(plan.partialQuestIds).toEqual([])
     expect(plan.uncoveredQuestIds).toEqual([])
     expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-2-4-okinoshima-periodic'])
+  })
+
+  it('requires every machine-readable fleet rule for the monthly 2-5 counterattack', () => {
+    const recipe = BundledQuestStrategyKnowledge.recipes.find(
+      (item) => item.id === 'normal-2-5-surface-counterattack-monthly'
+    )!
+
+    expect(auditQuestStrategyRecipeObjective(recipe, 266)).toMatchObject({
+      complete: true,
+      coverageStatus: 'route-ready',
+      contributions: [{ stageIndex: 0, mapKey: '2-5', machineConstraintComplete: true }]
+    })
+    expect(
+      auditQuestStrategyRecipeObjective(
+        { ...recipe, fleet: { ...recipe.fleet, flagshipTypeIds: undefined } },
+        266
+      ).coverageStatus
+    ).toBe('route-unreviewed')
+    expect(
+      auditQuestStrategyRecipeObjective(
+        {
+          ...recipe,
+          fleet: {
+            ...recipe.fleet,
+            shipTypeConstraints: recipe.fleet.shipTypeConstraints.map((constraint) =>
+              constraint.shipTypeIds.includes(ApiShipType.jyuujyun)
+                ? { ...constraint, shipTypeIds: [ApiShipType.koujyun] }
+                : constraint
+            )
+          }
+        },
+        266
+      ).coverageStatus
+    ).toBe('route-unreviewed')
+
+    const plan = build([266])
+    expect(plan.coveredQuestIds).toEqual([266])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.uncoveredQuestIds).toEqual([])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual([
+      'normal-2-5-surface-counterattack-monthly'
+    ])
   })
 
   it('uses the reviewed 1-6 transport route to complete the quarterly arrival task', () => {

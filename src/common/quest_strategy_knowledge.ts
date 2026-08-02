@@ -858,6 +858,103 @@ const recipes = [
   },
   {
     schemaVersion: 1,
+    id: 'normal-2-5-surface-counterattack-monthly',
+    revision: 1,
+    title: '2-5 水上反撃部隊',
+    status: 'approved',
+    questIds: [266],
+    objectives: [{ questId: 266, result: 'S', requiredCount: 1 }],
+    mapKey: '2-5',
+    routeLabels: ['B-F-E-I-O'],
+    targetNodes: ['O'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      flagshipTypeIds: [ApiShipType.kutikukan],
+      allowedShipTypeIds: [ApiShipType.kutikukan, ApiShipType.keijyun, ApiShipType.jyuujyun],
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 4,
+          maximum: 4,
+          label: '旗艦を含む駆逐艦 4 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.jyuujyun],
+          minimum: 1,
+          maximum: 1,
+          label: '重巡洋艦 1 隻（航空巡洋艦は不可）'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [
+          SlotitemType.RecSeaplane,
+          SlotitemType.SeaplaneBomber,
+          SlotitemType.SmallRadar,
+          SlotitemType.LargeRadar
+        ],
+        minimum: 4,
+        required: false,
+        label: '分岐点係数1の索敵値34以上へ余裕を加える偵察機・電探'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.SeaplaneFighter, SlotitemType.SeaplaneBomber],
+        minimum: 2,
+        required: false,
+        label: 'Oボス航空優勢42を狙える場合の水上戦闘機・水上爆撃機'
+      }
+    ],
+    formations: [{ formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'F・E・I・Oボス' }],
+    airState: {
+      target: 'superiority',
+      summary: 'Oボスの空母編成に対する航空優勢境界42を目安にし、索敵と夜戦火力を損なわない範囲で調整する'
+    },
+    actions: [
+      '任務266を受注し、駆逐艦が旗艦であることと2-5のS勝利が残っていることを確認する',
+      '駆逐艦4・軽巡洋艦1・重巡洋艦1の6隻にする。航空巡洋艦は任務条件を満たさないため使用しない',
+      '分岐点係数1の索敵値34以上に余裕を加え、可能ならOボス航空優勢42を狙う。索敵装備で夜戦連撃を失わないか確認する',
+      'B-F-E-I-Oを進み、全戦闘で単縦陣を選ぶ。各戦闘後に損傷を確認し、大破時は進撃しない',
+      'Oボスは必要なら夜戦してS勝利を取り、任務266の達成表示を確認する'
+    ],
+    cost: 'medium',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-2-5-surface-counterattack-current',
+        sourceLabel: '艦これ攻略 Wiki - 2-5',
+        url: 'https://wikiwiki.jp/kancolle/南西諸島海域/2-5',
+        reviewedAt: '2026-08-03T12:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '駆逐旗艦・駆逐4・軽巡1・重巡1、B-F-E-I-O、分岐点係数1の索敵34、軽量艦隊の高いS勝利リスクを確認'
+      },
+      {
+        sourceId: 'kcwiki-map-2-5-surface-counterattack-current',
+        sourceLabel: '舰娘百科 - 2-5',
+        url: 'https://zh.kcwiki.cn/wiki/2-5',
+        reviewedAt: '2026-08-03T12:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '駆逐旗艦・駆逐4・軽巡1・重巡1（航巡不可）、B-F-E-I-O、索敵34とO航空優勢42を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
     id: 'normal-1-6-transport-quarterly',
     revision: 1,
     title: '1-6 強行輸送艦隊',
@@ -2504,6 +2601,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.13',
+  version: '2026-08-03.14',
   recipes
 })

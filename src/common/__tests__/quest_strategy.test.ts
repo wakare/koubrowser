@@ -113,8 +113,8 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('loads twenty-eight reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.13')
+  it('loads twenty-nine reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.14')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
@@ -126,6 +126,7 @@ describe('quest strategy validation', () => {
       'normal-2-2-carrier-southwest-periodic',
       'normal-2-3-carrier-southwest-periodic',
       'normal-2-4-okinoshima-periodic',
+      'normal-2-5-surface-counterattack-monthly',
       'normal-1-6-transport-quarterly',
       'normal-6-3-aerial-recon-quarterly',
       'normal-6-1-submarine-monthly',
@@ -159,6 +160,7 @@ describe('quest strategy validation', () => {
         item.id.includes('logistics-line') ||
         item.id.includes('2-1') ||
         item.id.includes('2-4') ||
+        item.id.includes('surface-counterattack-monthly') ||
         item.id.includes('transport-quarterly') ||
         item.id.includes('aerial-recon-quarterly') ||
         item.id.includes('submarine-monthly') ||
