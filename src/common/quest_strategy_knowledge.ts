@@ -856,12 +856,179 @@ const recipes = [
   },
   {
     schemaVersion: 1,
-    id: 'normal-3-3-northern-weekly',
+    id: 'normal-3-1-northern-quarterly',
     revision: 1,
-    title: '3-3 北方ウィークリー周回',
+    title: '3-1 北方海域警備',
     status: 'approved',
-    questIds: [241],
-    objectives: [{ questId: 241, result: 'victory', requiredCount: 5 }],
+    questIds: [873],
+    objectives: [{ questId: 873, result: 'A', requiredCount: 1 }],
+    mapKey: '3-1',
+    routeLabels: ['C-F-G'],
+    targetNodes: ['G'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 1,
+          maximum: 1,
+          label: '正規空母・装甲空母 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kei_kuubo],
+          minimum: 1,
+          maximum: 1,
+          label: '軽空母 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.jyuujyun, ApiShipType.koujyun],
+          minimum: 1,
+          maximum: 1,
+          label: '重巡級 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 2,
+          maximum: 2,
+          label: '駆逐艦 2 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter],
+        minimum: 1,
+        required: false,
+        label: '艦上戦闘機（Gの航空優勢42に余裕を加える）'
+      }
+    ],
+    formations: [{ formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'F・Gボス' }],
+    airState: {
+      target: 'superiority',
+      summary: 'Gの航空優勢境界42に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務873を受注し、3-1段階が残っていることを確認する',
+      '正規空母系1・軽空母1・軽巡洋艦1・重巡級1・駆逐艦2の6隻にする',
+      'C-F-Gを進み、F戦後に損傷を確認して大破時は進撃しない',
+      'GボスでA勝利以上を取り、3-1段階の進捗を確認する'
+    ],
+    cost: 'medium',
+    risk: 'medium',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-3-1-current',
+        sourceLabel: '艦これ攻略 Wiki - 3-1',
+        url: 'https://wikiwiki.jp/kancolle/北方海域/3-1',
+        reviewedAt: '2026-08-03T06:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '戦艦級・空母系2以下、駆逐2以上によるC-F-Gと任務873の軽巡条件を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-3-1-current',
+        sourceLabel: '舰娘百科 - 3-1',
+        url: 'https://zh.kcwiki.cn/wiki/3-1',
+        reviewedAt: '2026-08-03T06:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '空母系2・巡洋艦級2・駆逐2の固定経路、軽巡入り編成と航空優勢42を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-3-2-northern-quarterly',
+    revision: 1,
+    title: '3-2 北方海域警備',
+    status: 'approved',
+    questIds: [873],
+    objectives: [{ questId: 873, result: 'A', requiredCount: 1 }],
+    mapKey: '3-2',
+    routeLabels: ['C-E-F-L（高速+）', 'C-G-F-L（高速+）', 'C-G-H-F-L（通常高速時候補）'],
+    targetNodes: ['L'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 5,
+          maximum: 5,
+          label: '駆逐艦 5 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.SmallRadar, SlotitemType.LargeRadar],
+        minimum: 1,
+        required: false,
+        label: '分岐安定用の電探 1 個以上'
+      }
+    ],
+    formations: [{ formationId: ApiFormation.tanjyuu, label: '単縦陣', when: '水上戦・Lボス' }],
+    actions: [
+      '任務873を受注し、3-2段階が残っていることを確認する',
+      '軽巡洋艦1・駆逐艦5の6隻を全艦高速以上にし、少なくとも1隻へ電探を載せる',
+      '高速+統一ならC-E-F-LまたはC-G-F-Lを狙い、通常高速ではHを経由する場合があるため各戦闘後に損傷を確認する',
+      '大破時は進撃せず、LボスでA勝利以上を取って3-2段階の進捗を確認する'
+    ],
+    cost: 'low',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-3-2-current',
+        sourceLabel: '艦これ攻略 Wiki - 3-2',
+        url: 'https://wikiwiki.jp/kancolle/北方海域/3-2',
+        reviewedAt: '2026-08-03T06:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '軽巡1・駆逐5のボス到達、電探条件、高速+時のH回避と通常高速時のH経由リスクを確認'
+      },
+      {
+        sourceId: 'kcwiki-map-3-2-current',
+        sourceLabel: '舰娘百科 - 3-2',
+        url: 'https://zh.kcwiki.cn/wiki/3-2',
+        reviewedAt: '2026-08-03T06:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '軽巡1・駆逐5、高速+と電探による短縮候補、通常高速時のH分岐を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-3-3-northern-weekly',
+    revision: 2,
+    title: '3-3 北方定期任務まとめ',
+    status: 'approved',
+    questIds: [241, 873],
+    objectives: [
+      { questId: 241, result: 'victory', requiredCount: 5 },
+      { questId: 873, result: 'A', requiredCount: 1 }
+    ],
     mapKey: '3-3',
     routeLabels: ['A-C-G-M'],
     targetNodes: ['M'],
@@ -883,12 +1050,20 @@ const recipes = [
         },
         {
           shipTypeIds: [ApiShipType.jyuujyun, ApiShipType.koujyun],
-          minimum: 2,
-          label: '重巡級 2 隻'
+          minimum: 1,
+          maximum: 1,
+          label: '重巡級 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
         },
         {
           shipTypeIds: [ApiShipType.kutikukan],
           minimum: 2,
+          maximum: 2,
           label: '駆逐艦 2 隻'
         }
       ]
@@ -913,10 +1088,10 @@ const recipes = [
       summary: 'Gの航空優勢境界78に搭載機損耗分の余裕を加える'
     },
     actions: [
-      '任務241を受注し、3-3・3-4・3-5の合計勝利数が残っていることを確認する',
-      '正規空母系1・軽空母1・重巡級2・駆逐艦2の6隻にし、3隻以上へ電探を載せる',
+      '任務241・873のうち表示中の対象を受注し、3-3の必要勝利が残っていることを確認する',
+      '正規空母系1・軽空母1・重巡級1・軽巡洋艦1・駆逐艦2の6隻にし、3隻以上へ電探を載せる',
       'A-C-G-Mを進み、Cのうずしお後とG戦後に損傷を確認して大破時は進撃しない',
-      'MボスでB勝利以上を取り、合計5勝まで同じ周回を繰り返す'
+      'MボスでA勝利以上を取り、任務241は北方海域の合計5勝、任務873は3-3段階の進捗を確認する'
     ],
     cost: 'medium',
     risk: 'medium',
@@ -928,7 +1103,7 @@ const recipes = [
         reviewedAt: '2026-08-03T04:00:00.000Z',
         validUntil: '2027-02-03T00:00:00.000Z',
         confidence: 'supported',
-        summary: '正規空母1・大型艦と空母系合計2・駆逐2以上・潜水艦なしのA-C-G-Mと北方任務周回を確認'
+        summary: '正規空母1・大型艦と空母系合計2・駆逐2以上・潜水艦なしのA-C-G-Mと軽巡入り任務873を確認'
       },
       {
         sourceId: 'kcwiki-map-3-3-current',
@@ -937,7 +1112,7 @@ const recipes = [
         reviewedAt: '2026-08-03T04:00:00.000Z',
         validUntil: '2027-02-03T00:00:00.000Z',
         confidence: 'supported',
-        summary: '正規空母1・軽空母1・巡洋艦級2・駆逐2の固定経路、制空境界、電探準備を独立照合'
+        summary: '正規空母1・軽空母1・軽巡を含む巡洋艦級2・駆逐2の固定経路、制空境界、任務873を独立照合'
       },
       PeriodicSortieEvidence
     ],
@@ -1638,6 +1813,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.7',
+  version: '2026-08-03.8',
   recipes
 })

@@ -2011,10 +2011,245 @@
     },
     {
       "actions": [
-        "任務241を受注し、3-3・3-4・3-5の合計勝利数が残っていることを確認する",
-        "正規空母系1・軽空母1・重巡級2・駆逐艦2の6隻にし、3隻以上へ電探を載せる",
+        "任務873を受注し、3-1段階が残っていることを確認する",
+        "正規空母系1・軽空母1・軽巡洋艦1・重巡級1・駆逐艦2の6隻にする",
+        "C-F-Gを進み、F戦後に損傷を確認して大破時は進撃しない",
+        "GボスでA勝利以上を取り、3-1段階の進捗を確認する"
+      ],
+      "airState": {
+        "summary": "Gの航空優勢境界42に搭載機損耗分の余裕を加える",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "3-1",
+          "questId": 873,
+          "requiredCount": 1,
+          "result": "A",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "medium",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6
+          ],
+          "label": "艦上戦闘機（Gの航空優勢42に余裕を加える）",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T06:00:00.000Z",
+          "sourceId": "wikiwiki-map-3-1-current",
+          "sourceLabel": "艦これ攻略 Wiki - 3-1",
+          "summary": "戦艦級・空母系2以下、駆逐2以上によるC-F-Gと任務873の軽巡条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/北方海域/3-1",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T06:00:00.000Z",
+          "sourceId": "kcwiki-map-3-1-current",
+          "sourceLabel": "舰娘百科 - 3-1",
+          "summary": "空母系2・巡洋艦級2・駆逐2の固定経路、軽巡入り編成と航空優勢42を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/3-1",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "正規空母・装甲空母 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              11,
+              18
+            ]
+          },
+          {
+            "label": "軽空母 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              7
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "重巡級 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              5,
+              6
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "F・Gボス"
+        }
+      ],
+      "mapKey": "3-1",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-3-1-northern-quarterly",
+      "routeLabels": [
+        "C-F-G"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "G"
+      ],
+      "title": "3-1 北方海域警備",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務873を受注し、3-2段階が残っていることを確認する",
+        "軽巡洋艦1・駆逐艦5の6隻を全艦高速以上にし、少なくとも1隻へ電探を載せる",
+        "高速+統一ならC-E-F-LまたはC-G-F-Lを狙い、通常高速ではHを経由する場合があるため各戦闘後に損傷を確認する",
+        "大破時は進撃せず、LボスでA勝利以上を取って3-2段階の進捗を確認する"
+      ],
+      "contributions": [
+        {
+          "mapKey": "3-2",
+          "questId": 873,
+          "requiredCount": 1,
+          "result": "A",
+          "stageIndex": 1
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            12,
+            13
+          ],
+          "label": "分岐安定用の電探 1 個以上",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T06:00:00.000Z",
+          "sourceId": "wikiwiki-map-3-2-current",
+          "sourceLabel": "艦これ攻略 Wiki - 3-2",
+          "summary": "軽巡1・駆逐5のボス到達、電探条件、高速+時のH回避と通常高速時のH経由リスクを確認",
+          "url": "https://wikiwiki.jp/kancolle/北方海域/3-2",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T06:00:00.000Z",
+          "sourceId": "kcwiki-map-3-2-current",
+          "sourceLabel": "舰娘百科 - 3-2",
+          "summary": "軽巡1・駆逐5、高速+と電探による短縮候補、通常高速時のH分岐を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/3-2",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 5 隻",
+            "maximum": 5,
+            "minimum": 5,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "水上戦・Lボス"
+        }
+      ],
+      "mapKey": "3-2",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-3-2-northern-quarterly",
+      "routeLabels": [
+        "C-E-F-L（高速+）",
+        "C-G-F-L（高速+）",
+        "C-G-H-F-L（通常高速時候補）"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "L"
+      ],
+      "title": "3-2 北方海域警備",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務241・873のうち表示中の対象を受注し、3-3の必要勝利が残っていることを確認する",
+        "正規空母系1・軽空母1・重巡級1・軽巡洋艦1・駆逐艦2の6隻にし、3隻以上へ電探を載せる",
         "A-C-G-Mを進み、Cのうずしお後とG戦後に損傷を確認して大破時は進撃しない",
-        "MボスでB勝利以上を取り、合計5勝まで同じ周回を繰り返す"
+        "MボスでA勝利以上を取り、任務241は北方海域の合計5勝、任務873は3-3段階の進捗を確認する"
       ],
       "airState": {
         "summary": "Gの航空優勢境界78に搭載機損耗分の余裕を加える",
@@ -2027,6 +2262,13 @@
           "requiredCount": 5,
           "result": "victory",
           "stageIndex": 0
+        },
+        {
+          "mapKey": "3-3",
+          "questId": 873,
+          "requiredCount": 1,
+          "result": "A",
+          "stageIndex": 2
         }
       ],
       "cost": "medium",
@@ -2055,7 +2297,7 @@
           "reviewedAt": "2026-08-03T04:00:00.000Z",
           "sourceId": "wikiwiki-map-3-3-current",
           "sourceLabel": "艦これ攻略 Wiki - 3-3",
-          "summary": "正規空母1・大型艦と空母系合計2・駆逐2以上・潜水艦なしのA-C-G-Mと北方任務周回を確認",
+          "summary": "正規空母1・大型艦と空母系合計2・駆逐2以上・潜水艦なしのA-C-G-Mと軽巡入り任務873を確認",
           "url": "https://wikiwiki.jp/kancolle/北方海域/3-3",
           "validUntil": "2027-02-03T00:00:00.000Z"
         },
@@ -2064,7 +2306,7 @@
           "reviewedAt": "2026-08-03T04:00:00.000Z",
           "sourceId": "kcwiki-map-3-3-current",
           "sourceLabel": "舰娘百科 - 3-3",
-          "summary": "正規空母1・軽空母1・巡洋艦級2・駆逐2の固定経路、制空境界、電探準備を独立照合",
+          "summary": "正規空母1・軽空母1・軽巡を含む巡洋艦級2・駆逐2の固定経路、制空境界、任務873を独立照合",
           "url": "https://zh.kcwiki.cn/wiki/3-3",
           "validUntil": "2027-02-03T00:00:00.000Z"
         },
@@ -2100,15 +2342,25 @@
             ]
           },
           {
-            "label": "重巡級 2 隻",
-            "minimum": 2,
+            "label": "重巡級 1 隻",
+            "maximum": 1,
+            "minimum": 1,
             "shipTypeIds": [
               5,
               6
             ]
           },
           {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
             "label": "駆逐艦 2 隻",
+            "maximum": 2,
             "minimum": 2,
             "shipTypeIds": [
               2
@@ -2124,7 +2376,7 @@
         }
       ],
       "mapKey": "3-3",
-      "revision": 1,
+      "revision": 2,
       "risk": "medium",
       "routeId": "normal-3-3-northern-weekly",
       "routeLabels": [
@@ -2134,7 +2386,7 @@
       "targetNodes": [
         "M"
       ],
-      "title": "3-3 北方ウィークリー周回",
+      "title": "3-3 北方定期任務まとめ",
       "validity": {
         "reviewBy": "2026-11-03T00:00:00.000Z"
       }
@@ -3142,11 +3394,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:e567dea923997b20e191ee00dc5527af42e13ce797fdd71ed099fee9f2320936",
-    "legacyKnowledgeDigest": "sha256:d3c398a47e5dbc1f948938142b67d9d8ab0e20b721246d855003509e8cb16f79",
-    "pilotAuthoringManifestDigest": "sha256:9577ef4dda529c518926a931c16f270a24e70890a10c98a6682b1af791beb03a",
+    "inventoryDigest": "sha256:13b2efc40fc7ea2ccb9751ec4b2cb98ee802307357213542b67511065f8b97fd",
+    "legacyKnowledgeDigest": "sha256:eaa918fff1b4a2c9ea5904d6b3b0f650cde64d8e81fd3963940778f320c3b3e3",
+    "pilotAuthoringManifestDigest": "sha256:6fab4d4c2474d84fb4c61be253385490341df44be53c34e1007d05a6aec49dbe",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "f72d9b67ce2c13950280f40bc62d93b39053d519"
+    "repositoryCommit": "e588374019f8b086c23ced2c9ba8b7aa5a42ec18"
   },
-  "version": "2026-08-03.7.v2"
+  "version": "2026-08-03.8.v2"
 }

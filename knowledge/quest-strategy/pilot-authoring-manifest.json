@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.7",
+  "manifestVersion": "2026-08-03.8",
   "sourceSnapshot": {
-    "repositoryCommit": "f72d9b67ce2c13950280f40bc62d93b39053d519",
+    "repositoryCommit": "e588374019f8b086c23ced2c9ba8b7aa5a42ec18",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -396,6 +396,42 @@
       }
     },
     {
+      "factId": "quest:873:objective",
+      "questId": 873,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "e588374019f8b086c23ced2c9ba8b7aa5a42ec18",
+        "projectionDigest": "sha256:08fff79875cea5a04582ed8ceedbffd2d9630e45ffc036af82285176c1c8b53b"
+      },
+      "classification": "multi-stage",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "3-1", "result": "A", "targetCells": [] }]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "3-2", "result": "A", "targetCells": [] }]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "3-3", "result": "A", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-northern-patrol-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T06:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
       "factId": "quest:893:objective",
       "questId": 893,
       "revision": 1,
@@ -743,8 +779,68 @@
       }
     },
     {
-      "templateId": "normal-map:3-3:r8-reviewed",
+      "templateId": "normal-map:3-1:r8-reviewed",
       "revision": 1,
+      "status": "approved",
+      "mapKey": "3-1",
+      "routeLabels": ["C-F-G"],
+      "targetNodes": ["G"],
+      "fleetConstraintRef": "legacy-recipe:normal-3-1-northern-quarterly",
+      "formations": [{ "formationId": 1, "label": "単縦陣", "when": "F・Gボス" }],
+      "actions": [
+        "任務873を受注し、3-1段階が残っていることを確認する",
+        "正規空母系1・軽空母1・軽巡洋艦1・重巡級1・駆逐艦2の6隻にする",
+        "C-F-Gを進み、F戦後に損傷を確認して大破時は進撃しない",
+        "GボスでA勝利以上を取り、3-1段階の進捗を確認する"
+      ],
+      "cost": "medium",
+      "risk": "medium",
+      "review": {
+        "author": "codex-r8-northern-patrol-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T06:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-3-1-wikiwiki-current-review",
+          "map-3-1-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:3-2:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "3-2",
+      "routeLabels": ["C-E-F-L（高速+）", "C-G-F-L（高速+）", "C-G-H-F-L（通常高速時候補）"],
+      "targetNodes": ["L"],
+      "fleetConstraintRef": "legacy-recipe:normal-3-2-northern-quarterly",
+      "formations": [{ "formationId": 1, "label": "単縦陣", "when": "水上戦・Lボス" }],
+      "actions": [
+        "任務873を受注し、3-2段階が残っていることを確認する",
+        "軽巡洋艦1・駆逐艦5の6隻を全艦高速以上にし、少なくとも1隻へ電探を載せる",
+        "高速+統一ならC-E-F-LまたはC-G-F-Lを狙い、通常高速ではHを経由する場合があるため各戦闘後に損傷を確認する",
+        "大破時は進撃せず、LボスでA勝利以上を取って3-2段階の進捗を確認する"
+      ],
+      "cost": "low",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-northern-patrol-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T06:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-3-2-wikiwiki-current-review",
+          "map-3-2-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:3-3:r8-reviewed",
+      "revision": 2,
       "status": "approved",
       "mapKey": "3-3",
       "routeLabels": ["A-C-G-M"],
@@ -752,17 +848,17 @@
       "fleetConstraintRef": "legacy-recipe:normal-3-3-northern-weekly",
       "formations": [{ "formationId": 1, "label": "単縦陣", "when": "G・Mボス" }],
       "actions": [
-        "任務241を受注し、3-3・3-4・3-5の合計勝利数が残っていることを確認する",
-        "正規空母系1・軽空母1・重巡級2・駆逐艦2の6隻にし、3隻以上へ電探を載せる",
+        "任務241・873のうち表示中の対象を受注し、3-3の必要勝利が残っていることを確認する",
+        "正規空母系1・軽空母1・重巡級1・軽巡洋艦1・駆逐艦2の6隻にし、3隻以上へ電探を載せる",
         "A-C-G-Mを進み、Cのうずしお後とG戦後に損傷を確認して大破時は進撃しない",
-        "MボスでB勝利以上を取り、合計5勝まで同じ周回を繰り返す"
+        "MボスでA勝利以上を取り、任務241は北方海域の合計5勝、任務873は3-3段階の進捗を確認する"
       ],
       "cost": "medium",
       "risk": "medium",
       "review": {
-        "author": "codex-r8-weekly-chain-route-author",
+        "author": "codex-r8-northern-patrol-route-author",
         "approver": "project-owner",
-        "reviewedAt": "2026-08-03T04:00:00.000Z",
+        "reviewedAt": "2026-08-03T06:00:00.000Z",
         "reviewBy": "2026-11-03T00:00:00.000Z",
         "validUntil": "2027-02-03T00:00:00.000Z",
         "evidenceReviewIds": [
@@ -1216,12 +1312,52 @@
       "confidence": "supported"
     },
     {
+      "reviewId": "map-3-1-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/北方海域/3-1",
+      "sourceLabel": "艦これ攻略 Wiki - 3-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T06:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-3-1-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/3-1",
+      "sourceLabel": "舰娘百科 - 3-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T06:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-3-2-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/北方海域/3-2",
+      "sourceLabel": "艦これ攻略 Wiki - 3-2",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T06:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-3-2-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/3-2",
+      "sourceLabel": "舰娘百科 - 3-2",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T06:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
       "reviewId": "map-3-3-wikiwiki-current-review",
       "status": "approved",
       "sourceUrl": "https://wikiwiki.jp/kancolle/北方海域/3-3",
       "sourceLabel": "艦これ攻略 Wiki - 3-3",
       "reviewer": "project-owner",
-      "reviewedAt": "2026-08-03T04:00:00.000Z",
+      "reviewedAt": "2026-08-03T06:00:00.000Z",
       "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },
@@ -1231,7 +1367,7 @@
       "sourceUrl": "https://zh.kcwiki.cn/wiki/3-3",
       "sourceLabel": "舰娘百科 - 3-3",
       "reviewer": "project-owner",
-      "reviewedAt": "2026-08-03T04:00:00.000Z",
+      "reviewedAt": "2026-08-03T06:00:00.000Z",
       "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },

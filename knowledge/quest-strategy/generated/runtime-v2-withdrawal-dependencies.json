@@ -195,6 +195,34 @@
     },
     {
       "evidenceDependencies": [
+        "wikiwiki-map-3-1-current",
+        "kcwiki-map-3-1-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 873,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-3-1-northern-quarterly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-3-2-current",
+        "kcwiki-map-3-2-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 873,
+          "stageIndex": 1
+        }
+      ],
+      "routeId": "normal-3-2-northern-quarterly"
+    },
+    {
+      "evidenceDependencies": [
         "wikiwiki-map-3-3-current",
         "kcwiki-map-3-3-current",
         "wikiwiki-periodic-sortie"
@@ -203,6 +231,10 @@
         {
           "questId": 241,
           "stageIndex": 0
+        },
+        {
+          "questId": 873,
+          "stageIndex": 2
         }
       ],
       "routeId": "normal-3-3-northern-weekly"

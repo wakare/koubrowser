@@ -33,6 +33,8 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '2-2': 'available',
         '2-3': 'available',
         '2-4': 'available',
+        '3-1': 'available',
+        '3-2': 'available',
         '3-3': 'available',
         '4-1': 'available',
         '4-2': 'available',
@@ -150,6 +152,23 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(plan.partialQuestIds).toEqual([])
     expect(plan.uncoveredQuestIds).toEqual([])
     expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-2-4-okinoshima-periodic'])
+  })
+
+  it('assembles all three northern patrol stages and shares 3-3 with the weekly', () => {
+    const plan = build([241, 873])
+    const quarterly = plan.questCoverage.find((coverage) => coverage.questId === 873)!
+
+    expect(plan.coveredQuestIds).toEqual([241, 873])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.uncoveredQuestIds).toEqual([])
+    expect(quarterly.contributedStageIndexes).toEqual([0, 1, 2])
+    expect(quarterly.remainingStageIndexes).toEqual([])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual([
+      'normal-3-3-northern-weekly',
+      'normal-3-1-northern-quarterly',
+      'normal-3-2-northern-quarterly'
+    ])
+    expect(plan.steps[0].coveredQuestIds).toEqual([241, 873])
   })
 
   it('binds the two 7-2 targets to distinct cells and completes task 893', () => {

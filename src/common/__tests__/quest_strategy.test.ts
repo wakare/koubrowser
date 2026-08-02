@@ -113,8 +113,8 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('loads nineteen reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.7')
+  it('loads twenty-one reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.8')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
@@ -126,6 +126,8 @@ describe('quest strategy validation', () => {
       'normal-2-2-carrier-southwest-periodic',
       'normal-2-3-carrier-southwest-periodic',
       'normal-2-4-okinoshima-periodic',
+      'normal-3-1-northern-quarterly',
+      'normal-3-2-northern-quarterly',
       'normal-3-3-northern-weekly',
       'normal-4-1-western-quarterly',
       'normal-4-3-western-quarterly',
@@ -151,7 +153,7 @@ describe('quest strategy validation', () => {
         item.id.includes('2-1') ||
         item.id.includes('2-4') ||
         item.id.includes('western-quarterly') ||
-        item.id.includes('northern-weekly') ||
+        item.id.includes('northern-') ||
         item.id.includes('coral-weekly')
     )) {
       expect(new Set(recipe.evidence.map((evidence) => new URL(evidence.url).hostname))).toEqual(
