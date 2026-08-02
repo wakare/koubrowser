@@ -691,6 +691,7 @@ describe('Electron smoke script', () => {
       summary: false,
       workspacePages: false,
       taskGuide: false,
+      taskGuideHiddenLayoutFixture: false,
       wideWorkspace: false,
       requireDisplayProfile: undefined,
       requireLiveProfile: undefined,
@@ -728,6 +729,7 @@ describe('Electron smoke script', () => {
       summary: false,
       workspacePages: true,
       taskGuide: true,
+      taskGuideHiddenLayoutFixture: false,
       wideWorkspace: true,
       requireDisplayProfile: undefined,
       requireLiveProfile: undefined,
@@ -760,6 +762,19 @@ describe('Electron smoke script', () => {
       layoutFixture: true,
       dataUpdateFixture: true,
       taskGuide: true
+    })
+    expect(
+      smoke.parseArgs([
+        '--layout-fixture',
+        '--data-update-fixture',
+        '--task-guide',
+        '--task-guide-hidden-layout-fixture'
+      ])
+    ).toMatchObject({
+      layoutFixture: true,
+      dataUpdateFixture: true,
+      taskGuide: true,
+      taskGuideHiddenLayoutFixture: true
     })
     expect(
       smoke.parseArgs([
@@ -833,6 +848,11 @@ describe('Electron smoke script', () => {
   it('rejects unsafe or incomplete command options', () => {
     expect(() => smoke.parseArgs(['--task-guide'])).toThrow(
       '--task-guide requires --allow-game-start, --manual-game-start, or --layout-fixture'
+    )
+    expect(() =>
+      smoke.parseArgs(['--layout-fixture', '--task-guide-hidden-layout-fixture'])
+    ).toThrow(
+      '--task-guide-hidden-layout-fixture requires --layout-fixture and --task-guide'
     )
     expect(() => smoke.parseArgs(['--data-update-fixture', '--task-guide'])).toThrow(
       '--data-update-fixture requires --layout-fixture'

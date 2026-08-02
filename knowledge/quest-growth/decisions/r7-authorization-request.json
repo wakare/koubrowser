@@ -46,7 +46,7 @@
     },
     {
       "gateId": "r7-real-account-readonly-acceptance",
-      "authorizationState": "not-authorized",
+      "authorizationState": "authorized",
       "summary": "允许按脱敏步骤执行实账号只读显示验收。",
       "requiredEvidence": [
         "owner starts the game manually and credentials are not handled by the agent",
@@ -93,6 +93,12 @@
       "approver": "project-owner",
       "reviewedAt": "2026-08-02T02:07:16.639Z",
       "approvalDigest": "sha256:c2f7ce617eaaf00bb8aded393734af42bbe75a8d3a9480ea31f4b31a7f1f6be3"
+    },
+    {
+      "gateId": "r7-real-account-readonly-acceptance",
+      "approver": "project-owner",
+      "reviewedAt": "2026-08-02T02:44:42.000Z",
+      "approvalDigest": "sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb"
     }
   ],
   "proposedOutputContract": {

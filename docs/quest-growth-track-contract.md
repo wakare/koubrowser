@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R7_RENDERER_OPT_IN_IMPLEMENTED_REAL_ACCOUNT_NOT_AUTHORIZED`
+Status: `R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED`
 
 ## モデル境界
 
@@ -194,7 +194,7 @@ compiler version、input digest、output digest を固定する。
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
 本データで上書きしない。R6 lineage は exact commit
 `6b52e143af9fcab1dbb00b74f7e89bcf695e5e38` を別の audit snapshot として保持する。
-`R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED` を downstream stop に固定する。
+`R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED` を downstream stop に固定する。
 authoring catalog の2 reviewed route は承認済み opt-in UI だけに出力し、pure evaluator、adapter、
 runtime bundle へは出力してはならない。
 
@@ -218,7 +218,8 @@ R7 の実装前判断は [`quest-growth-r7-decision-packet.md`](quest-growth-r7-
 現在は `r7-schema-output-class` と `r7-pilot-content-authoring` をそれぞれ semantic digest に固定して
 承認し、遠征05の資源ループと1-5の3戦撤退対潜練習を各1件 authoring した。project owner は
 2026-08-02 に route ごとの固定摘要を独立承認し、2件を `reviewed` へ昇格した。
-renderer opt-in gate までの3 gate は `authorized`、残る3 gate は `not-authorized`、runtime eligible は0件である。
+実アカウント只読受入 gate までの4 gate は `authorized`、残る2 gate は `not-authorized`、
+runtime eligible は0件である。
 
 具体的 route の `reviewed` 昇格には route 単位の独立 semantic-digest approval を必要とする。renderer、
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や
@@ -238,8 +239,10 @@ decision packet を
 
 実アカウント只読受入の権限分離、脱敏 evidence、abort / restore 条件は
 [`quest-growth-r7-real-account-acceptance-decision-packet.md`](quest-growth-r7-real-account-acceptance-decision-packet.md)
-に固定した。decision packet の作成は受入実行の承認を意味せず、現在の status は
-`OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE`、actual acceptance は `not-run` である。
+に固定した。project owner は revision 1 の受入実行を承認したが、非表示 task page により
+route 検査前に fail closed した。revision 2 harness amendment は匿名 hidden-layout fixture で PASS 済みだが、
+現在の status は `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT`、actual acceptance は
+`blocked-before-route-inspection` である。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

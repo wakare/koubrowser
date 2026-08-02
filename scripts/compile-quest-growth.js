@@ -966,7 +966,12 @@ function buildQuestGrowthArtifacts(root) {
     runtimePromotion: {
       status: 'blocked',
       reason:
-        r7RendererDecision.output.r7RendererAuthorizedRouteCount > 0
+        r7RealAccountDecision.output.r7RealAccountAcceptanceAuthorizedRouteCount > 0
+          ? 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
+          : r7RealAccountDecision.output
+                .r7RealAccountAcceptanceAmendmentOwnerDecisionRequired
+            ? 'R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED'
+          : r7RendererDecision.output.r7RendererAuthorizedRouteCount > 0
           ? 'R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED'
           : r7RouteReviewDecision.output.r7ReviewedConcreteRouteCount > 0
           ? 'R7_REVIEWED_ROUTES_RENDERER_NOT_AUTHORIZED'
@@ -1011,7 +1016,10 @@ function buildQuestGrowthArtifacts(root) {
       ...([...decisionRubrics.rubrics.values()].some((item) => item.status !== 'approved')
         ? ['DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED']
         : []),
-      'R7_REAL_ACCOUNT_ACCEPTANCE_NOT_AUTHORIZED'
+      ...(r7RealAccountDecision.output
+        .r7RealAccountAcceptanceAmendmentOwnerDecisionRequired
+        ? ['R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED']
+        : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'])
     ]
   }
   return {

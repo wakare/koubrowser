@@ -4,13 +4,16 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE`
+Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT`
 
 ## 目的
 
 承認済み renderer に表示される2件の reviewed route を、project owner の手動ログイン後に
-只読で確認する範囲を固定する。この packet は受入実行の承認を求める decision-only artifact であり、
-実アカウント受入そのものはまだ実行していない。
+只読で確認する範囲を固定する。project owner は 2026-08-02 に revision 1 の固定摘要どおり
+受入実行を承認した。最初の実行は account data ready 後、ユーザーが非表示にした任務 page を
+revision 1 harness が開けず、route 検査前に fail closed した。revision 2 はこの layout 互換性と
+固定12 check の検査漏れだけを補う。gate の承認は維持するが、revision 2 の実行は再承認まで
+`not-authorized` とする。
 
 machine-readable request は
 [`r7-real-account-acceptance-request.json`](../knowledge/quest-growth/decisions/r7-real-account-acceptance-request.json)、
@@ -49,6 +52,29 @@ PASS / FAIL だけを出力する。認証情報を扱わず、`GAME START` を�
 4. 既存の任務指引、現在/全 route、情報不足 fallback は引き続き利用できる。
 5. 検査後に任務 filter、workspace page、panel、window と route の閉状態が復元され、ゲーム側の
    任務受注、編成、出撃、遠征、補給、装備状態に操作結果がない。
+
+## revision 1 の実行結果
+
+- result: `blocked-before-route-inspection`
+- reason: `TASK_WORKSPACE_PAGE_NOT_VISIBLE`
+- account data ready: `true`
+- route inspection started: `false`
+- owner の `GAME START` 後のゲーム操作: `false`
+- screenshot / raw log / account snapshot retention: `false`
+- 実行プロセスは終了済み
+
+## revision 2 harness amendment
+
+production code と route 内容は変更せず、固定 harness に次の3点だけを追加する。
+
+1. 非表示の `secondary-tasks` page / `questguide` panel を一時的に復元し、検査後に元の
+   非表示状態、active page、editor、scroll へ戻す。
+2. `resources` と `asw` の両方について1件の固定 reviewed route 全表示文言、manual label、
+   route semantic digest と layout を検査し、`unset` では route 0件と fallback を検査する。
+3. focus / route details の操作が local storage を変更しないことを確認し、元の session state に戻す。
+
+匿名 signed data-update + hidden-layout fixture では、2 route、fallback、session-only、page / panel / active-page
+復元がすべて PASS した。
 
 ## 実行前 gate
 
@@ -103,29 +129,34 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 ## 固定摘要
 
 - acceptance request semantic digest:
-  `sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe`
+  `sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e`
 - request raw digest:
-  `sha256:9898f9b616405d96cb066450d504d07dcb6ddca3533b6fb5efffe4c681545245`
+  `sha256:c93a7c03e6afe77f272852dcaf32ad342e61f2cb7c2b7e8f9f8f125c631f0380`
+- revision 1 approved semantic digest:
+  `sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe`
+- revision 2 smoke harness digest:
+  `sha256:38cf695bf354cc16e589621efc9fd2c2634c0de0e6291feb39a502e56795c537`
 - gate semantic digest:
   `sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb`
 - route count: `2`
 - required checks: `12`
-- actual acceptance status: `not-run`
+- actual acceptance status: `blocked-before-route-inspection`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
 
 推奨承認文面:
 
-> 批准固定摘要 `sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe`
-> 对应的 `r7-real-account-readonly-acceptance`。仅授权 project owner 手动处理登录并点击一次
-> `GAME START` 后，对 packet 固定的两条 reviewed route 执行一次只读、脱敏验收；Codex 仅可运行固定
-> harness、检查 DOM/布局并输出脱敏 PASS/FAIL，必须恢复页面状态。不得处理凭据、点击 GAME START、
-> 执行游戏操作、修改游戏通信、保存截图/raw log/account snapshot、修改路线内容；不授权 runtime
-> publication、默认启用或其他 route family。
+> 批准修订固定摘要 `sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e`
+> 对应的 `r7-real-account-readonly-acceptance` revision 2 harness amendment。仅允许在原已批准的
+> 两条 reviewed route 只读验收中，临时恢复被隐藏的任务页/面板并原状还原，完整检查
+> resources、asw、unset fallback 和 session-only 状态；仅授权再执行一次原范围的只读、
+> 脱敏验收。其余边界不变：Codex 不得处理凭据、点击 GAME START、执行游戏操作、修改游戏通信、
+> 保存截图/raw log/account snapshot、修改路线或 production code；不授权 runtime publication、
+> 默认启用或其他 route family。
 
-## 当前结论
+## 承認結果と現在の結論
 
-packet 与 validator 已完成，但 gate 仍为 `not-authorized`，`executionAuthorization` 仍为
-`not-authorized`，`actualAcceptanceStatus` 为 `not-run`。收到上述固定摘要的明确批准前，不执行
-实账号验收。
+revision 1 の gate 承認は記録済みだが、revision 2 の `executionAuthorization` は
+`not-authorized` である。修訂固定摘要への project owner の明示承認なしに実アカウント
+session を再開しない。runtime publication、default enablement、他 family は未承認のままである。

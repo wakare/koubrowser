@@ -47,14 +47,18 @@ R6 basis は次に固定する。
 `sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3`
 に固定して 2026-08-01T18:34:55.864Z に承認した。`r7-renderer-opt-in-integration` は
 `sha256:c2f7ce617eaaf00bb8aded393734af42bbe75a8d3a9480ea31f4b31a7f1f6be3`
-に固定して 2026-08-02T02:07:16.639Z に承認した。残り3件は `not-authorized` のままであり、
-前段の承認は後段の承認へ自動変換しない。
+に固定して 2026-08-02T02:07:16.639Z に承認した。この時点では残り3件を `not-authorized` とし、
+前段の承認が後段へ自動変換されない状態を維持した。
 
 次の `r7-real-account-readonly-acceptance` は decision-only packet を
 [`quest-growth-r7-real-account-acceptance-decision-packet.md`](quest-growth-r7-real-account-acceptance-decision-packet.md)
 に固定した。semantic digest は
-`sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe` だが、gate と実行は
-まだ `not-authorized`、実アカウント受入は `not-run` である。
+`sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe` として project owner が
+承認した。最初の実行は非表示 task page に対応できず route 検査前に fail closed した。
+この結果と検査漏れだけを補う revision 2 は
+`sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e` に再固定したが、実行は
+owner decision required である。最初の4 gate は `authorized`、残る2 gate は `not-authorized` のままであり、
+ハーネス修訂も明示承認なしに再実行しない。
 
 ## 提案する output class
 

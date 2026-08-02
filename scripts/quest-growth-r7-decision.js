@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const R7DecisionCompilerVersion = 'quest-growth-r7-decision-compiler/3'
+const R7DecisionCompilerVersion = 'quest-growth-r7-decision-compiler/4'
 const R7DecisionOutputFilenames = ['r7-authorization-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -232,12 +232,13 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
     .filter((gate) => gate.authorizationState === 'authorized')
     .map((gate) => gate.gateId)
   if (
-    authorizedGateIds.length !== 3 ||
+    authorizedGateIds.length !== 4 ||
     authorizedGateIds[0] !== 'r7-schema-output-class' ||
     authorizedGateIds[1] !== 'r7-pilot-content-authoring' ||
-    authorizedGateIds[2] !== 'r7-renderer-opt-in-integration'
+    authorizedGateIds[2] !== 'r7-renderer-opt-in-integration' ||
+    authorizedGateIds[3] !== 'r7-real-account-readonly-acceptance'
   ) {
-    throw new Error('only the first three R7 gates are authorized')
+    throw new Error('only the first four R7 gates are authorized')
   }
   for (const gate of gates.values()) {
     const hasRecord = authorizationRecords.has(gate.gateId)
@@ -438,7 +439,7 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
     requestId: request.value.requestId,
     revision: request.value.revision,
     generatedAt: request.value.sourceSnapshot.checkedAt,
-    status: 'RENDERER_OPT_IN_INTEGRATION_AUTHORIZED',
+    status: 'REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED',
     scope: request.value.scope,
     requestDigest: digest(requestRaw),
     semanticDigest: request.semanticDigest,
@@ -454,7 +455,7 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
       recommendedFamilies: request.recommendedFamilies,
       selectedInitialFamilies: request.selectedInitialFamilies
     },
-    implementationAuthorization: 'R7_RENDERER_OPT_IN_INTEGRATION_AUTHORIZED',
+    implementationAuthorization: 'R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED',
     concreteRouteArtifactCount,
     runtimeEligibleCount
   }

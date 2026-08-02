@@ -168,7 +168,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED'
+      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -189,7 +189,9 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
-    expect(report.globalStops).toContain('R7_REAL_ACCOUNT_ACCEPTANCE_NOT_AUTHORIZED')
+    expect(report.globalStops).toContain(
+      'R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED'
+    )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
@@ -308,7 +310,7 @@ describe('quest growth authoring contract', () => {
     })
   })
 
-  it('authorizes the first three R7 gates while keeping publication blocked', () => {
+  it('authorizes the first four R7 gates while keeping publication blocked', () => {
     const report = read<{
       status: string
       scope: string
@@ -330,7 +332,7 @@ describe('quest growth authoring contract', () => {
       runtimeEligibleCount: number
     }>('generated', 'r7-authorization-report.json')
 
-    expect(report.status).toBe('RENDERER_OPT_IN_INTEGRATION_AUTHORIZED')
+    expect(report.status).toBe('REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED')
     expect(report.scope).toBe('R7_DECISION_ONLY')
     expect(report.requestDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
@@ -352,13 +354,18 @@ describe('quest growth authoring contract', () => {
     })
     expect(
       report.authorizationGates
-        .slice(3)
+        .slice(4)
         .every(
           (gate) =>
             gate.authorizationState === 'not-authorized' &&
             /^sha256:[0-9a-f]{64}$/.test(gate.semanticDigest)
         )
     ).toBe(true)
+    expect(report.authorizationGates[3]).toEqual({
+      gateId: 'r7-real-account-readonly-acceptance',
+      authorizationState: 'authorized',
+      semanticDigest: 'sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb'
+    })
     expect(report.pilotProposal).toEqual({
       selectionState: 'selected',
       maximumInitialFamilies: 2,
@@ -366,7 +373,7 @@ describe('quest growth authoring contract', () => {
       selectedInitialFamilies: ['expedition-resource-periodic-loop', 'anti-submarine-foundation']
     })
     expect(report.implementationAuthorization).toBe(
-      'R7_RENDERER_OPT_IN_INTEGRATION_AUTHORIZED'
+      'R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED'
     )
     expect(report.concreteRouteArtifactCount).toBe(2)
     expect(report.runtimeEligibleCount).toBe(0)
@@ -384,14 +391,14 @@ describe('quest growth authoring contract', () => {
       'route-eligibility-report.json'
     )
     const tampered = structuredClone(request)
-    tampered.authorizationGates[3].authorizationState = 'authorized'
+    tampered.authorizationGates[4].authorizationState = 'authorized'
 
     expect(authorizationRequestSemanticDigest(tampered)).toBe(
       authorizationRequestSemanticDigest(request)
     )
     expect(() =>
       validateR7AuthorizationRequest(tampered, approvalPacket, eligibilityReport)
-    ).toThrow('only the first three R7 gates are authorized')
+    ).toThrow('only the first four R7 gates are authorized')
   })
 
   it('validates two reviewed pilot routes and keeps publication blocked', () => {
@@ -721,7 +728,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('generates a bounded unapproved real-account acceptance decision', () => {
+  it('keeps the approved gate while requiring owner approval for the harness amendment', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -738,16 +745,26 @@ describe('quest growth authoring contract', () => {
       publicationAuthorization: string
       defaultEnablementAuthorization: string
       routeBindings: { focus: string }[]
+      priorAttemptReasonCode: string
+      harnessAmendmentReasonCode: string
+      anonymousHiddenLayoutFixtureRequired: boolean
     }>('generated', 'r7-real-account-acceptance-report.json')
 
-    expect(report.status).toBe('OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE')
+    expect(report.status).toBe(
+      'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT'
+    )
     expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
-    expect(report.authorizationState).toBe('not-authorized')
+    expect(report.authorizationState).toBe('authorized')
     expect(report.executionAuthorization).toBe('not-authorized')
     expect(report.acceptanceMode).toBe('owner-login-readonly-redacted')
     expect(report.maximumAcceptedRoutes).toBe(2)
     expect(report.requiredCheckCount).toBe(12)
-    expect(report.actualAcceptanceStatus).toBe('not-run')
+    expect(report.actualAcceptanceStatus).toBe('blocked-before-route-inspection')
+    expect(report.priorAttemptReasonCode).toBe('TASK_WORKSPACE_PAGE_NOT_VISIBLE')
+    expect(report.harnessAmendmentReasonCode).toBe(
+      'USER_CUSTOMIZED_WORKSPACE_LAYOUT_COMPATIBILITY'
+    )
+    expect(report.anonymousHiddenLayoutFixtureRequired).toBe(true)
     expect(report.screenshotCaptureAllowed).toBe(false)
     expect(report.rawLogRetentionAllowed).toBe(false)
     expect(report.accountDataExportAllowed).toBe(false)
@@ -803,7 +820,7 @@ describe('quest growth authoring contract', () => {
     approved.requestedAuthorization.authorizationState = 'authorized'
     approved.requestedAuthorization.executionAuthorization = 'authorized'
     approved.review.approver = 'project-owner'
-    approved.review.reviewedAt = '2026-08-02T03:00:00.000Z'
+    approved.review.reviewedAt = '2026-08-02T03:20:00.000Z'
     approved.review.approvalDigest = realAccountRequestSemanticDigest(request)
 
     expect(realAccountRequestSemanticDigest(approved)).toBe(
