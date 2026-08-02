@@ -47,8 +47,12 @@ const {
   R7SignedBundleEvidenceReviewDecisionOutputFilenames,
   buildR7SignedBundleEvidenceReviewDecisionArtifacts
 } = require('./quest-growth-r7-signed-bundle-evidence-review-decision')
+const {
+  R7SignedBundleEvidenceReviewExecutionDecisionOutputFilenames,
+  buildR7SignedBundleEvidenceReviewExecutionDecisionArtifacts
+} = require('./quest-growth-r7-signed-bundle-evidence-review-execution-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/27'
+const CompilerVersion = 'quest-growth-authoring-compiler/28'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -67,7 +71,8 @@ const OutputFilenames = [
   ...R7PublicationCandidateReviewDecisionOutputFilenames,
   ...R7StagingConfigurationDecisionOutputFilenames,
   ...R7StagingEvidenceDecisionOutputFilenames,
-  ...R7SignedBundleEvidenceReviewDecisionOutputFilenames
+  ...R7SignedBundleEvidenceReviewDecisionOutputFilenames,
+  ...R7SignedBundleEvidenceReviewExecutionDecisionOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -915,6 +920,8 @@ function buildQuestGrowthArtifacts(root) {
     buildR7StagingEvidenceDecisionArtifacts({ root })
   const r7SignedBundleEvidenceReviewDecision =
     buildR7SignedBundleEvidenceReviewDecisionArtifacts({ root })
+  const r7SignedBundleEvidenceReviewExecutionDecision =
+    buildR7SignedBundleEvidenceReviewExecutionDecisionArtifacts({ root })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -974,6 +981,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r7StagingConfigurationDecision.source,
       ...r7StagingEvidenceDecision.source,
       ...r7SignedBundleEvidenceReviewDecision.source,
+      ...r7SignedBundleEvidenceReviewExecutionDecision.source,
       fixtureDigests
     },
     output: {
@@ -1019,7 +1027,8 @@ function buildQuestGrowthArtifacts(root) {
       ...r7PublicationCandidateReviewDecision.output,
       ...r7StagingConfigurationDecision.output,
       ...r7StagingEvidenceDecision.output,
-      ...r7SignedBundleEvidenceReviewDecision.output
+      ...r7SignedBundleEvidenceReviewDecision.output,
+      ...r7SignedBundleEvidenceReviewExecutionDecision.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -1123,7 +1132,11 @@ function buildQuestGrowthArtifacts(root) {
         : r7SignedBundleEvidenceReviewDecision.output
             .r7SignedBundleEvidenceReviewImplemented
           ? ['R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORED_REAL_REVIEW_NOT_AUTHORIZED']
-          : [])
+          : []),
+      ...(r7SignedBundleEvidenceReviewExecutionDecision.output
+        .r7SignedBundleEvidenceReviewExecutionOwnerDecisionRequired
+        ? ['R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_EXECUTION_OWNER_DECISION_REQUIRED']
+        : [])
     ]
   }
   return {
@@ -1141,7 +1154,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7PublicationCandidateReviewDecision.artifacts,
     ...r7StagingConfigurationDecision.artifacts,
     ...r7StagingEvidenceDecision.artifacts,
-    ...r7SignedBundleEvidenceReviewDecision.artifacts
+    ...r7SignedBundleEvidenceReviewDecision.artifacts,
+    ...r7SignedBundleEvidenceReviewExecutionDecision.artifacts
   }
 }
 

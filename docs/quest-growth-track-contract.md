@@ -307,6 +307,11 @@ harness、匿名 ephemeral Ed25519 signed fixture を commit `948dcb772ba21cf6fb
 で実装した。10 check は PASS、authoring authorization は `consumed`、runtime eligible count は0である。
 実 signed bundle / 公開鍵の review、秘密鍵、実在 URL、staging acceptance、runtime publication は引き続き
 禁止する。
+次の1回限りの offline / read-only / redacted review execution は
+[`quest-growth-r7-signed-bundle-evidence-review-execution-decision-packet.md`](quest-growth-r7-signed-bundle-evidence-review-execution-decision-packet.md)
+へ分離した。固定 harness、固定2 route、owner が明示する public bundle / public key の2 input、公開10 field、
+禁止15 field と10 check だけを対象とする。fixed-digest approval と2 input の明示提供前は execution を行わず、
+runtime eligible count は0のままとする。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

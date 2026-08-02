@@ -1,0 +1,170 @@
+{
+  "requestSchema": "QuestGrowthR7SignedBundleEvidenceReviewExecutionRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-signed-bundle-evidence-review-execution",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_EXECUTION_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "ec1acf7361e79cdc1d773ee8960ddbfeec523f27",
+    "checkedAt": "2026-08-02T13:19:47.494Z"
+  },
+  "approvalBasis": {
+    "authoringSemanticDigest": "sha256:eb599466cdcf580d6a4fabad4439a274ca483d5f1d6888f80f3d467ed4ce2080",
+    "authoringRequestDigest": "sha256:991f04d8c2200ebeea7380eb1813ef947f24cec6930827b27b82d17452c424d8",
+    "authoringReportDigest": "sha256:c47472bc256f2ee20f5d3cad92714b2854fcfe4e54ae77b0eebfb2d83036920e",
+    "authoringStatus": "R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORED_REAL_REVIEW_NOT_AUTHORIZED",
+    "implementationCommit": "948dcb772ba21cf6fbb127d9ce249a4006fd1f03",
+    "reviewHarnessDigest": "sha256:2f8a916cb066840ce863fe6059fa04e05bd793bf3f47bf277162e399026d1554",
+    "resultSchemaDigest": "sha256:20fb4b269ca49b680f669cfa317222de0485a1e84a863979e009a1ddd8b25139",
+    "candidateVersion": "r7.candidate.20260802.1",
+    "candidateCanonicalDigest": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c",
+    "candidateFileDigest": "sha256:92cd036faf74f262633edca062b63e7a2ce61081a8cf6666fa7ad697f6beae0b",
+    "candidateReviewFileDigest": "sha256:a7f2b499394dc3c35381ae878f5d82bb4657452d25701f8a8638fe08545750ea",
+    "protectedCommunicationDigests": {
+      "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+      "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
+      "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e"
+    }
+  },
+  "requestedAuthorization": {
+    "gateId": "r7-signed-bundle-evidence-review-execution",
+    "authorizationState": "not-authorized",
+    "executionAuthorization": "not-authorized",
+    "maximumExecutions": 1,
+    "maximumRouteCount": 2,
+    "repositoryMutationAuthorized": false
+  },
+  "inputContract": {
+    "ownerMustProvideExplicitPaths": true,
+    "requiredInputs": [
+      "signed-bundle-directory",
+      "ed25519-public-key-file"
+    ],
+    "allowedInputClasses": [
+      "public-signed-release-bundle",
+      "public-ed25519-verification-key"
+    ],
+    "privateKeyAllowed": false,
+    "passphraseAllowed": false,
+    "credentialAllowed": false,
+    "urlAllowed": false,
+    "externalEndpointAllowed": false
+  },
+  "executionContract": {
+    "mode": "single-offline-readonly-redacted-review",
+    "fixedHarnessOnly": true,
+    "networkAccessAllowed": false,
+    "bundleMutationAllowed": false,
+    "publicKeyMutationAllowed": false,
+    "outputPersistenceAllowed": false,
+    "rawLogRetentionAllowed": false,
+    "screenshotCaptureAllowed": false,
+    "accountDataAccessAllowed": false,
+    "requiredRouteIds": [
+      "route:expedition-05-resource-loop:draft-1",
+      "route:1-5-basic-asw-three-battle:draft-1"
+    ],
+    "allowedPublicEvidenceFields": [
+      "dataVersion",
+      "publishedAt",
+      "manifestSha256",
+      "questKnowledgeSha256",
+      "publicKeySha256",
+      "fileCount",
+      "payloadBytes",
+      "routeCount",
+      "requiredCheckCount",
+      "redactedAcceptanceStatus"
+    ],
+    "prohibitedOutputFields": [
+      "privateKey",
+      "passphrase",
+      "credential",
+      "token",
+      "publicKeyBytes",
+      "manifestUrl",
+      "stagingUrl",
+      "productionUrl",
+      "localPath",
+      "accountData",
+      "personalIdentifier",
+      "rawLog",
+      "screenshot",
+      "bundleBytes",
+      "signatureBytes"
+    ]
+  },
+  "roleSeparationContract": {
+    "releaseAuthor": "external-release-author",
+    "reviewer": "independent-bundle-evidence-reviewer",
+    "stagingOperator": "staging-acceptance-operator",
+    "allRolesMustBeDistinct": true,
+    "codexMayActAsReviewerOnly": true,
+    "reviewerMayAccessPrivateKey": false,
+    "releaseAuthorMayApproveOwnEvidence": false
+  },
+  "preflightRequirements": [
+    "owner-explicitly-provides-bundle-and-public-key-paths",
+    "fixed-harness-schema-candidate-and-protected-file-digests-match",
+    "bundle-and-public-key-are-local-readable-inputs",
+    "input-set-contains-no-private-key-passphrase-credential-or-account-data",
+    "review-process-has-no-network-access",
+    "runtime-eligible-count-is-zero"
+  ],
+  "requiredChecks": [
+    "existing-ed25519-bundle-signature-and-file-hashes-pass",
+    "bundle-growth-routes-match-exactly-the-two-reviewed-candidate-routes",
+    "public-key-fingerprint-is-recomputed-without-outputting-key-bytes",
+    "result-matches-strict-ten-field-schema",
+    "result-contains-none-of-the-fifteen-prohibited-fields",
+    "review-is-offline-read-only-and-does-not-persist-output",
+    "release-author-reviewer-and-staging-operator-remain-distinct",
+    "no-private-key-passphrase-credential-url-or-account-data-is-accessed",
+    "publication-default-enablement-and-runtime-eligibility-remain-unchanged",
+    "protected-game-communication-digests-remain-fixed"
+  ],
+  "abortConditions": [
+    "owner-does-not-explicitly-provide-both-input-paths",
+    "input-appears-to-contain-private-key-passphrase-credential-or-account-data",
+    "approval-basis-or-protected-file-digest-mismatch",
+    "bundle-signature-file-hash-candidate-or-route-binding-mismatch",
+    "review-would-require-network-access-or-url-resolution",
+    "redacted-output-cannot-be-guaranteed",
+    "review-would-mutate-inputs-repository-game-state-or-game-communication"
+  ],
+  "executionResult": null,
+  "executionBoundary": {
+    "realSignedBundleReadAuthorizedAfterApproval": true,
+    "realPublicKeyAndFingerprintReadAuthorizedAfterApproval": true,
+    "privateKeyOrPassphraseHandlingAuthorized": false,
+    "credentialHandlingAuthorized": false,
+    "bundleSigningAuthorized": false,
+    "realUrlAuthorized": false,
+    "externalEndpointConnectionAuthorized": false,
+    "stagingAcceptanceAuthorized": false,
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false,
+    "otherRouteFamiliesAuthorized": false,
+    "gameCommunicationChangesAuthorized": false,
+    "installerBuildRequiredAtThisGate": false
+  },
+  "stillProhibited": [
+    "private-key-or-passphrase-handling",
+    "credential-or-account-data-access",
+    "bundle-signing-or-mutation",
+    "real-url-or-external-endpoint",
+    "output-or-raw-log-persistence",
+    "staging-acceptance",
+    "runtime-publication",
+    "default-enablement",
+    "other-route-family",
+    "game-communication-mutation",
+    "installer-build"
+  ],
+  "review": {
+    "author": "codex-r7-signed-bundle-evidence-review-execution-decision-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}
