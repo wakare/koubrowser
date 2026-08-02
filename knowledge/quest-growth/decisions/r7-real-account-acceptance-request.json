@@ -27,7 +27,7 @@
   "requestedAuthorization": {
     "gateId": "r7-real-account-readonly-acceptance",
     "authorizationState": "authorized",
-    "executionAuthorization": "authorized",
+    "executionAuthorization": "consumed",
     "maximumAcceptedRoutes": 2,
     "acceptanceMode": "owner-login-readonly-redacted"
   },
@@ -233,7 +233,7 @@
     "productionCodeChangesAuthorized": false,
     "routeContentChangesAuthorized": false
   },
-  "executionResult": {
+  "previousExecutionResult": {
     "recordedAt": "2026-08-02T04:44:15.520Z",
     "approvedSemanticDigest": "sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c",
     "requestRevision": 4,
@@ -243,6 +243,27 @@
     "accountDataReady": true,
     "routeInspectionStarted": true,
     "checkedRouteCount": 2,
+    "gameActionAfterOwnerGameStart": false,
+    "rawEvidenceRetained": false,
+    "screenshotCaptured": false,
+    "accountDataExported": false,
+    "pageFilterPanelWindowStateRestored": true,
+    "applicationProcessClosed": true
+  },
+  "executionResult": {
+    "recordedAt": "2026-08-02T07:34:16.399Z",
+    "approvedSemanticDigest": "sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6",
+    "requestRevision": 6,
+    "status": "fail-closed",
+    "stage": "current-route-panel-layout-before-fixed-content-check",
+    "reasonCode": "QUEST_STRATEGY_CURRENT_SIZE_HORIZONTAL_OVERFLOW",
+    "accountDataReady": true,
+    "routeInspectionStarted": true,
+    "checkedRouteCount": 0,
+    "layoutDiagnostic": {
+      "clientWidth": 221,
+      "scrollWidth": 257
+    },
     "gameActionAfterOwnerGameStart": false,
     "rawEvidenceRetained": false,
     "screenshotCaptured": false,

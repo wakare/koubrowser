@@ -72,7 +72,8 @@ revision 4 は同じ harness と同じ2 route を使う1回限りの再試行と
 全体は fail closed、実行承認は消費済みである。
 revision 5 は project owner の固定摘要承認後、この汎用 sweep を route acceptance 専用の layout check へ
 分離し、匿名 signed custom-layout fixture で PASS した。revision 6 は固定 harness と同じ2 route を使う
-1回限りの只読再試行として project owner が固定摘要を承認した。
+1回限りの只読再試行として project owner が固定摘要を承認した。実行は account data ready 後、current
+custom layout の quest strategy container が横 overflow したため route content 詳細検査前に fail closed した。
 
 ## 提案する output class
 

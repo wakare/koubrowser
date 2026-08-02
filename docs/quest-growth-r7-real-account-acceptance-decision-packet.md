@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_6_AUTHORIZED_NOT_RUN`
+Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_6_FAIL_CLOSED`
 
 ## 目的
 
@@ -173,7 +173,7 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - acceptance request semantic digest:
   `sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6`
 - request raw digest:
-  `sha256:af125f870e66109b3c80ee52706bf2c6c7a36d5baefa80b95075d5d01f068d6f`
+  `sha256:1aefffcbe1d8cb6a03480165d26129113ebdea1d0ac8082aba50129ca327958d`
 - revision 5 approved semantic digest:
   `sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402`
 - revision 4 approved semantic digest:
@@ -218,7 +218,12 @@ screenshot capture、raw log retention、account data export はすべて禁止�
   `sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400`
 - revision 5 anonymous signed custom-layout fixture: `PASS`
 - revision 6 maximum executions: `1`
-- revision 6 execution authorization: `authorized`
+- revision 6 execution authorization: `consumed`
+- revision 6 acceptance status: `fail-closed`
+- revision 6 reason: `QUEST_STRATEGY_CURRENT_SIZE_HORIZONTAL_OVERFLOW`
+- revision 6 account data ready: `true`
+- revision 6 checked route count: `0`
+- revision 6 redacted layout diagnostic: client `221`, scroll `257`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
@@ -276,4 +281,8 @@ revision 6 は revision 5 で固定・検証した harness を変更せず、同
 1回限りの只読・脱敏実アカウント再試行だけを申請する。汎用 `--wide-workspace` regression は実行せず、
 現在サイズと1つの controlled size だけを検査する。project owner は semantic digest
 `sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6` を明示承認し、
-execution authorization は `authorized` とした。
+execution authorization は `authorized` とした。実行は account data ready 後、current user layout の
+quest strategy container が client width `221`、scroll width `257` となったため、固定 route content の
+詳細検査前に fail closed した。ゲーム内操作、screenshot、raw log、account snapshot はなく、page / filter /
+panel / window state を復元して application process を終了した。1回分の execution authorization は
+`consumed` とする。
