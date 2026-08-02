@@ -317,6 +317,7 @@ interface SmokeScript {
   MinimumWorkspaceWidth: number
   NarrowWorkspaceHeight: number
   NarrowWorkspaceWidth: number
+  NarrowRoutePanelFixtureWidth: number
   SurfaceWorkspaceHeight: number
   SurfaceWorkspaceWidth: number
   ScreenshotCommandTimeoutMs: number
@@ -590,6 +591,18 @@ interface SmokeScript {
   ) => Promise<void>
   summarizeSmokeResult: (result: Record<string, unknown>) => Record<string, unknown>
   isRoutePanelAcceptanceMode: (options: Partial<SmokeOptions>) => boolean
+  routePanelLayoutSummary: (taskGuide: Record<string, unknown>) => {
+    reviewedRouteCount: number
+    fallbackChecked: boolean
+    noHorizontalOverflow: boolean
+    dimensions: Array<{
+      focus: string
+      region: string
+      clientWidth: number
+      scrollWidth: number
+    }>
+    narrowPanelFixture?: Record<string, unknown>
+  }
   routePanelRestorationSummary: (
     before: {
       workspaceLayout: string | null
@@ -942,6 +955,50 @@ describe('Electron smoke script', () => {
         { width: 1200, height: 700 }
       )
     ).toThrow('ROUTE_PANEL_CONTROLLED_SIZE_UNAVAILABLE')
+  })
+
+  it('checks panel and route overflow for the anonymous 221px fixture', () => {
+    expect(smoke.NarrowRoutePanelFixtureWidth).toBe(221)
+    expect(readFileSync(path.resolve(process.cwd(), 'scripts', 'electron-smoke.js'), 'utf8')).toContain(
+      'const fixtureWidth = clientWidth + 2'
+    )
+    expect(readFileSync(path.resolve(process.cwd(), 'scripts', 'electron-smoke.js'), 'utf8')).toContain(
+      "growth.style.width = clientWidth + 1 + 'px'"
+    )
+    const strategy = {
+      reviewedRouteChecks: ['resources', 'asw'].map((focus) => ({
+        focus,
+        panelClientWidth: 221,
+        panelScrollWidth: 221,
+        clientWidth: 219,
+        scrollWidth: 219
+      })),
+      fallback: {
+        focus: 'unset',
+        panelClientWidth: 221,
+        panelScrollWidth: 221,
+        clientWidth: 219,
+        scrollWidth: 219
+      },
+      narrowPanelFixture: {
+        targetWidth: 221,
+        closed: { routeSectionClosed: true, clientWidth: 221, scrollWidth: 221 }
+      }
+    }
+
+    expect(
+      smoke.routePanelLayoutSummary({ questStrategyUpdate: strategy })
+    ).toMatchObject({
+      reviewedRouteCount: 2,
+      fallbackChecked: true,
+      noHorizontalOverflow: true,
+      narrowPanelFixture: strategy.narrowPanelFixture
+    })
+
+    strategy.reviewedRouteChecks[0].panelScrollWidth = 223
+    expect(() =>
+      smoke.routePanelLayoutSummary({ questStrategyUpdate: strategy })
+    ).toThrow('ROUTE_PANEL_HORIZONTAL_OVERFLOW')
   })
 
   it('reports custom layout restoration without returning page names or identifiers', () => {

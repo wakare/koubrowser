@@ -199,4 +199,18 @@ describe('QuestGrowthCheck.vue', () => {
     expect(source).not.toContain('buildQuestStrategyRoutePlan')
     expect(source).toContain('selectQuestGrowthReviewedRoutes')
   })
+
+  it('uses component width instead of viewport width for narrow route layout', () => {
+    const source = fs.readFileSync(
+      path.resolve(process.cwd(), 'src', 'renderer', 'src', 'components', 'QuestGrowthCheck.vue'),
+      'utf8'
+    )
+
+    expect(source).toContain('container-type: inline-size')
+    expect(source).toContain('@container (max-width: 320px)')
+    expect(source).toContain('.quest-growth-counts')
+    expect(source).toContain('flex-wrap: wrap')
+    expect(source).toContain('.quest-growth-route-columns')
+    expect(source).toContain('grid-template-columns: minmax(0, 1fr)')
+  })
 })

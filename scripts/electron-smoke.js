@@ -129,6 +129,7 @@ const DataUpdateFixtureStrategyRecipeId = 'signed-smoke-route'
 const DataUpdateFixtureMapAreaId = 1
 const DataUpdateFixtureMapNo = 1
 const DataUpdateFixtureMapPath = 'map/001_01_map.json'
+const NarrowRoutePanelFixtureWidth = 221
 const DataUpdateFixtureMapSpot = Object.freeze({
   no: 987,
   label: '署名更新スモーク地点',
@@ -6287,7 +6288,12 @@ async function prepareHiddenTaskGuideLayoutFixture(session, timeoutMs) {
   return { previousPageId }
 }
 
-async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = undefined) {
+async function inspectTaskGuide(
+  session,
+  timeoutMs,
+  expectedQuestKnowledge = undefined,
+  narrowRoutePanelWidth = undefined
+) {
   const reviewedRouteCatalog = JSON.parse(
     fs.readFileSync(
       path.resolve(__dirname, '..', 'knowledge', 'quest-growth', 'r7', 'route-catalog.json'),
@@ -6389,6 +6395,9 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
   let previousFilter
   let previousStrategyVisibility
   let previousGrowthState
+  let previousGrowthFixtureStyle
+  let previousStrategyEntryStyle
+  let narrowClosedLayout
   let taskPageTemporarilyRestored = false
   let questGuidePanelTemporarilyEnabled = false
   const inspectQuestStrategy = async (expectedVersion = undefined) => {
@@ -6427,6 +6436,50 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       'the growth-route session state',
       timeoutMs
     )
+    if (narrowRoutePanelWidth !== undefined) {
+      previousGrowthFixtureStyle = await session.evaluate(`(() => {
+        const clientWidth = ${JSON.stringify(narrowRoutePanelWidth)}
+        const growth = document.querySelector('.quest-growth-check')
+        if (!growth) return undefined
+        const previousStyle = growth.getAttribute('style')
+        growth.style.width = clientWidth + 1 + 'px'
+        growth.style.maxWidth = clientWidth + 1 + 'px'
+        growth.style.minWidth = '0'
+        return previousStyle
+      })()`)
+      narrowClosedLayout = await session.evaluate(`(() => {
+        const growth = document.querySelector('.quest-growth-check')
+        const routes = growth?.querySelector('.quest-growth-reviewed-routes')
+        if (!growth || !routes) return null
+        if (routes.open) {
+          routes.open = false
+          routes.dispatchEvent(new Event('toggle'))
+        }
+        return {
+          routeSectionClosed: !routes.open,
+          clientWidth: growth.clientWidth,
+          scrollWidth: growth.scrollWidth
+        }
+      })()`)
+      if (
+        !narrowClosedLayout ||
+        !narrowClosedLayout.routeSectionClosed ||
+        narrowClosedLayout.clientWidth !== narrowRoutePanelWidth
+      ) {
+        throw new Error(
+          `NARROW_ROUTE_PANEL_FIXTURE_WIDTH_MISMATCH: ${JSON.stringify(
+            narrowClosedLayout
+          )}`
+        )
+      }
+      if (narrowClosedLayout.scrollWidth > narrowClosedLayout.clientWidth + 1) {
+        throw new Error(
+          `NARROW_ROUTE_PANEL_CLOSED_HORIZONTAL_OVERFLOW: ${JSON.stringify(
+            narrowClosedLayout
+          )}`
+        )
+      }
+    }
     const strategyResult = await waitFor(
       () =>
         session.evaluate(`(() => {
@@ -6588,7 +6641,9 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
                 normalize(articles[0].querySelector('.quest-growth-route-badges')?.textContent)
                   .includes('手動確認必須'),
               clientWidth: routes.clientWidth,
-              scrollWidth: routes.scrollWidth
+              scrollWidth: routes.scrollWidth,
+              panelClientWidth: growth.clientWidth,
+              panelScrollWidth: growth.scrollWidth
             }
           })()`),
         `the reviewed growth route for focus ${focus}`,
@@ -6603,7 +6658,8 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
         result.fallbackVisible ||
         !result.contentMatches ||
         !result.manualConfirmationVisible ||
-        result.scrollWidth > result.clientWidth + 1
+        result.scrollWidth > result.clientWidth + 1 ||
+        result.panelScrollWidth > result.panelClientWidth + 1
       ) {
         throw new Error(
           `Reviewed growth route failed fixed-content or layout checks: ${JSON.stringify(result)}`
@@ -6617,7 +6673,9 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
         contentMatches: result.contentMatches,
         manualConfirmationVisible: result.manualConfirmationVisible,
         clientWidth: result.clientWidth,
-        scrollWidth: result.scrollWidth
+        scrollWidth: result.scrollWidth,
+        panelClientWidth: result.panelClientWidth,
+        panelScrollWidth: result.panelScrollWidth
       })
     }
     const fallback = await inspectGrowthRouteFocus('unset')
@@ -6625,7 +6683,8 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       fallback.routeCount !== 0 ||
       !fallback.fallbackVisible ||
       !fallback.contentMatches ||
-      fallback.scrollWidth > fallback.clientWidth + 1
+      fallback.scrollWidth > fallback.clientWidth + 1 ||
+      fallback.panelScrollWidth > fallback.panelClientWidth + 1
     ) {
       throw new Error(`Growth-route fallback failed layout checks: ${JSON.stringify(fallback)}`)
     }
@@ -6647,9 +6706,18 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
         routeCount: fallback.routeCount,
         fallbackVisible: fallback.fallbackVisible,
         clientWidth: fallback.clientWidth,
-        scrollWidth: fallback.scrollWidth
+        scrollWidth: fallback.scrollWidth,
+        panelClientWidth: fallback.panelClientWidth,
+        panelScrollWidth: fallback.panelScrollWidth
       },
-      sessionOnlyState: true
+      sessionOnlyState: true,
+      narrowPanelFixture:
+        narrowRoutePanelWidth === undefined
+          ? undefined
+          : {
+              targetWidth: narrowRoutePanelWidth,
+              closed: narrowClosedLayout
+            }
     }
   }
   try {
@@ -6727,6 +6795,28 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
             ${JSON.stringify(`${workspaceSelector} .workspace-panel[data-panel-name="questguide"]`)}
           ))`),
         'the task-guide panel to become visible',
+        timeoutMs
+      )
+    }
+
+    if (narrowRoutePanelWidth !== undefined) {
+      previousStrategyEntryStyle = await session.evaluate(`(() => {
+        const clientWidth = ${JSON.stringify(narrowRoutePanelWidth)}
+        const fixtureWidth = clientWidth + 2
+        const entry = document.querySelector('.quest-strategy-entry')
+        if (!entry) return null
+        const previousStyle = entry.getAttribute('style')
+        entry.style.width = fixtureWidth + 'px'
+        entry.style.maxWidth = fixtureWidth + 'px'
+        entry.style.minWidth = '0'
+        return previousStyle
+      })()`)
+      await waitFor(
+        () =>
+          session.evaluate(`document.querySelector('.quest-strategy-entry')?.clientWidth === ${JSON.stringify(
+            narrowRoutePanelWidth + 2
+          )}`),
+        'the anonymous narrow route-panel fixture width',
         timeoutMs
       )
     }
@@ -6987,6 +7077,15 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
         timeoutMs
       )
     }
+    if (previousGrowthFixtureStyle !== undefined) {
+      await session.evaluate(`(() => {
+        const previousStyle = ${JSON.stringify(previousGrowthFixtureStyle)}
+        const growth = document.querySelector('.quest-growth-check')
+        if (!growth) return
+        if (previousStyle === null) growth.removeAttribute('style')
+        else growth.setAttribute('style', previousStyle)
+      })()`)
+    }
     if (previousStrategyVisibility !== undefined) {
       await session.evaluate(`(() => {
         const expected = ${JSON.stringify(previousStrategyVisibility.visible)}
@@ -7011,6 +7110,15 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
         } else {
           localStorage.setItem('questStrategyRouteVisible:v1', stored)
         }
+      })()`)
+    }
+    if (previousStrategyEntryStyle !== undefined) {
+      await session.evaluate(`(() => {
+        const previousStyle = ${JSON.stringify(previousStrategyEntryStyle)}
+        const entry = document.querySelector('.quest-strategy-entry')
+        if (!entry) return
+        if (previousStyle === null) entry.removeAttribute('style')
+        else entry.setAttribute('style', previousStyle)
       })()`)
     }
     if (previousFilter !== undefined) {
@@ -7505,15 +7613,31 @@ function routePanelLayoutSummary(taskGuide) {
   const reviewed = strategy?.reviewedRouteChecks ?? []
   const fallback = strategy?.fallback
   const dimensions = [
-    ...reviewed.map((item) => ({
-      focus: item.focus,
-      clientWidth: item.clientWidth,
-      scrollWidth: item.scrollWidth
-    })),
+    ...reviewed.flatMap((item) => [
+      {
+        focus: item.focus,
+        region: 'panel',
+        clientWidth: item.panelClientWidth,
+        scrollWidth: item.panelScrollWidth
+      },
+      {
+        focus: item.focus,
+        region: 'routes',
+        clientWidth: item.clientWidth,
+        scrollWidth: item.scrollWidth
+      }
+    ]),
     ...(fallback
       ? [
           {
             focus: fallback.focus,
+            region: 'panel',
+            clientWidth: fallback.panelClientWidth,
+            scrollWidth: fallback.panelScrollWidth
+          },
+          {
+            focus: fallback.focus,
+            region: 'routes',
             clientWidth: fallback.clientWidth,
             scrollWidth: fallback.scrollWidth
           }
@@ -7523,7 +7647,12 @@ function routePanelLayoutSummary(taskGuide) {
   const contained =
     reviewed.length === 2 &&
     Boolean(fallback) &&
-    dimensions.every((item) => item.scrollWidth <= item.clientWidth + 1)
+    dimensions.every(
+      (item) =>
+        Number.isFinite(item.clientWidth) &&
+        Number.isFinite(item.scrollWidth) &&
+        item.scrollWidth <= item.clientWidth + 1
+    )
   if (!contained) {
     throw new Error(
       `ROUTE_PANEL_HORIZONTAL_OVERFLOW: ${JSON.stringify({
@@ -7537,7 +7666,8 @@ function routePanelLayoutSummary(taskGuide) {
     reviewedRouteCount: reviewed.length,
     fallbackChecked: true,
     noHorizontalOverflow: true,
-    dimensions
+    dimensions,
+    narrowPanelFixture: strategy?.narrowPanelFixture
   }
 }
 
@@ -7564,7 +7694,8 @@ async function inspectRoutePanelResponsiveAcceptance(
   timeoutMs,
   expectedQuestKnowledge,
   originalState,
-  currentTaskGuide
+  currentTaskGuide,
+  narrowRoutePanelWidth = undefined
 ) {
   const controlSession = session.screenshotSession ?? session
   const originalWindow = await controlSession.call('Smoke.getWindowState')
@@ -7623,7 +7754,12 @@ async function inspectRoutePanelResponsiveAcceptance(
       timeoutMs
     )
     controlled = routePanelLayoutSummary(
-      await inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge)
+      await inspectTaskGuide(
+        session,
+        timeoutMs,
+        expectedQuestKnowledge,
+        narrowRoutePanelWidth
+      )
     )
   } finally {
     await session.evaluate(`(() => {
@@ -9074,7 +9210,14 @@ async function run(options) {
             options.timeoutMs,
             dataUpdateExpectation
           )
-        : await inspectTaskGuide(appSession, options.timeoutMs, dataUpdateExpectation)
+        : await inspectTaskGuide(
+            appSession,
+            options.timeoutMs,
+            dataUpdateExpectation,
+            options.taskGuideCustomLayoutFixture
+              ? NarrowRoutePanelFixtureWidth
+              : undefined
+          )
       : undefined
     const routePanelAcceptance = routePanelAcceptanceMode
       ? await inspectRoutePanelResponsiveAcceptance(
@@ -9082,7 +9225,10 @@ async function run(options) {
           options.timeoutMs,
           dataUpdateExpectation,
           routePanelOriginalState,
-          taskGuide
+          taskGuide,
+          options.taskGuideCustomLayoutFixture
+            ? NarrowRoutePanelFixtureWidth
+            : undefined
         )
       : undefined
     const runGenericWorkspaceRegression = options.wideWorkspace && !routePanelAcceptanceMode
@@ -9425,6 +9571,7 @@ module.exports = {
   IntermediateWorkspaceWidth,
   NarrowWorkspaceHeight,
   NarrowWorkspaceWidth,
+  NarrowRoutePanelFixtureWidth,
   ScreenshotCommandTimeoutMs,
   TallWorkspaceHeight,
   TallWorkspaceWidth,
@@ -9432,6 +9579,7 @@ module.exports = {
   WideWorkspaceMinWidth,
   metricsAreContained,
   isRoutePanelAcceptanceMode,
+  routePanelLayoutSummary,
   routePanelRestorationSummary,
   selectRoutePanelControlledSize,
   physicalDisplaySize,

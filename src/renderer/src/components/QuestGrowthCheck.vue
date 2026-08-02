@@ -509,10 +509,14 @@ function segmentTarget(segment: QuestGrowthReviewedRouteSegment): string {
 .quest-growth-check {
   display: grid;
   gap: 8px;
+  min-width: 0;
+  max-width: 100%;
   padding: 10px 12px;
   border: 1px solid rgba(#75e8ff, 0.28);
   background: rgba(#75e8ff, 0.035);
   color: rgba(#fff, 0.82);
+  box-sizing: border-box;
+  container-type: inline-size;
 }
 
 .quest-growth-header {
@@ -861,6 +865,36 @@ function segmentTarget(segment: QuestGrowthReviewedRouteSegment): string {
   .quest-growth-route-columns {
     grid-template-columns: minmax(0, 1fr);
     flex-direction: column;
+  }
+}
+
+@container (max-width: 320px) {
+  .quest-growth-header {
+    flex-direction: column;
+  }
+
+  .quest-growth-counts {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+
+  .quest-growth-context,
+  .quest-growth-priority,
+  .quest-growth-route-columns,
+  .quest-growth-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .quest-growth-context label {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .quest-growth-reviewed-route > header {
+    flex-direction: column;
+  }
+
+  .quest-growth-route-badges {
+    flex: 1 1 auto;
   }
 }
 </style>
