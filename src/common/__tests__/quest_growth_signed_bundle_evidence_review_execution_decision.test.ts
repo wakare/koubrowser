@@ -93,20 +93,20 @@ describe('R7 signed bundle evidence review execution decision', () => {
     ).toThrow('R7 signed bundle evidence review input contract mismatch')
   })
 
-  it('integrates the pending execution decision into the compiler', () => {
+  it('reflects the later recorded execution result in the compiler', () => {
     const artifacts = buildQuestGrowthArtifacts(Root)
     const sourceManifest = artifacts['source-manifest.json']
     const conflictReport = artifacts['conflict-and-gap-report.json']
 
     expect(sourceManifest.output).toMatchObject({
-      r7SignedBundleEvidenceReviewExecutionOwnerDecisionRequired: true,
-      r7SignedBundleEvidenceReviewExecutionAuthorized: false,
-      r7SignedBundleEvidenceReviewExecutionConsumed: false,
-      r7SignedBundleEvidenceReviewExecutionPassed: false,
+      r7SignedBundleEvidenceReviewExecutionOwnerDecisionRequired: false,
+      r7SignedBundleEvidenceReviewExecutionAuthorized: true,
+      r7SignedBundleEvidenceReviewExecutionConsumed: true,
+      r7SignedBundleEvidenceReviewExecutionPassed: true,
       r7SignedBundleEvidenceReviewExecutionMaximumExecutions: 1,
       r7SignedBundleEvidenceReviewExecutionRequiredCheckCount: 10
     })
-    expect(conflictReport.globalStops).toContain(
+    expect(conflictReport.globalStops).not.toContain(
       'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_EXECUTION_OWNER_DECISION_REQUIRED'
     )
   })

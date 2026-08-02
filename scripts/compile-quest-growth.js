@@ -56,7 +56,7 @@ const {
   buildR7SignedBundleEvidenceReviewResultRecordingDecisionArtifacts
 } = require('./quest-growth-r7-signed-bundle-evidence-review-result-recording-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/29'
+const CompilerVersion = 'quest-growth-authoring-compiler/30'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -1143,7 +1143,9 @@ function buildQuestGrowthArtifacts(root) {
           ? ['R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORED_REAL_REVIEW_NOT_AUTHORIZED']
           : []),
       ...(r7SignedBundleEvidenceReviewExecutionDecision.output
-        .r7SignedBundleEvidenceReviewExecutionOwnerDecisionRequired
+        .r7SignedBundleEvidenceReviewExecutionOwnerDecisionRequired &&
+      !r7SignedBundleEvidenceReviewResultRecordingDecision.output
+        .r7SignedBundleEvidenceReviewResultRecorded
         ? ['R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_EXECUTION_OWNER_DECISION_REQUIRED']
         : []),
       ...(r7SignedBundleEvidenceReviewResultRecordingDecision.output

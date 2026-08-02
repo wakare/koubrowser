@@ -43,11 +43,11 @@ describe('R7 signed bundle evidence review result recording decision', () => {
     )
 
     expect(result.semanticDigest).toBe(
-      'sha256:2f0dd74cbb96f119f89bd048b54a6fc98e19a3dd3db95ef8cab69e227cfd555d'
+      'sha256:74a0e6dbe0b9e0d00214c6b82fb651e8b15b77bb0ad25ef9773b5a13bdddbd01'
     )
   })
 
-  it('requires owner approval without persisting the observed result', () => {
+  it('records the approved result without authorizing a rerun', () => {
     const result =
       buildR7SignedBundleEvidenceReviewResultRecordingDecisionArtifacts({
         root: Root
@@ -59,20 +59,29 @@ describe('R7 signed bundle evidence review result recording decision', () => {
 
     expect(report).toMatchObject({
       status:
-        'OWNER_DECISION_REQUIRED_R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDING',
-      authorizationState: 'not-authorized',
-      resultRecordingAuthorization: 'not-authorized',
+        'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDED',
+      authorizationState: 'consumed',
+      resultRecordingAuthorization: 'consumed',
       maximumRecords: 1,
       completedExecutionCount: 1,
-      recordedResultCount: 0,
+      recordedResultCount: 1,
       allowedPublicEvidenceFieldCount: 10,
       prohibitedRecordFieldCount: 15,
       authorizedRepositoryPathCount: 4,
       requiredCheckCount: 10,
       executionRerunAuthorized: false,
       inputRereadAuthorized: false,
-      runtimeEligibleCount: 0
+      runtimeEligibleCount: 0,
+      publicationAuthorization: 'R7_NOT_AUTHORIZED',
+      defaultEnablementAuthorization: 'R7_NOT_AUTHORIZED',
+      recordedResult: {
+        dataVersion: 'r7.20260802.1',
+        routeCount: 2,
+        requiredCheckCount: 10,
+        redactedAcceptanceStatus: 'review-passed'
+      }
     })
+    expect(Object.keys(report.recordedResult)).toHaveLength(10)
   })
 
   it('rejects review reruns and input rereads', () => {
@@ -98,14 +107,21 @@ describe('R7 signed bundle evidence review result recording decision', () => {
     const conflictReport = artifacts['conflict-and-gap-report.json']
 
     expect(sourceManifest.output).toMatchObject({
-      r7SignedBundleEvidenceReviewResultRecordingOwnerDecisionRequired: true,
-      r7SignedBundleEvidenceReviewResultRecordingAuthorized: false,
-      r7SignedBundleEvidenceReviewResultRecorded: false,
+      r7SignedBundleEvidenceReviewResultRecordingOwnerDecisionRequired: false,
+      r7SignedBundleEvidenceReviewResultRecordingAuthorized: true,
+      r7SignedBundleEvidenceReviewResultRecorded: true,
       r7SignedBundleEvidenceReviewResultRecordingMaximumRecords: 1,
-      r7SignedBundleEvidenceReviewResultRecordingAllowedFieldCount: 10
+      r7SignedBundleEvidenceReviewResultRecordingAllowedFieldCount: 10,
+      r7SignedBundleEvidenceReviewExecutionOwnerDecisionRequired: false,
+      r7SignedBundleEvidenceReviewExecutionAuthorized: true,
+      r7SignedBundleEvidenceReviewExecutionConsumed: true,
+      r7SignedBundleEvidenceReviewExecutionPassed: true
     })
-    expect(conflictReport.globalStops).toContain(
+    expect(conflictReport.globalStops).not.toContain(
       'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDING_OWNER_DECISION_REQUIRED'
+    )
+    expect(conflictReport.globalStops).not.toContain(
+      'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_EXECUTION_OWNER_DECISION_REQUIRED'
     )
   })
 })

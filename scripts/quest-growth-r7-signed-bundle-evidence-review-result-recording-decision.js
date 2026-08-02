@@ -55,6 +55,21 @@ const AuthorizedRepositoryPaths = [
   'knowledge/quest-growth/generated/source-manifest.json',
   'knowledge/quest-growth/generated/conflict-and-gap-report.json'
 ]
+const FixedRecordedResult = {
+  dataVersion: 'r7.20260802.1',
+  publishedAt: '2026-08-02T14:00:30.121Z',
+  manifestSha256:
+    'sha256:b2490f595db0b01d8eec0a7211c0d1a64448bde8e02a30db5875e99b496b85df',
+  questKnowledgeSha256:
+    'sha256:0b0226c9bfc983b6f0da81684e14ff484ef383596fad0ac92b2302783dd49d14',
+  publicKeySha256:
+    'sha256:74937f3c0c5765c3ec15da217a63df0a23f6378d78383eacddfb047dbcc73b40',
+  fileCount: 113,
+  payloadBytes: 804189,
+  routeCount: 2,
+  requiredCheckCount: 10,
+  redactedAcceptanceStatus: 'review-passed'
+}
 const RequiredChecks = [
   'prior-execution-approval-and-fixed-harness-digests-match',
   'completed-execution-count-is-exactly-one',
@@ -161,9 +176,8 @@ function validateR7SignedBundleEvidenceReviewResultRecordingRequest(value, root)
     value.requestId !==
       'decision:quest-growth-r7-signed-bundle-evidence-review-result-recording' ||
     value.revision !== 1 ||
-    value.status !== 'draft' ||
-    value.scope !== 'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDING_ONLY' ||
-    value.recordedResult !== null
+    !['draft', 'approved'].includes(value.status) ||
+    value.scope !== 'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDING_ONLY'
   ) {
     throw new Error('R7 signed bundle review result recording request mismatch')
   }
@@ -223,8 +237,12 @@ function validateR7SignedBundleEvidenceReviewResultRecordingRequest(value, root)
   if (
     value.requestedAuthorization.gateId !==
       'r7-signed-bundle-evidence-review-result-recording' ||
-    value.requestedAuthorization.authorizationState !== 'not-authorized' ||
-    value.requestedAuthorization.resultRecordingAuthorization !== 'not-authorized' ||
+    !['not-authorized', 'consumed'].includes(
+      value.requestedAuthorization.authorizationState
+    ) ||
+    !['not-authorized', 'consumed'].includes(
+      value.requestedAuthorization.resultRecordingAuthorization
+    ) ||
     value.requestedAuthorization.maximumRecords !== 1 ||
     value.requestedAuthorization.repositoryMutationAuthorizedAfterApproval !== true ||
     value.requestedAuthorization.executionRerunAuthorized !== false
@@ -296,14 +314,30 @@ function validateR7SignedBundleEvidenceReviewResultRecordingRequest(value, root)
   }
 
   exactKeys(value.review, ['author', 'approver', 'reviewedAt', 'approvalDigest'], 'review')
-  if (
-    value.review.author !==
-      'codex-r7-signed-bundle-evidence-review-result-recording-decision-author' ||
-    value.review.approver !== null ||
-    value.review.reviewedAt !== null ||
-    value.review.approvalDigest !== null
-  ) {
-    throw new Error('draft R7 result recording request must not claim approval')
+  const commonReviewValid =
+    value.review.author ===
+    'codex-r7-signed-bundle-evidence-review-result-recording-decision-author'
+  const draftValid =
+    value.status === 'draft' &&
+    value.requestedAuthorization.authorizationState === 'not-authorized' &&
+    value.requestedAuthorization.resultRecordingAuthorization ===
+      'not-authorized' &&
+    value.recordedResult === null &&
+    value.review.approver === null &&
+    value.review.reviewedAt === null &&
+    value.review.approvalDigest === null
+  const approvedValid =
+    value.status === 'approved' &&
+    value.requestedAuthorization.authorizationState === 'consumed' &&
+    value.requestedAuthorization.resultRecordingAuthorization === 'consumed' &&
+    same(value.recordedResult, FixedRecordedResult) &&
+    value.review.approver === 'project-owner' &&
+    typeof value.review.reviewedAt === 'string' &&
+    Number.isFinite(Date.parse(value.review.reviewedAt)) &&
+    value.review.approvalDigest ===
+      'sha256:2f0dd74cbb96f119f89bd048b54a6fc98e19a3dd3db95ef8cab69e227cfd555d'
+  if (!commonReviewValid || (!draftValid && !approvedValid)) {
+    throw new Error('R7 result recording approval state mismatch')
   }
 
   return { value, semanticDigest: recordingSemanticDigest(value) }
@@ -315,22 +349,25 @@ function buildR7SignedBundleEvidenceReviewResultRecordingDecisionArtifacts({ roo
     JSON.parse(requestRaw),
     root
   )
+  const recorded = request.value.status === 'approved'
   const report = {
     schemaVersion: 1,
     compilerVersion: CompilerVersion,
     generatedAt: request.value.sourceSnapshot.checkedAt,
-    status: 'OWNER_DECISION_REQUIRED_R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDING',
+    status: recorded
+      ? 'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDED'
+      : 'OWNER_DECISION_REQUIRED_R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDING',
     scope: request.value.scope,
     requestId: request.value.requestId,
     revision: request.value.revision,
     requestDigest: digest(requestRaw),
     semanticDigest: request.semanticDigest,
     gateId: request.value.requestedAuthorization.gateId,
-    authorizationState: 'not-authorized',
-    resultRecordingAuthorization: 'not-authorized',
+    authorizationState: recorded ? 'consumed' : 'not-authorized',
+    resultRecordingAuthorization: recorded ? 'consumed' : 'not-authorized',
     maximumRecords: request.value.requestedAuthorization.maximumRecords,
     completedExecutionCount: request.value.approvalBasis.completedExecutionCount,
-    recordedResultCount: 0,
+    recordedResultCount: recorded ? 1 : 0,
     allowedPublicEvidenceFieldCount:
       request.value.recordingContract.allowedPublicEvidenceFields.length,
     prohibitedRecordFieldCount: request.value.recordingContract.prohibitedRecordFields.length,
@@ -343,6 +380,7 @@ function buildR7SignedBundleEvidenceReviewResultRecordingDecisionArtifacts({ roo
     runtimeEligibleCount: 0,
     publicationAuthorization: 'R7_NOT_AUTHORIZED',
     defaultEnablementAuthorization: 'R7_NOT_AUTHORIZED',
+    recordedResult: recorded ? request.value.recordedResult : null,
     stillProhibited: request.value.stillProhibited
   }
   return {
@@ -353,12 +391,17 @@ function buildR7SignedBundleEvidenceReviewResultRecordingDecisionArtifacts({ roo
       r7SignedBundleEvidenceReviewResultRecordingRequestDigest: digest(requestRaw)
     },
     output: {
-      r7SignedBundleEvidenceReviewResultRecordingOwnerDecisionRequired: true,
-      r7SignedBundleEvidenceReviewResultRecordingAuthorized: false,
-      r7SignedBundleEvidenceReviewResultRecorded: false,
+      r7SignedBundleEvidenceReviewResultRecordingOwnerDecisionRequired:
+        !recorded,
+      r7SignedBundleEvidenceReviewResultRecordingAuthorized: recorded,
+      r7SignedBundleEvidenceReviewResultRecorded: recorded,
       r7SignedBundleEvidenceReviewResultRecordingMaximumRecords: report.maximumRecords,
       r7SignedBundleEvidenceReviewResultRecordingAllowedFieldCount:
-        report.allowedPublicEvidenceFieldCount
+        report.allowedPublicEvidenceFieldCount,
+      r7SignedBundleEvidenceReviewExecutionOwnerDecisionRequired: !recorded,
+      r7SignedBundleEvidenceReviewExecutionAuthorized: recorded,
+      r7SignedBundleEvidenceReviewExecutionConsumed: recorded,
+      r7SignedBundleEvidenceReviewExecutionPassed: recorded
     }
   }
 }

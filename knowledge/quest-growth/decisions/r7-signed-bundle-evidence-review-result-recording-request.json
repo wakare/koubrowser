@@ -2,7 +2,7 @@
   "requestSchema": "QuestGrowthR7SignedBundleEvidenceReviewResultRecordingRequest/1alpha",
   "requestId": "decision:quest-growth-r7-signed-bundle-evidence-review-result-recording",
   "revision": 1,
-  "status": "draft",
+  "status": "approved",
   "scope": "R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDING_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "b1a5f72becef0f7c12a1915c7fef1cf24f74155b",
@@ -20,8 +20,8 @@
   },
   "requestedAuthorization": {
     "gateId": "r7-signed-bundle-evidence-review-result-recording",
-    "authorizationState": "not-authorized",
-    "resultRecordingAuthorization": "not-authorized",
+    "authorizationState": "consumed",
+    "resultRecordingAuthorization": "consumed",
     "maximumRecords": 1,
     "repositoryMutationAuthorizedAfterApproval": true,
     "executionRerunAuthorized": false
@@ -121,11 +121,22 @@
     "game-communication-mutation",
     "installer-build"
   ],
-  "recordedResult": null,
+  "recordedResult": {
+    "dataVersion": "r7.20260802.1",
+    "publishedAt": "2026-08-02T14:00:30.121Z",
+    "manifestSha256": "sha256:b2490f595db0b01d8eec0a7211c0d1a64448bde8e02a30db5875e99b496b85df",
+    "questKnowledgeSha256": "sha256:0b0226c9bfc983b6f0da81684e14ff484ef383596fad0ac92b2302783dd49d14",
+    "publicKeySha256": "sha256:74937f3c0c5765c3ec15da217a63df0a23f6378d78383eacddfb047dbcc73b40",
+    "fileCount": 113,
+    "payloadBytes": 804189,
+    "routeCount": 2,
+    "requiredCheckCount": 10,
+    "redactedAcceptanceStatus": "review-passed"
+  },
   "review": {
     "author": "codex-r7-signed-bundle-evidence-review-result-recording-decision-author",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T14:36:46.243Z",
+    "approvalDigest": "sha256:2f0dd74cbb96f119f89bd048b54a6fc98e19a3dd3db95ef8cab69e227cfd555d"
   }
 }
