@@ -5,10 +5,12 @@ import { describe, expect, it } from 'vitest'
 
 const require = createRequire(import.meta.url)
 const {
+  buildSyntheticPublicEvidence,
   validateSchemaDefinition,
   validateStagingEvidence,
   validateStagingEvidenceFiles
 } = require('../../../scripts/quest-growth-r7-staging-evidence.js') as {
+  buildSyntheticPublicEvidence: () => Record<string, unknown>
   validateSchemaDefinition: (value: Record<string, unknown>) => Record<string, unknown>
   validateStagingEvidence: (
     value: Record<string, any>,
@@ -141,8 +143,10 @@ describe('R7 staging evidence anonymous authoring', () => {
   })
 
   it('emits only redacted synthetic status without sensitive values', () => {
-    const result = validateStagingEvidence(fixture(), Root)
+    const value = fixture()
+    const result = validateStagingEvidence(value, Root)
 
+    expect(value.publicEvidence).toEqual(buildSyntheticPublicEvidence())
     expect(result).toMatchObject({
       syntheticOnly: true,
       keyMaterialPresent: false,

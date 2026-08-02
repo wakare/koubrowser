@@ -14,11 +14,11 @@
   "publicEvidence": {
     "dataVersion": "r7.synthetic.evidence.1",
     "publishedAt": "2026-08-02T00:00:00.000Z",
-    "manifestSha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
-    "questKnowledgeSha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-    "publicKeySha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+    "manifestSha256": "sha256:9f0629ec4257d8f35b16d975360a5035207bfac4028acf637d8eab9acae3c7d9",
+    "questKnowledgeSha256": "sha256:40c90c3b03c90f121f55d1203ac50e3aa5cb068053faf7f5ee8217647edb9c56",
+    "publicKeySha256": "sha256:40ccbd6fe4490fba63d5b9222615492e664a300a409094d7de8971b00988e246",
     "fileCount": 1,
-    "payloadBytes": 1,
+    "payloadBytes": 32,
     "routeCount": 2,
     "requiredCheckCount": 10,
     "redactedAcceptanceStatus": "not-executed"

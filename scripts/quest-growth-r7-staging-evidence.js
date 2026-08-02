@@ -45,20 +45,11 @@ const ProhibitedFields = [
   'rawLog',
   'screenshot'
 ]
-const FixedSyntheticEvidence = {
-  dataVersion: 'r7.synthetic.evidence.1',
-  publishedAt: '2026-08-02T00:00:00.000Z',
-  manifestSha256:
-    'sha256:1111111111111111111111111111111111111111111111111111111111111111',
-  questKnowledgeSha256:
-    'sha256:2222222222222222222222222222222222222222222222222222222222222222',
-  publicKeySha256:
-    'sha256:3333333333333333333333333333333333333333333333333333333333333333',
-  fileCount: 1,
-  payloadBytes: 1,
-  routeCount: 2,
-  requiredCheckCount: 10,
-  redactedAcceptanceStatus: 'not-executed'
+const SyntheticPublicEvidenceInputs = {
+  manifest: 'r7.synthetic.manifest.20260802.1\n',
+  questKnowledge: 'r7.synthetic.quest-knowledge.20260802.1\n',
+  publicKeyFingerprint: 'r7.synthetic.public-key-fingerprint.20260802.1\n',
+  payload: 'r7.synthetic.payload.20260802.1\n'
 }
 const FixedRoles = {
   releaseAuthor: 'actor:synthetic-external-release-author',
@@ -68,6 +59,21 @@ const FixedRoles = {
 
 function digest(value) {
   return `sha256:${createHash('sha256').update(value).digest('hex')}`
+}
+
+function buildSyntheticPublicEvidence() {
+  return {
+    dataVersion: 'r7.synthetic.evidence.1',
+    publishedAt: '2026-08-02T00:00:00.000Z',
+    manifestSha256: digest(SyntheticPublicEvidenceInputs.manifest),
+    questKnowledgeSha256: digest(SyntheticPublicEvidenceInputs.questKnowledge),
+    publicKeySha256: digest(SyntheticPublicEvidenceInputs.publicKeyFingerprint),
+    fileCount: 1,
+    payloadBytes: Buffer.byteLength(SyntheticPublicEvidenceInputs.payload),
+    routeCount: FixedRouteIds.length,
+    requiredCheckCount: 10,
+    redactedAcceptanceStatus: 'not-executed'
+  }
 }
 
 function exactKeys(value, required, description) {
@@ -194,7 +200,7 @@ function validateStagingEvidence(value, root = process.cwd()) {
   }
 
   exactKeys(value.publicEvidence, AllowedPublicEvidenceFields, 'R7 public evidence')
-  if (!same(value.publicEvidence, FixedSyntheticEvidence)) {
+  if (!same(value.publicEvidence, buildSyntheticPublicEvidence())) {
     throw new Error('R7 staging evidence must remain fixed and synthetic')
   }
 
@@ -299,6 +305,7 @@ if (require.main === module) {
 module.exports = {
   AllowedPublicEvidenceFields,
   ProhibitedFields,
+  buildSyntheticPublicEvidence,
   validateProtectedCommunicationDigests,
   validateSchemaDefinition,
   validateStagingEvidence,
