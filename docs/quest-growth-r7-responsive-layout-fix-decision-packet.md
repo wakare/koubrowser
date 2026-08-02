@@ -10,6 +10,9 @@ root cause は `QuestGrowthCheck.vue` の responsive collapse が viewport width
 実際の window は `2576px` であるため media query は発火せず、幅 `221px` の workspace column 内でも
 header counts、context grid、route header / badges が横並びの minimum を維持して overflow した。
 
+project owner は固定摘要を明示承認した。implementation authorization は `authorized` であり、下記4 path
+と匿名 fixture の範囲だけで実装を進める。実アカウント execution authorization は未承認のままである。
+
 ## 申請する authoring 範囲
 
 gate は `r7-route-panel-responsive-fix-authoring`、revision 1 とする。変更可能な path は次の4件だけである。
@@ -77,4 +80,3 @@ badges の wrap、既存 wide layout の維持、匿名 signed fixture による
 > `QuestGrowthCheck` 改为容器感知的窄列布局，并用匿名 signed fixture 验证 `221px` 下 resources、asw、unset
 > 及关闭状态的横向溢出；必须保持 wide layout、session-only 语义、路线内容和游戏通信不变。不授权实账号验收、
 > renderer 以外的 production code、路线/本地事实/翻译修改、runtime publication、默认启用或其他 route family。
-

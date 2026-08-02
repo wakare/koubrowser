@@ -7,7 +7,8 @@ const R7ResponsiveLayoutDecisionCompilerVersion =
 const R7ResponsiveLayoutDecisionOutputFilenames = [
   'r7-responsive-layout-fix-report.json'
 ]
-const ApprovedResponsiveLayoutSemanticDigest = null
+const ApprovedResponsiveLayoutSemanticDigest =
+  'sha256:3b7c6d8b5806cb5c0e850d3a197d9f276d49a90a55cdf75a3a3d03ee031f1e43'
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/

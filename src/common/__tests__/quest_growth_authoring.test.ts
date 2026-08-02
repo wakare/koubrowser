@@ -923,9 +923,9 @@ describe('quest growth authoring contract', () => {
       publicationAuthorization: string
     }>('generated', 'r7-responsive-layout-fix-report.json')
 
-    expect(report.status).toBe('OWNER_DECISION_REQUIRED_R7_ROUTE_PANEL_RESPONSIVE_FIX')
-    expect(report.authorizationState).toBe('not-authorized')
-    expect(report.implementationAuthorization).toBe('not-authorized')
+    expect(report.status).toBe('R7_ROUTE_PANEL_RESPONSIVE_FIX_AUTHORIZED')
+    expect(report.authorizationState).toBe('authorized')
+    expect(report.implementationAuthorization).toBe('authorized')
     expect(report.authorizedPaths).toEqual([
       'src/renderer/src/components/QuestGrowthCheck.vue',
       'src/renderer/src/components/__tests__/QuestGrowthCheck.test.ts',

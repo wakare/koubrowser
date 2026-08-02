@@ -1,6 +1,6 @@
 {
   "anonymousSignedFixtureRequired": true,
-  "authorizationState": "not-authorized",
+  "authorizationState": "authorized",
   "authorizedPaths": [
     "src/renderer/src/components/QuestGrowthCheck.vue",
     "src/renderer/src/components/__tests__/QuestGrowthCheck.test.ts",
@@ -11,8 +11,8 @@
   "compilerVersion": "quest-growth-r7-responsive-layout-decision-compiler/1",
   "defaultEnablementAuthorization": "R7_NOT_AUTHORIZED",
   "gateId": "r7-route-panel-responsive-fix-authoring",
-  "generatedAt": "2026-08-02T07:42:10.343Z",
-  "implementationAuthorization": "not-authorized",
+  "generatedAt": "2026-08-02T07:52:15.071Z",
+  "implementationAuthorization": "authorized",
   "layoutDiagnostic": {
     "clientWidth": 221,
     "scrollWidth": 257
@@ -22,7 +22,7 @@
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
   "realAccountExecutionAuthorization": "R7_NOT_AUTHORIZED",
   "reasonCode": "QUEST_STRATEGY_CURRENT_SIZE_HORIZONTAL_OVERFLOW",
-  "requestDigest": "sha256:2a7b1567a717a9f732f3a2556a02e47cae37a9c5853a96bc2bc17255cabff73e",
+  "requestDigest": "sha256:65a181d938553bbdb906bbe88d8e15241c7c30860d10956088df7af8a82a4bca",
   "requestId": "decision:quest-growth-r7-route-panel-responsive-fix-authoring",
   "requiredCheckCount": 8,
   "revision": 1,
@@ -31,7 +31,7 @@
   "schemaVersion": 1,
   "scope": "R7_ROUTE_PANEL_RESPONSIVE_FIX_AUTHORING_ONLY",
   "semanticDigest": "sha256:3b7c6d8b5806cb5c0e850d3a197d9f276d49a90a55cdf75a3a3d03ee031f1e43",
-  "status": "OWNER_DECISION_REQUIRED_R7_ROUTE_PANEL_RESPONSIVE_FIX",
+  "status": "R7_ROUTE_PANEL_RESPONSIVE_FIX_AUTHORIZED",
   "stillProhibited": [
     "credential-handling-by-agent",
     "agent-click-game-start",

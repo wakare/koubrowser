@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7ResponsiveLayoutFixRequest/1alpha",
   "requestId": "decision:quest-growth-r7-route-panel-responsive-fix-authoring",
   "revision": 1,
-  "status": "draft",
+  "status": "approved",
   "scope": "R7_ROUTE_PANEL_RESPONSIVE_FIX_AUTHORING_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "9305994c9a5c92a6818071c372e68ae8bd69310e",
@@ -37,8 +37,8 @@
   },
   "requestedAuthorization": {
     "gateId": "r7-route-panel-responsive-fix-authoring",
-    "authorizationState": "not-authorized",
-    "implementationAuthorization": "not-authorized",
+    "authorizationState": "authorized",
+    "implementationAuthorization": "authorized",
     "authorizedPaths": [
       "src/renderer/src/components/QuestGrowthCheck.vue",
       "src/renderer/src/components/__tests__/QuestGrowthCheck.test.ts",
@@ -98,8 +98,8 @@
   ],
   "review": {
     "author": "codex-r7-responsive-layout-fix-author",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T07:52:15.071Z",
+    "approvalDigest": "sha256:3b7c6d8b5806cb5c0e850d3a197d9f276d49a90a55cdf75a3a3d03ee031f1e43"
   }
 }

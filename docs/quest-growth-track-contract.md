@@ -258,7 +258,8 @@ revision 5 は project owner の固定摘要承認後、汎用 wide-workspace sw
 route content 詳細検査前に fail closed し、execution authorization は `consumed` である。
 横 overflow の診断と次の production renderer authoring 境界は
 [`quest-growth-r7-responsive-layout-fix-decision-packet.md`](quest-growth-r7-responsive-layout-fix-decision-packet.md)
-に固定した。現在は owner decision required であり、承認前に production code または harness を変更しない。
+に固定した。project owner は固定摘要を承認し、4 path の renderer / anonymous fixture authoring だけを
+authorized とした。実アカウント再実行は引き続き未承認である。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
