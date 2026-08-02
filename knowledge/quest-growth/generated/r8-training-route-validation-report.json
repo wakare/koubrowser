@@ -1,0 +1,18 @@
+{
+  "catalogDigest": "sha256:34c693f5fb44b04a9e9c5d2bd1b10b73e69b45b14e56749c00f40dffe39f3eff",
+  "compilerVersion": "quest-growth-r8-training-route-validator/1",
+  "defaultVisible": false,
+  "evidenceSnapshotDigest": "sha256:96815272f51cea6f995a205a1dc626decc101c604fab61ce3e52195fa76358ae",
+  "evidenceSourceCount": 3,
+  "generatedAt": "2026-08-03T02:00:00.000Z",
+  "independentEvidenceGroupCount": 2,
+  "reviewedRouteCount": 1,
+  "routeFamily": "experience-remodel-modernization",
+  "routeId": "route:practice-remodel-modernization-loop:draft-1",
+  "routeSemanticDigest": "sha256:6882c44aa23d32deb92284e05e6ae3c177089003343984ecd27628ce39d4e46f",
+  "runtimeEligibleCount": 0,
+  "runtimePublicationAuthorized": false,
+  "schemaVersion": 1,
+  "sessionOnly": true,
+  "status": "R8_TRAINING_BUNDLED_OPT_IN_ROUTE_REVIEWED"
+}

@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R8_UNLOCK_BUNDLED_OPT_IN_ROUTE_REVIEWED`
+Status: `R8_TRAINING_BUNDLED_OPT_IN_ROUTE_REVIEWED`
 
 ## モデル境界
 
@@ -233,9 +233,14 @@ R8 は R7 の署名候補や runtime publication を拡張せず、攻略推薦�
 A15・A16で第4艦隊を開放する常設編成任務チェーンを日中2情報源で照合し、2026-08-03 に
 reviewed とした。端末では開放済み艦隊数と表示中の固定チェーン任務数だけを匿名集約し、
 未表示任務の完了、必要艦の入手経路、建造・ドロップ優先度を推定しない。
+`experience-remodel-modernization` lineage では、演習、改造、通常近代化改修を3つの手動区間に
+分けた育成ループを、日本語 WikiWiki と中国語 KcWiki の claim 単位で独立照合し、2026-08-03 に
+reviewed とした。端末では Lv1～19、20～49、50以上の匿名練度帯、練度条件を満たす改造候補数、
+通常四項目の改修余地と未ロック艦数だけを集約する。演習残数、特殊素材の充足、育成対象、
+素材艦の安全性は推定せず、改造前の通常強化を一律禁止もしない。
 表示は利用者が対応する重点を選び、閉じた攻略ルート section を開いた場合だけである。既定非表示、
 session-only、manual-check、runtime publication 未承認、runtime eligible count 0 を維持する。
-R8 bundled route 3件はいずれも R7 の Ed25519 signed candidate 2件には含めない。
+R8 bundled route 4件はいずれも R7 の Ed25519 signed candidate 2件には含めない。
 
 具体的 route の `reviewed` 昇格には route 単位の独立 semantic-digest approval を必要とする。renderer、
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や

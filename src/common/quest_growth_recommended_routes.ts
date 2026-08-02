@@ -1,5 +1,6 @@
 import r8EoRouteCatalogJson from '../../knowledge/quest-growth/r8/route-catalog.json'
 import r8SurfaceRouteCatalogJson from '../../knowledge/quest-growth/r8/surface-route-catalog.json'
+import r8TrainingRouteCatalogJson from '../../knowledge/quest-growth/r8/training-route-catalog.json'
 import r8UnlockRouteCatalogJson from '../../knowledge/quest-growth/r8/unlock-route-catalog.json'
 import {
   selectQuestGrowthReviewedRoutes,
@@ -19,20 +20,21 @@ interface QuestGrowthR8RouteCatalog {
   routes: QuestGrowthReviewedRoute[]
 }
 
-export type QuestGrowthRecommendedRouteFocus = QuestGrowthRouteFocus | 'unlock'
+export type QuestGrowthRecommendedRouteFocus = QuestGrowthRouteFocus | 'unlock' | 'training'
 
 const EoRouteId = 'route:1-5-monthly-eo-medal-loop:draft-1'
 const EoRouteFamily = 'normal-map-eo-blueprint-loop'
-const EoRouteDigest =
-  'sha256:94fce9facb9cd86ac11e9a1a1b3349e9e5bb6303ebdfb986ad9992a3cfc23d0a'
+const EoRouteDigest = 'sha256:94fce9facb9cd86ac11e9a1a1b3349e9e5bb6303ebdfb986ad9992a3cfc23d0a'
 const SurfaceRouteId = 'route:2-1-surface-air-baseline:draft-1'
 const SurfaceRouteFamily = 'surface-air-los-foundation'
-const SurfaceRouteDigest =
-  'sha256:6de12b626dacdf252746d21593268167105614242f3158a046a1a126db8e3f86'
+const SurfaceRouteDigest = 'sha256:6de12b626dacdf252746d21593268167105614242f3158a046a1a126db8e3f86'
 const UnlockRouteId = 'route:fleet-2-4-unlock-chain:draft-1'
 const UnlockRouteFamily = 'system-fleet-unlock'
-const UnlockRouteDigest =
-  'sha256:38e06557efdb7b7fafb911b078001faea1d73effd50cbeff755b53e2d1605cc2'
+const UnlockRouteDigest = 'sha256:38e06557efdb7b7fafb911b078001faea1d73effd50cbeff755b53e2d1605cc2'
+const TrainingRouteId = 'route:practice-remodel-modernization-loop:draft-1'
+const TrainingRouteFamily = 'experience-remodel-modernization'
+const TrainingRouteDigest =
+  'sha256:6882c44aa23d32deb92284e05e6ae3c177089003343984ecd27628ce39d4e46f'
 
 export const QuestGrowthR8EoRouteCatalog =
   r8EoRouteCatalogJson as unknown as QuestGrowthR8RouteCatalog
@@ -40,6 +42,8 @@ export const QuestGrowthR8SurfaceRouteCatalog =
   r8SurfaceRouteCatalogJson as unknown as QuestGrowthR8RouteCatalog
 export const QuestGrowthR8UnlockRouteCatalog =
   r8UnlockRouteCatalogJson as unknown as QuestGrowthR8RouteCatalog
+export const QuestGrowthR8TrainingRouteCatalog =
+  r8TrainingRouteCatalogJson as unknown as QuestGrowthR8RouteCatalog
 
 function validTimestamp(value: string | null): value is string {
   return typeof value === 'string' && value.length > 0 && Number.isFinite(Date.parse(value))
@@ -176,14 +180,59 @@ function unlockRouteIsDisplayable(route: QuestGrowthReviewedRoute, now: number):
   })
 }
 
+const TrainingSegmentBindings = [
+  ['segment:practice-training-check', 'training', '演習'],
+  ['segment:remodel-readiness-check', 'remodel', '改造'],
+  ['segment:normal-modernization-check', 'modernization', '近代化改修']
+] as const
+
+function trainingRouteIsDisplayable(route: QuestGrowthReviewedRoute, now: number): boolean {
+  if (
+    route.routeId !== TrainingRouteId ||
+    route.routeFamily !== TrainingRouteFamily ||
+    route.revision !== 1 ||
+    route.status !== 'reviewed' ||
+    route.outputClass !== 'manual-check-route' ||
+    route.review.author !== 'codex-r8-training-route-author' ||
+    route.review.approver !== 'project-owner' ||
+    route.review.approvalDigest !== TrainingRouteDigest ||
+    !validTimestamp(route.review.reviewedAt) ||
+    !validTimestamp(route.currentness.reviewBy) ||
+    !validTimestamp(route.currentness.validUntil) ||
+    Date.parse(route.review.reviewedAt) >= Date.parse(route.currentness.reviewBy) ||
+    now >= Date.parse(route.currentness.reviewBy) ||
+    now >= Date.parse(route.currentness.validUntil) ||
+    route.segments.length !== TrainingSegmentBindings.length
+  ) {
+    return false
+  }
+
+  return route.segments.every((segment, index) => {
+    const binding = TrainingSegmentBindings[index]
+    return (
+      segment.segmentId === binding[0] &&
+      segment.actionCategory === binding[1] &&
+      segment.mapKey === null &&
+      segment.targetNodes.join('-') === binding[2] &&
+      segment.formations.length === 0 &&
+      segment.fleetConstraints.length >= 4 &&
+      segment.equipmentConstraints.length >= 1 &&
+      segment.branchConditions.length >= 3 &&
+      segment.sortieInstructions.length >= 5 &&
+      segment.fallback.trim().length > 0
+    )
+  })
+}
+
 export function selectQuestGrowthRecommendedRoutes(
   focus: QuestGrowthRecommendedRouteFocus,
   now: Date | number,
   eoCatalog: QuestGrowthR8RouteCatalog = QuestGrowthR8EoRouteCatalog,
   surfaceCatalog: QuestGrowthR8RouteCatalog = QuestGrowthR8SurfaceRouteCatalog,
-  unlockCatalog: QuestGrowthR8RouteCatalog = QuestGrowthR8UnlockRouteCatalog
+  unlockCatalog: QuestGrowthR8RouteCatalog = QuestGrowthR8UnlockRouteCatalog,
+  trainingCatalog: QuestGrowthR8RouteCatalog = QuestGrowthR8TrainingRouteCatalog
 ): QuestGrowthRouteSelection {
-  if (focus !== 'eo' && focus !== 'surface' && focus !== 'unlock') {
+  if (focus !== 'eo' && focus !== 'surface' && focus !== 'unlock' && focus !== 'training') {
     return selectQuestGrowthReviewedRoutes(focus, now)
   }
 
@@ -193,7 +242,13 @@ export function selectQuestGrowthRecommendedRoutes(
   }
 
   const catalog =
-    focus === 'eo' ? eoCatalog : focus === 'surface' ? surfaceCatalog : unlockCatalog
+    focus === 'eo'
+      ? eoCatalog
+      : focus === 'surface'
+        ? surfaceCatalog
+        : focus === 'unlock'
+          ? unlockCatalog
+          : trainingCatalog
   if (!catalogKeepsBundledBoundary(catalog)) {
     return { state: 'knowledge-review-required', routes: [] }
   }
@@ -202,7 +257,9 @@ export function selectQuestGrowthRecommendedRoutes(
       ? eoRouteIsDisplayable(catalog.routes[0], timestamp)
       : focus === 'surface'
         ? surfaceRouteIsDisplayable(catalog.routes[0], timestamp)
-        : unlockRouteIsDisplayable(catalog.routes[0], timestamp)
+        : focus === 'unlock'
+          ? unlockRouteIsDisplayable(catalog.routes[0], timestamp)
+          : trainingRouteIsDisplayable(catalog.routes[0], timestamp)
   if (!displayable) {
     return { state: 'knowledge-review-required', routes: [] }
   }

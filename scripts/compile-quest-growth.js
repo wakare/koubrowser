@@ -55,10 +55,7 @@ const {
   R7SignedBundleEvidenceReviewResultRecordingDecisionOutputFilenames,
   buildR7SignedBundleEvidenceReviewResultRecordingDecisionArtifacts
 } = require('./quest-growth-r7-signed-bundle-evidence-review-result-recording-decision')
-const {
-  R8EoRouteOutputFilenames,
-  buildR8EoRouteArtifacts
-} = require('./quest-growth-r8-eo-route')
+const { R8EoRouteOutputFilenames, buildR8EoRouteArtifacts } = require('./quest-growth-r8-eo-route')
 const {
   R8SurfaceRouteOutputFilenames,
   buildR8SurfaceRouteArtifacts
@@ -67,8 +64,12 @@ const {
   R8UnlockRouteOutputFilenames,
   buildR8UnlockRouteArtifacts
 } = require('./quest-growth-r8-unlock-route')
+const {
+  R8TrainingRouteOutputFilenames,
+  buildR8TrainingRouteArtifacts
+} = require('./quest-growth-r8-training-route')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/33'
+const CompilerVersion = 'quest-growth-authoring-compiler/34'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -92,7 +93,8 @@ const OutputFilenames = [
   ...R7SignedBundleEvidenceReviewResultRecordingDecisionOutputFilenames,
   ...R8EoRouteOutputFilenames,
   ...R8SurfaceRouteOutputFilenames,
-  ...R8UnlockRouteOutputFilenames
+  ...R8UnlockRouteOutputFilenames,
+  ...R8TrainingRouteOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -915,8 +917,7 @@ function buildQuestGrowthArtifacts(root) {
     base,
     r7AuthorizationReport: r7Decision.artifacts['r7-authorization-report.json'],
     r7SchemaReport: r7Schema.artifacts['r7-schema-validation-report.json'],
-    r7RouteReviewReport:
-      r7RouteReviewDecision.artifacts['r7-pilot-route-review-report.json']
+    r7RouteReviewReport: r7RouteReviewDecision.artifacts['r7-pilot-route-review-report.json']
   })
   const r7RealAccountDecision = buildR7RealAccountDecisionArtifacts({
     root,
@@ -932,14 +933,15 @@ function buildQuestGrowthArtifacts(root) {
     root,
     base
   })
-  const r7PublicationCandidateReviewDecision =
-    buildR7PublicationCandidateReviewDecisionArtifacts({ root, base })
-  const r7StagingConfigurationDecision =
-    buildR7StagingConfigurationDecisionArtifacts({ root })
-  const r7StagingEvidenceDecision =
-    buildR7StagingEvidenceDecisionArtifacts({ root })
-  const r7SignedBundleEvidenceReviewDecision =
-    buildR7SignedBundleEvidenceReviewDecisionArtifacts({ root })
+  const r7PublicationCandidateReviewDecision = buildR7PublicationCandidateReviewDecisionArtifacts({
+    root,
+    base
+  })
+  const r7StagingConfigurationDecision = buildR7StagingConfigurationDecisionArtifacts({ root })
+  const r7StagingEvidenceDecision = buildR7StagingEvidenceDecisionArtifacts({ root })
+  const r7SignedBundleEvidenceReviewDecision = buildR7SignedBundleEvidenceReviewDecisionArtifacts({
+    root
+  })
   const r7SignedBundleEvidenceReviewExecutionDecision =
     buildR7SignedBundleEvidenceReviewExecutionDecisionArtifacts({ root })
   const r7SignedBundleEvidenceReviewResultRecordingDecision =
@@ -947,6 +949,7 @@ function buildQuestGrowthArtifacts(root) {
   const r8EoRoute = buildR8EoRouteArtifacts({ root })
   const r8SurfaceRoute = buildR8SurfaceRouteArtifacts({ root })
   const r8UnlockRoute = buildR8UnlockRouteArtifacts({ root })
+  const r8TrainingRoute = buildR8TrainingRouteArtifacts({ root })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -1011,6 +1014,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r8EoRoute.source,
       ...r8SurfaceRoute.source,
       ...r8UnlockRoute.source,
+      ...r8TrainingRoute.source,
       fixtureDigests
     },
     output: {
@@ -1061,24 +1065,24 @@ function buildQuestGrowthArtifacts(root) {
       ...r7SignedBundleEvidenceReviewResultRecordingDecision.output,
       ...r8EoRoute.output,
       ...r8SurfaceRoute.output,
-      ...r8UnlockRoute.output
+      ...r8UnlockRoute.output,
+      ...r8TrainingRoute.output
     },
     runtimePromotion: {
       status: 'blocked',
-      reason:
-        r7RealAccountDecision.output.r7RealAccountAcceptanceFailClosed
-          ? 'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
-          : r7RealAccountDecision.output.r7RealAccountAcceptancePassed
+      reason: r7RealAccountDecision.output.r7RealAccountAcceptanceFailClosed
+        ? 'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
+        : r7RealAccountDecision.output.r7RealAccountAcceptancePassed
           ? 'R7_REAL_ACCOUNT_ACCEPTANCE_PASSED_PUBLICATION_NOT_AUTHORIZED'
           : r7RealAccountDecision.output.r7RealAccountAcceptanceAuthorizedRouteCount > 0
-          ? 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
-          : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
-            ? 'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
-          : r7RendererDecision.output.r7RendererAuthorizedRouteCount > 0
-          ? 'R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED'
-          : r7RouteReviewDecision.output.r7ReviewedConcreteRouteCount > 0
-          ? 'R7_REVIEWED_ROUTES_RENDERER_NOT_AUTHORIZED'
-          : 'R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED'
+            ? 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
+            : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
+              ? 'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
+              : r7RendererDecision.output.r7RendererAuthorizedRouteCount > 0
+                ? 'R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED'
+                : r7RouteReviewDecision.output.r7ReviewedConcreteRouteCount > 0
+                  ? 'R7_REVIEWED_ROUTES_RENDERER_NOT_AUTHORIZED'
+                  : 'R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED'
     }
   }
   const independentApprovalPending =
@@ -1123,14 +1127,12 @@ function buildQuestGrowthArtifacts(root) {
         ? ['R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED']
         : r7RealAccountDecision.output.r7RealAccountAcceptancePassed
           ? ['R7_REAL_ACCOUNT_ACCEPTANCE_PASSED_PUBLICATION_NOT_AUTHORIZED']
-        : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
-          ? ['R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED']
-          : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN']),
-      ...(r7RuntimePublicationDecision.output
-        .r7RuntimePublicationAuthoringOwnerDecisionRequired
+          : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
+            ? ['R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED']
+            : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN']),
+      ...(r7RuntimePublicationDecision.output.r7RuntimePublicationAuthoringOwnerDecisionRequired
         ? ['R7_RUNTIME_PUBLICATION_AUTHORING_OWNER_DECISION_REQUIRED']
-        : r7RuntimePublicationDecision.output
-            .r7RuntimePublicationAuthoringAuthorizedNotImplemented
+        : r7RuntimePublicationDecision.output.r7RuntimePublicationAuthoringAuthorizedNotImplemented
           ? ['R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED']
           : r7RuntimePublicationDecision.output.r7RuntimePublicationAuthoringImplemented
             ? ['R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_PUBLICATION_NOT_AUTHORIZED']
@@ -1139,17 +1141,14 @@ function buildQuestGrowthArtifacts(root) {
         .r7PublicationCandidateReviewOwnerDecisionRequired
         ? ['R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_OWNER_DECISION_REQUIRED']
         : r7PublicationCandidateReviewDecision.output
-            .r7PublicationCandidateReviewAuthorizedNotImplemented
+              .r7PublicationCandidateReviewAuthorizedNotImplemented
           ? ['R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED']
-          : r7PublicationCandidateReviewDecision.output
-              .r7PublicationCandidateReviewImplemented
+          : r7PublicationCandidateReviewDecision.output.r7PublicationCandidateReviewImplemented
             ? ['R7_PUBLICATION_CANDIDATE_OWNER_REVIEW_REQUIRED']
-            : r7PublicationCandidateReviewDecision.output
-                .r7PublicationCandidateReviewApproved
+            : r7PublicationCandidateReviewDecision.output.r7PublicationCandidateReviewApproved
               ? ['R7_PUBLICATION_CANDIDATE_APPROVED_SIGNING_NOT_AUTHORIZED']
               : []),
-      ...(r7StagingConfigurationDecision.output
-        .r7StagingConfigurationOwnerDecisionRequired
+      ...(r7StagingConfigurationDecision.output.r7StagingConfigurationOwnerDecisionRequired
         ? ['R7_STAGING_CONFIGURATION_OWNER_FIXED_DIGEST_REQUIRED']
         : r7StagingConfigurationDecision.output.r7StagingConfigurationApproved
           ? ['R7_STAGING_CONFIGURATION_APPROVED_REAL_STAGING_NOT_AUTHORIZED']
@@ -1158,12 +1157,11 @@ function buildQuestGrowthArtifacts(root) {
         ? ['R7_STAGING_EVIDENCE_AUTHORING_OWNER_DECISION_REQUIRED']
         : r7StagingEvidenceDecision.output.r7StagingEvidenceImplemented
           ? ['R7_STAGING_EVIDENCE_AUTHORED_REAL_EVIDENCE_NOT_AUTHORIZED']
-        : []),
+          : []),
       ...(r7SignedBundleEvidenceReviewDecision.output
         .r7SignedBundleEvidenceReviewOwnerDecisionRequired
         ? ['R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORING_OWNER_DECISION_REQUIRED']
-        : r7SignedBundleEvidenceReviewDecision.output
-            .r7SignedBundleEvidenceReviewImplemented
+        : r7SignedBundleEvidenceReviewDecision.output.r7SignedBundleEvidenceReviewImplemented
           ? ['R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORED_REAL_REVIEW_NOT_AUTHORIZED']
           : []),
       ...(r7SignedBundleEvidenceReviewExecutionDecision.output
@@ -1198,7 +1196,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7SignedBundleEvidenceReviewResultRecordingDecision.artifacts,
     ...r8EoRoute.artifacts,
     ...r8SurfaceRoute.artifacts,
-    ...r8UnlockRoute.artifacts
+    ...r8UnlockRoute.artifacts,
+    ...r8TrainingRoute.artifacts
   }
 }
 

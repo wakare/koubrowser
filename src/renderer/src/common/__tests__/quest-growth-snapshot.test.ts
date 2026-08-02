@@ -39,7 +39,11 @@ function ship(
     api_fuel: options.fuel ?? 20,
     api_bull: options.ammo ?? 20,
     api_locked: options.locked ?? 1,
-    api_lv: options.level ?? 1
+    api_lv: options.level ?? 1,
+    api_karyoku: masterId === 101 ? [5, 20] : [20, 20],
+    api_raisou: masterId === 101 ? [5, 20] : [20, 20],
+    api_taiku: masterId === 101 ? [5, 20] : [20, 20],
+    api_soukou: masterId === 101 ? [5, 20] : [20, 20]
   } as ApiShip
 }
 
@@ -48,6 +52,8 @@ function masterShip(masterId: number): MstShip {
     api_id: masterId,
     api_name: `SECRET_SHIP_${masterId}`,
     api_stype: masterId - 99,
+    api_afterlv: masterId === 101 ? 20 : 50,
+    api_aftershipid: `${masterId + 100}`,
     api_fuel_max: 20,
     api_bull_max: 20
   } as MstShip
@@ -140,7 +146,7 @@ describe('quest growth local snapshot adapter', () => {
 
     expect(snapshot.schemaVersion).toBe(1)
     expect(snapshot.source).toBe('renderer-readonly-state')
-    expect(snapshot.inputs).toHaveLength(10)
+    expect(snapshot.inputs).toHaveLength(13)
     expect(snapshot.privacy).toEqual({
       containsAccountIdentifier: false,
       containsShipIdentifier: false,
@@ -150,6 +156,22 @@ describe('quest growth local snapshot adapter', () => {
     expect(input(snapshot.inputs, 'modernization.material-summary')).toMatchObject({
       freshness: 'fresh',
       visibleUnlockedShipCount: 1
+    })
+    expect(input(snapshot.inputs, 'ships.level-bands')).toMatchObject({
+      freshness: 'fresh',
+      level1To19Count: 1,
+      level20To49Count: 0,
+      level50PlusCount: 1
+    })
+    expect(input(snapshot.inputs, 'ships.remodel-ready')).toMatchObject({
+      freshness: 'fresh',
+      levelReadyShipCount: 1,
+      specialMaterialReadiness: 'unknown'
+    })
+    expect(input(snapshot.inputs, 'modernization.gaps')).toMatchObject({
+      freshness: 'fresh',
+      normalStatGapShipCount: 1,
+      normalStatMaxedShipCount: 1
     })
     expect(input(snapshot.inputs, 'fleet.safety-state')).toMatchObject({
       freshness: 'fresh',

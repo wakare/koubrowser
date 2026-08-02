@@ -1,0 +1,178 @@
+{
+  "authoringSchema": "QuestGrowthR8ConcreteRouteCatalog/1alpha",
+  "catalogVersion": "1.0.0-alpha.1",
+  "status": "reviewed",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "44b4fdb66b45cc729603d378b4c5796432ede752",
+    "checkedAt": "2026-08-03T02:00:00.000Z"
+  },
+  "selectedFamilies": ["experience-remodel-modernization"],
+  "publicationAuthorization": "R8_BUNDLED_OPT_IN_ONLY",
+  "runtimeContract": {
+    "defaultVisible": false,
+    "sessionOnly": true,
+    "runtimePublicationAuthorized": false,
+    "runtimeEligibleCount": 0
+  },
+  "routes": [
+    {
+      "routeId": "route:practice-remodel-modernization-loop:draft-1",
+      "lineageRef": {
+        "id": "growth-lineage:experience-remodel-modernization",
+        "revision": 1
+      },
+      "routeFamily": "experience-remodel-modernization",
+      "revision": 1,
+      "status": "reviewed",
+      "outputClass": "manual-check-route",
+      "title": "演習 → 改造 → 通常近代化 育成ループ（手動確認）",
+      "summary": "残っている演習機会を画面で確認して経験を得た後、改造可能練度と特殊素材を分けて確認し、通常の近代化改修は改造後を基本に進めます。艦娘の優先順位や素材の安全性は自動判定しません。",
+      "applicability": [
+        "現在の重点として演習・改造・近代化を選んでいる。",
+        "演習画面、艦娘一覧、改造画面と近代化改修画面を手動確認できる。",
+        "演習の残り相手数は端末データから推定せず、現在の画面を正とする。",
+        "素材艦の希少性、任務用途、保持方針は一隻ずつ利用者が確認する。",
+        "練度帯と改修余地の集計は候補の絞り込みに使わず、現在事実の要約としてだけ扱う。"
+      ],
+      "segments": [
+        {
+          "segmentId": "segment:practice-training-check",
+          "actionCategory": "training",
+          "mapKey": null,
+          "targetNodes": ["演習"],
+          "fleetConstraints": [
+            "演習画面で現在対戦できる相手を確認し、端末の累計戦績から残数を推定しない。",
+            "育成対象は利用者が選び、保有艦の練度帯だけから特定艦を優先しない。",
+            "相手の旗艦・二番艦の練度と編成を見て、勝敗と経験値が相手依存であることを確認する。",
+            "一つの固定編成を全艦種共通の最適解として扱わない。"
+          ],
+          "equipmentConstraints": [
+            "演習相手に合わせて装備を手動確認し、端末の装備カテゴリ集計だけで勝利を保証しない。"
+          ],
+          "formations": [],
+          "airState": null,
+          "branchConditions": [
+            "現在対戦できる相手がいなければ次の更新枠まで待ち、出撃海域を自動代替しない。",
+            "燃料・弾薬消費を許容できない場合は編成を見直し、演習実行を必須にしない。",
+            "相手編成が育成対象に不向きと判断した場合はその相手を保留し、勝利や経験値を保証しない。"
+          ],
+          "sortieInstructions": [
+            "演習画面を開き、現在利用できる相手を確認する。",
+            "育成したい艦娘を利用者自身で選び、相手編成に合わせて随伴艦と装備を確認する。",
+            "補給消費と現在の資源方針を確認してから演習を実行する。",
+            "演習後に練度を更新し、損傷が母港へ持ち越されていないことを確認する。",
+            "改造可能練度へ達した艦がある場合だけ次の区間へ進む。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:exercise-low-repair-training",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:b633418856ea6a6f7d5ee9bcf353cee1e87d77fe4384503bc5e06506a3d80df6"
+            },
+            {
+              "claimRef": "claim:exercise-low-repair-training",
+              "independenceGroupId": "group:kcwiki-zh",
+              "sourceDigest": "sha256:a0e06c143e7f5530c1abf613141f779e5d8d0bde3820b4b46ca71794fb76dfbf"
+            }
+          ],
+          "fallback": "演習画面を確認できない、相手情報が不明、または資源消費を判断できない場合は停止し、残り回数や獲得経験値を推定しない。"
+        },
+        {
+          "segmentId": "segment:remodel-readiness-check",
+          "actionCategory": "remodel",
+          "mapKey": null,
+          "targetNodes": ["改造"],
+          "fleetConstraints": [
+            "端末の改造可能数は練度条件を満たした艦の匿名集計であり、実行対象を自動選択しない。",
+            "対象艦の現在形態、改造後形態、必要練度を改造画面で確認する。",
+            "設計図・カタパルト・戦闘詳報などの特殊素材条件は練度条件と分けて確認する。",
+            "改造で艦種や装備構成が変わる場合、任務・遠征・編成への影響を手動確認する。"
+          ],
+          "equipmentConstraints": [
+            "改造前後の初期装備と装備解除状態を画面で確認し、入手装備の価値をこのルートで順位付けしない。"
+          ],
+          "formations": [],
+          "airState": null,
+          "branchConditions": [
+            "必要練度に達していなければ演習区間へ戻り、固定海域へ自動誘導しない。",
+            "特殊素材が必要または不足している場合は停止し、設計図等の使用優先順位を決めない。",
+            "対象艦を現在の任務・遠征で使用中の場合は影響を確認してから実行する。"
+          ],
+          "sortieInstructions": [
+            "艦娘一覧で改造候補を利用者自身が選ぶ。",
+            "改造画面で必要練度と改造後形態を確認する。",
+            "弾薬・鋼材と特殊素材の必要数を別々に確認する。",
+            "現在の任務・遠征・装備への影響に問題がない場合だけ改造する。",
+            "改造後の形態、装備、通常近代化状態を更新して確認する。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:modernization-before-after-remodel",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:b633418856ea6a6f7d5ee9bcf353cee1e87d77fe4384503bc5e06506a3d80df6"
+            },
+            {
+              "claimRef": "claim:modernization-before-after-remodel",
+              "independenceGroupId": "group:kcwiki-zh",
+              "sourceDigest": "sha256:2b53a45c3e68bafc0a72a46655fae504d02003524d699b19bb35a51f6ea9ff85"
+            }
+          ],
+          "fallback": "必要練度、改造後形態、消費資源または特殊素材を確認できない場合は改造せず、対象艦の状態確認へ戻る。"
+        },
+        {
+          "segmentId": "segment:normal-modernization-check",
+          "actionCategory": "modernization",
+          "mapKey": null,
+          "targetNodes": ["近代化改修"],
+          "fleetConstraints": [
+            "通常の火力・雷装・対空・装甲の不足集計は対象候補の自動推薦に使用しない。",
+            "改造が近い艦では通常四項目が改造時にリセットされることを確認して投入時期を決める。",
+            "改造後の艦、または当面改造しない艦を対象とする場合も、現在必要な強化だけを手動確認する。",
+            "運・耐久・対潜の特殊近代化改修はこの通常ルートから除外する。"
+          ],
+          "equipmentConstraints": [
+            "素材艦の装備を外す選択肢と装備状態を確認し、重要装備を失わない。"
+          ],
+          "formations": [],
+          "airState": null,
+          "branchConditions": [
+            "素材艦が希少、唯一、任務指定、育成中または保持対象か不明なら使用しない。",
+            "素材安全をロック状態だけで判定せず、一隻でも判断できない場合は停止する。",
+            "改造が近くても現在の攻略が通常強化不足で止まっている場合は、素材効率との交換条件を理解した上で小規模強化を手動判断する。"
+          ],
+          "sortieInstructions": [
+            "近代化改修画面で強化対象を利用者自身が選ぶ。",
+            "火力・雷装・対空・装甲の現在値と上限を確認する。",
+            "対象艦の改造時期を確認し、通常四項目の上昇分がリセットされる可能性を確認する。",
+            "素材艦を一隻ずつ確認し、希少性・任務用途・保持方針・装備状態に問題がないことを確認する。",
+            "確認できた素材だけで通常近代化改修を行い、結果と残り改修余地を更新する。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:modernization-before-after-remodel",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:b633418856ea6a6f7d5ee9bcf353cee1e87d77fe4384503bc5e06506a3d80df6"
+            },
+            {
+              "claimRef": "claim:modernization-before-after-remodel",
+              "independenceGroupId": "group:kcwiki-zh",
+              "sourceDigest": "sha256:2b53a45c3e68bafc0a72a46655fae504d02003524d699b19bb35a51f6ea9ff85"
+            }
+          ],
+          "fallback": "素材艦の安全、対象艦の改造時期、通常四項目と特殊改修の区別のいずれかが不明なら実行せず、画面上の事実確認だけを残す。"
+        }
+      ],
+      "currentness": {
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "fallback": "演習機会、改造条件、素材安全または通常近代化の適用範囲が証拠快照と異なる場合はこのルートを表示せず、再審査へ戻す。",
+      "review": {
+        "author": "codex-r8-training-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T02:00:00.000Z",
+        "approvalDigest": "sha256:6882c44aa23d32deb92284e05e6ae3c177089003343984ecd27628ce39d4e46f"
+      }
+    }
+  ]
+}

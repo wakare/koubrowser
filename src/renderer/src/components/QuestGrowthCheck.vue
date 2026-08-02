@@ -29,6 +29,9 @@ const emit = defineEmits<{
 
 const ObservableTitleKeys = {
   'modernization.material-summary': 'quest.growth.observable.modernization',
+  'ships.level-bands': 'quest.growth.observable.levelBands',
+  'ships.remodel-ready': 'quest.growth.observable.remodelReady',
+  'modernization.gaps': 'quest.growth.observable.modernizationGaps',
   'fleet.safety-state': 'quest.growth.observable.fleetSafety',
   'quest.visible-chain': 'quest.growth.observable.questChain',
   'resources.bands': 'quest.growth.observable.resources',
@@ -42,6 +45,8 @@ const ObservableTitleKeys = {
 
 const ActionMessageKeys = {
   OPEN_SHIP_AND_MODERNIZATION_VIEWS: 'quest.growth.action.openModernization',
+  OPEN_OR_REFRESH_SHIP_LIST_FOR_LEVEL_BANDS: 'quest.growth.action.refreshLevelBands',
+  OPEN_REMODEL_VIEW_AND_REFRESH_MASTER_DATA: 'quest.growth.action.openRemodel',
   REFRESH_DAMAGE_SUPPLY_AND_REPAIR_STATE: 'quest.growth.action.refreshFleetSafety',
   OPEN_ALL_RELEVANT_QUEST_TABS_AND_REFRESH: 'quest.growth.action.openQuestTabs',
   OPEN_OR_REFRESH_LOCAL_RESOURCE_VIEW: 'quest.growth.action.refreshResources',
@@ -74,7 +79,12 @@ const ActionMessageKeys = {
     'quest.growth.action.confirmModernizationMaterials',
   REVIEW_DAMAGE_SUPPLY_AND_REPAIR_FACTS_SEPARATELY: 'quest.growth.action.reviewFleetSafety',
   REVIEW_VISIBLE_UNLOCK_QUESTS_AS_CURRENT_VIEW_ONLY: 'quest.growth.action.reviewVisibleQuests',
-  REVIEW_MEASURED_TOTALS_AND_USER_POSTURE_SEPARATELY: 'quest.growth.action.reviewResourcePosture'
+  REVIEW_MEASURED_TOTALS_AND_USER_POSTURE_SEPARATELY: 'quest.growth.action.reviewResourcePosture',
+  REVIEW_ANONYMOUS_LEVEL_BANDS_WITHOUT_SHIP_PRIORITY: 'quest.growth.action.reviewLevelBands',
+  REVIEW_LEVEL_READY_COUNT_SEPARATELY_FROM_SPECIAL_MATERIALS:
+    'quest.growth.action.reviewRemodelReady',
+  REVIEW_NORMAL_MODERNIZATION_GAPS_SEPARATELY_FROM_SPECIAL_STATS:
+    'quest.growth.action.reviewModernizationGaps'
 } as const satisfies Readonly<Record<string, AppMessageKey>>
 
 type GrowthActionMessageKey =
@@ -139,21 +149,28 @@ const reviewedRouteSelection = computed(() =>
   selectQuestGrowthRecommendedRoutes(props.focus, props.now)
 )
 const FocusObservableIds: Readonly<
-  Partial<Record<QuestGrowthFocus, QuestGrowthFallbackInput['observableId']>>
+  Partial<Record<QuestGrowthFocus, readonly QuestGrowthFallbackInput['observableId'][]>>
 > = {
-  unlock: 'quest.visible-chain',
-  resources: 'resources.bands',
-  asw: 'ships.asw-capable-summary',
-  surface: 'capability.surface-air-los-gaps',
-  eo: 'maps.eo-affordability',
-  breadth: 'capability.breadth-summary',
-  event: 'event.overlay-status'
+  unlock: ['quest.visible-chain'],
+  training: [
+    'practice.available-count',
+    'ships.level-bands',
+    'ships.remodel-ready',
+    'modernization.gaps',
+    'modernization.material-summary'
+  ],
+  resources: ['resources.bands'],
+  asw: ['ships.asw-capable-summary'],
+  surface: ['capability.surface-air-los-gaps'],
+  eo: ['maps.eo-affordability'],
+  breadth: ['capability.breadth-summary'],
+  event: ['event.overlay-status']
 }
 const orderedRows = computed(() => {
-  const focusObservableId = FocusObservableIds[props.focus]
+  const focusedObservableIds = new Set(FocusObservableIds[props.focus] ?? [])
   return [...rows.value].sort((left, right) => {
-    const leftFocused = left.input.observableId === focusObservableId ? 0 : 1
-    const rightFocused = right.input.observableId === focusObservableId ? 0 : 1
+    const leftFocused = focusedObservableIds.has(left.input.observableId) ? 0 : 1
+    const rightFocused = focusedObservableIds.has(right.input.observableId) ? 0 : 1
     if (leftFocused !== rightFocused) return leftFocused - rightFocused
     const leftKind = left.outcome.kind === 'data-acquisition' ? 0 : 1
     const rightKind = right.outcome.kind === 'data-acquisition' ? 0 : 1
@@ -168,12 +185,98 @@ const priorityActions = computed(() => {
   return [...unique].slice(0, 5)
 })
 const focusedInput = computed(() => {
-  const observableId = FocusObservableIds[props.focus]
+  const observableId = FocusObservableIds[props.focus]?.[0]
   return observableId
     ? props.inputs.find((candidate) => candidate.observableId === observableId)
     : undefined
 })
 const focusedFacts = computed<GrowthFact[]>(() => {
+  if (props.focus === 'training') {
+    const levelBands = props.inputs.find((input) => input.observableId === 'ships.level-bands')
+    const remodelReady = props.inputs.find((input) => input.observableId === 'ships.remodel-ready')
+    const modernizationGaps = props.inputs.find(
+      (input) => input.observableId === 'modernization.gaps'
+    )
+    const materials = props.inputs.find(
+      (input) => input.observableId === 'modernization.material-summary'
+    )
+    const practice = props.inputs.find((input) => input.observableId === 'practice.available-count')
+    const facts: GrowthFact[] = []
+    if (levelBands?.observableId === 'ships.level-bands' && levelBands.freshness === 'fresh') {
+      facts.push(
+        numberFact(
+          'level1To19Count',
+          'quest.growth.fact.level1To19Count',
+          levelBands.level1To19Count
+        ),
+        numberFact(
+          'level20To49Count',
+          'quest.growth.fact.level20To49Count',
+          levelBands.level20To49Count
+        ),
+        numberFact(
+          'level50PlusCount',
+          'quest.growth.fact.level50PlusCount',
+          levelBands.level50PlusCount
+        )
+      )
+    }
+    if (
+      remodelReady?.observableId === 'ships.remodel-ready' &&
+      remodelReady.freshness === 'fresh'
+    ) {
+      facts.push(
+        numberFact(
+          'levelReadyShipCount',
+          'quest.growth.fact.levelReadyShipCount',
+          remodelReady.levelReadyShipCount
+        ),
+        {
+          key: 'specialMaterialReadiness',
+          label: translateApp('quest.growth.fact.specialMaterialReadiness'),
+          value: translateApp('quest.growth.fact.state.unknown')
+        }
+      )
+    }
+    if (
+      modernizationGaps?.observableId === 'modernization.gaps' &&
+      modernizationGaps.freshness === 'fresh'
+    ) {
+      facts.push(
+        numberFact(
+          'normalStatGapShipCount',
+          'quest.growth.fact.normalStatGapShipCount',
+          modernizationGaps.normalStatGapShipCount
+        ),
+        numberFact(
+          'normalStatMaxedShipCount',
+          'quest.growth.fact.normalStatMaxedShipCount',
+          modernizationGaps.normalStatMaxedShipCount
+        )
+      )
+    }
+    if (
+      materials?.observableId === 'modernization.material-summary' &&
+      materials.freshness === 'fresh'
+    ) {
+      facts.push(
+        numberFact(
+          'visibleUnlockedShipCount',
+          'quest.growth.fact.visibleUnlockedShipCount',
+          materials.visibleUnlockedShipCount
+        )
+      )
+    }
+    if (practice?.observableId === 'practice.available-count') {
+      facts.push({
+        key: 'practiceAvailability',
+        label: translateApp('quest.growth.fact.practiceAvailability'),
+        value: translateApp(FreshnessMessageKeys[practice.freshness])
+      })
+    }
+    return facts.length > 0 ? facts : [availabilityFact('unknown')]
+  }
+
   const input = focusedInput.value
   if (!input) return []
 
@@ -199,21 +302,13 @@ const focusedFacts = computed<GrowthFact[]>(() => {
         numberFact('ammunition', 'quest.growth.fact.ammunition', input.totals.ammunition),
         numberFact('steel', 'quest.growth.fact.steel', input.totals.steel),
         numberFact('bauxite', 'quest.growth.fact.bauxite', input.totals.bauxite),
-        numberFact(
-          'repairBuckets',
-          'quest.growth.fact.repairBuckets',
-          input.totals.repairBuckets
-        )
+        numberFact('repairBuckets', 'quest.growth.fact.repairBuckets', input.totals.repairBuckets)
       ]
     case 'ships.asw-capable-summary':
       if (input.freshness !== 'fresh') return [availabilityFact(input.freshness)]
       return [
         numberFact('sonarCount', 'quest.growth.fact.sonarCount', input.sonarCount),
-        numberFact(
-          'depthChargeCount',
-          'quest.growth.fact.depthChargeCount',
-          input.depthChargeCount
-        )
+        numberFact('depthChargeCount', 'quest.growth.fact.depthChargeCount', input.depthChargeCount)
       ]
     case 'capability.surface-air-los-gaps':
       if (input.freshness !== 'fresh') return [availabilityFact(input.freshness)]
@@ -232,11 +327,7 @@ const focusedFacts = computed<GrowthFact[]>(() => {
     case 'maps.eo-affordability':
       if (input.freshness !== 'fresh') return [availabilityFact(input.freshness)]
       return [
-        numberFact(
-          'unlockedEoCount',
-          'quest.growth.fact.unlockedEoCount',
-          input.unlockedEoCount
-        ),
+        numberFact('unlockedEoCount', 'quest.growth.fact.unlockedEoCount', input.unlockedEoCount),
         {
           key: 'fleetSafety',
           label: translateApp('quest.growth.fact.fleetSafety'),
@@ -372,6 +463,9 @@ function segmentTarget(segment: QuestGrowthReviewedRouteSegment): string {
         <select :value="focus" @change="updateFocus">
           <option value="unset">{{ translateApp('quest.growth.context.unset') }}</option>
           <option value="unlock">{{ translateApp('quest.growth.observable.questChain') }}</option>
+          <option value="training">
+            {{ translateApp('quest.growth.observable.trainingLoop') }}
+          </option>
           <option value="resources">{{ translateApp('quest.growth.observable.resources') }}</option>
           <option value="asw">{{ translateApp('quest.growth.observable.asw') }}</option>
           <option value="surface">
@@ -448,7 +542,11 @@ function segmentTarget(segment: QuestGrowthReviewedRouteSegment): string {
 
           <section v-for="segment in route.segments" :key="segment.segmentId">
             <h4>
-              {{ translateApp('quest.growth.routes.segment', { params: { target: segmentTarget(segment) } }) }}
+              {{
+                translateApp('quest.growth.routes.segment', {
+                  params: { target: segmentTarget(segment) }
+                })
+              }}
             </h4>
             <div class="quest-growth-route-columns">
               <div>
@@ -477,7 +575,11 @@ function segmentTarget(segment: QuestGrowthReviewedRouteSegment): string {
 
           <footer>
             <span>
-              {{ translateApp('quest.growth.routes.reviewBy', { params: { date: route.currentness.reviewBy.slice(0, 10) } }) }}
+              {{
+                translateApp('quest.growth.routes.reviewBy', {
+                  params: { date: route.currentness.reviewBy.slice(0, 10) }
+                })
+              }}
             </span>
             <span>{{ route.fallback }}</span>
           </footer>

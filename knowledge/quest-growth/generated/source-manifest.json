@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/33",
+  "compilerVersion": "quest-growth-authoring-compiler/34",
   "output": {
     "approvedDecisionRubricCount": 8,
     "approvedMilestoneCount": 8,
@@ -93,6 +93,11 @@
     "r8SurfaceReviewedRouteCount": 1,
     "r8SurfaceRuntimeEligibleCount": 0,
     "r8SurfaceRuntimePublicationAuthorized": false,
+    "r8TrainingEvidenceSourceCount": 3,
+    "r8TrainingIndependentEvidenceGroupCount": 2,
+    "r8TrainingReviewedRouteCount": 1,
+    "r8TrainingRuntimeEligibleCount": 0,
+    "r8TrainingRuntimePublicationAuthorized": false,
     "r8UnlockEvidenceSourceCount": 2,
     "r8UnlockReviewedRouteCount": 1,
     "r8UnlockRuntimeEligibleCount": 0,
@@ -152,6 +157,8 @@
     "r8EoRouteCatalogDigest": "sha256:8fecd0810ccd1eb6f3874e713dbcabe9515c56a8e3c6656e887f54c2a326fa8a",
     "r8SurfaceEvidenceSnapshotDigest": "sha256:d35fbe4774679252dc2e2425d1ffb0dcda19cede56ecdd9b32fab4c629b471f6",
     "r8SurfaceRouteCatalogDigest": "sha256:5ed82389017cfe18afd526c0bc66b3d7dd06d1b3db47cc48b82b6c91ac97367f",
+    "r8TrainingEvidenceSnapshotDigest": "sha256:96815272f51cea6f995a205a1dc626decc101c604fab61ce3e52195fa76358ae",
+    "r8TrainingRouteCatalogDigest": "sha256:34c693f5fb44b04a9e9c5d2bd1b10b73e69b45b14e56749c00f40dffe39f3eff",
     "r8UnlockEvidenceSnapshotDigest": "sha256:d21f41efa820d721ebd918ca59360ebe8e601992d46c8c756269c2942ac79689",
     "r8UnlockRouteCatalogDigest": "sha256:eabcd1ceb13fa42322f5343bdc35b8cf38733029d9122ac773c80f66a835d2eb",
     "schemaDigest": "sha256:3ff863c1063459cbf5a9e8780ddf95f0fdcf9a9c2e0ecc8c69d2776475c57682",

@@ -31,7 +31,15 @@ const Inputs: QuestGrowthFallbackInput[] = [
 
 describe('QuestGrowthCheck.vue', () => {
   async function render(
-    focus: 'unset' | 'unlock' | 'resources' | 'asw' | 'surface' | 'eo' | 'breadth' = 'unset',
+    focus:
+      | 'unset'
+      | 'unlock'
+      | 'training'
+      | 'resources'
+      | 'asw'
+      | 'surface'
+      | 'eo'
+      | 'breadth' = 'unset',
     inputs: QuestGrowthFallbackInput[] = Inputs
   ) {
     const { default: QuestGrowthCheck } = await import('../QuestGrowthCheck.vue')
@@ -40,7 +48,7 @@ describe('QuestGrowthCheck.vue', () => {
         inputs,
         resourcePosture: 'unset',
         focus,
-        now: new Date('2026-08-02T02:07:16.639Z')
+        now: new Date('2026-08-15T00:00:00.000Z')
       }
     })
   }
@@ -151,9 +159,7 @@ describe('QuestGrowthCheck.vue', () => {
     expect(wrapper.get('.quest-growth-reviewed-route').text()).not.toContain(
       '1-5 3戦撤退・基礎対潜練習'
     )
-    expect(wrapper.get('.quest-growth-route-badges').text()).toContain(
-      'quest.growth.routes.manual'
-    )
+    expect(wrapper.get('.quest-growth-route-badges').text()).toContain('quest.growth.routes.manual')
   })
 
   it('shows the reviewed monthly 1-5 EO route for the EO focus', async () => {
@@ -168,9 +174,7 @@ describe('QuestGrowthCheck.vue', () => {
       '1-5 月度EO勲章ループ（手動確認）'
     )
     expect(wrapper.get('.quest-growth-reviewed-route').text()).toContain('A-D-F-G-J')
-    expect(wrapper.get('.quest-growth-reviewed-route').text()).toContain(
-      '月内に4回目の旗艦撃沈'
-    )
+    expect(wrapper.get('.quest-growth-reviewed-route').text()).toContain('月内に4回目の旗艦撃沈')
   })
 
   it('shows the reviewed 2-1 surface and air route for the surface focus', async () => {
@@ -201,10 +205,7 @@ describe('QuestGrowthCheck.vue', () => {
       }
     ])
 
-    expect(wrapper.findAll('.quest-growth-facts dd').map((fact) => fact.text())).toEqual([
-      '2',
-      '1'
-    ])
+    expect(wrapper.findAll('.quest-growth-facts dd').map((fact) => fact.text())).toEqual(['2', '1'])
     const details = wrapper.get('.quest-growth-reviewed-routes')
     ;(details.element as HTMLDetailsElement).open = true
     await details.trigger('toggle')
@@ -215,6 +216,62 @@ describe('QuestGrowthCheck.vue', () => {
     expect(route).toContain('A1 / A2 / A3 / A4')
     expect(route).toContain('川内・神通・那珂')
     expect(route).toContain('金剛・比叡・榛名・霧島')
+  })
+
+  it('shows anonymous training facts and the reviewed practice-to-modernization loop', async () => {
+    const wrapper = await render('training', [
+      {
+        observableId: 'ships.level-bands',
+        freshness: 'fresh',
+        level1To19Count: 4,
+        level20To49Count: 8,
+        level50PlusCount: 12
+      },
+      {
+        observableId: 'ships.remodel-ready',
+        freshness: 'fresh',
+        levelReadyShipCount: 2,
+        specialMaterialReadiness: 'unknown'
+      },
+      {
+        observableId: 'modernization.gaps',
+        freshness: 'fresh',
+        normalStatGapShipCount: 9,
+        normalStatMaxedShipCount: 15
+      },
+      {
+        observableId: 'modernization.material-summary',
+        freshness: 'fresh',
+        visibleUnlockedShipCount: 6
+      },
+      { observableId: 'practice.available-count', freshness: 'unavailable' }
+    ])
+
+    expect(wrapper.findAll('.quest-growth-facts dd').map((fact) => fact.text())).toEqual([
+      '4',
+      '8',
+      '12',
+      '2',
+      'quest.growth.fact.state.unknown',
+      '9',
+      '15',
+      '6',
+      'quest.growth.fact.state.unavailable'
+    ])
+    const priorities = wrapper.findAll('.quest-growth-priority li').map((item) => item.text())
+    expect(priorities).toContain('quest.growth.action.openPractice')
+    expect(priorities).toContain('quest.growth.action.reviewRemodelReady')
+    expect(priorities).not.toContain('quest.growth.action.openQuestTabs')
+    const details = wrapper.get('.quest-growth-reviewed-routes')
+    ;(details.element as HTMLDetailsElement).open = true
+    await details.trigger('toggle')
+
+    const route = wrapper.get('.quest-growth-reviewed-route').text()
+    expect(route).toContain('演習 → 改造 → 通常近代化 育成ループ（手動確認）')
+    expect(route).toContain('演習')
+    expect(route).toContain('改造')
+    expect(route).toContain('近代化改修')
+    expect(route).toContain('素材艦を一隻ずつ確認')
   })
 
   it('hides an expired route and requests knowledge review', async () => {

@@ -1,0 +1,133 @@
+{
+  "authoringSchema": "QuestGrowthR8EvidenceSnapshots/1alpha",
+  "snapshotVersion": "1.0.0-alpha.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "44b4fdb66b45cc729603d378b4c5796432ede752",
+    "checkedAt": "2026-08-03T02:00:00.000Z"
+  },
+  "sources": [
+    {
+      "sourceId": "source:wikiwiki-newcomer-r8-training",
+      "independenceGroupId": "group:wikiwiki-ja",
+      "url": "https://wikiwiki.jp/kancolle/新米提督の手引き",
+      "title": "新米提督の手引き",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki",
+      "language": "ja-JP",
+      "accessibility": "independently-readable",
+      "evidenceClass": "training-and-modernization",
+      "checkedAt": "2026-08-03T02:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-01-28T00:00:00.000Z",
+      "supportedClaims": [
+        "claim:exercise-low-repair-training",
+        "claim:modernization-before-after-remodel"
+      ],
+      "facts": [
+        {
+          "factId": "fact:practice-no-persistent-damage",
+          "statement": "演習中の損傷は母港へ持ち越されず、経験値を得られる。"
+        },
+        {
+          "factId": "fact:practice-opponent-dependent",
+          "statement": "演習経験値と勝敗は相手の旗艦・二番艦の練度や双方の編成に左右される。"
+        },
+        {
+          "factId": "fact:remodel-keeps-level",
+          "statement": "改造後も艦娘の練度と経験値は引き継がれる。"
+        },
+        {
+          "factId": "fact:normal-modernization-reset",
+          "statement": "通常の火力・雷装・対空・装甲の近代化改修上昇分は改造時にリセットされる。"
+        },
+        {
+          "factId": "fact:pre-remodel-strengthening-is-conditional",
+          "statement": "改造前の近代化改修は常に禁止ではなく、現在の攻略を支える小規模強化として条件付きで扱われる。"
+        },
+        {
+          "factId": "fact:material-consumption-needs-confirmation",
+          "statement": "近代化改修素材にした艦娘は失われるため、対象を一隻ずつ確認する必要がある。"
+        }
+      ],
+      "notes": [
+        "演習回数は画面で確認し、端末の累計値から残数を推定しない。",
+        "運・耐久・対潜の特殊な近代化改修は通常四項目と分ける。"
+      ]
+    },
+    {
+      "sourceId": "source:kcwiki-leveling-r8-training",
+      "independenceGroupId": "group:kcwiki-zh",
+      "url": "https://zh.kcwiki.cn/wiki/攻略:练级指南",
+      "title": "攻略:练级指南",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "accessibility": "independently-readable",
+      "evidenceClass": "training",
+      "checkedAt": "2026-08-03T02:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-01-28T00:00:00.000Z",
+      "supportedClaims": ["claim:exercise-low-repair-training"],
+      "facts": [
+        {
+          "factId": "fact:practice-all-ship-types",
+          "statement": "演習は全艦種の育成候補として扱われる。"
+        },
+        {
+          "factId": "fact:practice-no-repair-cost",
+          "statement": "演習で受けた損傷は修理を必要とせず、修復材を消費しない。"
+        },
+        {
+          "factId": "fact:practice-refresh-manual",
+          "statement": "演習候補は更新枠ごとに変わるため、現在の画面で利用可能な相手を確認する。"
+        },
+        {
+          "factId": "fact:no-single-best-leveling-route",
+          "statement": "育成方法は艦種、資源、修復材、時間に合わせて選び、単一の最適解に固定しない。"
+        }
+      ],
+      "notes": [
+        "海域別育成候補はこのルートに含めず、既存の対潜・水上ルートと分離する。",
+        "勝利や獲得経験値を現在の相手情報なしに保証しない。"
+      ]
+    },
+    {
+      "sourceId": "source:kcwiki-modernization-r8-training",
+      "independenceGroupId": "group:kcwiki-zh",
+      "url": "https://zh.kcwiki.cn/wiki/近代化改修",
+      "title": "近代化改修",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "accessibility": "independently-readable",
+      "evidenceClass": "modernization",
+      "checkedAt": "2026-08-03T02:00:00.000Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-01-28T00:00:00.000Z",
+      "supportedClaims": ["claim:modernization-before-after-remodel"],
+      "facts": [
+        {
+          "factId": "fact:normal-modernization-four-stats",
+          "statement": "通常の近代化改修は火力・雷装・対空・装甲の四項目を強化する。"
+        },
+        {
+          "factId": "fact:normal-modernization-not-inherited",
+          "statement": "改造前の通常近代化改修値は改造後に引き継がれない。"
+        },
+        {
+          "factId": "fact:early-strengthening-tradeoff",
+          "statement": "改造前の強化には素材効率との交換条件がある一方、低練度時の攻略を助ける場合がある。"
+        },
+        {
+          "factId": "fact:special-modernization-separated",
+          "statement": "運・耐久・対潜の強化は特殊条件を持つため、通常四項目と分けて確認する。"
+        },
+        {
+          "factId": "fact:important-material-warning",
+          "statement": "重要艦を素材として失わないよう、ロックだけに依存せず手動確認する。"
+        }
+      ],
+      "notes": [
+        "複雑な上昇式や成功率はこのルートの判断に使用しない。",
+        "素材候補の自動推薦を禁止し、未ロック艦数は安全判定に使わない。"
+      ]
+    }
+  ]
+}

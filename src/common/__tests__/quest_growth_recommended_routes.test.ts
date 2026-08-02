@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   QuestGrowthR8EoRouteCatalog,
   QuestGrowthR8SurfaceRouteCatalog,
+  QuestGrowthR8TrainingRouteCatalog,
   QuestGrowthR8UnlockRouteCatalog,
   selectQuestGrowthRecommendedRoutes
 } from '../quest_growth_recommended_routes'
@@ -87,10 +88,36 @@ describe('quest growth recommended routes', () => {
     })
   })
 
-  it('fails closed after the knowledge review deadline', () => {
+  it('selects the reviewed bundled practice, remodel and modernization loop', () => {
+    const selection = selectQuestGrowthRecommendedRoutes('training', ReviewedAt)
+
+    expect(selection).toMatchObject({
+      state: 'available',
+      routes: [
+        {
+          routeId: 'route:practice-remodel-modernization-loop:draft-1',
+          routeFamily: 'experience-remodel-modernization',
+          status: 'reviewed',
+          outputClass: 'manual-check-route'
+        }
+      ]
+    })
     expect(
-      selectQuestGrowthRecommendedRoutes('eo', new Date('2026-08-31T00:00:00.000Z'))
-    ).toEqual({ state: 'knowledge-review-required', routes: [] })
+      QuestGrowthR8TrainingRouteCatalog.routes[0].segments.map((segment) => segment.actionCategory)
+    ).toEqual(['training', 'remodel', 'modernization'])
+    expect(QuestGrowthR8TrainingRouteCatalog.runtimeContract).toEqual({
+      defaultVisible: false,
+      sessionOnly: true,
+      runtimePublicationAuthorized: false,
+      runtimeEligibleCount: 0
+    })
+  })
+
+  it('fails closed after the knowledge review deadline', () => {
+    expect(selectQuestGrowthRecommendedRoutes('eo', new Date('2026-08-31T00:00:00.000Z'))).toEqual({
+      state: 'knowledge-review-required',
+      routes: []
+    })
   })
 
   it('fails closed when the bundled-only boundary is widened', () => {
@@ -127,6 +154,22 @@ describe('quest growth recommended routes', () => {
         ReviewedAt,
         QuestGrowthR8EoRouteCatalog,
         QuestGrowthR8SurfaceRouteCatalog,
+        changed
+      )
+    ).toEqual({ state: 'knowledge-review-required', routes: [] })
+  })
+
+  it('fails closed when the training sequence drifts', () => {
+    const changed = structuredClone(QuestGrowthR8TrainingRouteCatalog)
+    changed.routes[0].segments[1].actionCategory = 'modernization'
+
+    expect(
+      selectQuestGrowthRecommendedRoutes(
+        'training',
+        ReviewedAt,
+        QuestGrowthR8EoRouteCatalog,
+        QuestGrowthR8SurfaceRouteCatalog,
+        QuestGrowthR8UnlockRouteCatalog,
         changed
       )
     ).toEqual({ state: 'knowledge-review-required', routes: [] })

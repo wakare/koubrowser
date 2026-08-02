@@ -29,6 +29,25 @@ const FreshInputs: QuestGrowthFallbackInput[] = [
     visibleUnlockedShipCount: 3
   },
   {
+    observableId: 'ships.level-bands',
+    freshness: 'fresh',
+    level1To19Count: 4,
+    level20To49Count: 8,
+    level50PlusCount: 12
+  },
+  {
+    observableId: 'ships.remodel-ready',
+    freshness: 'fresh',
+    levelReadyShipCount: 2,
+    specialMaterialReadiness: 'unknown'
+  },
+  {
+    observableId: 'modernization.gaps',
+    freshness: 'fresh',
+    normalStatGapShipCount: 9,
+    normalStatMaxedShipCount: 15
+  },
+  {
     observableId: 'fleet.safety-state',
     freshness: 'fresh',
     damage: 'clear',

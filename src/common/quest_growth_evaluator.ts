@@ -21,6 +21,22 @@ export type QuestGrowthFallbackInput =
       visibleUnlockedShipCount: number
     })
   | (BaseInput & {
+      observableId: 'ships.level-bands'
+      level1To19Count: number
+      level20To49Count: number
+      level50PlusCount: number
+    })
+  | (BaseInput & {
+      observableId: 'ships.remodel-ready'
+      levelReadyShipCount: number
+      specialMaterialReadiness: 'unknown'
+    })
+  | (BaseInput & {
+      observableId: 'modernization.gaps'
+      normalStatGapShipCount: number
+      normalStatMaxedShipCount: number
+    })
+  | (BaseInput & {
       observableId: 'fleet.safety-state'
       damage: SafetyState
       supply: SafetyState
@@ -111,6 +127,15 @@ const NoRouteBlocker = 'ROUTE_OUTPUT_PROHIBITED_IN_PURE_EVALUATOR'
 const ObservableContracts: Record<QuestGrowthFallbackInput['observableId'], ObservableContract> = {
   'modernization.material-summary': {
     rubricRef: 'rubric:modernization-material-safety@1',
+    acquisitionStep: 'OPEN_SHIP_AND_MODERNIZATION_VIEWS'
+  },
+  'ships.level-bands': {
+    acquisitionStep: 'OPEN_OR_REFRESH_SHIP_LIST_FOR_LEVEL_BANDS'
+  },
+  'ships.remodel-ready': {
+    acquisitionStep: 'OPEN_REMODEL_VIEW_AND_REFRESH_MASTER_DATA'
+  },
+  'modernization.gaps': {
     acquisitionStep: 'OPEN_SHIP_AND_MODERNIZATION_VIEWS'
   },
   'fleet.safety-state': {
@@ -234,6 +259,19 @@ function validateInput(input: QuestGrowthFallbackInput): void {
     case 'modernization.material-summary':
       assertCount(input.visibleUnlockedShipCount, 'visibleUnlockedShipCount')
       return
+    case 'ships.level-bands':
+      assertCount(input.level1To19Count, 'level1To19Count')
+      assertCount(input.level20To49Count, 'level20To49Count')
+      assertCount(input.level50PlusCount, 'level50PlusCount')
+      return
+    case 'ships.remodel-ready':
+      assertCount(input.levelReadyShipCount, 'levelReadyShipCount')
+      assertEnum(input.specialMaterialReadiness, ['unknown'], 'specialMaterialReadiness')
+      return
+    case 'modernization.gaps':
+      assertCount(input.normalStatGapShipCount, 'normalStatGapShipCount')
+      assertCount(input.normalStatMaxedShipCount, 'normalStatMaxedShipCount')
+      return
     case 'fleet.safety-state':
       assertEnum(input.damage, ['clear', 'blocked', 'unknown'], 'damage')
       assertEnum(input.supply, ['clear', 'blocked', 'unknown'], 'supply')
@@ -338,6 +376,30 @@ export function evaluateQuestGrowthFallback(
         input.observableId,
         ['CONFIRM_EACH_MATERIAL_SHIP_IS_NOT_RARE_UNIQUE_QUEST_REQUIRED_OR_RETAINED'],
         ['MATERIAL_SAFETY_REQUIRES_USER_CONFIRMATION']
+      )
+
+    case 'ships.level-bands':
+      return manualCheck(
+        input.observableId,
+        ['REVIEW_ANONYMOUS_LEVEL_BANDS_WITHOUT_SHIP_PRIORITY'],
+        ['LEVEL_BANDS_DO_NOT_SELECT_A_TRAINING_TARGET']
+      )
+
+    case 'ships.remodel-ready':
+      return manualCheck(
+        input.observableId,
+        ['REVIEW_LEVEL_READY_COUNT_SEPARATELY_FROM_SPECIAL_MATERIALS'],
+        [
+          'LEVEL_READINESS_DOES_NOT_PROVE_REMODEL_AFFORDABILITY',
+          'SPECIAL_MATERIAL_REQUIREMENTS_NEED_MANUAL_CONFIRMATION'
+        ]
+      )
+
+    case 'modernization.gaps':
+      return manualCheck(
+        input.observableId,
+        ['REVIEW_NORMAL_MODERNIZATION_GAPS_SEPARATELY_FROM_SPECIAL_STATS'],
+        ['AGGREGATE_GAPS_DO_NOT_SELECT_TARGET_OR_MATERIAL_SHIPS']
       )
 
     case 'fleet.safety-state': {

@@ -32,6 +32,7 @@ export type QuestGrowthResourcePosture = 'unset' | 'conserve' | 'balanced' | 'sp
 export type QuestGrowthFocus =
   | 'unset'
   | 'unlock'
+  | 'training'
   | 'resources'
   | 'asw'
   | 'surface'
@@ -142,6 +143,59 @@ function breadthFacts(svdata: SvData): {
   }
 }
 
+function levelBandFacts(svdata: SvData): {
+  level1To19Count: number
+  level20To49Count: number
+  level50PlusCount: number
+} {
+  let level1To19Count = 0
+  let level20To49Count = 0
+  let level50PlusCount = 0
+  for (const ship of svdata.ships) {
+    if (!Number.isSafeInteger(ship.api_lv) || ship.api_lv < 1) continue
+    if (ship.api_lv < 20) level1To19Count += 1
+    else if (ship.api_lv < 50) level20To49Count += 1
+    else level50PlusCount += 1
+  }
+  return { level1To19Count, level20To49Count, level50PlusCount }
+}
+
+function remodelFacts(svdata: SvData): {
+  levelReadyShipCount: number
+  specialMaterialReadiness: 'unknown'
+} {
+  let levelReadyShipCount = 0
+  for (const ship of svdata.ships) {
+    const master = svdata.mstShip(ship.api_ship_id)
+    if (
+      !master ||
+      master.api_afterlv <= 0 ||
+      master.api_aftershipid === '0' ||
+      ship.api_lv < master.api_afterlv
+    ) {
+      continue
+    }
+    levelReadyShipCount += 1
+  }
+  return { levelReadyShipCount, specialMaterialReadiness: 'unknown' }
+}
+
+function modernizationFacts(svdata: SvData): {
+  normalStatGapShipCount: number
+  normalStatMaxedShipCount: number
+} {
+  let normalStatGapShipCount = 0
+  let normalStatMaxedShipCount = 0
+  for (const ship of svdata.ships) {
+    const hasGap = [ship.api_karyoku, ship.api_raisou, ship.api_taiku, ship.api_soukou].some(
+      (stat) => stat[0] < stat[1]
+    )
+    if (hasGap) normalStatGapShipCount += 1
+    else normalStatMaxedShipCount += 1
+  }
+  return { normalStatGapShipCount, normalStatMaxedShipCount }
+}
+
 function resourceTotals(svdata: SvData): QuestGrowthResourceTotals | null {
   if (!MainResourceIds.every((id) => svdata.material(id) !== undefined)) return null
   return {
@@ -235,6 +289,15 @@ function evaluatorInputs(
         maximumLevel: null,
         equipmentCategoryCount: 0
       }
+  const levelBands = shipFactsAvailable
+    ? levelBandFacts(svdata)
+    : { level1To19Count: 0, level20To49Count: 0, level50PlusCount: 0 }
+  const remodel = shipFactsAvailable
+    ? remodelFacts(svdata)
+    : { levelReadyShipCount: 0, specialMaterialReadiness: 'unknown' as const }
+  const modernization = shipFactsAvailable
+    ? modernizationFacts(svdata)
+    : { normalStatGapShipCount: 0, normalStatMaxedShipCount: 0 }
   const unlockedEoCount = mapFactsAvailable
     ? svdata.mapinfos.filter((map) => EoMapIds.has(map.api_id)).length
     : 0
@@ -246,6 +309,21 @@ function evaluatorInputs(
       visibleUnlockedShipCount: shipFactsAvailable
         ? svdata.ships.filter((ship) => ship.api_locked === 0).length
         : 0
+    },
+    {
+      observableId: 'ships.level-bands',
+      freshness: shipFactsAvailable ? 'fresh' : 'unknown',
+      ...levelBands
+    },
+    {
+      observableId: 'ships.remodel-ready',
+      freshness: shipFactsAvailable ? 'fresh' : 'unknown',
+      ...remodel
+    },
+    {
+      observableId: 'modernization.gaps',
+      freshness: shipFactsAvailable ? 'fresh' : 'unknown',
+      ...modernization
     },
     {
       observableId: 'fleet.safety-state',
