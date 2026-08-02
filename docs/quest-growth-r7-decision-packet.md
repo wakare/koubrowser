@@ -64,8 +64,8 @@ default enablement に自動変換しない。
 
 revision 3 は tall layout の `primary-overview` と compact layout の `secondary-tasks` を選択する固定 harness に
 修訂し、両方の匿名 signed fixture で PASS した。semantic digest は
-`sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945` である。追加の実アカウント
-実行は owner decision required のままである。
+`sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945` であり、project owner が
+1回の只読・脱敏再実行を承認した。runtime publication と default enablement は未承認のままである。
 
 ## 提案する output class
 

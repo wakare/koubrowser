@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_REVISION_3`
+Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_3_AUTHORIZED_NOT_RUN`
 
 ## 目的
 
@@ -186,7 +186,7 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - prior acceptance status: `blocked-before-route-inspection`
 - revision 2 acceptance status: `fail-closed`
 - revision 2 execution authorization: `consumed`
-- revision 3 execution authorization: `not-authorized`
+- revision 3 execution authorization: `authorized` (one run, not yet consumed)
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
@@ -204,6 +204,7 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 ## 承認結果と現在の結論
 
 project owner は revision 2 修訂固定摘要を明示承認し、1回の再試行は fail closed で終了した。
-revision 3 は匿名 fixture まで完了したが、`executionAuthorization` は `not-authorized` である。
-新しい固定摘要の明示承認なしに実アカウントを再起動しない。runtime publication、default enablement、
-他 family も未承認のままである。
+revision 3 は匿名 fixture まで完了し、project owner は固定摘要を明示承認した。
+`executionAuthorization` は `authorized`、actual status は `retry-authorized-not-run` である。
+preflight 完了後に固定 harness を1回だけ再実行できる。runtime publication、default enablement、
+他 family は未承認のままである。
