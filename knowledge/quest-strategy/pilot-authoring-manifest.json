@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.6",
+  "manifestVersion": "2026-08-03.7",
   "sourceSnapshot": {
-    "repositoryCommit": "971c71d235634a209bf0560c739f824cdc07faeb",
+    "repositoryCommit": "f72d9b67ce2c13950280f40bc62d93b39053d519",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -320,6 +320,34 @@
         "reviewedAt": "2026-07-31T00:00:00.000Z",
         "reviewBy": "2026-10-29T00:00:00.000Z",
         "validUntil": "2027-07-31T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:822:objective",
+      "questId": 822,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "f72d9b67ce2c13950280f40bc62d93b39053d519",
+        "projectionDigest": "sha256:b2bb86f57f2e32c164a816a5cee136a7e8a9f12bb9eb6e242b516f402d0d1464"
+      },
+      "classification": "lossless-v1",
+      "objectiveStages": [
+        {
+          "requiredCount": 2,
+          "targets": [{ "mapKey": "2-4", "result": "S", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-okinoshima-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T05:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
         "evidenceReviewIds": ["periodic-sortie-review"]
       }
     },
@@ -682,6 +710,36 @@
         "reviewBy": "2026-11-01T00:00:00.000Z",
         "validUntil": "2027-02-01T00:00:00.000Z",
         "evidenceReviewIds": ["map-2-3-wikiwiki-review", "map-2-3-kcwiki-review"]
+      }
+    },
+    {
+      "templateId": "normal-map:2-4:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "2-4",
+      "routeLabels": ["B-G-H-L-P"],
+      "targetNodes": ["P"],
+      "fleetConstraintRef": "legacy-recipe:normal-2-4-okinoshima-periodic",
+      "formations": [{ "formationId": 1, "label": "単縦陣", "when": "B・L・Pボス" }],
+      "actions": [
+        "任務226・822のうち表示中の対象を受注し、2-4の必要勝利数が残っていることを確認する",
+        "航空巡洋艦1・軽巡洋艦1・駆逐艦4の6隻にし、近代化改修とL航空優勢84への余裕を確認する",
+        "B-G-H-L-Pの固定ルートを進み、B・L戦後に損傷を確認して大破時は進撃しない",
+        "PボスでS勝利を狙い、表示中の任務に必要な回数まで繰り返す"
+      ],
+      "cost": "medium",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-okinoshima-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T05:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-2-4-wikiwiki-current-review",
+          "map-2-4-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
       }
     },
     {
@@ -1135,6 +1193,26 @@
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-02T16:30:00.000Z",
       "validUntil": "2027-02-01T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-2-4-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/南西諸島海域/2-4",
+      "sourceLabel": "艦これ攻略 Wiki - 2-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T05:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-2-4-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/2-4",
+      "sourceLabel": "舰娘百科 - 2-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T05:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },
     {

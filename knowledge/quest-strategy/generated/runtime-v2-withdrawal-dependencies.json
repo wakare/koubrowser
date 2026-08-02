@@ -177,6 +177,24 @@
     },
     {
       "evidenceDependencies": [
+        "wikiwiki-map-2-4-current",
+        "kcwiki-map-2-4-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 226,
+          "stageIndex": 0
+        },
+        {
+          "questId": 822,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-2-4-okinoshima-periodic"
+    },
+    {
+      "evidenceDependencies": [
         "wikiwiki-map-3-3-current",
         "kcwiki-map-3-3-current",
         "wikiwiki-periodic-sortie"

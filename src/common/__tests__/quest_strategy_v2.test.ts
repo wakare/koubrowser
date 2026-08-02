@@ -32,6 +32,7 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '2-1': 'available',
         '2-2': 'available',
         '2-3': 'available',
+        '2-4': 'available',
         '3-3': 'available',
         '4-1': 'available',
         '4-2': 'available',
@@ -140,6 +141,15 @@ describe('quest strategy runtime v2 stage coverage', () => {
       'normal-4-4-western-quarterly',
       'normal-5-2-coral-weekly'
     ])
+  })
+
+  it('uses the reviewed fixed 2-4 route to complete the quarterly encounter', () => {
+    const plan = build([822])
+
+    expect(plan.coveredQuestIds).toEqual([822])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.uncoveredQuestIds).toEqual([])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-2-4-okinoshima-periodic'])
   })
 
   it('binds the two 7-2 targets to distinct cells and completes task 893', () => {

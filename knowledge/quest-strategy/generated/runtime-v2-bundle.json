@@ -1884,6 +1884,133 @@
     },
     {
       "actions": [
+        "任務226・822のうち表示中の対象を受注し、2-4の必要勝利数が残っていることを確認する",
+        "航空巡洋艦1・軽巡洋艦1・駆逐艦4の6隻にし、近代化改修とL航空優勢84への余裕を確認する",
+        "B-G-H-L-Pの固定ルートを進み、B・L戦後に損傷を確認して大破時は進撃しない",
+        "PボスでS勝利を狙い、表示中の任務に必要な回数まで繰り返す"
+      ],
+      "airState": {
+        "summary": "Lの航空優勢境界84に搭載機損耗分の余裕を加える",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "2-4",
+          "questId": 226,
+          "requiredCount": 5,
+          "result": "victory",
+          "stageIndex": 0
+        },
+        {
+          "mapKey": "2-4",
+          "questId": 822,
+          "requiredCount": 2,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "medium",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            45
+          ],
+          "label": "L航空優勢用の水上戦闘機 2 個以上",
+          "minimum": 2,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            11
+          ],
+          "label": "航空戦と弾着観測用の水上爆撃機",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T05:00:00.000Z",
+          "sourceId": "wikiwiki-map-2-4-current",
+          "sourceLabel": "艦これ攻略 Wiki - 2-4",
+          "summary": "重巡級1以下・軽巡1・駆逐4のB-G-H-L-P固定と軽量編成のS勝利リスク、任務822のS勝利2回を確認",
+          "url": "https://wikiwiki.jp/kancolle/南西諸島海域/2-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T05:00:00.000Z",
+          "sourceId": "kcwiki-map-2-4-current",
+          "sourceLabel": "舰娘百科 - 2-4",
+          "summary": "航巡1・軽巡1・駆逐4の固定経路、L航空優勢84と軽量編成の火力注意を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/2-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "航空巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              6
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 4 隻",
+            "minimum": 4,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "B・L・Pボス"
+        }
+      ],
+      "mapKey": "2-4",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-2-4-okinoshima-periodic",
+      "routeLabels": [
+        "B-G-H-L-P"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "P"
+      ],
+      "title": "2-4 沖ノ島定期任務まとめ",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務241を受注し、3-3・3-4・3-5の合計勝利数が残っていることを確認する",
         "正規空母系1・軽空母1・重巡級2・駆逐艦2の6隻にし、3隻以上へ電探を載せる",
         "A-C-G-Mを進み、Cのうずしお後とG戦後に損傷を確認して大破時は進撃しない",
@@ -3015,11 +3142,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:4e312bb82d56a8b0bd88c6305b191a67f8361b894446036187d04725bcbcc688",
-    "legacyKnowledgeDigest": "sha256:55266035106e0aca3b40cf1e433d1cefb83b5e22f1936f3cdbb54c55cfe69935",
-    "pilotAuthoringManifestDigest": "sha256:432ff39ced09fb9d5b8ea982180f2fad76e09e80679ba92f5e008fbd79d9d84f",
+    "inventoryDigest": "sha256:e567dea923997b20e191ee00dc5527af42e13ce797fdd71ed099fee9f2320936",
+    "legacyKnowledgeDigest": "sha256:d3c398a47e5dbc1f948938142b67d9d8ab0e20b721246d855003509e8cb16f79",
+    "pilotAuthoringManifestDigest": "sha256:9577ef4dda529c518926a931c16f270a24e70890a10c98a6682b1af791beb03a",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "971c71d235634a209bf0560c739f824cdc07faeb"
+    "repositoryCommit": "f72d9b67ce2c13950280f40bc62d93b39053d519"
   },
-  "version": "2026-08-03.6.v2"
+  "version": "2026-08-03.7.v2"
 }

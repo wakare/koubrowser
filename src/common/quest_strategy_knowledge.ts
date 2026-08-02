@@ -767,6 +767,95 @@ const recipes = [
   },
   {
     schemaVersion: 1,
+    id: 'normal-2-4-okinoshima-periodic',
+    revision: 1,
+    title: '2-4 沖ノ島定期任務まとめ',
+    status: 'approved',
+    questIds: [226, 822],
+    objectives: [
+      { questId: 226, result: 'victory', requiredCount: 5 },
+      { questId: 822, result: 'S', requiredCount: 2 }
+    ],
+    mapKey: '2-4',
+    routeLabels: ['B-G-H-L-P'],
+    targetNodes: ['P'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.koujyun],
+          minimum: 1,
+          maximum: 1,
+          label: '航空巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 4,
+          label: '駆逐艦 4 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.SeaplaneFighter],
+        minimum: 2,
+        required: false,
+        label: 'L航空優勢用の水上戦闘機 2 個以上'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.SeaplaneBomber],
+        minimum: 1,
+        required: false,
+        label: '航空戦と弾着観測用の水上爆撃機'
+      }
+    ],
+    formations: [{ formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'B・L・Pボス' }],
+    airState: {
+      target: 'superiority',
+      summary: 'Lの航空優勢境界84に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務226・822のうち表示中の対象を受注し、2-4の必要勝利数が残っていることを確認する',
+      '航空巡洋艦1・軽巡洋艦1・駆逐艦4の6隻にし、近代化改修とL航空優勢84への余裕を確認する',
+      'B-G-H-L-Pの固定ルートを進み、B・L戦後に損傷を確認して大破時は進撃しない',
+      'PボスでS勝利を狙い、表示中の任務に必要な回数まで繰り返す'
+    ],
+    cost: 'medium',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-2-4-current',
+        sourceLabel: '艦これ攻略 Wiki - 2-4',
+        url: 'https://wikiwiki.jp/kancolle/南西諸島海域/2-4',
+        reviewedAt: '2026-08-03T05:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '重巡級1以下・軽巡1・駆逐4のB-G-H-L-P固定と軽量編成のS勝利リスク、任務822のS勝利2回を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-2-4-current',
+        sourceLabel: '舰娘百科 - 2-4',
+        url: 'https://zh.kcwiki.cn/wiki/2-4',
+        reviewedAt: '2026-08-03T05:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '航巡1・軽巡1・駆逐4の固定経路、L航空優勢84と軽量編成の火力注意を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
     id: 'normal-3-3-northern-weekly',
     revision: 1,
     title: '3-3 北方ウィークリー周回',
@@ -1549,6 +1638,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.6',
+  version: '2026-08-03.7',
   recipes
 })
