@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://koubrowser.invalid/schema/quest-growth-r7-staging-evidence-1.json",
+  "title": "QuestGrowthR7StagingEvidenceAnonymousFixture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "evidenceId",
+    "mode",
+    "bindings",
+    "publicEvidence",
+    "roleSeparation",
+    "endpointRepresentation",
+    "authorization",
+    "prohibitedFields"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "evidenceId": {
+      "const": "r7.staging.evidence.anonymous.20260802.1"
+    },
+    "mode": {
+      "const": "anonymous-offline-evidence-only"
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidateVersion",
+        "candidateCanonicalDigest",
+        "stagingConfigurationSemanticDigest",
+        "routeIds"
+      ],
+      "properties": {
+        "candidateVersion": {
+          "const": "r7.candidate.20260802.1"
+        },
+        "candidateCanonicalDigest": {
+          "const": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c"
+        },
+        "stagingConfigurationSemanticDigest": {
+          "const": "sha256:3873731e2d84a85dde4685da9625fe2e4ed072f41c0de8973fa5c94e7e8cec93"
+        },
+        "routeIds": {
+          "const": [
+            "route:expedition-05-resource-loop:draft-1",
+            "route:1-5-basic-asw-three-battle:draft-1"
+          ]
+        }
+      }
+    },
+    "publicEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dataVersion",
+        "publishedAt",
+        "manifestSha256",
+        "questKnowledgeSha256",
+        "publicKeySha256",
+        "fileCount",
+        "payloadBytes",
+        "routeCount",
+        "requiredCheckCount",
+        "redactedAcceptanceStatus"
+      ],
+      "properties": {
+        "dataVersion": {
+          "const": "r7.synthetic.evidence.1"
+        },
+        "publishedAt": {
+          "const": "2026-08-02T00:00:00.000Z"
+        },
+        "manifestSha256": {
+          "const": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "questKnowledgeSha256": {
+          "const": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "publicKeySha256": {
+          "const": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "fileCount": {
+          "const": 1
+        },
+        "payloadBytes": {
+          "const": 1
+        },
+        "routeCount": {
+          "const": 2
+        },
+        "requiredCheckCount": {
+          "const": 10
+        },
+        "redactedAcceptanceStatus": {
+          "const": "not-executed"
+        }
+      }
+    },
+    "roleSeparation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["releaseAuthor", "evidenceReviewer", "stagingOperator"],
+      "properties": {
+        "releaseAuthor": {
+          "const": "actor:synthetic-external-release-author"
+        },
+        "evidenceReviewer": {
+          "const": "actor:synthetic-independent-evidence-reviewer"
+        },
+        "stagingOperator": {
+          "const": "actor:synthetic-staging-acceptance-operator"
+        }
+      }
+    },
+    "endpointRepresentation": {
+      "const": "reserved-invalid-placeholder-only"
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "offlineOnly",
+        "keyMaterialPresent",
+        "realFingerprintPresent",
+        "realEndpointPresent",
+        "stagingAcceptanceAuthorized",
+        "runtimePublicationAuthorized",
+        "defaultEnabled",
+        "runtimeEligibleCount"
+      ],
+      "properties": {
+        "offlineOnly": {
+          "const": true
+        },
+        "keyMaterialPresent": {
+          "const": false
+        },
+        "realFingerprintPresent": {
+          "const": false
+        },
+        "realEndpointPresent": {
+          "const": false
+        },
+        "stagingAcceptanceAuthorized": {
+          "const": false
+        },
+        "runtimePublicationAuthorized": {
+          "const": false
+        },
+        "defaultEnabled": {
+          "const": false
+        },
+        "runtimeEligibleCount": {
+          "const": 0
+        }
+      }
+    },
+    "prohibitedFields": {
+      "const": [
+        "privateKey",
+        "passphrase",
+        "credential",
+        "token",
+        "publicKeyBytes",
+        "manifestUrl",
+        "localPath",
+        "accountData",
+        "personalIdentifier",
+        "rawLog",
+        "screenshot"
+      ]
+    }
+  }
+}
