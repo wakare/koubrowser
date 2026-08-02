@@ -68,6 +68,8 @@ revision 3 は tall layout の `primary-overview` と compact layout の `second
 1回の只読・脱敏再実行を承認した。実行は DMM login page で account data を待機したまま timeout し、
 route 検査前に fail closed した。承認は消費済みで、runtime publication と default enablement は未承認のままである。
 revision 4 は同じ harness と同じ2 route を使う1回限りの再試行として project owner が承認した。
+固定2 route の検査後、汎用 responsive workspace sweep が user-customized layout で timeout したため、
+全体は fail closed、実行承認は消費済みである。
 
 ## 提案する output class
 

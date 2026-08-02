@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_4_AUTHORIZED_NOT_RUN`
+Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_4_FAIL_CLOSED`
 
 ## 目的
 
@@ -194,7 +194,11 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - revision 3 reason: `MANUAL_LOGIN_TIMEOUT_BEFORE_ACCOUNT_DATA`
 - revision 3 account data ready: `false`
 - revision 3 checked route count: `0`
-- revision 4 execution authorization: `authorized` (one run, not yet consumed)
+- revision 4 execution authorization: `consumed`
+- revision 4 acceptance status: `fail-closed`
+- revision 4 reason: `SURFACE_RESPONSIVE_WORKSPACE_MODE_TIMEOUT`
+- revision 4 account data ready: `true`
+- revision 4 checked route count: `2`
 - revision 4 maximum executions: `1`
 - revision 4 harness changes authorized: `false`
 - runtime eligible count: `0`
@@ -222,5 +226,7 @@ runtime publication、default enablement、他 family は未承認のままで�
 
 revision 4 は harness、production code、route content を変更しない。revision 3 と同じ layout-aware harness、
 同じ2件の reviewed route、同じ5分の owner manual login window を使用する1回限りの再試行だけを申請する。
-project owner は本 packet の固定摘要を明示承認した。現在の `executionAuthorization` は `authorized` で、
-preflight 完了後に同じ harness と同じ2 route を1回だけ再検査できる。
+project owner は本 packet の固定摘要を明示承認した。account data は ready となり、固定2 route と unset fallback の
+検査は完了したが、その後の汎用 `--wide-workspace` surface layout sweep が user-customized page labels と既定 label の
+一致を待って timeout した。全12 check を完了できなかったため全体は fail closed、execution authorization は
+`consumed` とする。新しい固定摘要の承認なしに再実行または harness 修正をしない。

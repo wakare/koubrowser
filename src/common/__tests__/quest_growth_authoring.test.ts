@@ -168,7 +168,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
+      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -189,7 +189,7 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
-    expect(report.globalStops).toContain('R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN')
+    expect(report.globalStops).toContain('R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED')
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
@@ -726,7 +726,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('authorizes the bounded revision 4 retry without claiming it ran', () => {
+  it('records the revision 4 post-route layout timeout as fail closed', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -758,20 +758,20 @@ describe('quest growth authoring contract', () => {
       harnessChangesAuthorized: boolean
     }>('generated', 'r7-real-account-acceptance-report.json')
 
-    expect(report.status).toBe('REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED')
+    expect(report.status).toBe('REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED')
     expect(report.semanticDigest).toBe(
       'sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c'
     )
     expect(report.authorizationState).toBe('authorized')
-    expect(report.executionAuthorization).toBe('authorized')
+    expect(report.executionAuthorization).toBe('consumed')
     expect(report.acceptanceMode).toBe('owner-login-readonly-redacted')
     expect(report.maximumAcceptedRoutes).toBe(2)
     expect(report.requiredCheckCount).toBe(12)
-    expect(report.actualAcceptanceStatus).toBe('retry-authorized-not-run')
-    expect(report.acceptanceReasonCode).toBe('MANUAL_LOGIN_TIMEOUT_BEFORE_ACCOUNT_DATA')
-    expect(report.accountDataReady).toBe(false)
-    expect(report.routeInspectionStarted).toBe(false)
-    expect(report.checkedRouteCount).toBe(0)
+    expect(report.actualAcceptanceStatus).toBe('fail-closed')
+    expect(report.acceptanceReasonCode).toBe('SURFACE_RESPONSIVE_WORKSPACE_MODE_TIMEOUT')
+    expect(report.accountDataReady).toBe(true)
+    expect(report.routeInspectionStarted).toBe(true)
+    expect(report.checkedRouteCount).toBe(2)
     expect(report.pageFilterPanelWindowStateRestored).toBe(true)
     expect(report.applicationProcessClosed).toBe(true)
     expect(report.retryAuthorizationReasonCode).toBe(
