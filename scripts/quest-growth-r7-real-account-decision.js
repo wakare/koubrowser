@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const R7RealAccountDecisionCompilerVersion =
-  'quest-growth-r7-real-account-decision-compiler/5'
+  'quest-growth-r7-real-account-decision-compiler/6'
 const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -98,13 +98,17 @@ const ExpectedPriorAttempt = {
   applicationProcessClosed: true
 }
 const ExpectedHarnessAmendment = {
-  reasonCode: 'USER_CUSTOMIZED_WORKSPACE_LAYOUT_COMPATIBILITY',
+  revision: 3,
+  supersedesRevision: 2,
+  reasonCode: 'TALL_AND_COMPACT_TASK_GUIDE_LAYOUT_SELECTION',
   changes: [
-    'temporarily-restore-hidden-task-page-and-guide-panel',
-    'validate-both-fixed-reviewed-route-bindings-and-unset-fallback',
-    'verify-session-only-focus-and-expansion-and-restore-their-state'
+    'inspect-primary-overview-quest-guide-when-primary-workspace-is-visible',
+    'inspect-or-temporarily-restore-secondary-task-page-in-compact-layout',
+    'remove-panel-text-from-timeout-diagnostics',
+    'verify-tall-primary-and-compact-hidden-layouts-with-anonymous-signed-fixtures'
   ],
   anonymousHiddenLayoutFixtureRequired: true,
+  anonymousTallLayoutFixtureRequired: true,
   productionCodeChangesAuthorized: false,
   routeContentChangesAuthorized: false
 }
@@ -251,7 +255,7 @@ function validateR7RealAccountAcceptanceRequest(
   if (
     value.authoringSchema !== 'QuestGrowthR7RealAccountAcceptanceRequest/1alpha' ||
     value.requestId !== 'decision:quest-growth-r7-real-account-readonly-acceptance' ||
-    value.revision !== 2 ||
+    value.revision !== 3 ||
     !['draft', 'approved'].includes(value.status) ||
     value.scope !== 'R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY'
   ) {
@@ -525,9 +529,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     rawLogRetentionAllowed: false,
     accountDataExportAllowed: false,
     protectedCommunicationDigests: request.value.approvalBasis.protectedCommunicationDigests,
-    actualAcceptanceStatus: request.approved
-      ? request.value.executionResult.status
-      : request.value.priorAttempt.result,
+    actualAcceptanceStatus: request.value.executionResult.status,
     acceptanceStage: request.value.executionResult.stage,
     acceptanceReasonCode: request.value.executionResult.reasonCode,
     accountDataReady: request.value.executionResult.accountDataReady,
@@ -541,6 +543,8 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     harnessAmendmentChangeCount: request.value.harnessAmendment.changes.length,
     anonymousHiddenLayoutFixtureRequired:
       request.value.harnessAmendment.anonymousHiddenLayoutFixtureRequired,
+    anonymousTallLayoutFixtureRequired:
+      request.value.harnessAmendment.anonymousTallLayoutFixtureRequired,
     stillProhibited: request.value.stillProhibited,
     runtimeEligibleCount: 0,
     publicationAuthorization: 'R7_NOT_AUTHORIZED',

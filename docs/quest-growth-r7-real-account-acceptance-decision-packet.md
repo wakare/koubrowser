@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED`
+Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_REVISION_3`
 
 ## 目的
 
@@ -16,6 +16,8 @@ revision 1 harness が開けず、route 検査前に fail closed した。revisi
 `not-authorized` とした。project owner は固定摘要を明示承認し、revision 2 の実行は
 `authorized` とした。再試行は account data ready 後、tall layout で task page を解決できず、
 route 検査前に再び fail closed した。この1回分の実行承認は消費済みである。
+revision 3 は tall / compact layout の表示先を判定する harness 修訂だけを固定し、実アカウントの
+追加実行は再承認待ちとする。
 
 machine-readable request は
 [`r7-real-account-acceptance-request.json`](../knowledge/quest-growth/decisions/r7-real-account-acceptance-request.json)、
@@ -96,6 +98,21 @@ source 確認の結果、`secondary-tasks` は `compactHeightOnly` である。l
 revision 2 が参照する hidden page list は persisted `visible=false` の page だけを含むため、復元対象を
 見つけられなかった。
 
+## revision 3 harness amendment
+
+revision 2 の検査範囲、route binding、evidence / restore / abort 条件は変更しない。固定 harness に
+次の4点だけを追加する。
+
+1. primary workspace が表示される tall layout では `primary-overview` の `questguide` を検査する。
+2. primary workspace が表示されない compact layout では `secondary-tasks` を使い、非表示なら
+   一時復元後に原状へ戻す。
+3. timeout diagnostic に panel text を含めず、panel name、visibility、client / scroll width だけにする。
+4. 匿名 signed fixture で compact-hidden と tall-primary を別々検査する。
+
+両 fixture とも `resources`、`asw`、`unset` fallback、session-only、元の page / panel / window 状態の
+復元を含めて PASS した。tall fixture では client `1920 x 1200`、workspace area
+`primary`、page `primary-overview`、secondary task tab omitted を確認した。
+
 ## 実行前 gate
 
 承認後も次がすべて PASS するまで実アカウント session を開始しない。
@@ -149,9 +166,9 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 ## 固定摘要
 
 - acceptance request semantic digest:
-  `sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e`
+  `sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945`
 - request raw digest:
-  `sha256:c93a7c03e6afe77f272852dcaf32ad342e61f2cb7c2b7e8f9f8f125c631f0380`
+  `sha256:f4092af1c061ab3c198236a32f78c5de70a69b1cae14ec0fb515ab3aec6ec462`
 - approved revision 2 request raw digest:
   `sha256:409132e26bd5b131da0049d715408438a13bd59c028eca6dea2dea48d899f446`
 - executed revision 2 request raw digest:
@@ -160,6 +177,8 @@ screenshot capture、raw log retention、account data export はすべて禁止�
   `sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe`
 - revision 2 smoke harness digest:
   `sha256:38cf695bf354cc16e589621efc9fd2c2634c0de0e6291feb39a502e56795c537`
+- revision 3 smoke harness digest:
+  `sha256:b334b4ef74f8ce6a29a6ccdfbcbb825df832dbedb28eefccd8eb7982af61bf3a`
 - gate semantic digest:
   `sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb`
 - route count: `2`
@@ -167,22 +186,24 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - prior acceptance status: `blocked-before-route-inspection`
 - revision 2 acceptance status: `fail-closed`
 - revision 2 execution authorization: `consumed`
+- revision 3 execution authorization: `not-authorized`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
 
 推奨承認文面:
 
-> 批准修订固定摘要 `sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e`
-> 对应的 `r7-real-account-readonly-acceptance` revision 2 harness amendment。仅允许在原已批准的
-> 两条 reviewed route 只读验收中，临时恢复被隐藏的任务页/面板并原状还原，完整检查
-> resources、asw、unset fallback 和 session-only 状态；仅授权再执行一次原范围的只读、
-> 脱敏验收。其余边界不变：Codex 不得处理凭据、点击 GAME START、执行游戏操作、修改游戏通信、
-> 保存截图/raw log/account snapshot、修改路线或 production code；不授权 runtime publication、
-> 默认启用或其他 route family。
+> 批准修订固定摘要 `sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945`
+> 对应的 `r7-real-account-readonly-acceptance` revision 3 harness amendment。仅允许 harness 根据
+> 实际布局在 tall 模式检查 primary-overview/questguide，在 compact 模式检查或临时恢复
+> secondary-tasks/questguide，并将 timeout diagnostic 限制为脱敏名称与尺寸；仅授权对原固定的
+> 两条 reviewed route 再执行一次原范围的只读、脱敏验收。其余边界不变：Codex 不得
+> 处理凭据、点击 GAME START、执行游戏操作、修改游戏通信、保存截图/raw log/account snapshot、
+> 修改路线或 production code；不授权 runtime publication、默认启用或其他 route family。
 
 ## 承認結果と現在の結論
 
 project owner は revision 2 修訂固定摘要を明示承認し、1回の再試行は fail closed で終了した。
-`executionAuthorization` は `consumed`、actual status は `fail-closed` である。追加の harness 変更、
-実アカウント再試行、runtime publication、default enablement、他 family はいずれも未承認である。
+revision 3 は匿名 fixture まで完了したが、`executionAuthorization` は `not-authorized` である。
+新しい固定摘要の明示承認なしに実アカウントを再起動しない。runtime publication、default enablement、
+他 family も未承認のままである。

@@ -692,6 +692,7 @@ describe('Electron smoke script', () => {
       workspacePages: false,
       taskGuide: false,
       taskGuideHiddenLayoutFixture: false,
+      taskGuideTallLayoutFixture: false,
       wideWorkspace: false,
       requireDisplayProfile: undefined,
       requireLiveProfile: undefined,
@@ -730,6 +731,7 @@ describe('Electron smoke script', () => {
       workspacePages: true,
       taskGuide: true,
       taskGuideHiddenLayoutFixture: false,
+      taskGuideTallLayoutFixture: false,
       wideWorkspace: true,
       requireDisplayProfile: undefined,
       requireLiveProfile: undefined,
@@ -775,6 +777,19 @@ describe('Electron smoke script', () => {
       dataUpdateFixture: true,
       taskGuide: true,
       taskGuideHiddenLayoutFixture: true
+    })
+    expect(
+      smoke.parseArgs([
+        '--layout-fixture',
+        '--data-update-fixture',
+        '--task-guide',
+        '--task-guide-tall-layout-fixture'
+      ])
+    ).toMatchObject({
+      layoutFixture: true,
+      dataUpdateFixture: true,
+      taskGuide: true,
+      taskGuideTallLayoutFixture: true
     })
     expect(
       smoke.parseArgs([
@@ -853,6 +868,21 @@ describe('Electron smoke script', () => {
       smoke.parseArgs(['--layout-fixture', '--task-guide-hidden-layout-fixture'])
     ).toThrow(
       '--task-guide-hidden-layout-fixture requires --layout-fixture and --task-guide'
+    )
+    expect(() =>
+      smoke.parseArgs(['--layout-fixture', '--task-guide-tall-layout-fixture'])
+    ).toThrow(
+      '--task-guide-tall-layout-fixture requires --layout-fixture and --task-guide'
+    )
+    expect(() =>
+      smoke.parseArgs([
+        '--layout-fixture',
+        '--task-guide',
+        '--task-guide-hidden-layout-fixture',
+        '--task-guide-tall-layout-fixture'
+      ])
+    ).toThrow(
+      '--task-guide-hidden-layout-fixture and --task-guide-tall-layout-fixture are mutually exclusive'
     )
     expect(() => smoke.parseArgs(['--data-update-fixture', '--task-guide'])).toThrow(
       '--data-update-fixture requires --layout-fixture'

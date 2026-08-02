@@ -1,12 +1,12 @@
 {
   "authoringSchema": "QuestGrowthR7RealAccountAcceptanceRequest/1alpha",
   "requestId": "decision:quest-growth-r7-real-account-readonly-acceptance",
-  "revision": 2,
-  "status": "approved",
+  "revision": 3,
+  "status": "draft",
   "scope": "R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "804cf1bc180240b67e2f1d2f51443f4bd5399f2d",
-    "checkedAt": "2026-08-02T03:11:23.756Z"
+    "checkedAt": "2026-08-02T03:49:26.379Z"
   },
   "approvalBasis": {
     "realAccountGateSemanticDigest": "sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb",
@@ -17,7 +17,7 @@
     "routeSelectorDigest": "sha256:c68ad63ce313a3ea1514a7d5588b8dd463fa0be4b49e49e10fbcdaf4ebd999f2",
     "growthComponentDigest": "sha256:c50c847d7b392759d94f65a8dd8bbaea8a047b1d12b5f4a5f6f308cded1e9947",
     "questGuideDigest": "sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4",
-    "smokeHarnessDigest": "sha256:38cf695bf354cc16e589621efc9fd2c2634c0de0e6291feb39a502e56795c537",
+    "smokeHarnessDigest": "sha256:b334b4ef74f8ce6a29a6ccdfbcbb825df832dbedb28eefccd8eb7982af61bf3a",
     "protectedCommunicationDigests": {
       "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
       "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
@@ -27,7 +27,7 @@
   "requestedAuthorization": {
     "gateId": "r7-real-account-readonly-acceptance",
     "authorizationState": "authorized",
-    "executionAuthorization": "authorized",
+    "executionAuthorization": "not-authorized",
     "maximumAcceptedRoutes": 2,
     "acceptanceMode": "owner-login-readonly-redacted"
   },
@@ -140,13 +140,17 @@
     "applicationProcessClosed": true
   },
   "harnessAmendment": {
-    "reasonCode": "USER_CUSTOMIZED_WORKSPACE_LAYOUT_COMPATIBILITY",
+    "revision": 3,
+    "supersedesRevision": 2,
+    "reasonCode": "TALL_AND_COMPACT_TASK_GUIDE_LAYOUT_SELECTION",
     "changes": [
-      "temporarily-restore-hidden-task-page-and-guide-panel",
-      "validate-both-fixed-reviewed-route-bindings-and-unset-fallback",
-      "verify-session-only-focus-and-expansion-and-restore-their-state"
+      "inspect-primary-overview-quest-guide-when-primary-workspace-is-visible",
+      "inspect-or-temporarily-restore-secondary-task-page-in-compact-layout",
+      "remove-panel-text-from-timeout-diagnostics",
+      "verify-tall-primary-and-compact-hidden-layouts-with-anonymous-signed-fixtures"
     ],
     "anonymousHiddenLayoutFixtureRequired": true,
+    "anonymousTallLayoutFixtureRequired": true,
     "productionCodeChangesAuthorized": false,
     "routeContentChangesAuthorized": false
   },
@@ -190,8 +194,8 @@
   ],
   "review": {
     "author": "codex-r7-real-account-decision-author",
-    "approver": "project-owner",
-    "reviewedAt": "2026-08-02T03:20:43.601Z",
-    "approvalDigest": "sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e"
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
   }
 }

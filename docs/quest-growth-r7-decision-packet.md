@@ -62,6 +62,11 @@ project owner が明示承認した。revision 2 は tall layout で task page �
 `authorized`、残る2 gate は `not-authorized` のままであり、修訂承認も runtime publication や
 default enablement に自動変換しない。
 
+revision 3 は tall layout の `primary-overview` と compact layout の `secondary-tasks` を選択する固定 harness に
+修訂し、両方の匿名 signed fixture で PASS した。semantic digest は
+`sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945` である。追加の実アカウント
+実行は owner decision required のままである。
+
 ## 提案する output class
 
 - `reviewed-concrete-route`: exact revision と evidence digest に固定された具体的 route。

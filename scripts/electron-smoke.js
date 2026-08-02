@@ -193,6 +193,8 @@ function usage() {
     '  --task-guide        Inspect the workspace task guide after game data is ready.',
     '  --task-guide-hidden-layout-fixture',
     '                      Hide the task page before isolated task-guide inspection.',
+    '  --task-guide-tall-layout-fixture',
+    '                      Inspect the primary task guide in an isolated tall layout.',
     '  --wide-workspace    Temporarily inspect the complete available wide work area.',
     '  --require-display-profile <issue-23|issue-34>',
     '                      Require the exact physical display topology reported by that issue.',
@@ -223,6 +225,7 @@ function parseArgs(argv) {
     workspacePages: false,
     taskGuide: false,
     taskGuideHiddenLayoutFixture: false,
+    taskGuideTallLayoutFixture: false,
     wideWorkspace: false,
     requireDisplayProfile: undefined,
     requireLiveProfile: undefined,
@@ -255,6 +258,8 @@ function parseArgs(argv) {
       options.taskGuide = true
     } else if (argument === '--task-guide-hidden-layout-fixture') {
       options.taskGuideHiddenLayoutFixture = true
+    } else if (argument === '--task-guide-tall-layout-fixture') {
+      options.taskGuideTallLayoutFixture = true
     } else if (argument === '--wide-workspace') {
       options.wideWorkspace = true
     } else if (argument === '--help') {
@@ -404,6 +409,19 @@ function parseArgs(argv) {
   ) {
     throw new Error(
       '--task-guide-hidden-layout-fixture requires --layout-fixture and --task-guide'
+    )
+  }
+  if (
+    options.taskGuideTallLayoutFixture &&
+    (!options.layoutFixture || !options.taskGuide)
+  ) {
+    throw new Error(
+      '--task-guide-tall-layout-fixture requires --layout-fixture and --task-guide'
+    )
+  }
+  if (options.taskGuideHiddenLayoutFixture && options.taskGuideTallLayoutFixture) {
+    throw new Error(
+      '--task-guide-hidden-layout-fixture and --task-guide-tall-layout-fixture are mutually exclusive'
     )
   }
   if (
@@ -6231,7 +6249,10 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
     throw new Error('The fixed reviewed-route catalog is unavailable for task-guide inspection')
   }
   const workspaceState = await session.evaluate(`(() => {
-    const workspace = document.querySelector('.assist-workspace--secondary')
+    const primary = document.querySelector('.assist-workspace--primary')
+    const area = primary ? 'primary' : 'secondary'
+    const targetPageId = primary ? 'primary-overview' : 'secondary-tasks'
+    const workspace = primary ?? document.querySelector('.assist-workspace--secondary')
     const navigation = workspace?.querySelector('.workspace-page-tabs')
     const active = navigation?.querySelector(
       'button[role="tab"][aria-selected="true"]'
@@ -6239,9 +6260,11 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
     return navigation && active
       ? {
           previousPageId: active.dataset.workspacePageId ?? null,
-          taskPageInitiallyVisible: Boolean(
+          area,
+          targetPageId,
+          targetPageInitiallyVisible: Boolean(
             navigation.querySelector(
-              'button[data-workspace-page-id="secondary-tasks"]'
+              'button[data-workspace-page-id="' + CSS.escape(targetPageId) + '"]'
             )
           ),
           editorInitiallyOpen: Boolean(workspace.querySelector('.workspace-layout-editor')),
@@ -6251,13 +6274,14 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       : null
   })()`)
   if (!workspaceState) {
-    throw new Error('The secondary workspace is unavailable for task-guide inspection')
+    throw new Error('No visible workspace is available for task-guide inspection')
   }
 
-  const targetPageId = 'secondary-tasks'
+  const workspaceSelector = `.assist-workspace--${workspaceState.area}`
+  const targetPageId = workspaceState.targetPageId
   const setWorkspaceEditorOpen = async (open) => {
     await session.evaluate(`(() => {
-      const workspace = document.querySelector('.assist-workspace--secondary')
+      const workspace = document.querySelector(${JSON.stringify(workspaceSelector)})
       const editor = workspace?.querySelector('.workspace-layout-editor')
       if (${JSON.stringify(open)}) {
         if (!editor) {
@@ -6271,11 +6295,11 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       () =>
         session.evaluate(`(() => {
           const editor = document.querySelector(
-            '.assist-workspace--secondary .workspace-layout-editor'
+            ${JSON.stringify(`${workspaceSelector} .workspace-layout-editor`)}
           )
           return Boolean(editor) === ${JSON.stringify(open)}
         })()`),
-      `the secondary workspace layout editor to ${open ? 'open' : 'close'}`,
+      `the ${workspaceState.area} workspace layout editor to ${open ? 'open' : 'close'}`,
       timeoutMs
     )
   }
@@ -6283,7 +6307,7 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
     await session.evaluate(`(() => {
       const pageId = ${JSON.stringify(pageId)}
       const tab = document.querySelector(
-        '.assist-workspace--secondary .workspace-page-tabs ' +
+        ${JSON.stringify(`${workspaceSelector} .workspace-page-tabs `)} +
         'button[data-workspace-page-id="' + CSS.escape(pageId) + '"]'
       )
       tab?.click()
@@ -6293,7 +6317,7 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
         session.evaluate(`(() => {
           const expected = ${JSON.stringify(pageId)}
           const active = document.querySelector(
-            '.assist-workspace--secondary .workspace-page-tabs ' +
+            ${JSON.stringify(`${workspaceSelector} .workspace-page-tabs `)} +
             'button[role="tab"][aria-selected="true"]'
           )
           return active?.dataset.workspacePageId === expected
@@ -6570,14 +6594,14 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
     }
   }
   try {
-    if (!workspaceState.taskPageInitiallyVisible) {
+    if (!workspaceState.targetPageInitiallyVisible) {
       await setWorkspaceEditorOpen(true)
       await waitFor(
         () =>
           session.evaluate(`(() => {
             const item = document.querySelector(
-              '.assist-workspace--secondary .workspace-hidden-pages ' +
-              'li[data-workspace-page-id="secondary-tasks"]'
+              ${JSON.stringify(`${workspaceSelector} .workspace-hidden-pages `)} +
+              'li[data-workspace-page-id="' + ${JSON.stringify(targetPageId)} + '"]'
             )
             const button = item?.querySelector('button')
             if (!button) {
@@ -6586,26 +6610,31 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
             button.click()
             return true
           })()`),
-        'the hidden task workspace page to become restorable',
+        `the hidden ${workspaceState.area} task-guide page to become restorable`,
         timeoutMs
       )
       await waitFor(
         () =>
           session.evaluate(`Boolean(document.querySelector(
-            '.assist-workspace--secondary .workspace-page-tabs ' +
-            'button[data-workspace-page-id="secondary-tasks"]'
+            ${JSON.stringify(`${workspaceSelector} .workspace-page-tabs `)} +
+            'button[data-workspace-page-id=' + ${JSON.stringify(
+              JSON.stringify(targetPageId)
+            )} + ']'
           ))`),
-        'the task workspace page to be restored',
+        `the ${workspaceState.area} task-guide page to be restored`,
         timeoutMs
       )
       taskPageTemporarilyRestored = true
     }
 
-    await selectWorkspacePage(targetPageId, 'the task workspace page for guide inspection')
+    await selectWorkspacePage(
+      targetPageId,
+      `the ${workspaceState.area} task-guide page for inspection`
+    )
     await setWorkspaceEditorOpen(false)
 
     const questGuidePanelInitiallyVisible = await session.evaluate(`Boolean(document.querySelector(
-      '.assist-workspace--secondary .workspace-panel[data-panel-name="questguide"]'
+      ${JSON.stringify(`${workspaceSelector} .workspace-panel[data-panel-name="questguide"]`)}
     ))`)
     if (!questGuidePanelInitiallyVisible) {
       await setWorkspaceEditorOpen(true)
@@ -6613,7 +6642,7 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
         () =>
           session.evaluate(`(() => {
             const checkbox = document.querySelector(
-              '.assist-workspace--secondary .workspace-layout-editor ' +
+              ${JSON.stringify(`${workspaceSelector} .workspace-layout-editor `)} +
               'li[data-layout-panel-name="questguide"] input[type="checkbox"]'
             )
             if (!checkbox) {
@@ -6636,8 +6665,7 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       await waitFor(
         () =>
           session.evaluate(`Boolean(document.querySelector(
-            '.assist-workspace--secondary ' +
-            '.workspace-panel[data-panel-name="questguide"]'
+            ${JSON.stringify(`${workspaceSelector} .workspace-panel[data-panel-name="questguide"]`)}
           ))`),
         'the task-guide panel to become visible',
         timeoutMs
@@ -6684,6 +6712,8 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       const strategyResult = await inspectQuestStrategy(expectedQuestKnowledge.strategyVersion)
       return {
         ...fixtureResult,
+        workspaceArea: workspaceState.area,
+        workspacePageId: targetPageId,
         questStrategyUpdate: strategyResult,
         recurringUnregisteredCount: undefined,
         recurringUnresolvedCount: undefined,
@@ -6705,16 +6735,18 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
     } catch (error) {
       const diagnostic = await session.evaluate(`(() => {
         const active = document.querySelector(
-          '.assist-workspace--secondary .workspace-page-tabs ' +
+          ${JSON.stringify(`${workspaceSelector} .workspace-page-tabs `)} +
           'button[role="tab"][aria-selected="true"]'
         )
         const panels = [
           ...document.querySelectorAll(
-            '.assist-workspace--secondary .workspace-panel'
+            ${JSON.stringify(`${workspaceSelector} .workspace-panel`)}
           )
         ].map((panel) => ({
           name: panel.dataset.panelName ?? null,
-          text: panel.textContent.trim().slice(0, 300)
+          visible: panel.getClientRects().length > 0,
+          clientWidth: panel.clientWidth,
+          scrollWidth: panel.scrollWidth
         }))
         return {
           activePage: active?.textContent.trim() ?? null,
@@ -6851,6 +6883,8 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
     const questStrategyUpdate = await inspectQuestStrategy()
     return {
       ...result,
+      workspaceArea: workspaceState.area,
+      workspacePageId: targetPageId,
       questStrategyUpdate,
       recurringUnregisteredCount: unregistered.filteredCount,
       recurringUnresolvedCount: unresolved.filteredCount,
@@ -6945,7 +6979,7 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       await setWorkspaceEditorOpen(true)
       await session.evaluate(`(() => {
         const checkbox = document.querySelector(
-          '.assist-workspace--secondary .workspace-layout-editor ' +
+          ${JSON.stringify(`${workspaceSelector} .workspace-layout-editor `)} +
           'li[data-layout-panel-name="questguide"] input[type="checkbox"]'
         )
         if (checkbox?.checked) {
@@ -6956,8 +6990,7 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       await waitFor(
         () =>
           session.evaluate(`!document.querySelector(
-            '.assist-workspace--secondary ' +
-            '.workspace-panel[data-panel-name="questguide"]'
+            ${JSON.stringify(`${workspaceSelector} .workspace-panel[data-panel-name="questguide"]`)}
           )`),
         'the task-guide panel visibility to be restored',
         timeoutMs
@@ -6969,7 +7002,7 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       await setWorkspaceEditorOpen(false)
       await session.evaluate(`(() => {
         const button = document.querySelector(
-          '.assist-workspace--secondary .workspace-page-empty .is-danger'
+          ${JSON.stringify(`${workspaceSelector} .workspace-page-empty .is-danger`)}
         )
         if (!button || button.disabled) {
           return
@@ -6985,8 +7018,10 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       await waitFor(
         () =>
           session.evaluate(`!document.querySelector(
-            '.assist-workspace--secondary .workspace-page-tabs ' +
-            'button[data-workspace-page-id="secondary-tasks"]'
+            ${JSON.stringify(`${workspaceSelector} .workspace-page-tabs `)} +
+            'button[data-workspace-page-id=' + ${JSON.stringify(
+              JSON.stringify(targetPageId)
+            )} + ']'
           )`),
         'the hidden task workspace page state to be restored',
         timeoutMs
@@ -7039,6 +7074,125 @@ async function inspectHiddenTaskGuideLayoutFixture(
   return {
     ...taskGuide,
     hiddenLayoutFixture: restored
+  }
+}
+
+async function inspectTallTaskGuideLayoutFixture(
+  session,
+  timeoutMs,
+  expectedQuestKnowledge = undefined
+) {
+  const controlSession = session.screenshotSession ?? session
+  const originalWindow = await controlSession.call('Smoke.getWindowState')
+  const originalApp = await inspectApp(session)
+  const topology = await controlSession.call('Smoke.getDisplayTopology')
+  const display = topology.displays.find((candidate) => candidate.id === topology.currentDisplayId)
+  if (!display || display.workArea.height < 900) {
+    throw new Error('The current display cannot provide a tall task-guide fixture layout')
+  }
+  const workArea = {
+    left: display.workArea.x,
+    top: display.workArea.y,
+    width: display.workArea.width,
+    height: display.workArea.height
+  }
+  const restoreBounds = originalWindow.maximized
+    ? originalWindow.normalBounds
+    : originalWindow.bounds
+  const requestedBounds = workspaceBoundsForSize(
+    workArea,
+    Math.min(TallWorkspaceWidth, workArea.width),
+    Math.min(TallWorkspaceHeight, workArea.height),
+    { left: restoreBounds.x, top: restoreBounds.y }
+  )
+  let leftOriginalMaximizedState = false
+  try {
+    if (originalWindow.maximized) {
+      await session.evaluate(`window.api.toggleMaximize()`)
+      leftOriginalMaximizedState = true
+      await waitFor(
+        async () => {
+          const state = await controlSession.call('Smoke.getWindowState')
+          return state.maximized ? undefined : state
+        },
+        'the task-guide fixture to leave maximized state',
+        timeoutMs
+      )
+    }
+    await session.evaluate(`(() => {
+      const bounds = ${JSON.stringify(requestedBounds)}
+      window.resizeTo(bounds.width, bounds.height)
+      window.moveTo(bounds.left, bounds.top)
+    })()`)
+    const tallApp = await waitForStableAppSize(
+      session,
+      requestedBounds.width,
+      requestedBounds.height,
+      'the tall task-guide fixture window',
+      timeoutMs
+    )
+    const layout = await waitFor(
+      () =>
+        session.evaluate(`(() => {
+          const state = {
+            primaryVisible: Boolean(document.querySelector('.assist-workspace--primary')),
+            secondaryTaskPageOmitted: !document.querySelector(
+              '.assist-workspace--secondary .workspace-page-tabs ' +
+              'button[data-workspace-page-id="secondary-tasks"]'
+            )
+          }
+          return state.primaryVisible && state.secondaryTaskPageOmitted ? state : null
+        })()`),
+      'the tall task-guide workspace selection',
+      timeoutMs
+    )
+    if (!layout.primaryVisible || !layout.secondaryTaskPageOmitted) {
+      throw new Error(`Tall task-guide fixture selected the wrong workspace: ${JSON.stringify(layout)}`)
+    }
+    const taskGuide = await inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge)
+    if (taskGuide.workspaceArea !== 'primary' || taskGuide.workspacePageId !== 'primary-overview') {
+      throw new Error('Tall task-guide fixture did not inspect the primary overview')
+    }
+    return {
+      ...taskGuide,
+      tallLayoutFixture: {
+        workspaceArea: taskGuide.workspaceArea,
+        workspacePageId: taskGuide.workspacePageId,
+        clientWidth: tallApp.document.clientWidth,
+        clientHeight: tallApp.document.clientHeight,
+        primaryVisible: layout.primaryVisible,
+        secondaryTaskPageOmitted: layout.secondaryTaskPageOmitted
+      }
+    }
+  } finally {
+    await session.evaluate(`(() => {
+      const bounds = ${JSON.stringify({
+        left: restoreBounds.x,
+        top: restoreBounds.y,
+        width: restoreBounds.width,
+        height: restoreBounds.height
+      })}
+      window.resizeTo(bounds.width, bounds.height)
+      window.moveTo(bounds.left, bounds.top)
+    })()`)
+    if (originalWindow.maximized && leftOriginalMaximizedState) {
+      await session.evaluate(`window.api.toggleMaximize()`)
+      await waitFor(
+        async () => {
+          const state = await controlSession.call('Smoke.getWindowState')
+          return state.maximized ? state : undefined
+        },
+        'the original maximized state after the tall task-guide fixture',
+        timeoutMs
+      )
+    }
+    await waitForStableAppSize(
+      session,
+      originalApp.document.clientWidth,
+      originalApp.document.clientHeight,
+      'the original bounds after the tall task-guide fixture',
+      timeoutMs
+    )
   }
 }
 
@@ -7331,12 +7485,15 @@ function summarizeSmokeResult(result) {
     },
     taskGuide: result.taskGuide
       ? {
+          workspaceArea: result.taskGuide.workspaceArea,
+          workspacePageId: result.taskGuide.workspacePageId,
           recurringUnregisteredCount: result.taskGuide.recurringUnregisteredCount,
           recurringUnresolvedCount: result.taskGuide.recurringUnresolvedCount,
           recurringReviewCount: result.taskGuide.recurringReviewCount,
           questKnowledgeUpdate: result.taskGuide.questKnowledgeUpdate,
           questStrategyUpdate: result.taskGuide.questStrategyUpdate,
-          hiddenLayoutFixture: result.taskGuide.hiddenLayoutFixture
+          hiddenLayoutFixture: result.taskGuide.hiddenLayoutFixture,
+          tallLayoutFixture: result.taskGuide.tallLayoutFixture
         }
       : undefined,
     workspaceResizeSweep:
@@ -8479,7 +8636,13 @@ async function run(options) {
             )
           : undefined,
       taskGuide: options.taskGuide
-        ? options.taskGuideHiddenLayoutFixture
+        ? options.taskGuideTallLayoutFixture
+          ? await inspectTallTaskGuideLayoutFixture(
+              appSession,
+              options.timeoutMs,
+              dataUpdateExpectation
+            )
+          : options.taskGuideHiddenLayoutFixture
           ? await inspectHiddenTaskGuideLayoutFixture(
               appSession,
               options.timeoutMs,
