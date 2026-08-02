@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.18",
+  "manifestVersion": "2026-08-03.19",
   "sourceSnapshot": {
-    "repositoryCommit": "6ed437785e8503a16b40a6a8260f5863218d8de3",
+    "repositoryCommit": "ee009174b17801a55086ac734234bcee964afebe",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -794,6 +794,34 @@
         "reviewedAt": "2026-07-31T00:00:00.000Z",
         "reviewBy": "2026-10-29T00:00:00.000Z",
         "validUntil": "2027-07-31T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:903:objective",
+      "questId": 903,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "ee009174b17801a55086ac734234bcee964afebe",
+        "projectionDigest": "sha256:29126e67d424e68692db3a72ebbc95bf3035e098f749f9ff6a3f3c27794e1734"
+      },
+      "classification": "multi-stage",
+      "objectiveStages": [
+        { "requiredCount": 1, "targets": [{ "mapKey": "5-1", "result": "S", "targetCells": [] }] },
+        { "requiredCount": 1, "targets": [{ "mapKey": "5-4", "result": "S", "targetCells": [] }] },
+        { "requiredCount": 1, "targets": [{ "mapKey": "6-4", "result": "S", "targetCells": [] }] },
+        { "requiredCount": 1, "targets": [{ "mapKey": "6-5", "result": "S", "targetCells": [] }] }
+      ],
+      "review": {
+        "author": "codex-r8-sixth-squadron-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T17:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
         "evidenceReviewIds": ["periodic-sortie-review"]
       }
     }
@@ -1781,6 +1809,142 @@
       }
     },
     {
+      "templateId": "normal-map:5-1:sixth-squadron-r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "5-1",
+      "routeLabels": ["B-C-F-J"],
+      "targetNodes": ["J"],
+      "fleetConstraintRef": "legacy-recipe:normal-5-1-sixth-squadron-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "潜水艦隊と遭遇した場合" },
+        { "formationId": 1, "label": "単縦陣", "when": "C・F・Jボスの水上戦" }
+      ],
+      "actions": [
+        "任務903を受注し、5-1のS勝利が残っていることを確認する",
+        "夕張改二型を旗艦、由良改二を随伴にし、航空戦艦1・軽空母1・駆逐2を加えた6隻にする",
+        "軽空母・航空戦艦・由良で制空値252以上へ余裕を取り、必要なら駆逐1隻を先制対潜にする",
+        "B-C-F-Jを進み、各戦闘後に損傷と艦載機残数を確認して大破時は進撃しない",
+        "JボスでS勝利を取り、任務903の5-1進捗を確認する"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-sixth-squadron-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T17:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-5-1-wikiwiki-sixth-squadron-current-review",
+          "map-5-1-kcwiki-sixth-squadron-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:5-4:sixth-squadron-r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "5-4",
+      "routeLabels": ["B-C-G-L-P"],
+      "targetNodes": ["P"],
+      "fleetConstraintRef": "legacy-recipe:normal-5-4-sixth-squadron-quarterly",
+      "formations": [
+        { "formationId": 2, "label": "複縦陣", "when": "Cの潜水・水上混成戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "G・L・Pボス" }
+      ],
+      "actions": [
+        "任務903を受注し、5-4のS勝利が残っていることを確認する",
+        "夕張改二型を旗艦、由良改二を随伴にし、正規空母系2・戦艦級2を加えた6隻にする",
+        "G航空優勢320以上と分岐点係数2の索敵値60以上へ余裕を取り、Cの対潜を1スロ準備する",
+        "B-C-G-L-Pを進み、C・Lの対空砲火後に艦載機残数を確認して大破時は進撃しない",
+        "PボスでS勝利を取り、任務903の5-4進捗を確認する"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-sixth-squadron-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T17:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-5-4-wikiwiki-sixth-squadron-current-review",
+          "map-5-4-kcwiki-sixth-squadron-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:6-4:sixth-squadron-r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "6-4",
+      "routeLabels": ["B-D-C-F-N"],
+      "targetNodes": ["N"],
+      "fleetConstraintRef": "legacy-recipe:normal-6-4-sixth-squadron-quarterly",
+      "formations": [
+        { "formationId": 3, "label": "輪形陣", "when": "D・Fの空襲戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "C・Nボス" }
+      ],
+      "actions": [
+        "任務903を受注し、6-4のS勝利が残っていることと基地航空隊の運用可否を確認する",
+        "夕張改二型を旗艦、由良改二を随伴にし、高速戦艦1・駆逐3を加えた全高速6隻にする",
+        "夕張改二特は高速化し、駆逐・夕張・由良へ対地装備を分散して基地航空隊をNへ集中する",
+        "B-D-C-F-Nを進み、D・Fは輪形陣、Cは単縦陣とする。大破時は進撃しない",
+        "NボスでS勝利を取り、任務903の6-4進捗を確認する"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-sixth-squadron-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T17:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-6-4-wikiwiki-sixth-squadron-current-review",
+          "map-6-4-kcwiki-sixth-squadron-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:6-5:sixth-squadron-r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "6-5",
+      "routeLabels": ["B-F-I-J-M"],
+      "targetNodes": ["M"],
+      "fleetConstraintRef": "legacy-recipe:normal-6-5-sixth-squadron-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "Bの対潜戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "F・I・J夜戦・Mボス" }
+      ],
+      "actions": [
+        "任務903を受注し、6-5のS勝利が残っていることと基地航空隊2部隊の運用可否を確認する",
+        "夕張改二型を旗艦、由良改二を随伴にし、航空戦艦2・駆逐2を加えた6隻にする",
+        "伊勢型改二と由良の水上戦闘機で制空を補い、行動半径5以上の基地航空隊2部隊をMへ集中する",
+        "B-F-I-J-Mを進み、Bは単横陣、それ以外は単縦陣とする。大破時は進撃しない",
+        "Mボスの敵連合艦隊を全滅させてS勝利を取り、任務903の達成を確認する"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-sixth-squadron-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T17:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-6-5-wikiwiki-sixth-squadron-current-review",
+          "map-6-5-kcwiki-sixth-squadron-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
       "templateId": "normal-map:7-1:r8-reviewed",
       "revision": 1,
       "status": "approved",
@@ -2434,6 +2598,86 @@
       "sourceLabel": "舰娘百科 - 5-4",
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-03T16:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-5-1-wikiwiki-sixth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/南方海域/5-1",
+      "sourceLabel": "艦これ攻略 Wiki - 5-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T17:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-5-1-kcwiki-sixth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/5-1",
+      "sourceLabel": "舰娘百科 - 5-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T17:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-5-4-wikiwiki-sixth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/南方海域/5-4",
+      "sourceLabel": "艦これ攻略 Wiki - 5-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T17:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-5-4-kcwiki-sixth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/5-4",
+      "sourceLabel": "舰娘百科 - 5-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T17:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-4-wikiwiki-sixth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/中部海域/6-4",
+      "sourceLabel": "艦これ攻略 Wiki - 6-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T17:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-4-kcwiki-sixth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/中部海域/6-4",
+      "sourceLabel": "舰娘百科 - 6-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T17:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-5-wikiwiki-sixth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/中部海域/6-5",
+      "sourceLabel": "艦これ攻略 Wiki - 6-5",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T17:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-5-kcwiki-sixth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/中部海域/6-5",
+      "sourceLabel": "舰娘百科 - 6-5",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T17:00:00.000Z",
       "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },

@@ -3016,6 +3016,630 @@
     },
     {
       "actions": [
+        "任務903を受注し、5-1のS勝利が残っていることを確認する",
+        "夕張改二型を旗艦、由良改二を随伴にし、航空戦艦1・軽空母1・駆逐2を加えた6隻にする",
+        "軽空母・航空戦艦・由良で制空値252以上へ余裕を取り、必要なら駆逐1隻を先制対潜にする",
+        "B-C-F-Jを進み、各戦闘後に損傷と艦載機残数を確認して大破時は進撃しない",
+        "JボスでS勝利を取り、任務903の5-1進捗を確認する"
+      ],
+      "airState": {
+        "summary": "軽空母・航空戦艦・由良改二の搭載枠を合わせ、Jボス航空優勢252へ余裕を取る",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "5-1",
+          "questId": 903,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6,
+            45
+          ],
+          "label": "Jボス航空優勢252を目安にする艦戦・水上戦闘機",
+          "minimum": 3,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            14,
+            40
+          ],
+          "label": "道中潜水艦への先制対潜用ソナー",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T17:00:00.000Z",
+          "sourceId": "wikiwiki-map-5-1-sixth-squadron-current",
+          "sourceLabel": "艦これ攻略 Wiki - 5-1",
+          "summary": "夕張改二型旗艦・由良改二随伴、航戦1・軽空母1・駆逐2のB-C-F-JとボスS勝利を確認",
+          "url": "https://wikiwiki.jp/kancolle/南方海域/5-1",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T17:00:00.000Z",
+          "sourceId": "kcwiki-map-5-1-sixth-squadron-current",
+          "sourceLabel": "舰娘百科 - 5-1",
+          "summary": "六水戦専用の夕張旗艦・由良随伴編成、B-C-F-J、制空と対潜準備を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/5-1",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "flagshipSpecificShipConstraint": {
+          "baseShipIds": [
+            622
+          ],
+          "label": "旗艦 夕張改二・改二特・改二丁"
+        },
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "夕張改二型・由良改二の軽巡洋艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "航空戦艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              10
+            ]
+          },
+          {
+            "label": "軽空母 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              7
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              23
+            ],
+            "label": "随伴 由良改二 1 隻",
+            "maximum": 1,
+            "minimum": 1
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "潜水艦隊と遭遇した場合"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "C・F・Jボスの水上戦"
+        }
+      ],
+      "mapKey": "5-1",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-5-1-sixth-squadron-quarterly",
+      "routeLabels": [
+        "B-C-F-J"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "J"
+      ],
+      "title": "5-1 拡張六水戦クォータリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務903を受注し、5-4のS勝利が残っていることを確認する",
+        "夕張改二型を旗艦、由良改二を随伴にし、正規空母系2・戦艦級2を加えた6隻にする",
+        "G航空優勢320以上と分岐点係数2の索敵値60以上へ余裕を取り、Cの対潜を1スロ準備する",
+        "B-C-G-L-Pを進み、C・Lの対空砲火後に艦載機残数を確認して大破時は進撃しない",
+        "PボスでS勝利を取り、任務903の5-4進捗を確認する"
+      ],
+      "airState": {
+        "summary": "Gの航空優勢320以上へ余裕を取り、Pボス航空優勢140を維持する",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "5-4",
+          "questId": 903,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 1
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6
+          ],
+          "label": "G航空優勢320以上へ余裕を取る艦上戦闘機",
+          "minimum": 4,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            14,
+            40
+          ],
+          "label": "Cの潜水艦対策用ソナー",
+          "minimum": 1,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            9,
+            10
+          ],
+          "label": "分岐点係数2の索敵値60以上へ余裕を加える偵察機",
+          "minimum": 2,
+          "required": true
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T17:00:00.000Z",
+          "sourceId": "wikiwiki-map-5-4-sixth-squadron-current",
+          "sourceLabel": "艦これ攻略 Wiki - 5-4",
+          "summary": "夕張改二型旗艦・由良改二随伴、空母2・戦艦2の上ルートB-C-G-L-Pと索敵60を確認",
+          "url": "https://wikiwiki.jp/kancolle/南方海域/5-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T17:00:00.000Z",
+          "sourceId": "kcwiki-map-5-4-sixth-squadron-current",
+          "sourceLabel": "舰娘百科 - 5-4",
+          "summary": "上ルートの空母・戦艦上限、G制空320、PボスS勝利と高い艦載機損耗を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/5-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "flagshipSpecificShipConstraint": {
+          "baseShipIds": [
+            622
+          ],
+          "label": "旗艦 夕張改二・改二特・改二丁"
+        },
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "夕張改二型・由良改二の軽巡洋艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "正規空母系 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              11,
+              18
+            ]
+          },
+          {
+            "label": "戦艦級 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              8,
+              9,
+              10,
+              12
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              23
+            ],
+            "label": "随伴 由良改二 1 隻",
+            "maximum": 1,
+            "minimum": 1
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 2,
+          "label": "複縦陣",
+          "when": "Cの潜水・水上混成戦"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "G・L・Pボス"
+        }
+      ],
+      "mapKey": "5-4",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-5-4-sixth-squadron-quarterly",
+      "routeLabels": [
+        "B-C-G-L-P"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "P"
+      ],
+      "title": "5-4 拡張六水戦クォータリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務903を受注し、6-4のS勝利が残っていることと基地航空隊の運用可否を確認する",
+        "夕張改二型を旗艦、由良改二を随伴にし、高速戦艦1・駆逐3を加えた全高速6隻にする",
+        "夕張改二特は高速化し、駆逐・夕張・由良へ対地装備を分散して基地航空隊をNへ集中する",
+        "B-D-C-F-Nを進み、D・Fは輪形陣、Cは単縦陣とする。大破時は進撃しない",
+        "NボスでS勝利を取り、任務903の6-4進捗を確認する"
+      ],
+      "airState": {
+        "summary": "由良改二の水上戦闘機でCの航空均衡を最低線とし、Nは基地航空隊の削り込みで調整する",
+        "target": "parity"
+      },
+      "contributions": [
+        {
+          "mapKey": "6-4",
+          "questId": 903,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 2
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            37,
+            24,
+            46,
+            52
+          ],
+          "label": "Nボス用の対地装備を複数艦へ分散",
+          "minimum": 5,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            45
+          ],
+          "label": "Cの敵弾着阻止と空襲対策用の水上戦闘機",
+          "minimum": 2,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            47
+          ],
+          "label": "行動半径5でNへ届く基地航空隊の陸攻",
+          "minimum": 3,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T17:00:00.000Z",
+          "sourceId": "wikiwiki-map-6-4-sixth-squadron-current",
+          "sourceLabel": "艦これ攻略 Wiki - 6-4",
+          "summary": "夕張改二型旗艦・由良改二随伴、高速戦艦1・駆逐3のB-D-C-F-Nと対地・基地航空隊を確認",
+          "url": "https://wikiwiki.jp/kancolle/中部海域/6-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T17:00:00.000Z",
+          "sourceId": "kcwiki-map-6-4-sixth-squadron-current",
+          "sourceLabel": "舰娘百科 - 6-4",
+          "summary": "全高速左最短、軽巡旗艦・戦艦1・駆逐3、対地装備と半径5基地航空隊を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/中部海域/6-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "flagshipSpecificShipConstraint": {
+          "baseShipIds": [
+            622
+          ],
+          "label": "旗艦 夕張改二・改二特・改二丁"
+        },
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "夕張改二型・由良改二の軽巡洋艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "高速戦艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              8
+            ]
+          },
+          {
+            "label": "駆逐艦 3 隻",
+            "maximum": 3,
+            "minimum": 3,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              23
+            ],
+            "label": "随伴 由良改二 1 隻",
+            "maximum": 1,
+            "minimum": 1
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 3,
+          "label": "輪形陣",
+          "when": "D・Fの空襲戦"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "C・Nボス"
+        }
+      ],
+      "mapKey": "6-4",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-6-4-sixth-squadron-quarterly",
+      "routeLabels": [
+        "B-D-C-F-N"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "N"
+      ],
+      "title": "6-4 拡張六水戦クォータリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務903を受注し、6-5のS勝利が残っていることと基地航空隊2部隊の運用可否を確認する",
+        "夕張改二型を旗艦、由良改二を随伴にし、航空戦艦2・駆逐2を加えた6隻にする",
+        "伊勢型改二と由良の水上戦闘機で制空を補い、行動半径5以上の基地航空隊2部隊をMへ集中する",
+        "B-F-I-J-Mを進み、Bは単横陣、それ以外は単縦陣とする。大破時は進撃しない",
+        "Mボスの敵連合艦隊を全滅させてS勝利を取り、任務903の達成を確認する"
+      ],
+      "airState": {
+        "summary": "伊勢型改二と由良改二の水上戦闘機で均衡を最低線とし、基地2部隊の削り込みを含めて調整する",
+        "target": "parity"
+      },
+      "contributions": [
+        {
+          "mapKey": "6-5",
+          "questId": 903,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 3
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            45
+          ],
+          "label": "本隊の航空均衡と基地削り込み後の優勢を狙う水上戦闘機",
+          "minimum": 5,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            47
+          ],
+          "label": "行動半径5でMへ届く基地航空隊2部隊分の陸攻",
+          "minimum": 6,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            14,
+            40
+          ],
+          "label": "Bの潜水艦対策用ソナー",
+          "minimum": 1,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            10
+          ],
+          "label": "I-J-Mの索敵分岐と弾着観測用の水上偵察機",
+          "minimum": 2,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T17:00:00.000Z",
+          "sourceId": "wikiwiki-map-6-5-sixth-squadron-current",
+          "sourceLabel": "艦これ攻略 Wiki - 6-5",
+          "summary": "夕張改二型旗艦・由良改二随伴、航戦2・駆逐2のB-F-I-J-Mと基地2部隊を確認",
+          "url": "https://wikiwiki.jp/kancolle/中部海域/6-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T17:00:00.000Z",
+          "sourceId": "kcwiki-map-6-5-sixth-squadron-current",
+          "sourceLabel": "舰娘百科 - 6-5",
+          "summary": "下回り水上編成、半径5の基地航空隊2部隊、制空・索敵・連合艦隊S勝利を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/中部海域/6-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "flagshipSpecificShipConstraint": {
+          "baseShipIds": [
+            622
+          ],
+          "label": "旗艦 夕張改二・改二特・改二丁"
+        },
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "夕張改二型・由良改二の軽巡洋艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "航空戦艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              10
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              23
+            ],
+            "label": "随伴 由良改二 1 隻",
+            "maximum": 1,
+            "minimum": 1
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "Bの対潜戦"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "F・I・J夜戦・Mボス"
+        }
+      ],
+      "mapKey": "6-5",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-6-5-sixth-squadron-quarterly",
+      "routeLabels": [
+        "B-F-I-J-M"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "M"
+      ],
+      "title": "6-5 拡張六水戦クォータリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務861を受注し、1-6到達回数が残っていることを確認する",
         "補給艦2・駆逐艦4の6隻にする。艦種が補給艦の状態であることを確認し、搭載可能なら水上戦闘機や対空カットインを用意する",
         "A-E-Gを進み、GからKへ逸れた場合は撤退して再出撃する。Fへ進んだ場合も各戦闘後に損傷を確認し、大破時は進撃しない",
@@ -5382,11 +6006,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:97a8da86f9c94959ebfa0b812b99f74ddc89d39b2f6410f3960dee183d9ee52c",
-    "legacyKnowledgeDigest": "sha256:b4b2e91f37a778b94f133eb0c7358968b4443b4c5389915545d501700a08deaf",
-    "pilotAuthoringManifestDigest": "sha256:7eafbf61205239bb1d4222bc135f44e71691c38bb7cc1bb8d762ef800f611fc4",
+    "inventoryDigest": "sha256:7f4b9e9eeeb0078534e6b6e80c7b645464c61f58fc84c17677c0fde7089f0701",
+    "legacyKnowledgeDigest": "sha256:6510ade0c308258fd1dc9ec5ce9ecdeaddfd4dc1bb2bc3511521805fa118080e",
+    "pilotAuthoringManifestDigest": "sha256:eae643bfe04cf1006c2d2e8fdffee00fbbf5935e00d34b0434ee3c4bfcccf2ae",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "6ed437785e8503a16b40a6a8260f5863218d8de3"
+    "repositoryCommit": "ee009174b17801a55086ac734234bcee964afebe"
   },
-  "version": "2026-08-03.18.v2"
+  "version": "2026-08-03.19.v2"
 }

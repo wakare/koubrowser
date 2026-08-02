@@ -55,6 +55,8 @@ describe('QuestStrategyRoute.vue', () => {
           '5-1',
           '5-3',
           '5-4',
+          '6-4',
+          '6-5',
           '4-1',
           '4-2',
           '4-3',
@@ -178,6 +180,21 @@ describe('QuestStrategyRoute.vue', () => {
     expect(routeText.some((text) => text.includes('A-D-E-H-I-J-M-P'))).toBe(true)
     expect(routeText.every((text) => text.includes('鳥海・青葉・衣笠・加古・古鷹・天龍・夕張'))).toBe(
       true
+    )
+  })
+
+  it('renders all four Sixth Squadron stages with flagship and Yura requirements', async () => {
+    const wrapper = await render([recommendation(903, 'active')])
+
+    expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(4)
+    const routeText = wrapper.findAll('.quest-strategy-step').map((step) => step.text())
+    for (const mapKey of ['5-1', '5-4', '6-4', '6-5']) {
+      expect(routeText.some((text) => text.includes(`"map":"${mapKey}"`))).toBe(true)
+    }
+    expect(routeText.every((text) => text.includes('夕張改二型を旗艦'))).toBe(true)
+    expect(routeText.every((text) => text.includes('随伴 由良改二 1 隻'))).toBe(true)
+    expect(wrapper.get('.quest-strategy-summary').text()).not.toContain(
+      'quest.strategy.uncovered'
     )
   })
 

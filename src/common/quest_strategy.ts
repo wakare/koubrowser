@@ -42,6 +42,11 @@ export interface StrategySpecificShipConstraint {
   label: string
 }
 
+export interface StrategyFlagshipSpecificShipConstraint {
+  baseShipIds: number[]
+  label: string
+}
+
 export interface StrategyEquipmentTypeConstraint {
   equipmentTypeIds: number[]
   minimum: number
@@ -83,6 +88,7 @@ export interface QuestStrategyRecipe {
     minimumShips: number
     maximumShips: number
     flagshipTypeIds?: number[]
+    flagshipSpecificShipConstraint?: StrategyFlagshipSpecificShipConstraint
     allowedShipTypeIds?: number[]
     shipTypeConstraints: StrategyShipTypeConstraint[]
     specificShipConstraints?: StrategySpecificShipConstraint[]
@@ -425,6 +431,18 @@ function readSpecificShipConstraint(value: unknown, path: string): StrategySpeci
   }
 }
 
+function readFlagshipSpecificShipConstraint(
+  value: unknown,
+  path: string
+): StrategyFlagshipSpecificShipConstraint {
+  const record = recordAt(value, path)
+  assertKeys(record, ['baseShipIds', 'label'], path)
+  return {
+    baseShipIds: uniqueIntegersAt(record.baseShipIds, `${path}.baseShipIds`),
+    label: stringAt(record.label, `${path}.label`)
+  }
+}
+
 function readEquipmentTypeConstraint(
   value: unknown,
   path: string
@@ -515,6 +533,7 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
       'minimumShips',
       'maximumShips',
       'flagshipTypeIds',
+      'flagshipSpecificShipConstraint',
       'allowedShipTypeIds',
       'shipTypeConstraints',
       'specificShipConstraints'
@@ -579,6 +598,14 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
             flagshipTypeIds: uniqueIntegersAt(
               fleetRecord.flagshipTypeIds,
               `${path}.fleet.flagshipTypeIds`
+            )
+          }),
+      ...(fleetRecord.flagshipSpecificShipConstraint === undefined
+        ? {}
+        : {
+            flagshipSpecificShipConstraint: readFlagshipSpecificShipConstraint(
+              fleetRecord.flagshipSpecificShipConstraint,
+              `${path}.fleet.flagshipSpecificShipConstraint`
             )
           }),
       ...(fleetRecord.allowedShipTypeIds === undefined
@@ -991,6 +1018,10 @@ function evaluateRecipe(
     fleetState = 'unknown'
     fleetMessage = '指定艦条件は編成画面で手動確認してください'
   }
+  if (fleetState === 'pass' && recipe.fleet.flagshipSpecificShipConstraint) {
+    fleetState = 'unknown'
+    fleetMessage = '指定旗艦条件は編成画面で手動確認してください'
+  }
   checks.push(hardCheck('fleet-ready', fleetState, fleetMessage))
 
   const requiredEquipment = recipe.equipmentTypeConstraints.filter(
@@ -1113,6 +1144,14 @@ function evaluateRecipe(
       ...(recipe.fleet.flagshipTypeIds === undefined
         ? {}
         : { flagshipTypeIds: [...recipe.fleet.flagshipTypeIds] }),
+      ...(recipe.fleet.flagshipSpecificShipConstraint === undefined
+        ? {}
+        : {
+            flagshipSpecificShipConstraint: {
+              ...recipe.fleet.flagshipSpecificShipConstraint,
+              baseShipIds: [...recipe.fleet.flagshipSpecificShipConstraint.baseShipIds]
+            }
+          }),
       ...(recipe.fleet.allowedShipTypeIds === undefined
         ? {}
         : { allowedShipTypeIds: [...recipe.fleet.allowedShipTypeIds] }),

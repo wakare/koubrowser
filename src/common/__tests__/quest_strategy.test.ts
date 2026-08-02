@@ -113,8 +113,8 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('loads thirty-five reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.18')
+  it('loads thirty-nine reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.19')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
@@ -133,6 +133,10 @@ describe('quest strategy validation', () => {
       'normal-5-1-new-mikawa-quarterly',
       'normal-5-3-new-mikawa-quarterly',
       'normal-5-4-new-mikawa-quarterly',
+      'normal-5-1-sixth-squadron-quarterly',
+      'normal-5-4-sixth-squadron-quarterly',
+      'normal-6-4-sixth-squadron-quarterly',
+      'normal-6-5-sixth-squadron-quarterly',
       'normal-1-6-transport-quarterly',
       'normal-6-3-aerial-recon-quarterly',
       'normal-6-1-submarine-monthly',
@@ -171,6 +175,7 @@ describe('quest strategy validation', () => {
         item.id.includes('surface-striking-monthly') ||
         item.id.includes('31st-destroyer-quarterly') ||
         item.id.includes('new-mikawa-quarterly') ||
+        item.id.includes('sixth-squadron-quarterly') ||
         item.id.includes('transport-quarterly') ||
         item.id.includes('aerial-recon-quarterly') ||
         item.id.includes('submarine-monthly') ||
@@ -238,6 +243,21 @@ describe('quest strategy validation', () => {
     })
     expect(() => normalizeQuestStrategyRecipes([mismatchedObjective])).toThrow(
       'questIds and objective questId values must match'
+    )
+
+    const malformedFlagship = recipe('malformed-flagship', [101], {
+      fleet: {
+        minimumShips: 1,
+        maximumShips: 6,
+        shipTypeConstraints: [],
+        flagshipSpecificShipConstraint: {
+          baseShipIds: [],
+          label: '指定旗艦'
+        }
+      }
+    })
+    expect(() => normalizeQuestStrategyRecipes([malformedFlagship])).toThrow(
+      'recipes[0].fleet.flagshipSpecificShipConstraint.baseShipIds'
     )
 
     expect(

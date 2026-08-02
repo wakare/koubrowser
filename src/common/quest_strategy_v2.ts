@@ -120,6 +120,13 @@ function recipeSatisfiesFleetRule(recipe: QuestStrategyRecipe, rule: QuestFleetR
         !!recipe.fleet.flagshipTypeIds?.length &&
         recipe.fleet.flagshipTypeIds.every((typeId) => new Set<number>(rule.types).has(typeId))
       )
+    case 'flagship-specific':
+      return (
+        rule.minimumLevel === undefined &&
+        rule.exactMasterIds !== true &&
+        !!recipe.fleet.flagshipSpecificShipConstraint &&
+        sameIds(recipe.fleet.flagshipSpecificShipConstraint.baseShipIds, rule.baseShipIds)
+      )
     case 'ship-type-count': {
       if (rule.minimumLevel !== undefined || rule.excludePositions !== undefined) {
         return false
@@ -164,6 +171,12 @@ function recipeSatisfiesFleetRule(recipe: QuestStrategyRecipe, rule: QuestFleetR
         ) &&
         recipe.fleet.shipTypeConstraints.every((constraint) =>
           constraint.shipTypeIds.every((typeId) => new Set<number>(rule.types).has(typeId))
+        )
+      )
+    case 'any-of':
+      return rule.alternatives.some((alternative) =>
+        alternative.every((alternativeRule) =>
+          recipeSatisfiesFleetRule(recipe, alternativeRule)
         )
       )
     default:

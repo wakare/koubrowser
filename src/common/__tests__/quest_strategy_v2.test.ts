@@ -355,6 +355,74 @@ describe('quest strategy runtime v2 stage coverage', () => {
     ])
   })
 
+  it('completes all four Sixth Squadron stages through the reviewed Yura branch', () => {
+    const recipes = BundledQuestStrategyKnowledge.recipes.filter((item) =>
+      item.id.includes('sixth-squadron-quarterly')
+    )
+
+    expect(recipes.map((recipe) => recipe.mapKey)).toEqual(['5-1', '5-4', '6-4', '6-5'])
+    expect(
+      recipes.flatMap((recipe) => auditQuestStrategyRecipeObjective(recipe, 903).contributions)
+    ).toMatchObject([
+      { stageIndex: 0, mapKey: '5-1', machineConstraintComplete: true },
+      { stageIndex: 1, mapKey: '5-4', machineConstraintComplete: true },
+      { stageIndex: 2, mapKey: '6-4', machineConstraintComplete: true },
+      { stageIndex: 3, mapKey: '6-5', machineConstraintComplete: true }
+    ])
+    expect(recipes[0].fleet.flagshipSpecificShipConstraint).toMatchObject({
+      baseShipIds: [622]
+    })
+    expect(recipes[0].fleet.specificShipConstraints).toMatchObject([
+      { baseShipIds: [23], minimum: 1 }
+    ])
+    expect(
+      auditQuestStrategyRecipeObjective(
+        {
+          ...recipes[0],
+          fleet: { ...recipes[0].fleet, flagshipSpecificShipConstraint: undefined }
+        },
+        903
+      ).coverageStatus
+    ).not.toBe('route-ready')
+    expect(
+      auditQuestStrategyRecipeObjective(
+        {
+          ...recipes[0],
+          fleet: { ...recipes[0].fleet, specificShipConstraints: undefined }
+        },
+        903
+      ).coverageStatus
+    ).not.toBe('route-ready')
+    expect(
+      auditQuestStrategyRecipeObjective(
+        {
+          ...recipes[0],
+          fleet: {
+            ...recipes[0].fleet,
+            specificShipConstraints: [
+              {
+                baseShipIds: [1, 2, 164, 165, 30, 31],
+                minimum: 2,
+                label: '第六水雷戦隊の指定駆逐艦から 2 隻'
+              }
+            ]
+          }
+        },
+        903
+      ).contributions[0]
+    ).toMatchObject({ machineConstraintComplete: true })
+
+    const plan = build([903])
+    expect(plan.coveredQuestIds).toEqual([903])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.steps.map((step) => step.recipeId).sort()).toEqual([
+      'normal-5-1-sixth-squadron-quarterly',
+      'normal-5-4-sixth-squadron-quarterly',
+      'normal-6-4-sixth-squadron-quarterly',
+      'normal-6-5-sixth-squadron-quarterly'
+    ])
+  })
+
   it('uses the reviewed 1-6 transport route to complete the quarterly arrival task', () => {
     const plan = build([861])
 
