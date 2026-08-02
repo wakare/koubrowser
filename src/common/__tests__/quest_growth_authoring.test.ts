@@ -949,11 +949,19 @@ describe('quest growth authoring contract', () => {
       requiredCheckCount: number
       realAccountExecutionAuthorization: string
       publicationAuthorization: string
+      implementationCommit: string
+      fullTestCount: number
+      anonymousSignedFixturePassed: boolean
+      panelClientWidth: number
+      panelScrollWidths: Record<string, number>
+      pagePanelFilterWindowStateRestored: boolean
     }>('generated', 'r7-responsive-layout-fix-report.json')
 
-    expect(report.status).toBe('R7_ROUTE_PANEL_RESPONSIVE_FIX_AUTHORIZED')
+    expect(report.status).toBe(
+      'R7_ROUTE_PANEL_RESPONSIVE_FIX_IMPLEMENTED_ANONYMOUSLY_VERIFIED'
+    )
     expect(report.authorizationState).toBe('authorized')
-    expect(report.implementationAuthorization).toBe('authorized')
+    expect(report.implementationAuthorization).toBe('consumed')
     expect(report.authorizedPaths).toEqual([
       'src/renderer/src/components/QuestGrowthCheck.vue',
       'src/renderer/src/components/__tests__/QuestGrowthCheck.test.ts',
@@ -966,6 +974,19 @@ describe('quest growth authoring contract', () => {
     expect(report.requiredCheckCount).toBe(8)
     expect(report.realAccountExecutionAuthorization).toBe('R7_NOT_AUTHORIZED')
     expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.implementationCommit).toBe(
+      'dd6220f7efc4696a6bd8224b5f628dca7a4d08d7'
+    )
+    expect(report.fullTestCount).toBe(1224)
+    expect(report.anonymousSignedFixturePassed).toBe(true)
+    expect(report.panelClientWidth).toBe(221)
+    expect(report.panelScrollWidths).toEqual({
+      closed: 221,
+      resources: 221,
+      asw: 221,
+      unset: 221
+    })
+    expect(report.pagePanelFilterWindowStateRestored).toBe(true)
     expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
   })
 

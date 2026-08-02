@@ -13,6 +13,11 @@ header counts、context grid、route header / badges が横並びの minimum を
 project owner は固定摘要を明示承認した。implementation authorization は `authorized` であり、下記4 path
 と匿名 fixture の範囲だけで実装を進める。実アカウント execution authorization は未承認のままである。
 
+実装 commit は `dd6220f7efc4696a6bd8224b5f628dca7a4d08d7` である。匿名 signed fixture は current
+`1316 x 632` と controlled `1600 x 800` の両方で、closed / resources / asw / unset の panel を
+client `221` / scroll `221`、route content を client `195` / scroll `195` として PASS した。
+page / panel / filter / window state は復元済みであり、implementation authorization は `consumed` とする。
+
 ## 申請する authoring 範囲
 
 gate は `r7-route-panel-responsive-fix-authoring`、revision 1 とする。変更可能な path は次の4件だけである。

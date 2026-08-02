@@ -1,4 +1,5 @@
 {
+  "anonymousSignedFixturePassed": true,
   "anonymousSignedFixtureRequired": true,
   "authorizationState": "authorized",
   "authorizedPaths": [
@@ -9,20 +10,39 @@
   ],
   "changeCount": 5,
   "compilerVersion": "quest-growth-r7-responsive-layout-decision-compiler/1",
+  "controlledWindow": {
+    "height": 800,
+    "width": 1600
+  },
+  "currentWindow": {
+    "height": 632,
+    "width": 1316
+  },
   "defaultEnablementAuthorization": "R7_NOT_AUTHORIZED",
+  "fullTestCount": 1224,
   "gateId": "r7-route-panel-responsive-fix-authoring",
   "generatedAt": "2026-08-02T07:52:15.071Z",
-  "implementationAuthorization": "authorized",
+  "growthComponentDigest": "sha256:60ea3622f93e058a00ad6d062eb3fcef5dbb1e5f1decd90e6a0e975023b9f60d",
+  "implementationAuthorization": "consumed",
+  "implementationCommit": "dd6220f7efc4696a6bd8224b5f628dca7a4d08d7",
   "layoutDiagnostic": {
     "clientWidth": 221,
     "scrollWidth": 257
   },
   "maximumOverflowTolerance": 1,
   "minimumPanelWidth": 221,
+  "pagePanelFilterWindowStateRestored": true,
+  "panelClientWidth": 221,
+  "panelScrollWidths": {
+    "asw": 221,
+    "closed": 221,
+    "resources": 221,
+    "unset": 221
+  },
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
   "realAccountExecutionAuthorization": "R7_NOT_AUTHORIZED",
   "reasonCode": "QUEST_STRATEGY_CURRENT_SIZE_HORIZONTAL_OVERFLOW",
-  "requestDigest": "sha256:65a181d938553bbdb906bbe88d8e15241c7c30860d10956088df7af8a82a4bca",
+  "requestDigest": "sha256:2d494d7f842cbe31b0f7b08a3acea424d82241d198ff27a894a35ac80d88c55e",
   "requestId": "decision:quest-growth-r7-route-panel-responsive-fix-authoring",
   "requiredCheckCount": 8,
   "revision": 1,
@@ -31,7 +51,8 @@
   "schemaVersion": 1,
   "scope": "R7_ROUTE_PANEL_RESPONSIVE_FIX_AUTHORING_ONLY",
   "semanticDigest": "sha256:3b7c6d8b5806cb5c0e850d3a197d9f276d49a90a55cdf75a3a3d03ee031f1e43",
-  "status": "R7_ROUTE_PANEL_RESPONSIVE_FIX_AUTHORIZED",
+  "smokeHarnessDigest": "sha256:5de07f3430079efba6c710d4848463086643582821635eda73c2fc73be1e527c",
+  "status": "R7_ROUTE_PANEL_RESPONSIVE_FIX_IMPLEMENTED_ANONYMOUSLY_VERIFIED",
   "stillProhibited": [
     "credential-handling-by-agent",
     "agent-click-game-start",

@@ -38,7 +38,7 @@
   "requestedAuthorization": {
     "gateId": "r7-route-panel-responsive-fix-authoring",
     "authorizationState": "authorized",
-    "implementationAuthorization": "authorized",
+    "implementationAuthorization": "consumed",
     "authorizedPaths": [
       "src/renderer/src/components/QuestGrowthCheck.vue",
       "src/renderer/src/components/__tests__/QuestGrowthCheck.test.ts",
@@ -72,6 +72,47 @@
       "typecheck-and-full-tests-pass",
       "protected-game-communication-digests-remain-fixed"
     ]
+  },
+  "implementationResult": {
+    "recordedAt": "2026-08-02T08:09:45.165Z",
+    "approvedSemanticDigest": "sha256:3b7c6d8b5806cb5c0e850d3a197d9f276d49a90a55cdf75a3a3d03ee031f1e43",
+    "implementationCommit": "dd6220f7efc4696a6bd8224b5f628dca7a4d08d7",
+    "changedPaths": [
+      "src/renderer/src/components/QuestGrowthCheck.vue",
+      "src/renderer/src/components/__tests__/QuestGrowthCheck.test.ts",
+      "scripts/electron-smoke.js",
+      "src/main/__tests__/electron-smoke-script.test.ts"
+    ],
+    "growthComponentDigest": "sha256:60ea3622f93e058a00ad6d062eb3fcef5dbb1e5f1decd90e6a0e975023b9f60d",
+    "smokeHarnessDigest": "sha256:5de07f3430079efba6c710d4848463086643582821635eda73c2fc73be1e527c",
+    "componentTestCount": 10,
+    "harnessTestCount": 42,
+    "fullTestCount": 1224,
+    "typecheckPassed": true,
+    "productionBuildPassed": true,
+    "anonymousSignedFixturePassed": true,
+    "currentWindow": {
+      "width": 1316,
+      "height": 632
+    },
+    "controlledWindow": {
+      "width": 1600,
+      "height": 800
+    },
+    "panelClientWidth": 221,
+    "closedPanelScrollWidth": 221,
+    "resourcesPanelScrollWidth": 221,
+    "aswPanelScrollWidth": 221,
+    "unsetPanelScrollWidth": 221,
+    "routeContentWidth": 195,
+    "routeContentScrollWidth": 195,
+    "sessionOnlyStatePreserved": true,
+    "wideLayoutPreserved": true,
+    "pagePanelFilterWindowStateRestored": true,
+    "realAccountExecutionPerformed": false,
+    "routeContentChangesMade": false,
+    "localFactSemanticsChangesMade": false,
+    "gameCommunicationChangesMade": false
   },
   "executionBoundary": {
     "realAccountExecutionAuthorized": false,

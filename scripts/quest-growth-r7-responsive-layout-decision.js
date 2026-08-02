@@ -46,6 +46,39 @@ const ExpectedChecks = [
   'typecheck-and-full-tests-pass',
   'protected-game-communication-digests-remain-fixed'
 ]
+const ExpectedImplementationResult = {
+  recordedAt: '2026-08-02T08:09:45.165Z',
+  approvedSemanticDigest:
+    'sha256:3b7c6d8b5806cb5c0e850d3a197d9f276d49a90a55cdf75a3a3d03ee031f1e43',
+  implementationCommit: 'dd6220f7efc4696a6bd8224b5f628dca7a4d08d7',
+  changedPaths: AuthorizedPaths,
+  growthComponentDigest:
+    'sha256:60ea3622f93e058a00ad6d062eb3fcef5dbb1e5f1decd90e6a0e975023b9f60d',
+  smokeHarnessDigest:
+    'sha256:5de07f3430079efba6c710d4848463086643582821635eda73c2fc73be1e527c',
+  componentTestCount: 10,
+  harnessTestCount: 42,
+  fullTestCount: 1224,
+  typecheckPassed: true,
+  productionBuildPassed: true,
+  anonymousSignedFixturePassed: true,
+  currentWindow: { width: 1316, height: 632 },
+  controlledWindow: { width: 1600, height: 800 },
+  panelClientWidth: 221,
+  closedPanelScrollWidth: 221,
+  resourcesPanelScrollWidth: 221,
+  aswPanelScrollWidth: 221,
+  unsetPanelScrollWidth: 221,
+  routeContentWidth: 195,
+  routeContentScrollWidth: 195,
+  sessionOnlyStatePreserved: true,
+  wideLayoutPreserved: true,
+  pagePanelFilterWindowStateRestored: true,
+  realAccountExecutionPerformed: false,
+  routeContentChangesMade: false,
+  localFactSemanticsChangesMade: false,
+  gameCommunicationChangesMade: false
+}
 
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize)
@@ -86,7 +119,9 @@ function same(left, right) {
 
 function responsiveLayoutRequestSemanticDigest(value) {
   const payload = Object.fromEntries(
-    Object.entries(value).filter(([key]) => key !== 'status' && key !== 'review')
+    Object.entries(value).filter(
+      ([key]) => key !== 'status' && key !== 'review' && key !== 'implementationResult'
+    )
   )
   return digest(
     canonicalJson({
@@ -115,6 +150,7 @@ function validateR7ResponsiveLayoutFixRequest(value, { root, base }) {
       'requestedAuthorization',
       'changeContract',
       'verificationContract',
+      'implementationResult',
       'executionBoundary',
       'stillProhibited',
       'review'
@@ -203,7 +239,7 @@ function validateR7ResponsiveLayoutFixRequest(value, { root, base }) {
     value.requestedAuthorization.authorizationState !==
       (approved ? 'authorized' : 'not-authorized') ||
     value.requestedAuthorization.implementationAuthorization !==
-      (approved ? 'authorized' : 'not-authorized') ||
+      (approved ? 'consumed' : 'not-authorized') ||
     !same(value.requestedAuthorization.authorizedPaths, AuthorizedPaths)
   ) {
     throw new Error('R7 responsive layout authorization mismatch')
@@ -243,6 +279,14 @@ function validateR7ResponsiveLayoutFixRequest(value, { root, base }) {
     !same(value.verificationContract.requiredChecks, ExpectedChecks)
   ) {
     throw new Error('R7 responsive layout verification contract mismatch')
+  }
+  exactKeys(
+    value.implementationResult,
+    Object.keys(ExpectedImplementationResult),
+    'R7 responsive layout implementation result'
+  )
+  if (!same(value.implementationResult, ExpectedImplementationResult)) {
+    throw new Error('R7 responsive layout implementation result mismatch')
   }
   exactKeys(
     value.executionBoundary,
@@ -297,7 +341,7 @@ function buildR7ResponsiveLayoutDecisionArtifacts({ root, base }) {
       ? request.value.review.reviewedAt
       : request.value.sourceSnapshot.checkedAt,
     status: request.approved
-      ? 'R7_ROUTE_PANEL_RESPONSIVE_FIX_AUTHORIZED'
+      ? 'R7_ROUTE_PANEL_RESPONSIVE_FIX_IMPLEMENTED_ANONYMOUSLY_VERIFIED'
       : 'OWNER_DECISION_REQUIRED_R7_ROUTE_PANEL_RESPONSIVE_FIX',
     scope: request.value.scope,
     requestId: request.value.requestId,
@@ -306,7 +350,7 @@ function buildR7ResponsiveLayoutDecisionArtifacts({ root, base }) {
     semanticDigest: request.semanticDigest,
     gateId: request.value.requestedAuthorization.gateId,
     authorizationState: request.approved ? 'authorized' : 'not-authorized',
-    implementationAuthorization: request.approved ? 'authorized' : 'not-authorized',
+    implementationAuthorization: request.approved ? 'consumed' : 'not-authorized',
     authorizedPaths: request.value.requestedAuthorization.authorizedPaths,
     reasonCode: request.value.failureBasis.reasonCode,
     layoutDiagnostic: request.value.failureBasis.layoutDiagnostic,
@@ -318,6 +362,23 @@ function buildR7ResponsiveLayoutDecisionArtifacts({ root, base }) {
       request.value.verificationContract.maximumOverflowTolerance,
     anonymousSignedFixtureRequired:
       request.value.verificationContract.anonymousSignedFixtureRequired,
+    implementationCommit: request.value.implementationResult.implementationCommit,
+    growthComponentDigest: request.value.implementationResult.growthComponentDigest,
+    smokeHarnessDigest: request.value.implementationResult.smokeHarnessDigest,
+    fullTestCount: request.value.implementationResult.fullTestCount,
+    anonymousSignedFixturePassed:
+      request.value.implementationResult.anonymousSignedFixturePassed,
+    currentWindow: request.value.implementationResult.currentWindow,
+    controlledWindow: request.value.implementationResult.controlledWindow,
+    panelClientWidth: request.value.implementationResult.panelClientWidth,
+    panelScrollWidths: {
+      closed: request.value.implementationResult.closedPanelScrollWidth,
+      resources: request.value.implementationResult.resourcesPanelScrollWidth,
+      asw: request.value.implementationResult.aswPanelScrollWidth,
+      unset: request.value.implementationResult.unsetPanelScrollWidth
+    },
+    pagePanelFilterWindowStateRestored:
+      request.value.implementationResult.pagePanelFilterWindowStateRestored,
     realAccountExecutionAuthorization: 'R7_NOT_AUTHORIZED',
     runtimeEligibleCount: 0,
     publicationAuthorization: 'R7_NOT_AUTHORIZED',
