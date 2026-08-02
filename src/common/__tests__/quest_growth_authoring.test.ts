@@ -133,6 +133,16 @@ const {
     dependencies: { root: string; base: string }
   ) => { semanticDigest: string; approved: boolean }
 }
+const {
+  runtimePublicationRequestSemanticDigest,
+  validateR7RuntimePublicationAuthoringRequest
+} = require('../../../scripts/quest-growth-r7-runtime-publication-decision.js') as {
+  runtimePublicationRequestSemanticDigest: (value: Record<string, unknown>) => string
+  validateR7RuntimePublicationAuthoringRequest: (
+    value: Record<string, unknown>,
+    dependencies: { root: string; base: string }
+  ) => { semanticDigest: string; approved: boolean }
+}
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -201,6 +211,9 @@ describe('quest growth authoring contract', () => {
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
     expect(report.globalStops).toContain(
       'R7_REAL_ACCOUNT_ACCEPTANCE_PASSED_PUBLICATION_NOT_AUTHORIZED'
+    )
+    expect(report.globalStops).toContain(
+      'R7_RUNTIME_PUBLICATION_AUTHORING_OWNER_DECISION_REQUIRED'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -1066,6 +1079,98 @@ describe('quest growth authoring contract', () => {
         base: GrowthDirectory
       })
     ).toThrow('R7 responsive layout failure basis mismatch')
+  })
+
+  it('keeps runtime publication authoring decision-only and unimplemented', () => {
+    const report = read<{
+      status: string
+      semanticDigest: string
+      authorizationState: string
+      implementationAuthorization: string
+      maximumPublishedRoutes: number
+      authorizedPaths: string[]
+      changeCount: number
+      requiredCheckCount: number
+      anonymousSignedFixtureRequired: boolean
+      rollbackMode: string
+      realAccountAcceptanceStatus: string
+      runtimeEligibleCount: number
+      publicationAuthorization: string
+      defaultEnablementAuthorization: string
+      productionDeploymentConfigurationAuthorization: string
+    }>('generated', 'r7-runtime-publication-authoring-report.json')
+
+    expect(report.status).toBe(
+      'OWNER_DECISION_REQUIRED_R7_RUNTIME_PUBLICATION_AUTHORING'
+    )
+    expect(report.semanticDigest).toBe(
+      'sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104'
+    )
+    expect(report.authorizationState).toBe('not-authorized')
+    expect(report.implementationAuthorization).toBe('not-authorized')
+    expect(report.maximumPublishedRoutes).toBe(2)
+    expect(report.authorizedPaths).toHaveLength(9)
+    expect(report.changeCount).toBe(6)
+    expect(report.requiredCheckCount).toBe(8)
+    expect(report.anonymousSignedFixtureRequired).toBe(true)
+    expect(report.rollbackMode).toBe('restore-bundled-opt-in-catalog')
+    expect(report.realAccountAcceptanceStatus).toBe(
+      'REAL_ACCOUNT_READONLY_ACCEPTANCE_PASSED'
+    )
+    expect(report.runtimeEligibleCount).toBe(0)
+    expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.defaultEnablementAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.productionDeploymentConfigurationAuthorization).toBe(
+      'R7_NOT_AUTHORIZED'
+    )
+  })
+
+  it('rejects a runtime publication path expansion', () => {
+    const request = read<
+      Record<string, unknown> & {
+        requestedAuthorization: { authorizedPaths: string[] }
+      }
+    >('decisions', 'r7-runtime-publication-authoring-request.json')
+    const tampered = structuredClone(request)
+    tampered.requestedAuthorization.authorizedPaths.push('src/main/kcbrowser.ts')
+
+    expect(runtimePublicationRequestSemanticDigest(tampered)).not.toBe(
+      runtimePublicationRequestSemanticDigest(request)
+    )
+    expect(() =>
+      validateR7RuntimePublicationAuthoringRequest(tampered, {
+        root: process.cwd(),
+        base: GrowthDirectory
+      })
+    ).toThrow('R7 runtime publication authoring authorization mismatch')
+  })
+
+  it('keeps the runtime publication digest stable across approval metadata only', () => {
+    const request = read<
+      Record<string, unknown> & {
+        status: string
+        requestedAuthorization: {
+          authorizationState: string
+          implementationAuthorization: string
+        }
+        review: {
+          approver: string | null
+          reviewedAt: string | null
+          approvalDigest: string | null
+        }
+      }
+    >('decisions', 'r7-runtime-publication-authoring-request.json')
+    const approved = structuredClone(request)
+    approved.status = 'approved'
+    approved.requestedAuthorization.authorizationState = 'authorized'
+    approved.requestedAuthorization.implementationAuthorization = 'authorized'
+    approved.review.approver = 'project-owner'
+    approved.review.reviewedAt = '2026-08-02T10:00:00.000Z'
+    approved.review.approvalDigest = runtimePublicationRequestSemanticDigest(request)
+
+    expect(runtimePublicationRequestSemanticDigest(approved)).toBe(
+      runtimePublicationRequestSemanticDigest(request)
+    )
   })
 
   it('binds approval to semantic content while excluding approval metadata', () => {

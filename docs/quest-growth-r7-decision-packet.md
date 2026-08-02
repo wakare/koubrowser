@@ -138,6 +138,12 @@ revision 6 の実アカウント受入は client `221` / scroll `257` の route 
 [`quest-growth-r7-responsive-layout-fix-decision-packet.md`](quest-growth-r7-responsive-layout-fix-decision-packet.md)
 に分離し、owner decision required とする。実アカウント再実行はこの gate に含めない。
 
+revision 7 の post-fix retry は固定2 route、current / controlled size、unset fallback、session-only state と
+UI state restore を確認して PASS した。次の runtime publication authoring は既存 Ed25519 data-update 経路への
+接続と匿名 signed fixture だけに限定し、固定摘要と承認境界を
+[`quest-growth-r7-runtime-publication-decision-packet.md`](quest-growth-r7-runtime-publication-decision-packet.md)
+に分離した。実際の runtime publication と default enablement は引き続き未承認である。
+
 件数、対象、証拠、review 境界を固定した decision-only packet は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)
 に分離する。

@@ -265,6 +265,11 @@ project owner は revision 7 の固定摘要を明示承認し、固定済みの
 只読・脱敏実行を `authorized` とした。固定 harness の実行は2 route、unset fallback、session-only state、
 current / controlled size の横 overflow、UI state 復元をすべて確認して PASS し、execution authorization は
 `consumed` となった。runtime publication、default enablement、他 family は未承認のままとする。
+次の独立 gate は runtime publication である。既存 Ed25519 data-update 経路へ2 reviewed route を接続する
+schema / validator、session-only bridge、rollback fallback と匿名 signed fixture だけを
+[`quest-growth-r7-runtime-publication-decision-packet.md`](quest-growth-r7-runtime-publication-decision-packet.md)
+に固定した。現在は owner decision required であり、実際の publication、production URL / public key、
+default enablement は許可しない。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

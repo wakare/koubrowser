@@ -27,8 +27,12 @@ const {
   R7ResponsiveLayoutDecisionOutputFilenames,
   buildR7ResponsiveLayoutDecisionArtifacts
 } = require('./quest-growth-r7-responsive-layout-decision')
+const {
+  R7RuntimePublicationDecisionOutputFilenames,
+  buildR7RuntimePublicationDecisionArtifacts
+} = require('./quest-growth-r7-runtime-publication-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/21'
+const CompilerVersion = 'quest-growth-authoring-compiler/22'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -42,7 +46,8 @@ const OutputFilenames = [
   ...R7RouteReviewDecisionOutputFilenames,
   ...R7RendererDecisionOutputFilenames,
   ...R7RealAccountDecisionOutputFilenames,
-  ...R7ResponsiveLayoutDecisionOutputFilenames
+  ...R7ResponsiveLayoutDecisionOutputFilenames,
+  ...R7RuntimePublicationDecisionOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -878,6 +883,10 @@ function buildQuestGrowthArtifacts(root) {
     root,
     base
   })
+  const r7RuntimePublicationDecision = buildR7RuntimePublicationDecisionArtifacts({
+    root,
+    base
+  })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -932,6 +941,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r7RendererDecision.source,
       ...r7RealAccountDecision.source,
       ...r7ResponsiveLayoutDecision.source,
+      ...r7RuntimePublicationDecision.source,
       fixtureDigests
     },
     output: {
@@ -972,7 +982,8 @@ function buildQuestGrowthArtifacts(root) {
       ...r7RouteReviewDecision.output,
       ...r7RendererDecision.output,
       ...r7RealAccountDecision.output,
-      ...r7ResponsiveLayoutDecision.output
+      ...r7ResponsiveLayoutDecision.output,
+      ...r7RuntimePublicationDecision.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -1036,7 +1047,11 @@ function buildQuestGrowthArtifacts(root) {
           ? ['R7_REAL_ACCOUNT_ACCEPTANCE_PASSED_PUBLICATION_NOT_AUTHORIZED']
         : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
           ? ['R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED']
-          : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'])
+          : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN']),
+      ...(r7RuntimePublicationDecision.output
+        .r7RuntimePublicationAuthoringOwnerDecisionRequired
+        ? ['R7_RUNTIME_PUBLICATION_AUTHORING_OWNER_DECISION_REQUIRED']
+        : [])
     ]
   }
   return {
@@ -1049,7 +1064,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7RouteReviewDecision.artifacts,
     ...r7RendererDecision.artifacts,
     ...r7RealAccountDecision.artifacts,
-    ...r7ResponsiveLayoutDecision.artifacts
+    ...r7ResponsiveLayoutDecision.artifacts,
+    ...r7RuntimePublicationDecision.artifacts
   }
 }
 

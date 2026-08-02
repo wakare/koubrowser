@@ -1,0 +1,116 @@
+{
+  "authoringSchema": "QuestGrowthR7RuntimePublicationAuthoringRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-runtime-publication-authoring",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_RUNTIME_PUBLICATION_AUTHORING_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "ae08aca3974d3ccdf19ed4690855caa815e87b45",
+    "checkedAt": "2026-08-02T09:48:33.527Z"
+  },
+  "approvalBasis": {
+    "runtimePublicationGateSemanticDigest": "sha256:1cafef68f4fa841168fc733742100058bb7481a984b041303f03072312f3c3a5",
+    "runtimePublicationGateAuthorization": "not-authorized",
+    "defaultEnablementGateSemanticDigest": "sha256:b982afd1d510f5eaed2e17900f703dcc2e3cb2619259d7ffdc32676d766081b8",
+    "defaultEnablementGateAuthorization": "not-authorized",
+    "realAccountAcceptanceSemanticDigest": "sha256:497bc51162e26ac696db7219bc876ff56dd0bbfd932e5dddec89a5460a405930",
+    "realAccountAcceptanceReportDigest": "sha256:54c1c5f4a61b7e2e2b0e4ee6e59ed72be6ed6babaf9cfcb965ece23ce2a9948c",
+    "realAccountAcceptanceStatus": "REAL_ACCOUNT_READONLY_ACCEPTANCE_PASSED",
+    "routeCatalogDigest": "sha256:cc2c83195c01c846ba3da89d2731264081e1374b74a190f046f75f9d59e776a4",
+    "routeSelectorDigest": "sha256:c68ad63ce313a3ea1514a7d5588b8dd463fa0be4b49e49e10fbcdaf4ebd999f2",
+    "questKnowledgeUpdateDigest": "sha256:aac857c64ecedd5b9f59838f2186a5bae5c18d63d53bbbe63b9cec7bdd6bba7e",
+    "dataUpdateRuntimeDigest": "sha256:5267c61b876b678a26a78afe5849938d97eea7db5f4f016386b493656dbbf920",
+    "dataUpdatePublisherDigest": "sha256:b12bd43b52ce275e997f0e1381afa0018db1111d4e2d2ca5c0fcf353887b491c",
+    "dataUpdateDeploymentDigest": "sha256:5bbc72a8354041753cb2ac47588dc29c079f943c3b3af847657e0461aeec0bd4",
+    "protectedCommunicationDigests": {
+      "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+      "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
+      "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e"
+    }
+  },
+  "requestedAuthorization": {
+    "gateId": "r7-runtime-publication-authoring",
+    "authorizationState": "not-authorized",
+    "implementationAuthorization": "not-authorized",
+    "maximumPublishedRoutes": 2,
+    "authorizedPaths": [
+      "src/common/quest_growth_reviewed_routes.ts",
+      "src/common/quest_knowledge_update.ts",
+      "src/renderer/src/stream.ts",
+      "scripts/create-data-update-bundle.js",
+      "scripts/electron-smoke.js",
+      "src/common/__tests__/quest_growth_reviewed_routes.test.ts",
+      "src/common/__tests__/quest_knowledge_update.test.ts",
+      "src/main/__tests__/data-update.test.ts",
+      "src/main/__tests__/electron-smoke-script.test.ts"
+    ]
+  },
+  "changeContract": {
+    "changes": [
+      "add-a-strict-versioned-growth-route-catalog-to-signed-quest-knowledge-updates",
+      "accept-only-the-two-fixed-reviewed-route-digests",
+      "feed-verified-route-updates-to-the-existing-session-only-renderer-selector",
+      "reject-draft-expired-withdrawn-unknown-version-and-unknown-field-content",
+      "restore-the-bundled-opt-in-catalog-when-no-valid-signed-route-update-is-active",
+      "extend-the-existing-anonymous-signed-data-update-fixture-with-growth-routes"
+    ],
+    "runtimeSchemaVersion": 1,
+    "signedEnvelope": "existing-ed25519-data-manifest-and-quest-knowledge-payload",
+    "productionDeploymentConfigurationChangesAuthorized": false,
+    "routeContentChangesAuthorized": false,
+    "rendererLayoutOrTextChangesAuthorized": false,
+    "mainOrPreloadProductionChangesAuthorized": false
+  },
+  "rollbackContract": {
+    "invalidOrMissingUpdateBehavior": "restore-bundled-opt-in-catalog",
+    "withdrawalBehavior": "newer-signed-bundle-hides-route-and-shows-knowledge-review-required",
+    "olderBundleBehavior": "existing-data-update-anti-rollback-remains-enforced",
+    "activePointerOrPayloadCorruptionBehavior": "reject-active-update-and-use-bundled-fallback",
+    "persistentAccountStateMutationAllowed": false
+  },
+  "verificationContract": {
+    "anonymousSignedFixtureRequired": true,
+    "realDistributionEndpointRequired": false,
+    "requiredChecks": [
+      "valid-signed-bundle-exposes-only-the-two-fixed-reviewed-routes",
+      "invalid-signature-hash-schema-version-or-unknown-field-is-rejected",
+      "draft-expired-withdrawn-or-digest-mismatched-route-is-not-displayable",
+      "missing-growth-route-update-restores-bundled-opt-in-catalog",
+      "newer-signed-withdrawal-hides-the-route-without-reenabling-an-older-bundle",
+      "resources-asw-and-unset-fallback-remain-session-only",
+      "typecheck-full-tests-production-build-and-anonymous-electron-smoke-pass",
+      "protected-game-communication-digests-remain-fixed"
+    ]
+  },
+  "implementationResult": null,
+  "executionBoundary": {
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false,
+    "realDistributionEndpointAuthorized": false,
+    "productionUrlOrPublicKeyAuthorized": false,
+    "privateKeyHandlingByAgentAuthorized": false,
+    "realAccountExecutionAuthorized": false,
+    "otherRouteFamiliesAuthorized": false,
+    "gameCommunicationChangesAuthorized": false,
+    "automaticGameOperationAuthorized": false,
+    "installerBuildRequiredAtThisAuthoringGate": false
+  },
+  "stillProhibited": [
+    "runtime-publication",
+    "default-enablement",
+    "real-distribution-endpoint",
+    "production-url-or-public-key-configuration",
+    "private-key-or-credential-handling",
+    "real-account-execution",
+    "route-content-mutation",
+    "other-route-family-authoring",
+    "game-communication-mutation",
+    "automatic-game-operation"
+  ],
+  "review": {
+    "author": "codex-r7-runtime-publication-authoring-decision-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}
