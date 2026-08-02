@@ -77,9 +77,19 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(audit.coverageStatus).toBe('unsupported-v1-multi-stage')
   })
 
-  it('does not promote an opaque fleet constraint to complete coverage', () => {
+  it('promotes the reviewed 1-4 fleet constraint only when every canonical rule is represented', () => {
+    const recipe = BundledQuestStrategyKnowledge.recipes.find(
+      (item) => item.id === 'normal-1-4-light-fleet-periodic'
+    )!
+
     expect(
       questStrategyCoverageStatus(257, BundledQuestStrategyKnowledge.recipes, GeneratedAt)
+    ).toBe('route-ready')
+    expect(
+      auditQuestStrategyRecipeObjective(
+        { ...recipe, fleet: { ...recipe.fleet, flagshipTypeIds: undefined } },
+        257
+      ).coverageStatus
     ).toBe('route-unreviewed')
   })
 

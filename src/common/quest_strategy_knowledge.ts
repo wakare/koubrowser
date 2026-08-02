@@ -222,11 +222,14 @@ const recipes = [
     fleet: {
       minimumShips: 6,
       maximumShips: 6,
+      flagshipTypeIds: [ApiShipType.keijyun],
+      allowedShipTypeIds: [ApiShipType.keijyun, ApiShipType.kutikukan],
       shipTypeConstraints: [
         {
           shipTypeIds: [ApiShipType.keijyun],
           minimum: 1,
-          label: '軽巡洋艦 1 隻以上'
+          maximum: 2,
+          label: '軽巡洋艦 1〜2 隻（旗艦を含む）'
         },
         {
           shipTypeIds: [ApiShipType.kutikukan],
@@ -263,6 +266,15 @@ const recipes = [
         validUntil: ValidUntil,
         confidence: 'supported',
         summary: '軽巡旗艦・駆逐4以上の両立編成、ボス固定候補、定期任務条件を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-1-4-current',
+        sourceLabel: '舰娘百科 - 1-4',
+        url: 'https://zh.kcwiki.cn/wiki/1-4',
+        reviewedAt: '2026-08-03T03:30:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '軽巡旗艦・軽巡と駆逐のみの任務条件、駆逐4によるJ-Lボス固定を独立照合'
       },
       PeriodicSortieEvidence
     ],
@@ -1350,6 +1362,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.4',
+  version: '2026-08-03.5',
   recipes
 })

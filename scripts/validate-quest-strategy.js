@@ -114,11 +114,11 @@ function validateObjective(value, description) {
   return value.questId
 }
 
-function validateTypeConstraint(value, description, typeKey, requireRequired) {
+function validateTypeConstraint(value, description, typeKey, requireRequired, allowMaximum = false) {
   exactKeys(
     value,
     [typeKey, 'minimum', 'label', ...(requireRequired ? ['required'] : [])],
-    [],
+    allowMaximum ? ['maximum'] : [],
     description
   )
   uniqueArray(
@@ -127,7 +127,10 @@ function validateTypeConstraint(value, description, typeKey, requireRequired) {
     (item, itemDescription) => integer(item, itemDescription, 1),
     1
   )
-  integer(value.minimum, `${description} minimum`, 1)
+  const minimum = integer(value.minimum, `${description} minimum`, 1)
+  if (value.maximum !== undefined) {
+    integer(value.maximum, `${description} maximum`, minimum)
+  }
   text(value.label, `${description} label`)
   if (requireRequired && typeof value.required !== 'boolean') {
     throw new Error(`invalid ${description} required`)
@@ -157,7 +160,7 @@ function validateRecipe(value, description) {
       'evidence',
       'validity'
     ],
-    ['airState', 'prerequisiteAlternative'],
+    ['targetCellIds', 'airState', 'prerequisiteAlternative'],
     description
   )
   if (value.schemaVersion !== 1) {
@@ -190,19 +193,37 @@ function validateRecipe(value, description) {
   }
   uniqueArray(value.routeLabels, `${description} routeLabels`, text, 1)
   uniqueArray(value.targetNodes, `${description} targetNodes`, text, 1)
+  if (value.targetCellIds !== undefined) {
+    uniqueArray(
+      value.targetCellIds,
+      `${description} targetCellIds`,
+      (item, itemDescription) => integer(item, itemDescription, 1),
+      1
+    )
+  }
   exactKeys(
     value.fleet,
     ['minimumShips', 'maximumShips', 'shipTypeConstraints'],
-    [],
+    ['flagshipTypeIds', 'allowedShipTypeIds'],
     `${description} fleet`
   )
   const minimumShips = integer(value.fleet.minimumShips, `${description} fleet minimumShips`, 1)
   integer(value.fleet.maximumShips, `${description} fleet maximumShips`, minimumShips)
+  for (const key of ['flagshipTypeIds', 'allowedShipTypeIds']) {
+    if (value.fleet[key] !== undefined) {
+      uniqueArray(
+        value.fleet[key],
+        `${description} fleet ${key}`,
+        (item, itemDescription) => integer(item, itemDescription, 1),
+        1
+      )
+    }
+  }
   uniqueArray(
     value.fleet.shipTypeConstraints,
     `${description} shipTypeConstraints`,
     (item, itemDescription) => {
-      validateTypeConstraint(item, itemDescription, 'shipTypeIds', false)
+      validateTypeConstraint(item, itemDescription, 'shipTypeIds', false, true)
       return JSON.stringify(item)
     }
   )

@@ -114,7 +114,7 @@ function build(
 
 describe('quest strategy validation', () => {
   it('loads sixteen reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.4')
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.5')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
@@ -211,6 +211,42 @@ describe('quest strategy validation', () => {
     expect(() =>
       normalizeQuestStrategyRecipes([recipe('invalid-cell', [101], { targetCellIds: [0] })])
     ).toThrow('integer greater than or equal to 1 expected')
+
+    const boundedFleet = recipe('bounded-fleet', [101], {
+      fleet: {
+        minimumShips: 6,
+        maximumShips: 6,
+        flagshipTypeIds: [3],
+        allowedShipTypeIds: [2, 3],
+        shipTypeConstraints: [
+          { shipTypeIds: [3], minimum: 1, maximum: 2, label: '軽巡洋艦 1〜2 隻' },
+          { shipTypeIds: [2], minimum: 4, label: '駆逐艦 4 隻以上' }
+        ]
+      }
+    })
+    const normalizedFleet = normalizeQuestStrategyRecipes([boundedFleet])[0].fleet
+    expect(normalizedFleet).toMatchObject({
+      flagshipTypeIds: [3],
+      allowedShipTypeIds: [2, 3]
+    })
+    expect(normalizedFleet.shipTypeConstraints[0]).toMatchObject({
+      shipTypeIds: [3],
+      minimum: 1,
+      maximum: 2
+    })
+    expect(() =>
+      normalizeQuestStrategyRecipes([
+        {
+          ...boundedFleet,
+          fleet: {
+            ...boundedFleet.fleet,
+            shipTypeConstraints: [
+              { shipTypeIds: [3], minimum: 2, maximum: 1, label: '不正な上限' }
+            ]
+          }
+        }
+      ])
+    ).toThrow('integer greater than or equal to 2 expected')
   })
 
   it('requires bounded validity for event-only knowledge', () => {

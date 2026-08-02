@@ -31,6 +31,7 @@ export interface StrategyValidity {
 export interface StrategyShipTypeConstraint {
   shipTypeIds: number[]
   minimum: number
+  maximum?: number
   label: string
 }
 
@@ -74,6 +75,8 @@ export interface QuestStrategyRecipe {
   fleet: {
     minimumShips: number
     maximumShips: number
+    flagshipTypeIds?: number[]
+    allowedShipTypeIds?: number[]
     shipTypeConstraints: StrategyShipTypeConstraint[]
   }
   equipmentTypeConstraints: StrategyEquipmentTypeConstraint[]
@@ -382,10 +385,14 @@ function readValidity(value: unknown, path: string): StrategyValidity {
 
 function readShipTypeConstraint(value: unknown, path: string): StrategyShipTypeConstraint {
   const record = recordAt(value, path)
-  assertKeys(record, ['shipTypeIds', 'minimum', 'label'], path)
+  assertKeys(record, ['shipTypeIds', 'minimum', 'maximum', 'label'], path)
+  const minimum = integerAt(record.minimum, `${path}.minimum`, 1)
   return {
     shipTypeIds: uniqueIntegersAt(record.shipTypeIds, `${path}.shipTypeIds`),
-    minimum: integerAt(record.minimum, `${path}.minimum`, 1),
+    minimum,
+    ...(record.maximum === undefined
+      ? {}
+      : { maximum: integerAt(record.maximum, `${path}.maximum`, minimum) }),
     label: stringAt(record.label, `${path}.label`)
   }
 }
@@ -474,7 +481,17 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
     throw new QuestStrategyValidationError(`${path}.mapKey`, 'normal map key expected')
   }
   const fleetRecord = recordAt(record.fleet, `${path}.fleet`)
-  assertKeys(fleetRecord, ['minimumShips', 'maximumShips', 'shipTypeConstraints'], `${path}.fleet`)
+  assertKeys(
+    fleetRecord,
+    [
+      'minimumShips',
+      'maximumShips',
+      'flagshipTypeIds',
+      'allowedShipTypeIds',
+      'shipTypeConstraints'
+    ],
+    `${path}.fleet`
+  )
   const minimumShips = integerAt(fleetRecord.minimumShips, `${path}.fleet.minimumShips`, 1)
   const maximumShips = integerAt(
     fleetRecord.maximumShips,
@@ -527,6 +544,22 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
     fleet: {
       minimumShips,
       maximumShips,
+      ...(fleetRecord.flagshipTypeIds === undefined
+        ? {}
+        : {
+            flagshipTypeIds: uniqueIntegersAt(
+              fleetRecord.flagshipTypeIds,
+              `${path}.fleet.flagshipTypeIds`
+            )
+          }),
+      ...(fleetRecord.allowedShipTypeIds === undefined
+        ? {}
+        : {
+            allowedShipTypeIds: uniqueIntegersAt(
+              fleetRecord.allowedShipTypeIds,
+              `${path}.fleet.allowedShipTypeIds`
+            )
+          }),
       shipTypeConstraints: arrayAt(
         fleetRecord.shipTypeConstraints,
         `${path}.fleet.shipTypeConstraints`,
@@ -886,7 +919,11 @@ function evaluateRecipe(
 
   let fleetState: StrategyCheckState = 'pass'
   let fleetMessage = '艦種条件を満たせます'
-  if (recipe.fleet.shipTypeConstraints.length > 0 && !snapshot.shipTypeCounts) {
+  const requiresShipTypeCounts =
+    recipe.fleet.shipTypeConstraints.length > 0 ||
+    recipe.fleet.flagshipTypeIds !== undefined ||
+    recipe.fleet.allowedShipTypeIds !== undefined
+  if (requiresShipTypeCounts && !snapshot.shipTypeCounts) {
     fleetState = 'unknown'
     fleetMessage = '艦種別の保有数を確認できません'
   } else if (snapshot.shipTypeCounts) {
@@ -897,6 +934,18 @@ function evaluateRecipe(
     if (failed) {
       fleetState = 'fail'
       fleetMessage = `艦種条件「${failed.label}」を満たせません`
+    } else if (
+      recipe.fleet.flagshipTypeIds &&
+      sumCounts(snapshot.shipTypeCounts, recipe.fleet.flagshipTypeIds) < 1
+    ) {
+      fleetState = 'fail'
+      fleetMessage = '旗艦に指定できる艦種を保有していません'
+    } else if (
+      recipe.fleet.allowedShipTypeIds &&
+      sumCounts(snapshot.shipTypeCounts, recipe.fleet.allowedShipTypeIds) < recipe.fleet.minimumShips
+    ) {
+      fleetState = 'fail'
+      fleetMessage = '許可された艦種だけでは必要隻数を編成できません'
     }
   }
   checks.push(hardCheck('fleet-ready', fleetState, fleetMessage))
@@ -1018,6 +1067,12 @@ function evaluateRecipe(
     fleet: {
       minimumShips: recipe.fleet.minimumShips,
       maximumShips: recipe.fleet.maximumShips,
+      ...(recipe.fleet.flagshipTypeIds === undefined
+        ? {}
+        : { flagshipTypeIds: [...recipe.fleet.flagshipTypeIds] }),
+      ...(recipe.fleet.allowedShipTypeIds === undefined
+        ? {}
+        : { allowedShipTypeIds: [...recipe.fleet.allowedShipTypeIds] }),
       shipTypeConstraints: recipe.fleet.shipTypeConstraints.map((constraint) => ({
         ...constraint,
         shipTypeIds: [...constraint.shipTypeIds]

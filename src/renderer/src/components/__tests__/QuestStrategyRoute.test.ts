@@ -139,21 +139,20 @@ describe('QuestStrategyRoute.vue', () => {
     expect(wrapper.get('.quest-strategy-summary').text()).not.toContain('quest.strategy.uncovered')
   })
 
-  it('persists an explicit partial-route choice only after manual interaction', async () => {
+  it('persists an explicit reviewed-route choice only after manual interaction', async () => {
     const wrapper = await render([recommendation(229), recommendation(257, 'active')])
     await wrapper.get('.quest-strategy-controls > summary').trigger('click')
-    await wrapper.get('.quest-strategy-candidate-group > summary').trigger('click')
-    const partial = wrapper
+    const reviewed = wrapper
       .findAll('label.quest-strategy-candidate')
-      .find((candidate) => candidate.text().includes('#257'))
+      .find((candidate) => candidate.text().includes('#229'))
 
-    expect(partial).toBeDefined()
-    await partial!.get('input').setValue(true)
+    expect(reviewed).toBeDefined()
+    await reviewed!.get('input').setValue(true)
 
     expect(JSON.parse(localStorage.getItem('questStrategyRouteSelection:v2') ?? 'null')).toEqual({
       schemaVersion: 2,
       mode: 'manual',
-      questIds: [229, 257]
+      questIds: [257, 229]
     })
   })
 })

@@ -26,7 +26,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     )
 
-    expect(output).toContain('27 facts, 16 routes, 29 stage contributions, 1 rejected objectives')
+    expect(output).toContain('27 facts, 16 routes, 30 stage contributions, 0 rejected objectives')
   })
 
   it('compiles exact stage contributions without promoting partial multi-stage quests', () => {
@@ -82,13 +82,7 @@ describe('quest strategy runtime v2 compiler', () => {
     }>('runtime-v2-withdrawal-dependencies.json')
 
     expect(manifest.output.bundleDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
-    expect(manifest.unsupported).toEqual([
-      {
-        questId: 257,
-        reason: 'HARD_FLEET_CONSTRAINT_NOT_MACHINE_COMPLETE',
-        recipeId: 'normal-1-4-light-fleet-periodic'
-      }
-    ])
+    expect(manifest.unsupported).toEqual([])
     expect(withdrawals.withdrawals).toEqual([])
     expect(withdrawals.dependencies).toHaveLength(16)
   })

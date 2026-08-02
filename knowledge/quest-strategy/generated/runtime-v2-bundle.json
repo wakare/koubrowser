@@ -1153,6 +1153,13 @@
       "contributions": [
         {
           "mapKey": "1-4",
+          "questId": 257,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        },
+        {
+          "mapKey": "1-4",
           "questId": 280,
           "requiredCount": 1,
           "result": "S",
@@ -1180,6 +1187,15 @@
         },
         {
           "confidence": "supported",
+          "reviewedAt": "2026-08-03T03:30:00.000Z",
+          "sourceId": "kcwiki-map-1-4-current",
+          "sourceLabel": "舰娘百科 - 1-4",
+          "summary": "軽巡旗艦・軽巡と駆逐のみの任務条件、駆逐4によるJ-Lボス固定を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/1-4",
+          "validUntil": "2027-02-02T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
           "reviewedAt": "2026-07-31T00:00:00.000+09:00",
           "sourceId": "wikiwiki-periodic-sortie",
           "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
@@ -1189,11 +1205,19 @@
         }
       ],
       "fleet": {
+        "allowedShipTypeIds": [
+          3,
+          2
+        ],
+        "flagshipTypeIds": [
+          3
+        ],
         "maximumShips": 6,
         "minimumShips": 6,
         "shipTypeConstraints": [
           {
-            "label": "軽巡洋艦 1 隻以上",
+            "label": "軽巡洋艦 1〜2 隻（旗艦を含む）",
+            "maximum": 2,
             "minimum": 1,
             "shipTypeIds": [
               3
@@ -2716,11 +2740,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:6ad6cd8d63fe1f24e3eac16bd5b42f59e45741c37ed702a3e850ce0f430f0084",
-    "legacyKnowledgeDigest": "sha256:66cd7b95051a00d1856e8f83bd32a2a6966f2e50a28c8bfb45f5a8ae2c17d784",
-    "pilotAuthoringManifestDigest": "sha256:f3aeab4e18f696fd3cf5b24e2a3c39bba3de23ac2d12988daf69cfd75ae8a2fb",
+    "inventoryDigest": "sha256:2ade9374e4ece56064da183a0b4708dbfe5c2f2825788a1cc3b18db0648958ca",
+    "legacyKnowledgeDigest": "sha256:4e80dee72bc3db23e1ccb963faa87c852276db816918af2ac0d5f69241008b93",
+    "pilotAuthoringManifestDigest": "sha256:35c6748cb07d11a7f72cb1962c9f484a1ec8cc17d4f50b6f49f18ae31d40c658",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "99c4fdba990697d5fee706120801d8534e56cf14"
+    "repositoryCommit": "2ea4f9b1533f47daf862c20544ee1940eac8e040"
   },
-  "version": "2026-08-03.4.v2"
+  "version": "2026-08-03.5.v2"
 }

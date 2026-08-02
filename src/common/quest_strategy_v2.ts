@@ -11,6 +11,7 @@ import {
   type QuestStrategyInventoryObjectiveStage,
   type QuestStrategyObjectiveProjection
 } from '@common/quest_strategy_inventory'
+import { getQuestFleetCondition, type QuestFleetRule } from '@common/kcquest'
 
 export type QuestStrategyCoverageStatus =
   | 'route-ready'
@@ -95,6 +96,73 @@ function objectiveProjection(questId: number): QuestStrategyObjectiveProjection 
   }
 }
 
+function sameTypeIds(left: readonly number[], right: readonly number[]): boolean {
+  const sortedLeft = [...left].sort((a, b) => a - b)
+  const sortedRight = [...right].sort((a, b) => a - b)
+  return (
+    sortedLeft.length === sortedRight.length &&
+    sortedLeft.every((typeId, index) => typeId === sortedRight[index])
+  )
+}
+
+function recipeSatisfiesFleetRule(recipe: QuestStrategyRecipe, rule: QuestFleetRule): boolean {
+  switch (rule.kind) {
+    case 'ship-count':
+      return (
+        (rule.min === undefined || recipe.fleet.minimumShips >= rule.min) &&
+        (rule.exact === undefined ||
+          (recipe.fleet.minimumShips === rule.exact && recipe.fleet.maximumShips === rule.exact)) &&
+        (rule.maximum === undefined || recipe.fleet.maximumShips <= rule.maximum)
+      )
+    case 'flagship-type':
+      return (
+        rule.minimumLevel === undefined &&
+        !!recipe.fleet.flagshipTypeIds?.length &&
+        recipe.fleet.flagshipTypeIds.every((typeId) => new Set<number>(rule.types).has(typeId))
+      )
+    case 'ship-type-count': {
+      if (rule.minimumLevel !== undefined || rule.excludePositions !== undefined) {
+        return false
+      }
+      const constraint = recipe.fleet.shipTypeConstraints.find((item) =>
+        sameTypeIds(item.shipTypeIds, rule.types)
+      )
+      return (
+        constraint !== undefined &&
+        (rule.min === undefined || constraint.minimum >= rule.min) &&
+        (rule.exact === undefined ||
+          (constraint.minimum === rule.exact && constraint.maximum === rule.exact)) &&
+        (rule.maximum === undefined ||
+          (constraint.maximum !== undefined && constraint.maximum <= rule.maximum))
+      )
+    }
+    case 'allowed-ship-types':
+      return (
+        !!recipe.fleet.allowedShipTypeIds?.length &&
+        recipe.fleet.allowedShipTypeIds.every((typeId) =>
+          new Set<number>(rule.types).has(typeId)
+        ) &&
+        recipe.fleet.shipTypeConstraints.every((constraint) =>
+          constraint.shipTypeIds.every((typeId) => new Set<number>(rule.types).has(typeId))
+        )
+      )
+    default:
+      return false
+  }
+}
+
+function recipeHasMachineCompleteFleetConstraint(
+  recipe: QuestStrategyRecipe,
+  questId: number,
+  projection: QuestStrategyObjectiveProjection | undefined
+): boolean {
+  if (!projection || projection.fleetConstraint !== 'opaque') {
+    return projection !== undefined
+  }
+  const condition = getQuestFleetCondition(questId)
+  return !!condition && condition.rules.every((rule) => recipeSatisfiesFleetRule(recipe, rule))
+}
+
 function matchingStageIndexes(
   recipe: QuestStrategyRecipe,
   objective: StrategyQuestObjective,
@@ -129,7 +197,11 @@ export function auditQuestStrategyRecipeObjective(
 ): QuestStrategyRecipeObjectiveAudit {
   const projection = objectiveProjection(questId)
   const objective = recipe.objectives?.find((item) => item.questId === questId)
-  const machineConstraintComplete = projection?.fleetConstraint !== 'opaque'
+  const machineConstraintComplete = recipeHasMachineCompleteFleetConstraint(
+    recipe,
+    questId,
+    projection
+  )
   const stageIndexes = objective
     ? matchingStageIndexes(recipe, objective, projection?.objectiveStages ?? [])
     : []
