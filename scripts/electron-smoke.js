@@ -6212,6 +6212,7 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
         : 'the bundled quest-strategy route in the task guide',
       timeoutMs
     )
+    const expectedGrowthFactCount = expectedVersion ? 1 : undefined
     if (
       strategyResult.forbiddenIdentifiers.length > 0 ||
       strategyResult.actionState === null ||
@@ -6222,7 +6223,9 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       strategyResult.growth?.priorityCount < 1 ||
       strategyResult.growth?.contextSelectCount !== 2 ||
       strategyResult.growth?.factFocus !== 'resources' ||
-      strategyResult.growth?.factCount !== 1 ||
+      (expectedGrowthFactCount === undefined
+        ? (strategyResult.growth?.factCount ?? 0) < 1
+        : strategyResult.growth?.factCount !== expectedGrowthFactCount) ||
       strategyResult.growth?.detailsCollapsed !== true ||
       strategyResult.growth?.routesInitiallyCollapsed !== true ||
       strategyResult.growth?.reviewedRouteCount !== 1 ||

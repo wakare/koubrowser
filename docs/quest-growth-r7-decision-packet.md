@@ -50,6 +50,12 @@ R6 basis は次に固定する。
 に固定して 2026-08-02T02:07:16.639Z に承認した。残り3件は `not-authorized` のままであり、
 前段の承認は後段の承認へ自動変換しない。
 
+次の `r7-real-account-readonly-acceptance` は decision-only packet を
+[`quest-growth-r7-real-account-acceptance-decision-packet.md`](quest-growth-r7-real-account-acceptance-decision-packet.md)
+に固定した。semantic digest は
+`sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe` だが、gate と実行は
+まだ `not-authorized`、実アカウント受入は `not-run` である。
+
 ## 提案する output class
 
 - `reviewed-concrete-route`: exact revision と evidence digest に固定された具体的 route。

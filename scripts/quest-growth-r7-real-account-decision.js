@@ -1,0 +1,461 @@
+const { createHash } = require('node:crypto')
+const fs = require('node:fs')
+const path = require('node:path')
+
+const R7RealAccountDecisionCompilerVersion =
+  'quest-growth-r7-real-account-decision-compiler/1'
+const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
+const CommitPattern = /^[0-9a-f]{40}$/
+const DigestPattern = /^sha256:[0-9a-f]{64}$/
+const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
+const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+const FixedRendererSemanticDigest =
+  'sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363'
+const FocusByFamily = {
+  'expedition-resource-periodic-loop': 'resources',
+  'anti-submarine-foundation': 'asw'
+}
+const ExpectedOwnerActions = [
+  'close-normal-koubrowser-and-confirm-local-backup',
+  'enter-all-credentials-and-complete-authentication',
+  'click-game-start-once',
+  'confirm-the-five-visible-acceptance-statements'
+]
+const ExpectedAgentActions = [
+  'launch-the-fixed-commit-acceptance-harness',
+  'wait-for-owner-to-complete-login-and-game-start',
+  'inspect-rendered-route-dom-and-layout-metrics',
+  'emit-redacted-pass-fail-summary',
+  'restore-page-filter-panel-and-window-state'
+]
+const ExpectedPreflight = [
+  'fixed-commit-and-all-approval-basis-digests-match',
+  'typecheck-and-full-tests-pass',
+  'quest-growth-authoring-verify-passes',
+  'anonymous-signed-data-update-smoke-passes',
+  'protected-game-communication-files-match-fixed-digests',
+  'normal-koubrowser-is-closed-and-owner-confirms-backup'
+]
+const ExpectedChecks = [
+  'route-section-is-closed-before-explicit-owner-expand',
+  'resources-focus-shows-only-the-reviewed-resource-route',
+  'asw-focus-shows-only-the-reviewed-asw-route',
+  'route-content-matches-fixed-route-semantic-digests',
+  'manual-confirmation-labels-do-not-claim-current-readiness-or-success',
+  'missing-or-inapplicable-focus-keeps-the-existing-non-route-fallback',
+  'route-dom-and-redacted-summary-contain-no-account-identifiers-or-raw-payload',
+  'route-panel-has-no-horizontal-overflow-at-acceptance-window-sizes',
+  'existing-quest-guide-current-and-all-views-remain-available',
+  'route-expand-and-focus-selection-are-not-persisted-after-reopen',
+  'page-filter-panel-and-window-state-are-restored',
+  'no-game-action-or-game-communication-mutation-occurs'
+]
+const ExpectedAllowedOutput = [
+  'fixed-commit',
+  'knowledge-version',
+  'route-ids-and-semantic-digests',
+  'focus-and-route-counts',
+  'boolean-check-results',
+  'client-and-scroll-dimensions',
+  'redacted-error-codes',
+  'acceptance-started-at-and-completed-at'
+]
+const ExpectedForbiddenOutput = [
+  'credentials',
+  'cookies',
+  'api-token',
+  'member-id',
+  'admiral-name',
+  'server-id',
+  'ship-instance-id',
+  'equipment-instance-id',
+  'raw-api-payload',
+  'unredacted-dom',
+  'unredacted-screenshot',
+  'saved-account-snapshot'
+]
+const ExpectedAbortConditions = [
+  'agent-is-asked-to-handle-credentials-or-click-game-start',
+  'approval-basis-or-protected-file-digest-mismatch',
+  'route-is-expired-withdrawn-unreviewed-or-digest-mismatched',
+  'acceptance-requires-any-game-action-beyond-owner-game-start',
+  'unredacted-account-data-would-be-written-or-exported',
+  'page-filter-panel-or-window-state-cannot-be-restored',
+  'owner-cannot-observe-or-confirm-the-required-ui'
+]
+const ExpectedProhibited = [
+  'credential-handling-by-agent',
+  'agent-click-game-start',
+  'game-operation-after-game-start',
+  'game-communication-mutation',
+  'route-content-mutation',
+  'unredacted-account-evidence-retention',
+  'runtime-publication',
+  'default-enablement',
+  'other-route-family-acceptance'
+]
+const ProtectedPaths = [
+  'src/main/kcbrowser.ts',
+  'src/preload/xhr-hook.ts',
+  'src/common/kcsapi_hook.ts'
+]
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, item]) => [key, canonicalize(item)])
+    )
+  }
+  return value
+}
+
+function canonicalJson(value) {
+  return `${JSON.stringify(canonicalize(value), null, 2)}\n`
+}
+
+function digest(value) {
+  return `sha256:${createHash('sha256').update(value).digest('hex')}`
+}
+
+function exactKeys(value, required, description) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`invalid ${description}`)
+  }
+  const allowed = new Set(required)
+  for (const key of required) {
+    if (!(key in value)) throw new Error(`missing ${description} ${key}`)
+  }
+  for (const key of Object.keys(value)) {
+    if (!allowed.has(key)) throw new Error(`unexpected ${description} ${key}`)
+  }
+}
+
+function same(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right)
+}
+
+function identifier(value, description) {
+  if (typeof value !== 'string' || !IdentifierPattern.test(value)) {
+    throw new Error(`invalid ${description}`)
+  }
+  return value
+}
+
+function timestamp(value, description) {
+  if (
+    typeof value !== 'string' ||
+    !TimestampPattern.test(value) ||
+    !Number.isFinite(Date.parse(value))
+  ) {
+    throw new Error(`invalid ${description}`)
+  }
+  return value
+}
+
+function realAccountRequestSemanticDigest(value) {
+  const payload = Object.fromEntries(
+    Object.entries(value).filter(([key]) => key !== 'status' && key !== 'review')
+  )
+  return digest(
+    canonicalJson({
+      ...payload,
+      requestedAuthorization: Object.fromEntries(
+        Object.entries(payload.requestedAuthorization).filter(
+          ([key]) => !['authorizationState', 'executionAuthorization'].includes(key)
+        )
+      )
+    })
+  )
+}
+
+function validateR7RealAccountAcceptanceRequest(
+  value,
+  { root, base, r7AuthorizationReport, r7RendererReport }
+) {
+  exactKeys(
+    value,
+    [
+      'authoringSchema',
+      'requestId',
+      'revision',
+      'status',
+      'scope',
+      'sourceSnapshot',
+      'approvalBasis',
+      'requestedAuthorization',
+      'routeBindings',
+      'ownerOnlyActions',
+      'agentReadOnlyActions',
+      'preflightRequirements',
+      'requiredChecks',
+      'evidenceContract',
+      'restoreContract',
+      'abortConditions',
+      'executionBoundary',
+      'stillProhibited',
+      'review'
+    ],
+    'R7 real-account acceptance request'
+  )
+  if (
+    value.authoringSchema !== 'QuestGrowthR7RealAccountAcceptanceRequest/1alpha' ||
+    value.requestId !== 'decision:quest-growth-r7-real-account-readonly-acceptance' ||
+    value.revision !== 1 ||
+    value.status !== 'draft' ||
+    value.scope !== 'R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY'
+  ) {
+    throw new Error('R7 real-account request must remain a draft acceptance-only decision')
+  }
+  exactKeys(value.sourceSnapshot, ['auditedBaseCommit', 'checkedAt'], 'R7 real-account snapshot')
+  if (!CommitPattern.test(value.sourceSnapshot.auditedBaseCommit)) {
+    throw new Error('invalid R7 real-account audited commit')
+  }
+  timestamp(value.sourceSnapshot.checkedAt, 'R7 real-account checkedAt')
+
+  const authorizationRaw = fs.readFileSync(
+    path.join(base, 'decisions', 'r7-authorization-request.json')
+  )
+  const realAccountGate = r7AuthorizationReport.authorizationGates.find(
+    (gate) => gate.gateId === 'r7-real-account-readonly-acceptance'
+  )
+  const expectedBasis = {
+    realAccountGateSemanticDigest: realAccountGate?.semanticDigest,
+    authorizationRequestDigest: digest(authorizationRaw),
+    rendererDecisionSemanticDigest: r7RendererReport.semanticDigest,
+    rendererDecisionRequestDigest: r7RendererReport.requestDigest,
+    routeCatalogDigest: digest(fs.readFileSync(path.join(base, 'r7', 'route-catalog.json'))),
+    routeSelectorDigest: digest(
+      fs.readFileSync(path.join(root, 'src', 'common', 'quest_growth_reviewed_routes.ts'))
+    ),
+    growthComponentDigest: digest(
+      fs.readFileSync(
+        path.join(root, 'src', 'renderer', 'src', 'components', 'QuestGrowthCheck.vue')
+      )
+    ),
+    questGuideDigest: digest(
+      fs.readFileSync(path.join(root, 'src', 'renderer', 'src', 'components', 'QuestGuide.vue'))
+    ),
+    smokeHarnessDigest: digest(fs.readFileSync(path.join(root, 'scripts', 'electron-smoke.js'))),
+    protectedCommunicationDigests: Object.fromEntries(
+      ProtectedPaths.map((item) => [item, digest(fs.readFileSync(path.join(root, ...item.split('/'))))])
+    )
+  }
+  exactKeys(value.approvalBasis, Object.keys(expectedBasis), 'R7 real-account approval basis')
+  exactKeys(
+    value.approvalBasis.protectedCommunicationDigests,
+    ProtectedPaths,
+    'R7 protected communication digests'
+  )
+  for (const [key, item] of Object.entries(value.approvalBasis)) {
+    if (key === 'protectedCommunicationDigests') {
+      for (const protectedDigest of Object.values(item)) {
+        if (!DigestPattern.test(protectedDigest)) {
+          throw new Error('invalid R7 protected communication digest')
+        }
+      }
+    } else if (!DigestPattern.test(item)) {
+      throw new Error(`invalid R7 real-account basis ${key}`)
+    }
+  }
+  if (!same(value.approvalBasis, expectedBasis)) {
+    throw new Error('R7 real-account approval basis mismatch')
+  }
+  if (
+    realAccountGate?.authorizationState !== 'not-authorized' ||
+    r7RendererReport.status !== 'RENDERER_OPT_IN_INTEGRATION_AUTHORIZED' ||
+    r7RendererReport.semanticDigest !== FixedRendererSemanticDigest ||
+    r7RendererReport.authorizationState !== 'authorized' ||
+    r7RendererReport.rendererEligibleRouteCount !== 2 ||
+    r7RendererReport.realAccountAcceptanceAuthorization !== 'R7_NOT_AUTHORIZED' ||
+    r7RendererReport.runtimeEligibleCount !== 0 ||
+    r7RendererReport.publicationAuthorization !== 'R7_NOT_AUTHORIZED'
+  ) {
+    throw new Error('R7 real-account prerequisites are invalid')
+  }
+
+  exactKeys(
+    value.requestedAuthorization,
+    [
+      'gateId',
+      'authorizationState',
+      'executionAuthorization',
+      'maximumAcceptedRoutes',
+      'acceptanceMode'
+    ],
+    'R7 real-account requested authorization'
+  )
+  if (
+    value.requestedAuthorization.gateId !== 'r7-real-account-readonly-acceptance' ||
+    value.requestedAuthorization.authorizationState !== 'owner-decision-required' ||
+    value.requestedAuthorization.executionAuthorization !== 'not-authorized' ||
+    value.requestedAuthorization.maximumAcceptedRoutes !== 2 ||
+    value.requestedAuthorization.acceptanceMode !== 'owner-login-readonly-redacted'
+  ) {
+    throw new Error('R7 real-account requested authorization mismatch')
+  }
+
+  if (!Array.isArray(value.routeBindings) || value.routeBindings.length !== 2) {
+    throw new Error('R7 real-account route binding count mismatch')
+  }
+  for (const [index, binding] of value.routeBindings.entries()) {
+    exactKeys(
+      binding,
+      ['routeId', 'routeFamily', 'routeRevision', 'routeSemanticDigest', 'focus'],
+      `R7 real-account route binding ${index}`
+    )
+    const rendererBinding = r7RendererReport.routeBindings[index]
+    const expected = {
+      routeId: rendererBinding.routeId,
+      routeFamily: rendererBinding.routeFamily,
+      routeRevision: rendererBinding.routeRevision,
+      routeSemanticDigest: rendererBinding.routeSemanticDigest,
+      focus: FocusByFamily[rendererBinding.routeFamily]
+    }
+    if (!same(binding, expected)) throw new Error(`R7 real-account route binding mismatch ${index}`)
+  }
+
+  if (
+    !same(value.ownerOnlyActions, ExpectedOwnerActions) ||
+    !same(value.agentReadOnlyActions, ExpectedAgentActions) ||
+    !same(value.preflightRequirements, ExpectedPreflight) ||
+    !same(value.requiredChecks, ExpectedChecks)
+  ) {
+    throw new Error('R7 real-account acceptance procedure mismatch')
+  }
+  exactKeys(
+    value.evidenceContract,
+    [
+      'allowedOutput',
+      'forbiddenOutput',
+      'screenshotCaptureAllowed',
+      'rawLogRetentionAllowed',
+      'accountDataExportAllowed'
+    ],
+    'R7 real-account evidence contract'
+  )
+  if (
+    !same(value.evidenceContract.allowedOutput, ExpectedAllowedOutput) ||
+    !same(value.evidenceContract.forbiddenOutput, ExpectedForbiddenOutput) ||
+    value.evidenceContract.screenshotCaptureAllowed !== false ||
+    value.evidenceContract.rawLogRetentionAllowed !== false ||
+    value.evidenceContract.accountDataExportAllowed !== false
+  ) {
+    throw new Error('R7 real-account evidence contract mismatch')
+  }
+  exactKeys(
+    value.restoreContract,
+    [
+      'restoreQuestFilter',
+      'restoreWorkspacePage',
+      'restorePanelVisibility',
+      'restoreWindowBounds',
+      'restoreRouteSectionClosed',
+      'gameStateMutationToRestoreAllowed'
+    ],
+    'R7 real-account restore contract'
+  )
+  if (
+    value.restoreContract.restoreQuestFilter !== true ||
+    value.restoreContract.restoreWorkspacePage !== true ||
+    value.restoreContract.restorePanelVisibility !== true ||
+    value.restoreContract.restoreWindowBounds !== true ||
+    value.restoreContract.restoreRouteSectionClosed !== true ||
+    value.restoreContract.gameStateMutationToRestoreAllowed !== false
+  ) {
+    throw new Error('R7 real-account restore contract mismatch')
+  }
+  if (!same(value.abortConditions, ExpectedAbortConditions)) {
+    throw new Error('R7 real-account abort policy mismatch')
+  }
+  exactKeys(
+    value.executionBoundary,
+    [
+      'productionCodeChangesAuthorized',
+      'routeContentChangesAuthorized',
+      'mainOrPreloadChangesAuthorized',
+      'gameCommunicationChangesAuthorized',
+      'automaticGameOperationAuthorized',
+      'runtimePublicationAuthorized',
+      'defaultEnablementAuthorized',
+      'otherRouteFamiliesAuthorized'
+    ],
+    'R7 real-account execution boundary'
+  )
+  if (Object.values(value.executionBoundary).some((item) => item !== false)) {
+    throw new Error('R7 real-account execution boundary must remain read-only')
+  }
+  if (!same(value.stillProhibited, ExpectedProhibited)) {
+    throw new Error('R7 real-account prohibited behavior mismatch')
+  }
+  exactKeys(value.review, ['author', 'approver', 'reviewedAt', 'approvalDigest'], 'R7 real-account review')
+  identifier(value.review.author, 'R7 real-account packet author')
+  if (
+    value.review.approver !== null ||
+    value.review.reviewedAt !== null ||
+    value.review.approvalDigest !== null
+  ) {
+    throw new Error('draft R7 real-account packet must not claim approval')
+  }
+  return { value, semanticDigest: realAccountRequestSemanticDigest(value) }
+}
+
+function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport, r7RendererReport }) {
+  const requestPath = path.join(base, 'decisions', 'r7-real-account-acceptance-request.json')
+  const requestRaw = fs.readFileSync(requestPath)
+  const request = validateR7RealAccountAcceptanceRequest(JSON.parse(requestRaw), {
+    root,
+    base,
+    r7AuthorizationReport,
+    r7RendererReport
+  })
+  const report = {
+    schemaVersion: 1,
+    compilerVersion: R7RealAccountDecisionCompilerVersion,
+    generatedAt: request.value.sourceSnapshot.checkedAt,
+    status: 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE',
+    scope: request.value.scope,
+    requestId: request.value.requestId,
+    revision: request.value.revision,
+    requestDigest: digest(requestRaw),
+    semanticDigest: request.semanticDigest,
+    gateId: request.value.requestedAuthorization.gateId,
+    gateSemanticDigest: request.value.approvalBasis.realAccountGateSemanticDigest,
+    authorizationState: 'not-authorized',
+    executionAuthorization: 'not-authorized',
+    acceptanceMode: request.value.requestedAuthorization.acceptanceMode,
+    maximumAcceptedRoutes: request.value.requestedAuthorization.maximumAcceptedRoutes,
+    routeBindings: request.value.routeBindings,
+    ownerOnlyActionCount: request.value.ownerOnlyActions.length,
+    agentReadOnlyActionCount: request.value.agentReadOnlyActions.length,
+    preflightRequirementCount: request.value.preflightRequirements.length,
+    requiredCheckCount: request.value.requiredChecks.length,
+    screenshotCaptureAllowed: false,
+    rawLogRetentionAllowed: false,
+    accountDataExportAllowed: false,
+    protectedCommunicationDigests: request.value.approvalBasis.protectedCommunicationDigests,
+    actualAcceptanceStatus: 'not-run',
+    stillProhibited: request.value.stillProhibited,
+    runtimeEligibleCount: 0,
+    publicationAuthorization: 'R7_NOT_AUTHORIZED',
+    defaultEnablementAuthorization: 'R7_NOT_AUTHORIZED'
+  }
+  return {
+    artifacts: { 'r7-real-account-acceptance-report.json': report },
+    source: { r7RealAccountAcceptanceRequestDigest: digest(requestRaw) },
+    output: {
+      r7RealAccountAcceptanceRouteCount: report.routeBindings.length,
+      r7RealAccountAcceptanceRequiredCheckCount: report.requiredCheckCount,
+      r7RealAccountAcceptanceAuthorizedRouteCount: 0
+    }
+  }
+}
+
+module.exports = {
+  R7RealAccountDecisionOutputFilenames,
+  buildR7RealAccountDecisionArtifacts,
+  realAccountRequestSemanticDigest,
+  validateR7RealAccountAcceptanceRequest
+}

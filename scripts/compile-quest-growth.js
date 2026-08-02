@@ -19,8 +19,12 @@ const {
   R7RendererDecisionOutputFilenames,
   buildR7RendererDecisionArtifacts
 } = require('./quest-growth-r7-renderer-decision')
+const {
+  R7RealAccountDecisionOutputFilenames,
+  buildR7RealAccountDecisionArtifacts
+} = require('./quest-growth-r7-real-account-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/18'
+const CompilerVersion = 'quest-growth-authoring-compiler/19'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -32,7 +36,8 @@ const OutputFilenames = [
   ...R7SchemaOutputFilenames,
   ...R7ContentDecisionOutputFilenames,
   ...R7RouteReviewDecisionOutputFilenames,
-  ...R7RendererDecisionOutputFilenames
+  ...R7RendererDecisionOutputFilenames,
+  ...R7RealAccountDecisionOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -858,6 +863,12 @@ function buildQuestGrowthArtifacts(root) {
     r7RouteReviewReport:
       r7RouteReviewDecision.artifacts['r7-pilot-route-review-report.json']
   })
+  const r7RealAccountDecision = buildR7RealAccountDecisionArtifacts({
+    root,
+    base,
+    r7AuthorizationReport: r7Decision.artifacts['r7-authorization-report.json'],
+    r7RendererReport: r7RendererDecision.artifacts['r7-renderer-integration-report.json']
+  })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -910,6 +921,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r7ContentDecision.source,
       ...r7RouteReviewDecision.source,
       ...r7RendererDecision.source,
+      ...r7RealAccountDecision.source,
       fixtureDigests
     },
     output: {
@@ -948,7 +960,8 @@ function buildQuestGrowthArtifacts(root) {
       ...r7Schema.output,
       ...r7ContentDecision.output,
       ...r7RouteReviewDecision.output,
-      ...r7RendererDecision.output
+      ...r7RendererDecision.output,
+      ...r7RealAccountDecision.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -998,7 +1011,7 @@ function buildQuestGrowthArtifacts(root) {
       ...([...decisionRubrics.rubrics.values()].some((item) => item.status !== 'approved')
         ? ['DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED']
         : []),
-      'R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED'
+      'R7_REAL_ACCOUNT_ACCEPTANCE_NOT_AUTHORIZED'
     ]
   }
   return {
@@ -1009,7 +1022,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7Schema.artifacts,
     ...r7ContentDecision.artifacts,
     ...r7RouteReviewDecision.artifacts,
-    ...r7RendererDecision.artifacts
+    ...r7RendererDecision.artifacts,
+    ...r7RealAccountDecision.artifacts
   }
 }
 

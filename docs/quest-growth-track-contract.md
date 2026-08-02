@@ -236,6 +236,11 @@ decision packet を
 に固定して実装した。renderer eligible route count は2件だが、実アカウント受入と runtime eligible count は
 引き続き0件に保つ。
 
+実アカウント只読受入の権限分離、脱敏 evidence、abort / restore 条件は
+[`quest-growth-r7-real-account-acceptance-decision-packet.md`](quest-growth-r7-real-account-acceptance-decision-packet.md)
+に固定した。decision packet の作成は受入実行の承認を意味せず、現在の status は
+`OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE`、actual acceptance は `not-run` である。
+
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)

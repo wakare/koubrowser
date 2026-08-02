@@ -1,0 +1,60 @@
+{
+  "acceptanceMode": "owner-login-readonly-redacted",
+  "accountDataExportAllowed": false,
+  "actualAcceptanceStatus": "not-run",
+  "agentReadOnlyActionCount": 5,
+  "authorizationState": "not-authorized",
+  "compilerVersion": "quest-growth-r7-real-account-decision-compiler/1",
+  "defaultEnablementAuthorization": "R7_NOT_AUTHORIZED",
+  "executionAuthorization": "not-authorized",
+  "gateId": "r7-real-account-readonly-acceptance",
+  "gateSemanticDigest": "sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb",
+  "generatedAt": "2026-08-02T02:34:14.905Z",
+  "maximumAcceptedRoutes": 2,
+  "ownerOnlyActionCount": 4,
+  "preflightRequirementCount": 6,
+  "protectedCommunicationDigests": {
+    "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e",
+    "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+    "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502"
+  },
+  "publicationAuthorization": "R7_NOT_AUTHORIZED",
+  "rawLogRetentionAllowed": false,
+  "requestDigest": "sha256:9898f9b616405d96cb066450d504d07dcb6ddca3533b6fb5efffe4c681545245",
+  "requestId": "decision:quest-growth-r7-real-account-readonly-acceptance",
+  "requiredCheckCount": 12,
+  "revision": 1,
+  "routeBindings": [
+    {
+      "focus": "resources",
+      "routeFamily": "expedition-resource-periodic-loop",
+      "routeId": "route:expedition-05-resource-loop:draft-1",
+      "routeRevision": 1,
+      "routeSemanticDigest": "sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a"
+    },
+    {
+      "focus": "asw",
+      "routeFamily": "anti-submarine-foundation",
+      "routeId": "route:1-5-basic-asw-three-battle:draft-1",
+      "routeRevision": 1,
+      "routeSemanticDigest": "sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d"
+    }
+  ],
+  "runtimeEligibleCount": 0,
+  "schemaVersion": 1,
+  "scope": "R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY",
+  "screenshotCaptureAllowed": false,
+  "semanticDigest": "sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe",
+  "status": "OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE",
+  "stillProhibited": [
+    "credential-handling-by-agent",
+    "agent-click-game-start",
+    "game-operation-after-game-start",
+    "game-communication-mutation",
+    "route-content-mutation",
+    "unredacted-account-evidence-retention",
+    "runtime-publication",
+    "default-enablement",
+    "other-route-family-acceptance"
+  ]
+}

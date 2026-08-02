@@ -108,6 +108,21 @@ const { rendererRequestSemanticDigest, validateR7RendererIntegrationRequest } = 
     }
   ) => { semanticDigest: string }
 }
+const {
+  realAccountRequestSemanticDigest,
+  validateR7RealAccountAcceptanceRequest
+} = require('../../../scripts/quest-growth-r7-real-account-decision.js') as {
+  realAccountRequestSemanticDigest: (value: Record<string, unknown>) => string
+  validateR7RealAccountAcceptanceRequest: (
+    value: Record<string, unknown>,
+    dependencies: {
+      root: string
+      base: string
+      r7AuthorizationReport: Record<string, unknown>
+      r7RendererReport: Record<string, unknown>
+    }
+  ) => { semanticDigest: string }
+}
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -174,7 +189,7 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
-    expect(report.globalStops).toContain('R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED')
+    expect(report.globalStops).toContain('R7_REAL_ACCOUNT_ACCEPTANCE_NOT_AUTHORIZED')
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
@@ -703,6 +718,96 @@ describe('quest growth authoring contract', () => {
 
     expect(rendererRequestSemanticDigest(pending)).toBe(
       rendererRequestSemanticDigest(request)
+    )
+  })
+
+  it('generates a bounded unapproved real-account acceptance decision', () => {
+    const report = read<{
+      status: string
+      semanticDigest: string
+      authorizationState: string
+      executionAuthorization: string
+      acceptanceMode: string
+      maximumAcceptedRoutes: number
+      requiredCheckCount: number
+      actualAcceptanceStatus: string
+      screenshotCaptureAllowed: boolean
+      rawLogRetentionAllowed: boolean
+      accountDataExportAllowed: boolean
+      runtimeEligibleCount: number
+      publicationAuthorization: string
+      defaultEnablementAuthorization: string
+      routeBindings: { focus: string }[]
+    }>('generated', 'r7-real-account-acceptance-report.json')
+
+    expect(report.status).toBe('OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE')
+    expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(report.authorizationState).toBe('not-authorized')
+    expect(report.executionAuthorization).toBe('not-authorized')
+    expect(report.acceptanceMode).toBe('owner-login-readonly-redacted')
+    expect(report.maximumAcceptedRoutes).toBe(2)
+    expect(report.requiredCheckCount).toBe(12)
+    expect(report.actualAcceptanceStatus).toBe('not-run')
+    expect(report.screenshotCaptureAllowed).toBe(false)
+    expect(report.rawLogRetentionAllowed).toBe(false)
+    expect(report.accountDataExportAllowed).toBe(false)
+    expect(report.runtimeEligibleCount).toBe(0)
+    expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.defaultEnablementAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.routeBindings.map((item) => item.focus)).toEqual(['resources', 'asw'])
+  })
+
+  it('fails closed when real-account evidence capture is widened', () => {
+    const request = read<
+      Record<string, unknown> & { evidenceContract: { screenshotCaptureAllowed: boolean } }
+    >('decisions', 'r7-real-account-acceptance-request.json')
+    const tampered = structuredClone(request)
+    tampered.evidenceContract.screenshotCaptureAllowed = true
+
+    expect(realAccountRequestSemanticDigest(tampered)).not.toBe(
+      realAccountRequestSemanticDigest(request)
+    )
+    expect(() =>
+      validateR7RealAccountAcceptanceRequest(tampered, {
+        root: process.cwd(),
+        base: GrowthDirectory,
+        r7AuthorizationReport: read<Record<string, unknown>>(
+          'generated',
+          'r7-authorization-report.json'
+        ),
+        r7RendererReport: read<Record<string, unknown>>(
+          'generated',
+          'r7-renderer-integration-report.json'
+        )
+      })
+    ).toThrow('R7 real-account evidence contract mismatch')
+  })
+
+  it('keeps the real-account request digest stable across approval metadata only', () => {
+    const request = read<
+      Record<string, unknown> & {
+        status: string
+        requestedAuthorization: {
+          authorizationState: string
+          executionAuthorization: string
+        }
+        review: {
+          approver: string | null
+          reviewedAt: string | null
+          approvalDigest: string | null
+        }
+      }
+    >('decisions', 'r7-real-account-acceptance-request.json')
+    const approved = structuredClone(request)
+    approved.status = 'approved'
+    approved.requestedAuthorization.authorizationState = 'authorized'
+    approved.requestedAuthorization.executionAuthorization = 'authorized'
+    approved.review.approver = 'project-owner'
+    approved.review.reviewedAt = '2026-08-02T03:00:00.000Z'
+    approved.review.approvalDigest = realAccountRequestSemanticDigest(request)
+
+    expect(realAccountRequestSemanticDigest(approved)).toBe(
+      realAccountRequestSemanticDigest(request)
     )
   })
 
