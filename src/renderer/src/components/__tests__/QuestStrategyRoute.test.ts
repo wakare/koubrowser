@@ -43,7 +43,7 @@ describe('QuestStrategyRoute.vue', () => {
     const wrapper = mount(QuestStrategyRoute, {
       props: {
         recommendations,
-        availableMapKeys: new Set(['1-4', '1-5', '4-2']),
+        availableMapKeys: new Set(['1-2', '1-3', '1-4', '1-5', '2-1', '2-2', '2-3', '4-2']),
         mapDataAvailable: true,
         activeQuestCount: 1,
         questCapacity: 5,
@@ -81,6 +81,23 @@ describe('QuestStrategyRoute.vue', () => {
     expect(wrapper.get('.quest-strategy-hero').text()).toContain('"map":"4-2"')
     expect(localStorage.getItem('questStrategyRouteSelection:v1')).toBeNull()
     expect(localStorage.getItem('questStrategyRouteSelection:v2')).toBeNull()
+  })
+
+  it('renders the complete five-map default bundle for compatible southwest tasks', async () => {
+    const wrapper = await render([
+      recommendation(226, 'active'),
+      recommendation(284, 'active'),
+      recommendation(894, 'active')
+    ])
+
+    expect(wrapper.get('.quest-strategy-hero').text()).toContain('"map":"2-1"')
+    expect(wrapper.find('.quest-strategy-zero-ready').exists()).toBe(false)
+    expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(5)
+    const routeText = wrapper.findAll('.quest-strategy-step').map((step) => step.text())
+    for (const mapKey of ['1-3', '1-4', '2-1', '2-2', '2-3']) {
+      expect(routeText.some((text) => text.includes(`"map":"${mapKey}"`))).toBe(true)
+    }
+    expect(wrapper.get('.quest-strategy-summary').text()).not.toContain('quest.strategy.uncovered')
   })
 
   it('persists an explicit partial-route choice only after manual interaction', async () => {
