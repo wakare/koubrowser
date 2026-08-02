@@ -15,8 +15,12 @@ const {
   R7RouteReviewDecisionOutputFilenames,
   buildR7RouteReviewDecisionArtifacts
 } = require('./quest-growth-r7-route-review-decision')
+const {
+  R7RendererDecisionOutputFilenames,
+  buildR7RendererDecisionArtifacts
+} = require('./quest-growth-r7-renderer-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/16'
+const CompilerVersion = 'quest-growth-authoring-compiler/17'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -27,7 +31,8 @@ const OutputFilenames = [
   ...R7DecisionOutputFilenames,
   ...R7SchemaOutputFilenames,
   ...R7ContentDecisionOutputFilenames,
-  ...R7RouteReviewDecisionOutputFilenames
+  ...R7RouteReviewDecisionOutputFilenames,
+  ...R7RendererDecisionOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -845,6 +850,14 @@ function buildQuestGrowthArtifacts(root) {
       r7ContentDecision.artifacts['r7-pilot-content-authorization-report.json'],
     r7SchemaReport: r7Schema.artifacts['r7-schema-validation-report.json']
   })
+  const r7RendererDecision = buildR7RendererDecisionArtifacts({
+    root,
+    base,
+    r7AuthorizationReport: r7Decision.artifacts['r7-authorization-report.json'],
+    r7SchemaReport: r7Schema.artifacts['r7-schema-validation-report.json'],
+    r7RouteReviewReport:
+      r7RouteReviewDecision.artifacts['r7-pilot-route-review-report.json']
+  })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -896,6 +909,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r7Schema.source,
       ...r7ContentDecision.source,
       ...r7RouteReviewDecision.source,
+      ...r7RendererDecision.source,
       fixtureDigests
     },
     output: {
@@ -933,7 +947,8 @@ function buildQuestGrowthArtifacts(root) {
       ...r7Decision.output,
       ...r7Schema.output,
       ...r7ContentDecision.output,
-      ...r7RouteReviewDecision.output
+      ...r7RouteReviewDecision.output,
+      ...r7RendererDecision.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -991,7 +1006,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7Decision.artifacts,
     ...r7Schema.artifacts,
     ...r7ContentDecision.artifacts,
-    ...r7RouteReviewDecision.artifacts
+    ...r7RouteReviewDecision.artifacts,
+    ...r7RendererDecision.artifacts
   }
 }
 

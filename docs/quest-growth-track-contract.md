@@ -228,6 +228,12 @@ semantic digest は
 [`quest-growth-r7-route-review-decision-packet.md`](quest-growth-r7-route-review-decision-packet.md)
 に固定し、reviewed route count は2件、runtime eligible count は0件に保つ。
 
+次の `r7-renderer-opt-in-integration` は未承認である。既存 `QuestGrowthCheck.vue` 内の初期状態で
+閉じた section、session-only、focus 別2 route、manual-check 表示、synthetic fixture だけに限定した
+decision packet を
+[`quest-growth-r7-renderer-decision-packet.md`](quest-growth-r7-renderer-decision-packet.md)
+に固定した。owner 承認までは renderer eligible route count を0件に保つ。
+
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)

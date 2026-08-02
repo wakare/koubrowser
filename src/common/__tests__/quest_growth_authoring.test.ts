@@ -95,6 +95,19 @@ const {
     }
   ) => { semanticDigest: string }
 }
+const { rendererRequestSemanticDigest, validateR7RendererIntegrationRequest } = require('../../../scripts/quest-growth-r7-renderer-decision.js') as {
+  rendererRequestSemanticDigest: (value: Record<string, unknown>) => string
+  validateR7RendererIntegrationRequest: (
+    value: Record<string, unknown>,
+    dependencies: {
+      root: string
+      base: string
+      r7AuthorizationReport: Record<string, unknown>
+      r7SchemaReport: Record<string, unknown>
+      r7RouteReviewReport: Record<string, unknown>
+    }
+  ) => { semanticDigest: string }
+}
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -588,6 +601,101 @@ describe('quest growth authoring contract', () => {
 
     expect(routeReviewRequestSemanticDigest(pending)).toBe(
       routeReviewRequestSemanticDigest(request)
+    )
+  })
+
+  it('generates a bounded unapproved renderer integration decision for two reviewed routes', () => {
+    const report = read<{
+      status: string
+      semanticDigest: string
+      authorizationState: string
+      implementationAuthorization: string
+      integrationMode: string
+      maximumDisplayedRoutes: number
+      reviewedRouteCount: number
+      rendererEligibleRouteCount: number
+      runtimeEligibleCount: number
+      publicationAuthorization: string
+      routeBindings: { focus: string; presentationClass: string }[]
+      optIn: { defaultVisible: boolean; selectionPersistence: string; focusRequired: boolean }
+    }>('generated', 'r7-renderer-integration-report.json')
+
+    expect(report.status).toBe('OWNER_DECISION_REQUIRED_RENDERER_INTEGRATION')
+    expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(report.authorizationState).toBe('not-authorized')
+    expect(report.implementationAuthorization).toBe('not-authorized')
+    expect(report.integrationMode).toBe('session-only-explicit-expand')
+    expect(report.maximumDisplayedRoutes).toBe(2)
+    expect(report.reviewedRouteCount).toBe(2)
+    expect(report.rendererEligibleRouteCount).toBe(0)
+    expect(report.runtimeEligibleCount).toBe(0)
+    expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.optIn).toMatchObject({
+      defaultVisible: false,
+      selectionPersistence: 'none',
+      focusRequired: true
+    })
+    expect(report.routeBindings).toEqual([
+      expect.objectContaining({ focus: 'resources', presentationClass: 'manual-check-route' }),
+      expect.objectContaining({ focus: 'asw', presentationClass: 'manual-check-route' })
+    ])
+  })
+
+  it('fails closed when the renderer opt-in contract is widened', () => {
+    const request = read<
+      Record<string, unknown> & { rendererContract: { defaultVisible: boolean } }
+    >('decisions', 'r7-renderer-integration-request.json')
+    const tampered = structuredClone(request)
+    tampered.rendererContract.defaultVisible = true
+
+    expect(rendererRequestSemanticDigest(tampered)).not.toBe(
+      rendererRequestSemanticDigest(request)
+    )
+    expect(() =>
+      validateR7RendererIntegrationRequest(tampered, {
+        root: process.cwd(),
+        base: GrowthDirectory,
+        r7AuthorizationReport: read<Record<string, unknown>>(
+          'generated',
+          'r7-authorization-report.json'
+        ),
+        r7SchemaReport: read<Record<string, unknown>>(
+          'generated',
+          'r7-schema-validation-report.json'
+        ),
+        r7RouteReviewReport: read<Record<string, unknown>>(
+          'generated',
+          'r7-pilot-route-review-report.json'
+        )
+      })
+    ).toThrow('R7 renderer display contract mismatch')
+  })
+
+  it('keeps the renderer request digest stable across approval metadata only', () => {
+    const request = read<
+      Record<string, unknown> & {
+        status: string
+        requestedAuthorization: {
+          authorizationState: string
+          implementationAuthorization: string
+        }
+        review: {
+          approver: string | null
+          reviewedAt: string | null
+          approvalDigest: string | null
+        }
+      }
+    >('decisions', 'r7-renderer-integration-request.json')
+    const approved = structuredClone(request)
+    approved.status = 'approved'
+    approved.requestedAuthorization.authorizationState = 'authorized'
+    approved.requestedAuthorization.implementationAuthorization = 'authorized'
+    approved.review.approver = 'project-owner'
+    approved.review.reviewedAt = '2026-08-02T02:00:00.000Z'
+    approved.review.approvalDigest = rendererRequestSemanticDigest(request)
+
+    expect(rendererRequestSemanticDigest(approved)).toBe(
+      rendererRequestSemanticDigest(request)
     )
   })
 

@@ -1,0 +1,143 @@
+{
+  "authoringSchema": "QuestGrowthR7RendererIntegrationRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-renderer-opt-in-integration",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_RENDERER_OPT_IN_INTEGRATION_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "356c51cf24c9e8e986ab1af8b62de4603016576c",
+    "checkedAt": "2026-08-02T01:51:01.162Z"
+  },
+  "approvalBasis": {
+    "rendererGateSemanticDigest": "sha256:c2f7ce617eaaf00bb8aded393734af42bbe75a8d3a9480ea31f4b31a7f1f6be3",
+    "authorizationRequestDigest": "sha256:4ed44099a4a4f3e090748c1f1d98f66a338f96293660ebc8d4d6f887bb85c10a",
+    "routeReviewSemanticDigest": "sha256:7a3ef3fc63abbad4db8ed8d3368e9f6279a40f279363600c5e97c1d00d7631c3",
+    "routeReviewRequestDigest": "sha256:fcf0710d84e65579de441443ea171751c4623e3dd18f410e5903291d166cf308",
+    "routeCatalogDigest": "sha256:cc2c83195c01c846ba3da89d2731264081e1374b74a190f046f75f9d59e776a4",
+    "routeSchemaDigest": "sha256:660baa094b6a493a12de1bcedb26d26e455f8ee2c4a4dc6e8b9f08de58835b68",
+    "growthComponentDigest": "sha256:95d21b4ea74672f7d3532f82a875bf48ae61438270470f4f95632b47d32a3165",
+    "growthSnapshotDigest": "sha256:ea612f3c31f042f4b6c4d979b099007a517330a511ac29b97aee220681ef7f8c",
+    "questGuideDigest": "sha256:7c375bc9d1fa537ef42a7cfc5599acf5ce4a36273ac0cccf81470271aef75660"
+  },
+  "requestedAuthorization": {
+    "gateId": "r7-renderer-opt-in-integration",
+    "authorizationState": "owner-decision-required",
+    "maximumDisplayedRoutes": 2,
+    "integrationMode": "session-only-explicit-expand",
+    "implementationAuthorization": "not-authorized"
+  },
+  "routeBindings": [
+    {
+      "routeId": "route:expedition-05-resource-loop:draft-1",
+      "routeFamily": "expedition-resource-periodic-loop",
+      "routeRevision": 1,
+      "routeSemanticDigest": "sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a",
+      "focus": "resources",
+      "presentationClass": "manual-check-route"
+    },
+    {
+      "routeId": "route:1-5-basic-asw-three-battle:draft-1",
+      "routeFamily": "anti-submarine-foundation",
+      "routeRevision": 1,
+      "routeSemanticDigest": "sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d",
+      "focus": "asw",
+      "presentationClass": "manual-check-route"
+    }
+  ],
+  "rendererContract": {
+    "targetComponent": "src/renderer/src/components/QuestGrowthCheck.vue",
+    "defaultVisible": false,
+    "activation": "explicit-details-open",
+    "selectionPersistence": "none",
+    "focusRequired": true,
+    "allowedDisplaySections": [
+      "title",
+      "summary",
+      "applicability-checklist",
+      "fleet-and-equipment-constraints",
+      "branch-conditions",
+      "manual-instructions",
+      "fallback",
+      "review-currentness"
+    ],
+    "requiredLabels": [
+      "reviewed-route",
+      "manual-confirmation-required",
+      "selected-focus-candidate"
+    ],
+    "forbiddenClaims": [
+      "account-is-ready",
+      "route-is-currently-executable",
+      "route-is-optimal",
+      "success-is-guaranteed",
+      "all-applicability-conditions-are-satisfied"
+    ],
+    "fallbackBehavior": "keep-existing-growth-check-and-hide-concrete-route"
+  },
+  "failClosedPolicy": {
+    "hideRouteWhen": [
+      "status-is-not-reviewed",
+      "semantic-digest-mismatch",
+      "review-metadata-invalid",
+      "review-by-reached",
+      "valid-until-reached",
+      "focus-not-selected-or-not-mapped",
+      "unsupported-output-class",
+      "route-count-exceeds-two"
+    ],
+    "unknownLocalFactBehavior": "show-manual-check-without-eligibility-verdict",
+    "expiredRouteBehavior": "hide-route-and-show-knowledge-review-required",
+    "emptyMatchBehavior": "show-existing-non-route-fallback"
+  },
+  "implementationBoundary": {
+    "rendererOnly": true,
+    "allowedProductionAreas": [
+      "src/common",
+      "src/renderer"
+    ],
+    "forbiddenProductionAreas": [
+      "src/main",
+      "src/preload"
+    ],
+    "newMainOrPreloadBridgeAllowed": false,
+    "networkAccessAllowed": false,
+    "databaseAccessAllowed": false,
+    "storageAllowed": false,
+    "gameCommunicationAccessAllowed": false,
+    "automaticGameOperationAllowed": false,
+    "rawAccountDataInRouteModelAllowed": false
+  },
+  "acceptanceBoundary": {
+    "syntheticFixturesOnly": true,
+    "requiredChecks": [
+      "default-closed-opt-in",
+      "focus-to-route-filtering",
+      "digest-and-currentness-fail-closed",
+      "manual-check-labels",
+      "no-route-fallback",
+      "narrow-and-wide-layout-without-horizontal-overflow",
+      "no-main-preload-network-storage-or-account-data-dependency"
+    ],
+    "realAccountAcceptanceAuthorized": false,
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false
+  },
+  "stillProhibited": [
+    "real-account-acceptance",
+    "runtime-publication",
+    "default-enablement",
+    "route-content-mutation",
+    "unreviewed-route-display",
+    "automatic-game-operation",
+    "game-communication-mutation",
+    "runtime-web-scraping",
+    "account-data-export",
+    "persistent-opt-in-state"
+  ],
+  "review": {
+    "author": "codex-r7-renderer-decision-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

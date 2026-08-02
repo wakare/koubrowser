@@ -102,6 +102,9 @@ validator は2 gate の digest、選択した2 pilot、family別件数、R6 line
 に分離し、project owner が 2026-08-02 に固定摘要どおり承認した。2件は `reviewed` へ昇格したが、
 renderer、実アカウント受入、runtime publication、default enablement は引き続き未承認である。
 次の独立判断は reviewed route を renderer に表示する範囲と fail-closed 条件である。
+固定摘要と推奨承認文面は
+[`quest-growth-r7-renderer-decision-packet.md`](quest-growth-r7-renderer-decision-packet.md)
+に分離した。owner 承認までは renderer eligible route count を0件に保つ。
 
 件数、対象、証拠、review 境界を固定した decision-only packet は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)
