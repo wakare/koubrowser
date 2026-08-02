@@ -26,7 +26,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     )
 
-    expect(output).toContain('27 facts, 4 routes, 12 stage contributions, 1 rejected objectives')
+    expect(output).toContain('27 facts, 9 routes, 22 stage contributions, 1 rejected objectives')
   })
 
   it('compiles exact stage contributions without promoting partial multi-stage quests', () => {
@@ -78,7 +78,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     ])
     expect(withdrawals.withdrawals).toEqual([])
-    expect(withdrawals.dependencies).toHaveLength(4)
+    expect(withdrawals.dependencies).toHaveLength(9)
   })
 
   it('binds every runtime route to an approved template and exact objective facts', () => {

@@ -170,7 +170,18 @@ export function questStrategyCoverageStatus(
   const audits = operationalRecipes.map((recipe) =>
     auditQuestStrategyRecipeObjective(recipe, questId)
   )
-  if (audits.some((audit) => audit.complete)) {
+  const projection = objectiveProjection(questId)
+  const contributedStageIndexes = new Set(
+    audits.flatMap((audit) =>
+      audit.contributions
+        .filter((contribution) => contribution.machineConstraintComplete)
+        .map((contribution) => contribution.stageIndex)
+    )
+  )
+  if (
+    (projection?.objectiveStages.length ?? 0) > 0 &&
+    projection!.objectiveStages.every((_, stageIndex) => contributedStageIndexes.has(stageIndex))
+  ) {
     return 'route-ready'
   }
   const partial = audits.find((audit) => audit.contributions.length > 0)
@@ -183,7 +194,6 @@ export function questStrategyCoverageStatus(
   if (matchingRecipes.length > 0) {
     return 'route-unreviewed'
   }
-  const projection = objectiveProjection(questId)
   return (projection?.objectiveStages.length ?? 0) > 0 ? 'objective-only' : 'knowledge-insufficient'
 }
 
@@ -245,12 +255,94 @@ function upgradeStep(
   }
 }
 
+function stageContributionKey(contribution: QuestStrategyStageContribution): string {
+  return `${contribution.questId}:${contribution.stageIndex}`
+}
+
+function selectStageAwareSteps(
+  candidates: readonly StrategyRouteStep[],
+  recipesById: ReadonlyMap<string, QuestStrategyRecipe>,
+  maximumRoutes: number
+): { steps: StrategyRouteStep[]; alternatives: StrategyRouteStep[] } {
+  const contributionsByRecipeId = new Map(
+    candidates.map((step) => {
+      const recipe = recipesById.get(step.recipeId)
+      return [
+        step.recipeId,
+        recipe
+          ? stageContributionsForStep(step, recipe).filter(
+              (contribution) => contribution.machineConstraintComplete
+            )
+          : []
+      ] as const
+    })
+  )
+  const coveredContributions = new Set<string>()
+  const selectedAlternatives = new Map<string, string>()
+  const remaining = [...candidates]
+  const steps: StrategyRouteStep[] = []
+
+  while (steps.length < maximumRoutes) {
+    const candidate = remaining
+      .filter((step) => {
+        const alternative = step.prerequisiteAlternative
+        const hasNewContribution = (contributionsByRecipeId.get(step.recipeId) ?? []).some(
+          (contribution) => !coveredContributions.has(stageContributionKey(contribution))
+        )
+        return (
+          hasNewContribution &&
+          (!alternative ||
+            !selectedAlternatives.has(alternative.groupId) ||
+            selectedAlternatives.get(alternative.groupId) === alternative.optionId)
+        )
+      })
+      .sort((left, right) => {
+        const leftMarginal = (contributionsByRecipeId.get(left.recipeId) ?? []).filter(
+          (contribution) => !coveredContributions.has(stageContributionKey(contribution))
+        ).length
+        const rightMarginal = (contributionsByRecipeId.get(right.recipeId) ?? []).filter(
+          (contribution) => !coveredContributions.has(stageContributionKey(contribution))
+        ).length
+        return (
+          rightMarginal - leftMarginal ||
+          right.score.total - left.score.total ||
+          (left.recipeId < right.recipeId ? -1 : left.recipeId > right.recipeId ? 1 : 0)
+        )
+      })[0]
+    if (!candidate) break
+
+    steps.push(candidate)
+    for (const contribution of contributionsByRecipeId.get(candidate.recipeId) ?? []) {
+      coveredContributions.add(stageContributionKey(contribution))
+    }
+    const alternative = candidate.prerequisiteAlternative
+    if (alternative) {
+      selectedAlternatives.set(alternative.groupId, alternative.optionId)
+    }
+    remaining.splice(remaining.indexOf(candidate), 1)
+  }
+
+  const selectedRecipeIds = new Set(steps.map((step) => step.recipeId))
+  return {
+    steps,
+    alternatives: candidates.filter((step) => !selectedRecipeIds.has(step.recipeId))
+  }
+}
+
 export function buildQuestStrategyRoutePlanV2(
   input: BuildQuestStrategyRoutePlanV2Input
 ): QuestStrategyRoutePlanV2 {
   const legacyPlan = buildQuestStrategyRoutePlan(input)
   const recipesById = new Map(input.recipes.map((recipe) => [recipe.id, recipe]))
-  const selectedStepContributions = legacyPlan.steps.flatMap((step) => {
+  const evaluatedByRecipeId = new Map(
+    [...legacyPlan.steps, ...legacyPlan.alternatives].map((step) => [step.recipeId, step])
+  )
+  const stageSelection = selectStageAwareSteps(
+    [...evaluatedByRecipeId.values()],
+    recipesById,
+    input.preferences.maximumRoutes
+  )
+  const selectedStepContributions = stageSelection.steps.flatMap((step) => {
     const recipe = recipesById.get(step.recipeId)
     return recipe ? stageContributionsForStep(step, recipe) : []
   })
@@ -275,9 +367,7 @@ export function buildQuestStrategyRoutePlanV2(
     .filter((coverage) => !coverage.complete)
     .map((coverage) => coverage.questId)
   const warnings = [
-    ...legacyPlan.warnings.filter(
-      (warning) => !warning.includes('件の選択任務に利用可能な攻略手順がありません')
-    ),
+    ...new Set(stageSelection.steps.flatMap((step) => step.warnings)),
     ...(partialQuestIds.length > 0
       ? [`${partialQuestIds.length} 件は一部 stage の攻略手順だけを表示しています`]
       : []),
@@ -296,15 +386,16 @@ export function buildQuestStrategyRoutePlanV2(
     partialQuestIds,
     uncoveredQuestIds,
     questCoverage,
-    steps: legacyPlan.steps.map((step) => upgradeStep(step, recipesById, coverageByQuest)),
-    alternatives: legacyPlan.alternatives.map((step) =>
+    steps: stageSelection.steps.map((step) => upgradeStep(step, recipesById, coverageByQuest)),
+    alternatives: stageSelection.alternatives.map((step) =>
       upgradeStep(step, recipesById, coverageByQuest)
     ),
     warnings,
     executionSummary: {
       ...legacyPlan.executionSummary,
+      routeCount: stageSelection.steps.length,
       coveredQuestCount: coveredQuestIds.length,
-      consolidatedRouteSetups: Math.max(0, coveredQuestIds.length - legacyPlan.steps.length)
+      consolidatedRouteSetups: Math.max(0, coveredQuestIds.length - stageSelection.steps.length)
     }
   }
 }

@@ -1,6 +1,6 @@
 # 任務攻略推薦ルート設計
 
-最終更新日: 2026-07-31
+最終更新日: 2026-08-03
 
 ## 目的
 
@@ -44,7 +44,7 @@
 - 整数 score、固定 tie-break、入力 fingerprint、`any` 前提の独立 alternative を実装
 - 合成 fixture と production 整合性テストで決定性、降格、失効、競合、
   preference、任務定義との map/rank/count 一致を検証
-- Wiki の現行海域・定期任務ページをレビューし、通常海域 4 recipe を同梱
+- Wiki の現行海域・定期任務ページをレビューし、通常海域 9 recipe を同梱
 - 既存任務指引内へ既定非表示の opt-in UI、score 内訳、次点、確認事項、
   recipe 非表示、実行要約を追加
 - 1～5 任務を最大 512 recipe から限界被覆で選ぶ bounded set-cover と性能 fixture を追加。
@@ -54,12 +54,17 @@
 - production Electron の署名 update smoke で攻略 version、privacy、横 overflow、
   UI 状態復元を検証
 
-| recipe                            | 同時進行対象          | 審査根拠                                                                                                       |
-| --------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `normal-1-5-periodic-asw`         | 261 / 265 / 893       | [1-5](https://wikiwiki.jp/kancolle/鎮守府海域/1-5)、[定期出撃任務](https://wikiwiki.jp/kancolle/任務/出撃定期) |
-| `normal-4-2-western-periodic`     | 229 / 264 / 845       | [4-2](https://wikiwiki.jp/kancolle/西方海域/4-2)、[定期出撃任務](https://wikiwiki.jp/kancolle/任務/出撃定期)   |
-| `normal-1-4-light-fleet-periodic` | 257 / 280 / 284       | [1-4](https://wikiwiki.jp/kancolle/鎮守府海域/1-4)、[定期出撃任務](https://wikiwiki.jp/kancolle/任務/出撃定期) |
-| `normal-2-1-southwest-periodic`   | 226 / 280 / 284 / 894 | [2-1](https://wikiwiki.jp/kancolle/南西諸島海域/2-1)、[舰娘百科 2-1](https://zh.kcwiki.cn/wiki/2-1)            |
+| recipe                                  | 同時進行対象          | 審査根拠                                                                                                       |
+| --------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `normal-1-5-periodic-asw`               | 261 / 265 / 893       | [1-5](https://wikiwiki.jp/kancolle/鎮守府海域/1-5)、[定期出撃任務](https://wikiwiki.jp/kancolle/任務/出撃定期) |
+| `normal-4-2-western-periodic`           | 229 / 264 / 845       | [4-2](https://wikiwiki.jp/kancolle/西方海域/4-2)、[定期出撃任務](https://wikiwiki.jp/kancolle/任務/出撃定期)   |
+| `normal-1-4-light-fleet-periodic`       | 257 / 280 / 284       | [1-4](https://wikiwiki.jp/kancolle/鎮守府海域/1-4)、[定期出撃任務](https://wikiwiki.jp/kancolle/任務/出撃定期) |
+| `normal-1-2-logistics-line-periodic`    | 280                   | [1-2](https://wikiwiki.jp/kancolle/鎮守府海域/1-2)、[舰娘百科 1-2](https://zh.kcwiki.cn/wiki/1-2)              |
+| `normal-1-3-carrier-logistics-periodic` | 280 / 894             | [1-3](https://wikiwiki.jp/kancolle/鎮守府海域/1-3)、[舰娘百科 1-3](https://zh.kcwiki.cn/wiki/1-3)              |
+| `normal-1-4-carrier-periodic`           | 280 / 284 / 894       | [1-4](https://wikiwiki.jp/kancolle/鎮守府海域/1-4)、[舰娘百科 1-4](https://zh.kcwiki.cn/wiki/1-4)              |
+| `normal-2-1-southwest-periodic`         | 226 / 280 / 284 / 894 | [2-1](https://wikiwiki.jp/kancolle/南西諸島海域/2-1)、[舰娘百科 2-1](https://zh.kcwiki.cn/wiki/2-1)            |
+| `normal-2-2-carrier-southwest-periodic` | 284 / 894             | [2-2](https://wikiwiki.jp/kancolle/南西諸島海域/2-2)、[舰娘百科 2-2](https://zh.kcwiki.cn/wiki/2-2)            |
+| `normal-2-3-carrier-southwest-periodic` | 284 / 894             | [2-3](https://wikiwiki.jp/kancolle/南西諸島海域/2-3)、[舰娘百科 2-3](https://zh.kcwiki.cn/wiki/2-3)            |
 
 根拠には 2026-10-31 の再審査期限と 2027-07-31 の有効期限を設定した。
 再審査期限後は stale penalty と警告を付け、有効期限後は推薦から除外する。
@@ -85,8 +90,9 @@
 示すことである。coverage inventory やすべての任務種別を一覧することを主目的にしない。
 
 - 主選択候補は `ApiQuestCategory.syutugeki` に限定する。
-- 自動選択は完全な `route-ready` route unit を一つだけ選び、別海域の任務で 5 件まで
-  埋めない。
+- 自動選択は完全な `route-ready` bundle だけを選ぶ。単一海域 recipe の共同達成に加え、
+  multi-stage 任務は最大5海域の stage-aware bundle として選び、完了できない組合せを
+  route-ready に昇格しない。
 - 審査済み partial は明示的な手動選択だけを許可する。
 - objective-only、conflicted、knowledge-insufficient、withdrawn は折り畳んだ診断とし、
   route coverage に数えない。
@@ -96,21 +102,22 @@
 
 ### 現在の actionability baseline
 
-primary denominator 27 件に対し、現行の審査済み 4 route unit が任務全体を完了できるのは
-226、229、261、264、265 の 5 件（18.52%）である。257、280、284、845、893、894 の 6 件は一部
+primary denominator 27 件に対し、現行の審査済み 9 route unit が任務全体を完了できるのは
+226、229、261、264、265、280、284、894 の 8 件（29.63%）である。257、845、893 の 3 件は一部
 stage または機械判定できない hard fleet constraint が残り、残る 16 件には route unit が
 ない。この値は全利用者の表示任務に
 対する命中率ではなく、canonical recurring normal-sortie inventory 上のデータ充足率である。
 
-2-1 は既に R8 成長指引で独立照合・審査済みの route を無損失で再利用し、日次 #226 を
-route-ready に、#280 / #284 / #894 の 2-1 区間だけを partial にする。authoring manifest の
+1-2、1-3、1-4、2-1、2-2、2-3 の組み合わせにより、#280、#284、#894 は各 stage を失わずに
+複数海域の順序付き計画として表示できる。V2 planner は任務 ID 単位ではなく stage 単位で
+限界被覆を計算し、最大5海域の範囲で完了できない残り stage を明示する。authoring manifest の
 approved map template、canonical objective fact、evidence URL と runtime recipe が一致しない場合、
 compiler は生成を停止する。
 
 そのため本変更では、件数を増やすために未審査 Wiki 情報を取り込まず、まず route-ready
 だけを自動選択する UI と authority を固定する。次のデータ pilot は、代表 snapshot で
 zero-ready の原因を記録し、author と approver を分離できる場合に限り、小さな審査単位で
-追加する。18.52% をもって既定有効化や実用カバレッジ達成とは判断しない。
+追加する。29.63% をもって既定有効化や実用カバレッジ達成とは判断しない。
 
 ## 推奨アーキテクチャ
 

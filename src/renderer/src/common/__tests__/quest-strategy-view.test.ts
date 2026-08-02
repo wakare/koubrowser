@@ -82,8 +82,7 @@ describe('quest strategy renderer adapter', () => {
     const candidates = listQuestStrategyCandidates(recipes, input, GeneratedAt)
 
     expect(listQuestStrategyDefaultBundles(recipes, candidates, GeneratedAt)[0]).toEqual({
-      recipeId: 'normal-4-2-western-periodic',
-      mapKey: '4-2',
+      recipeIds: ['normal-4-2-western-periodic'],
       questIds: [264, 229]
     })
     expect(
@@ -180,10 +179,29 @@ describe('quest strategy renderer adapter', () => {
 
     expect(
       result.filter((candidate) => candidate.group === 'route-ready').map((item) => item.questId)
-    ).toEqual([226, 229, 261, 264, 265])
+    ).toEqual([226, 229, 261, 264, 265, 280, 284, 894])
     expect(
       result.filter((candidate) => candidate.group === 'partial').map((item) => item.questId)
-    ).toEqual([257, 280, 284, 845, 893, 894])
+    ).toEqual([257, 845, 893])
+  })
+
+  it('builds a five-route default bundle for the two compatible southwest multi-stage tasks', () => {
+    const candidates = listQuestStrategyCandidates(
+      recipes,
+      [recommendation(226, 'active'), recommendation(284, 'active'), recommendation(894, 'active')],
+      GeneratedAt
+    )
+
+    expect(listQuestStrategyDefaultBundles(recipes, candidates, GeneratedAt)[0]).toEqual({
+      recipeIds: [
+        'normal-1-3-carrier-logistics-periodic',
+        'normal-1-4-carrier-periodic',
+        'normal-2-1-southwest-periodic',
+        'normal-2-2-carrier-southwest-periodic',
+        'normal-2-3-carrier-southwest-periodic'
+      ],
+      questIds: [226, 284, 894]
+    })
   })
 
   it('keeps expired recipes in diagnostics instead of exposing them as manual partial routes', () => {
@@ -250,9 +268,13 @@ describe('quest strategy renderer adapter', () => {
       }
     ])
     expect(snapshot.mapAvailability).toEqual({
+      '1-2': 'unknown',
+      '1-3': 'unknown',
       '1-4': 'unknown',
       '1-5': 'unknown',
       '2-1': 'unknown',
+      '2-2': 'unknown',
+      '2-3': 'unknown',
       '4-2': 'unknown'
     })
     expect(snapshot.questCapacity).toEqual({ active: 4, maximum: 5 })

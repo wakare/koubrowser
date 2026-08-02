@@ -113,13 +113,18 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('loads four reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.1')
+  it('loads nine reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.2')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
       'normal-1-4-light-fleet-periodic',
-      'normal-2-1-southwest-periodic'
+      'normal-1-2-logistics-line-periodic',
+      'normal-1-3-carrier-logistics-periodic',
+      'normal-1-4-carrier-periodic',
+      'normal-2-1-southwest-periodic',
+      'normal-2-2-carrier-southwest-periodic',
+      'normal-2-3-carrier-southwest-periodic'
     ])
     expect(
       BundledQuestStrategyKnowledge.recipes.every(
@@ -129,12 +134,14 @@ describe('quest strategy validation', () => {
           item.evidence.every((evidence) => evidence.url.startsWith('https://'))
       )
     ).toBe(true)
-    const southwest = BundledQuestStrategyKnowledge.recipes.find(
-      (item) => item.id === 'normal-2-1-southwest-periodic'
-    )!
-    expect(new Set(southwest.evidence.map((evidence) => new URL(evidence.url).hostname))).toEqual(
-      new Set(['wikiwiki.jp', 'zh.kcwiki.cn'])
-    )
+    for (const recipe of BundledQuestStrategyKnowledge.recipes.filter(
+      (item) =>
+        item.id.includes('carrier') || item.id.includes('logistics-line') || item.id.includes('2-1')
+    )) {
+      expect(new Set(recipe.evidence.map((evidence) => new URL(evidence.url).hostname))).toEqual(
+        new Set(['wikiwiki.jp', 'zh.kcwiki.cn'])
+      )
+    }
   })
 
   it('keeps production objectives aligned with bundled quest definitions', () => {

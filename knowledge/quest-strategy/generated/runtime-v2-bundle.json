@@ -1235,6 +1235,284 @@
     },
     {
       "actions": [
+        "任務280を受注し、1-2段階が残っていることを確認する",
+        "高速の軽巡洋艦1・駆逐艦4の5隻で編成する",
+        "A-Eの最短ルートを進み、EボスでS勝利する"
+      ],
+      "contributions": [
+        {
+          "mapKey": "1-2",
+          "questId": 280,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "wikiwiki-map-1-2",
+          "sourceLabel": "艦これ攻略 Wiki - 1-2",
+          "summary": "高速の軽巡1・駆逐4によるA-E固定と任務280の1-2条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/鎮守府海域/1-2",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "kcwiki-map-1-2",
+          "sourceLabel": "舰娘百科 - 1-2",
+          "summary": "軽巡1・駆逐4のA-E最短分岐を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/1-2",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 5,
+        "minimumShips": 5,
+        "shipTypeConstraints": [
+          {
+            "label": "軽巡洋艦 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 4 隻",
+            "minimum": 4,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "A・E の水上戦"
+        }
+      ],
+      "mapKey": "1-2",
+      "revision": 1,
+      "risk": "low",
+      "routeId": "normal-1-2-logistics-line-periodic",
+      "routeLabels": [
+        "A-E"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "E"
+      ],
+      "title": "1-2 兵站線確保任務",
+      "validity": {
+        "reviewBy": "2026-11-01T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務280・894を同時に受注し、両方の1-3段階が残っていることを確認する",
+        "軽空母1・駆逐艦4の5隻で編成する",
+        "C-F-Jを進み、各戦闘後に損傷を確認して大破時は進撃しない",
+        "JボスでS勝利し、両任務の進捗を確認する"
+      ],
+      "contributions": [
+        {
+          "mapKey": "1-3",
+          "questId": 280,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 1
+        },
+        {
+          "mapKey": "1-3",
+          "questId": 894,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "wikiwiki-map-1-3",
+          "sourceLabel": "艦これ攻略 Wiki - 1-3",
+          "summary": "軽空母でC、駆逐4でF-J固定となる分岐と任務280・894条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/鎮守府海域/1-3",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "kcwiki-map-1-3",
+          "sourceLabel": "舰娘百科 - 1-3",
+          "summary": "軽空母1・駆逐4のC-F-J分岐を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/1-3",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 5,
+        "minimumShips": 5,
+        "shipTypeConstraints": [
+          {
+            "label": "軽空母 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              7
+            ]
+          },
+          {
+            "label": "駆逐艦 4 隻",
+            "minimum": 4,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "C・F・J の水上戦"
+        }
+      ],
+      "mapKey": "1-3",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-1-3-carrier-logistics-periodic",
+      "routeLabels": [
+        "C-F-J"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "J"
+      ],
+      "title": "1-3 空母兵站線任務まとめ",
+      "validity": {
+        "reviewBy": "2026-11-01T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務280・284・894を同時に受注し、各任務の1-4段階が残っていることを確認する",
+        "軽空母2・駆逐艦4の6隻にし、現在の制空値を確認する",
+        "分岐先に応じてボスLへ進み、各戦闘後に損傷を確認して大破時は進撃しない",
+        "LボスでS勝利し、3任務の進捗を確認する"
+      ],
+      "airState": {
+        "summary": "全敵編成の航空優勢境界30に搭載機損耗分の余裕を加える",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "1-4",
+          "questId": 280,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 2
+        },
+        {
+          "mapKey": "1-4",
+          "questId": 284,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        },
+        {
+          "mapKey": "1-4",
+          "questId": 894,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 1
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6
+          ],
+          "label": "艦上戦闘機 1 個以上（制空値30に余裕を加える）",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "wikiwiki-map-1-4-current",
+          "sourceLabel": "艦これ攻略 Wiki - 1-4",
+          "summary": "空母系2以下・駆逐4のボス到達分岐、制空境界、定期任務条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/鎮守府海域/1-4",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "kcwiki-map-1-4",
+          "sourceLabel": "舰娘百科 - 1-4",
+          "summary": "軽空母2・駆逐4の編成例とボス到達分岐を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/1-4",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "軽空母 2 隻",
+            "minimum": 2,
+            "shipTypeIds": [
+              7
+            ]
+          },
+          {
+            "label": "駆逐艦 4 隻",
+            "minimum": 4,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "水上戦・Lボス"
+        }
+      ],
+      "mapKey": "1-4",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-1-4-carrier-periodic",
+      "routeLabels": [
+        "A-D-E-H-L",
+        "A-D-G-J-L",
+        "B-C-F-E-H-L"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "L"
+      ],
+      "title": "1-4 空母定期任務まとめ",
+      "validity": {
+        "reviewBy": "2026-11-01T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "2-1を対象とする表示中の任務を同時に受注し、各任務の2-1段階が残っていることを確認する",
         "軽空母2・重雷装巡洋艦1・駆逐艦3の6隻にし、現在の制空値を確認する",
         "C-D-HまたはC-E-D-Hを進み、各戦闘後に損傷を確認して大破時は進撃しない",
@@ -1355,6 +1633,230 @@
       "validity": {
         "reviewBy": "2026-10-30T00:00:00.000Z"
       }
+    },
+    {
+      "actions": [
+        "任務284・894を同時に受注し、両方の2-2段階が残っていることを確認する",
+        "軽空母1・水上機母艦1・軽巡洋艦1・駆逐艦3の6隻にし、現在の制空値を確認する",
+        "C-E-KまたはC-E-G-H-Kを進み、各戦闘後に損傷を確認して大破時は進撃しない",
+        "KボスでS勝利し、両任務の進捗を確認する"
+      ],
+      "airState": {
+        "summary": "Kボスの航空優勢境界41に搭載機損耗分の余裕を加える",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "2-2",
+          "questId": 284,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 2
+        },
+        {
+          "mapKey": "2-2",
+          "questId": 894,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 3
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6
+          ],
+          "label": "艦上戦闘機 1 個以上（制空値41に余裕を加える）",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "wikiwiki-map-2-2",
+          "sourceLabel": "艦これ攻略 Wiki - 2-2",
+          "summary": "水母によるC-E、軽空母を含むE-K/EGHKのボス到達、制空境界を確認",
+          "url": "https://wikiwiki.jp/kancolle/南西諸島海域/2-2",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "kcwiki-map-2-2",
+          "sourceLabel": "舰娘百科 - 2-2",
+          "summary": "軽空母1・水母1・軽巡1・駆逐3の分岐とボス到達を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/2-2",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "軽空母 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              7
+            ]
+          },
+          {
+            "label": "水上機母艦 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              16
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 3 隻",
+            "minimum": 3,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "E・G・K の水上戦"
+        }
+      ],
+      "mapKey": "2-2",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-2-2-carrier-southwest-periodic",
+      "routeLabels": [
+        "C-E-K",
+        "C-E-G-H-K"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "K"
+      ],
+      "title": "2-2 空母南西任務まとめ",
+      "validity": {
+        "reviewBy": "2026-11-01T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務284・894を同時に受注し、両方の2-3段階が残っていることを確認する",
+        "軽空母1・軽巡洋艦1・駆逐艦4の6隻にし、現在の制空値を確認する",
+        "初手と途中の分岐に従ってボスNへ進み、各戦闘後に損傷を確認して大破時は進撃しない",
+        "NボスでS勝利し、両任務の進捗を確認する"
+      ],
+      "airState": {
+        "summary": "Nボスの航空優勢境界81に搭載機損耗分の余裕を加える",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "2-3",
+          "questId": 284,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 3
+        },
+        {
+          "mapKey": "2-3",
+          "questId": 894,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 4
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6
+          ],
+          "label": "艦上戦闘機 2 個以上（制空値81に余裕を加える）",
+          "minimum": 2,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "wikiwiki-map-2-3",
+          "sourceLabel": "艦これ攻略 Wiki - 2-3",
+          "summary": "軽巡1・駆逐4・自由1のボス固定編成、空母任務、制空境界を確認",
+          "url": "https://wikiwiki.jp/kancolle/南西諸島海域/2-3",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T16:30:00.000Z",
+          "sourceId": "kcwiki-map-2-3",
+          "sourceLabel": "舰娘百科 - 2-3",
+          "summary": "軽空母1・軽巡1・駆逐4によるNボス固定を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/2-3",
+          "validUntil": "2027-02-01T00:00:00.000Z"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "軽空母 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              7
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 4 隻",
+            "minimum": 4,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "水上戦・Nボス"
+        }
+      ],
+      "mapKey": "2-3",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-2-3-carrier-southwest-periodic",
+      "routeLabels": [
+        "A/B 分岐-N"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "N"
+      ],
+      "title": "2-3 空母南西任務まとめ",
+      "validity": {
+        "reviewBy": "2026-11-01T00:00:00.000Z"
+      }
     }
   ],
   "schemaVersion": 2,
@@ -1363,11 +1865,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:ff1e5e90b621733c996b0a96c13f090c0ba8dfeb754f585bbe071a7909e97afb",
-    "legacyKnowledgeDigest": "sha256:87212c6273312e8f4cd5b937b128ec74cb4794e120151c2f2b937d342d975281",
-    "pilotAuthoringManifestDigest": "sha256:183df24ca6dc7a048fcd754d0eabc5d3623a8e03862f8e349536c91c9350ecde",
+    "inventoryDigest": "sha256:8fd12bfeee135990df0aa972dd5ac91374fa8e192c7ec03eaf2dd08f4885c4d8",
+    "legacyKnowledgeDigest": "sha256:0d3777d0860316d2d7f8be219b1855c721bb178d0fc179530e0d26099a56dbcd",
+    "pilotAuthoringManifestDigest": "sha256:d1efa8b4617b534fbc7cc58486eae6c183c70da066143538d96c815f41aaa012",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "0505bc88f7e31c7c2ad84dc50b2f0e8c2bc34d56"
+    "repositoryCommit": "f8b5793ec16241f2202618f91b39ae78aece100c"
   },
-  "version": "2026-08-03.1.v2"
+  "version": "2026-08-03.2.v2"
 }

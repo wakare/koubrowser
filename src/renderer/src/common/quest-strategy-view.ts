@@ -40,8 +40,7 @@ export interface QuestStrategyCandidate {
 export type QuestStrategyCandidateGroup = 'route-ready' | 'partial' | 'diagnostic'
 
 export interface QuestStrategyDefaultBundle {
-  recipeId: string
-  mapKey: string
+  recipeIds: string[]
   questIds: number[]
 }
 
@@ -203,48 +202,99 @@ export function listQuestStrategyDefaultBundles(
   maximum = QuestStrategyMaximumSelection
 ): QuestStrategyDefaultBundle[] {
   const candidateById = new Map(candidates.map((candidate) => [candidate.questId, candidate]))
-  return recipes
-    .filter((recipe) => questStrategyRecipeIsOperational(recipe, generatedAt))
-    .map((recipe) => {
-      const questIds = recipe.questIds
-        .map((questId) => candidateById.get(questId))
-        .filter(
-          (candidate): candidate is QuestStrategyCandidate =>
-            candidate?.autoSelectable === true &&
-            auditQuestStrategyRecipeObjective(recipe, candidate.questId).complete
-        )
-        .sort(compareQuestStrategyCandidates)
-        .slice(0, maximum)
-        .map((candidate) => candidate.questId)
-      return { recipeId: recipe.id, mapKey: recipe.mapKey, questIds }
-    })
-    .filter((bundle) => bundle.questIds.length > 0)
-    .sort((left, right) => {
-      const leftCandidates = left.questIds.map((questId) => candidateById.get(questId)!)
-      const rightCandidates = right.questIds.map((questId) => candidateById.get(questId)!)
-      const leftUrgency = leftCandidates.reduce(
-        (total, candidate) => total + deadlineValue(candidate.deadlineUrgency),
-        0
+  const operationalRecipes = recipes.filter((recipe) =>
+    questStrategyRecipeIsOperational(recipe, generatedAt)
+  )
+  const recipeSetsByQuestId = new Map<number, string[]>()
+  for (const candidate of candidates.filter((item) => item.autoSelectable)) {
+    const routeCandidates = operationalRecipes
+      .map((recipe) => ({
+        recipe,
+        audit: auditQuestStrategyRecipeObjective(recipe, candidate.questId)
+      }))
+      .filter(({ audit }) =>
+        audit.contributions.some((contribution) => contribution.machineConstraintComplete)
       )
-      const rightUrgency = rightCandidates.reduce(
-        (total, candidate) => total + deadlineValue(candidate.deadlineUrgency),
-        0
+    const requiredStageCount = routeCandidates[0]?.audit.requiredStageCount ?? 0
+    const uncoveredStages = new Set(
+      Array.from({ length: requiredStageCount }, (_, stageIndex) => stageIndex)
+    )
+    const recipeIds: string[] = []
+    const remaining = [...routeCandidates]
+    while (uncoveredStages.size > 0 && recipeIds.length < QuestStrategyMaximumSelection) {
+      const next = remaining
+        .map((route) => ({
+          ...route,
+          newStageIndexes: [
+            ...new Set(
+              route.audit.contributions
+                .filter(
+                  (contribution) =>
+                    contribution.machineConstraintComplete &&
+                    uncoveredStages.has(contribution.stageIndex)
+                )
+                .map((contribution) => contribution.stageIndex)
+            )
+          ]
+        }))
+        .filter((route) => route.newStageIndexes.length > 0)
+        .sort(
+          (left, right) =>
+            right.newStageIndexes.length - left.newStageIndexes.length ||
+            compareText(left.recipe.id, right.recipe.id)
+        )[0]
+      if (!next) break
+      recipeIds.push(next.recipe.id)
+      next.newStageIndexes.forEach((stageIndex) => uncoveredStages.delete(stageIndex))
+      remaining.splice(
+        remaining.findIndex((route) => route.recipe.id === next.recipe.id),
+        1
       )
-      const leftReady = leftCandidates.filter((candidate) => candidate.readiness === 'ready').length
-      const rightReady = rightCandidates.filter(
-        (candidate) => candidate.readiness === 'ready'
-      ).length
-      return (
-        right.questIds.length - left.questIds.length ||
-        rightCandidates.filter((candidate) => candidate.active).length -
-          leftCandidates.filter((candidate) => candidate.active).length ||
-        rightUrgency - leftUrgency ||
-        rightReady - leftReady ||
-        compareText(left.recipeId, right.recipeId) ||
-        compareText(left.mapKey, right.mapKey) ||
-        compareText(left.questIds.join(','), right.questIds.join(','))
+    }
+    if (uncoveredStages.size === 0 && recipeIds.length > 0) {
+      recipeSetsByQuestId.set(candidate.questId, recipeIds.sort(compareText))
+    }
+  }
+
+  const bundlesByRecipeSet = new Map<string, QuestStrategyDefaultBundle>()
+  for (const recipeIds of recipeSetsByQuestId.values()) {
+    const recipeIdSet = new Set(recipeIds)
+    const questIds = [...recipeSetsByQuestId.entries()]
+      .filter(([, requiredRecipeIds]) =>
+        requiredRecipeIds.every((recipeId) => recipeIdSet.has(recipeId))
       )
-    })
+      .map(([questId]) => candidateById.get(questId)!)
+      .sort(compareQuestStrategyCandidates)
+      .slice(0, maximum)
+      .map((candidate) => candidate.questId)
+    const key = recipeIds.join(',')
+    bundlesByRecipeSet.set(key, { recipeIds: [...recipeIds], questIds })
+  }
+
+  return [...bundlesByRecipeSet.values()].sort((left, right) => {
+    const leftCandidates = left.questIds.map((questId) => candidateById.get(questId)!)
+    const rightCandidates = right.questIds.map((questId) => candidateById.get(questId)!)
+    const leftUrgency = leftCandidates.reduce(
+      (total, candidate) => total + deadlineValue(candidate.deadlineUrgency),
+      0
+    )
+    const rightUrgency = rightCandidates.reduce(
+      (total, candidate) => total + deadlineValue(candidate.deadlineUrgency),
+      0
+    )
+    const leftReady = leftCandidates.filter((candidate) => candidate.readiness === 'ready').length
+    const rightReady = rightCandidates.filter((candidate) => candidate.readiness === 'ready').length
+    return (
+      right.questIds.length - left.questIds.length ||
+      rightCandidates.filter((candidate) => candidate.active).length -
+        leftCandidates.filter((candidate) => candidate.active).length ||
+      rightUrgency - leftUrgency ||
+      rightReady - leftReady ||
+      left.recipeIds.length - right.recipeIds.length ||
+      compareText(left.recipeIds.join(','), right.recipeIds.join(',')) ||
+      compareText(left.questIds.join(','), right.questIds.join(','))
+    )
+  })
 }
 
 export function normalizeStoredQuestStrategySelectionV2(

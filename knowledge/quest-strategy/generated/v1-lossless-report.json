@@ -67,6 +67,54 @@
       "lossless": false,
       "objectives": [
         {
+          "lossless": false,
+          "questId": 280,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-1-2-logistics-line-periodic"
+    },
+    {
+      "lossless": false,
+      "objectives": [
+        {
+          "lossless": false,
+          "questId": 280,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        },
+        {
+          "lossless": false,
+          "questId": 894,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-1-3-carrier-logistics-periodic"
+    },
+    {
+      "lossless": false,
+      "objectives": [
+        {
+          "lossless": false,
+          "questId": 280,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        },
+        {
+          "lossless": false,
+          "questId": 284,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        },
+        {
+          "lossless": false,
+          "questId": 894,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-1-4-carrier-periodic"
+    },
+    {
+      "lossless": false,
+      "objectives": [
+        {
           "lossless": true,
           "questId": 226,
           "reason": "COMPLETE_OBJECTIVE"
@@ -88,6 +136,38 @@
         }
       ],
       "recipeId": "normal-2-1-southwest-periodic"
+    },
+    {
+      "lossless": false,
+      "objectives": [
+        {
+          "lossless": false,
+          "questId": 284,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        },
+        {
+          "lossless": false,
+          "questId": 894,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-2-2-carrier-southwest-periodic"
+    },
+    {
+      "lossless": false,
+      "objectives": [
+        {
+          "lossless": false,
+          "questId": 284,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        },
+        {
+          "lossless": false,
+          "questId": 894,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-2-3-carrier-southwest-periodic"
     }
   ],
   "compiledRecipeMaximum": 512,
@@ -126,7 +206,7 @@
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "0505bc88f7e31c7c2ad84dc50b2f0e8c2bc34d56"
+    "repositoryCommit": "f8b5793ec16241f2202618f91b39ae78aece100c"
   },
   "unsupportedQuestIds": [
     {

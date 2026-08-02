@@ -25,9 +25,13 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         prerequisiteState: 'ready'
       })),
       mapAvailability: {
+        '1-2': 'available',
+        '1-3': 'available',
         '1-4': 'available',
         '1-5': 'available',
         '2-1': 'available',
+        '2-2': 'available',
+        '2-3': 'available',
         '4-2': 'available'
       },
       questCapacity: {
@@ -106,13 +110,19 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(plan.steps[0].partialQuestIds).toEqual([845])
   })
 
-  it('completes the daily 2-X objective while retaining exact 2-1 stage progress', () => {
+  it('uses five shared stages to complete the widest task set without hiding the 1-2 remainder', () => {
     const plan = build([226, 280, 284, 894])
     const coverage = new Map(plan.questCoverage.map((item) => [item.questId, item]))
 
-    expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-2-1-southwest-periodic'])
-    expect(plan.coveredQuestIds).toEqual([226])
-    expect(plan.partialQuestIds).toEqual([280, 284, 894])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual([
+      'normal-2-1-southwest-periodic',
+      'normal-1-4-carrier-periodic',
+      'normal-1-3-carrier-logistics-periodic',
+      'normal-2-2-carrier-southwest-periodic',
+      'normal-2-3-carrier-southwest-periodic'
+    ])
+    expect(plan.coveredQuestIds).toEqual([226, 284, 894])
+    expect(plan.partialQuestIds).toEqual([280])
     expect(coverage.get(226)).toMatchObject({
       complete: true,
       contributedStageIndexes: [0],
@@ -120,18 +130,30 @@ describe('quest strategy runtime v2 stage coverage', () => {
     })
     expect(coverage.get(280)).toMatchObject({
       complete: false,
-      contributedStageIndexes: [3],
-      remainingStageIndexes: [0, 1, 2]
+      contributedStageIndexes: [1, 2, 3],
+      remainingStageIndexes: [0]
     })
     expect(coverage.get(284)).toMatchObject({
-      complete: false,
-      contributedStageIndexes: [1],
-      remainingStageIndexes: [0, 2, 3]
+      complete: true,
+      contributedStageIndexes: [0, 1, 2, 3],
+      remainingStageIndexes: []
     })
     expect(coverage.get(894)).toMatchObject({
-      complete: false,
-      contributedStageIndexes: [2],
-      remainingStageIndexes: [0, 1, 3, 4]
+      complete: true,
+      contributedStageIndexes: [0, 1, 2, 3, 4],
+      remainingStageIndexes: []
+    })
+  })
+
+  it('builds the complete four-map route for task 280', () => {
+    const plan = build([280])
+
+    expect(plan.steps.map((step) => step.mapKey)).toEqual(['1-2', '1-3', '1-4', '2-1'])
+    expect(plan.coveredQuestIds).toEqual([280])
+    expect(plan.questCoverage[0]).toMatchObject({
+      complete: true,
+      contributedStageIndexes: [0, 1, 2, 3],
+      remainingStageIndexes: []
     })
   })
 

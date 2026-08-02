@@ -147,15 +147,20 @@ function defaultSelection(): number[] {
   return (
     defaultBundles.value
       .map((bundle, index) => {
-        const recipe = activeRecipes.value.find((item) => item.id === bundle.recipeId)
-        if (!recipe) return undefined
-        const bundlePlan = buildPlanFor(bundle.questIds, [recipe])
-        const step = bundlePlan?.steps.find(
-          (item) =>
-            item.recipeId === bundle.recipeId &&
-            bundle.questIds.every((questId) => item.completedQuestIds.includes(questId))
+        const recipeIds = new Set(bundle.recipeIds)
+        const bundleRecipes = activeRecipes.value.filter((item) => recipeIds.has(item.id))
+        if (bundleRecipes.length !== bundle.recipeIds.length) return undefined
+        const bundlePlan = buildPlanFor(bundle.questIds, bundleRecipes)
+        const complete = bundle.questIds.every((questId) =>
+          bundlePlan?.coveredQuestIds.includes(questId)
         )
-        return step ? { questIds: bundle.questIds, score: step.score.total, index } : undefined
+        return complete && bundlePlan
+          ? {
+              questIds: bundle.questIds,
+              score: bundlePlan.steps.reduce((total, step) => total + step.score.total, 0),
+              index
+            }
+          : undefined
       })
       .filter(
         (candidate): candidate is { questIds: number[]; score: number; index: number } =>
