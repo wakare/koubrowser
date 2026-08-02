@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-PUBLICATION-CANDIDATE-REVIEW-AUTHORING`
 
-Status: `R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORED_OWNER_DECISION_REQUIRED`
+Status: `R7_PUBLICATION_CANDIDATE_REVIEW_APPROVED`
 
 ## 目的
 
@@ -103,7 +103,7 @@ payload、runtime publication、default enablement、installer publication は�
 - candidate validator tests: `8`
 - full tests: `1245`
 - signature mode: `none-canonical-payload-only`
-- review status: `owner-decision-required`
+- review status: `approved`
 
 次の owner review 推奨承認文面:
 
@@ -113,3 +113,9 @@ payload、runtime publication、default enablement、installer publication は�
 > 两条 reviewed route、8项审查证据及未签名 canonical payload，并允许将独立 review record 标记为
 > approved。仅授权 review decision 记录；不授权 bundle/manifest 签名、私钥或凭据处理、production
 > payload/URL/公钥、真实分发端点、runtime publication、默认启用、其他 route family、游戏通信修改或安装包发布。
+
+project owner は `2026-08-02T11:21:02.178Z` に review semantic digest
+`sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c` を明示承認し、
+review decision commit `9f1e66e0589873f8d8dc5ed176c3de96b9d021f8` で独立 review record を
+`approved` にした。candidate file と canonical digest は不変である。署名、production payload、runtime
+publication、default enablement、installer publication は引き続き未承認である。

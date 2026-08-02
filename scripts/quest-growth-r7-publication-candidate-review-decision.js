@@ -1,8 +1,11 @@
 const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
+const {
+  validatePublicationCandidateFiles
+} = require('./quest-growth-r7-publication-candidate')
 
-const CompilerVersion = 'quest-growth-r7-publication-candidate-review-decision-compiler/2'
+const CompilerVersion = 'quest-growth-r7-publication-candidate-review-decision-compiler/3'
 const OutputFilenames = ['r7-publication-candidate-review-report.json']
 const FixedSemanticDigest =
   'sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33'
@@ -185,10 +188,114 @@ function validateImplementationResult(value) {
   }
 }
 
+function validateReviewDecisionResult(value, root) {
+  exactKeys(
+    value,
+    [
+      'recordedAt',
+      'candidateReviewSemanticDigest',
+      'reviewDecisionCommit',
+      'reviewer',
+      'decision',
+      'candidateVersion',
+      'candidateCanonicalDigest',
+      'candidateFileDigest',
+      'reviewRecordDigest',
+      'validatorDigest',
+      'candidateTestDigest',
+      'requiredCheckCount',
+      'candidateTestCount',
+      'fullTestCount',
+      'typecheckPassed',
+      'candidateUnchanged',
+      'bundleSigningPerformed',
+      'privateKeyHandled',
+      'productionPayloadGenerated',
+      'runtimePublicationPerformed',
+      'defaultEnablementChanged',
+      'installerBuilt',
+      'gameCommunicationChangesMade'
+    ],
+    'R7 publication candidate review decision result'
+  )
+  if (
+    !TimestampPattern.test(value.recordedAt) ||
+    !Number.isFinite(Date.parse(value.recordedAt)) ||
+    value.candidateReviewSemanticDigest !==
+      'sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c' ||
+    value.reviewDecisionCommit !== '9f1e66e0589873f8d8dc5ed176c3de96b9d021f8' ||
+    value.reviewer !== 'project-owner' ||
+    value.decision !== 'approved' ||
+    value.candidateVersion !== 'r7.candidate.20260802.1' ||
+    value.candidateCanonicalDigest !==
+      'sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c' ||
+    value.candidateFileDigest !== FixedImplementationDigests[AuthorizedPaths[0]] ||
+    value.reviewRecordDigest !==
+      'sha256:a7f2b499394dc3c35381ae878f5d82bb4657452d25701f8a8638fe08545750ea' ||
+    value.validatorDigest !==
+      'sha256:2eb091d7a5c8c9cdbcd0e7669a2f6342cfbd6efe91f6a22a76c97a08cf159b24' ||
+    value.candidateTestDigest !==
+      'sha256:577693935a598c2cee8b4151c25d8c5ace5b03e6878bd8520e7415cbf92994cb' ||
+    value.requiredCheckCount !== 8 ||
+    value.candidateTestCount !== 8 ||
+    value.fullTestCount !== 1245 ||
+    value.typecheckPassed !== true ||
+    value.candidateUnchanged !== true
+  ) {
+    throw new Error('R7 publication candidate review decision evidence mismatch')
+  }
+  for (const item of [
+    'bundleSigningPerformed',
+    'privateKeyHandled',
+    'productionPayloadGenerated',
+    'runtimePublicationPerformed',
+    'defaultEnablementChanged',
+    'installerBuilt',
+    'gameCommunicationChangesMade'
+  ]) {
+    if (value[item] !== false) {
+      throw new Error(`R7 publication candidate review boundary widened: ${item}`)
+    }
+  }
+  const validated = validatePublicationCandidateFiles(root)
+  if (
+    validated.candidate.canonicalDigest !== value.candidateCanonicalDigest ||
+    validated.review.semanticDigest !== value.candidateReviewSemanticDigest ||
+    validated.review.approved !== true ||
+    validated.review.value.status !== 'approved' ||
+    validated.review.value.decision !== 'approved'
+  ) {
+    throw new Error('R7 publication candidate approved review mismatch')
+  }
+  const currentDigests = {
+    candidateFileDigest: digest(
+      fs.readFileSync(path.join(root, ...AuthorizedPaths[0].split('/')))
+    ),
+    reviewRecordDigest: digest(
+      fs.readFileSync(path.join(root, ...AuthorizedPaths[1].split('/')))
+    ),
+    validatorDigest: digest(
+      fs.readFileSync(path.join(root, ...AuthorizedPaths[2].split('/')))
+    ),
+    candidateTestDigest: digest(
+      fs.readFileSync(path.join(root, ...AuthorizedPaths[3].split('/')))
+    )
+  }
+  for (const [key, item] of Object.entries(currentDigests)) {
+    if (value[key] !== item) {
+      throw new Error(`R7 publication candidate review file drift: ${key}`)
+    }
+  }
+}
+
 function publicationCandidateReviewRequestSemanticDigest(value) {
   const payload = Object.fromEntries(
     Object.entries(value).filter(
-      ([key]) => key !== 'status' && key !== 'review' && key !== 'implementationResult'
+      ([key]) =>
+        key !== 'status' &&
+        key !== 'review' &&
+        key !== 'implementationResult' &&
+        key !== 'reviewDecisionResult'
     )
   )
   return digest(
@@ -218,6 +325,7 @@ function validateR7PublicationCandidateReviewRequest(value, { root, base }) {
       'candidateContract',
       'independentReviewContract',
       'implementationResult',
+      'reviewDecisionResult',
       'executionBoundary',
       'stillProhibited',
       'review'
@@ -370,6 +478,12 @@ function validateR7PublicationCandidateReviewRequest(value, { root, base }) {
     }
     validateImplementationResult(value.implementationResult)
   }
+  if (value.reviewDecisionResult !== null) {
+    if (!approved || value.implementationResult === null) {
+      throw new Error('R7 publication candidate review decision prerequisites missing')
+    }
+    validateReviewDecisionResult(value.reviewDecisionResult, root)
+  }
 
   exactKeys(
     value.executionBoundary,
@@ -431,12 +545,16 @@ function buildR7PublicationCandidateReviewDecisionArtifacts({ root, base }) {
   const report = {
     schemaVersion: 1,
     compilerVersion: CompilerVersion,
-    generatedAt: request.value.implementationResult
+    generatedAt: request.value.reviewDecisionResult
+      ? request.value.reviewDecisionResult.recordedAt
+      : request.value.implementationResult
       ? request.value.implementationResult.recordedAt
       : request.approved
       ? request.value.review.reviewedAt
       : request.value.sourceSnapshot.checkedAt,
-    status: request.value.implementationResult
+    status: request.value.reviewDecisionResult
+      ? 'R7_PUBLICATION_CANDIDATE_REVIEW_APPROVED'
+      : request.value.implementationResult
       ? 'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORED_OWNER_DECISION_REQUIRED'
       : request.approved
       ? 'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED'
@@ -455,7 +573,12 @@ function buildR7PublicationCandidateReviewDecisionArtifacts({ root, base }) {
       request.value.implementationResult?.candidateCanonicalDigest ?? null,
     candidateReviewSemanticDigest:
       request.value.implementationResult?.candidateReviewSemanticDigest ?? null,
-    ownerReviewStatus: request.value.implementationResult?.reviewStatus ?? null,
+    ownerReviewStatus: request.value.reviewDecisionResult
+      ? 'approved'
+      : request.value.implementationResult?.reviewStatus ?? null,
+    reviewDecisionCommit: request.value.reviewDecisionResult?.reviewDecisionCommit ?? null,
+    reviewApprovalDigest:
+      request.value.reviewDecisionResult?.candidateReviewSemanticDigest ?? null,
     maximumCandidateRoutes: request.value.requestedAuthorization.maximumCandidateRoutes,
     authorizedPaths: request.value.requestedAuthorization.authorizedPaths,
     candidateVersion: request.value.candidateContract.candidateVersion,
@@ -475,7 +598,11 @@ function buildR7PublicationCandidateReviewDecisionArtifacts({ root, base }) {
       r7PublicationCandidateReviewAuthorizedNotImplemented:
         request.approved && request.value.implementationResult === null,
       r7PublicationCandidateReviewImplemented:
-        request.approved && request.value.implementationResult !== null,
+        request.approved &&
+        request.value.implementationResult !== null &&
+        request.value.reviewDecisionResult === null,
+      r7PublicationCandidateReviewApproved:
+        request.approved && request.value.reviewDecisionResult !== null,
       r7PublicationCandidateReviewAuthorizedPathCount: request.approved
         ? report.authorizedPaths.length
         : 0,

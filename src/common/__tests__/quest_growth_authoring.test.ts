@@ -228,7 +228,7 @@ describe('quest growth authoring contract', () => {
       'R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_PUBLICATION_NOT_AUTHORIZED'
     )
     expect(report.globalStops).toContain(
-      'R7_PUBLICATION_CANDIDATE_OWNER_REVIEW_REQUIRED'
+      'R7_PUBLICATION_CANDIDATE_APPROVED_SIGNING_NOT_AUTHORIZED'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -1236,11 +1236,11 @@ describe('quest growth authoring contract', () => {
       candidateCanonicalDigest: string
       candidateReviewSemanticDigest: string
       ownerReviewStatus: string
+      reviewDecisionCommit: string
+      reviewApprovalDigest: string
     }>('generated', 'r7-publication-candidate-review-report.json')
 
-    expect(report.status).toBe(
-      'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORED_OWNER_DECISION_REQUIRED'
-    )
+    expect(report.status).toBe('R7_PUBLICATION_CANDIDATE_REVIEW_APPROVED')
     expect(report.semanticDigest).toBe(
       'sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33'
     )
@@ -1255,7 +1255,13 @@ describe('quest growth authoring contract', () => {
     expect(report.candidateReviewSemanticDigest).toBe(
       'sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c'
     )
-    expect(report.ownerReviewStatus).toBe('owner-decision-required')
+    expect(report.ownerReviewStatus).toBe('approved')
+    expect(report.reviewDecisionCommit).toBe(
+      '9f1e66e0589873f8d8dc5ed176c3de96b9d021f8'
+    )
+    expect(report.reviewApprovalDigest).toBe(
+      'sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c'
+    )
     expect(report.maximumCandidateRoutes).toBe(2)
     expect(report.authorizedPaths).toHaveLength(4)
     expect(report.candidateVersion).toBe('r7.candidate.20260802.1')
@@ -1296,6 +1302,18 @@ describe('quest growth authoring contract', () => {
         base: GrowthDirectory
       })
     ).toThrow('R7 publication candidate implementation evidence mismatch')
+
+    const reviewTampered = structuredClone(request) as typeof request & {
+      reviewDecisionResult: { reviewDecisionCommit: string }
+    }
+    reviewTampered.reviewDecisionResult.reviewDecisionCommit =
+      '0000000000000000000000000000000000000000'
+    expect(() =>
+      validateR7PublicationCandidateReviewRequest(reviewTampered, {
+        root: process.cwd(),
+        base: GrowthDirectory
+      })
+    ).toThrow('R7 publication candidate review decision evidence mismatch')
   })
 
   it('keeps publication candidate approval metadata outside the fixed digest', () => {

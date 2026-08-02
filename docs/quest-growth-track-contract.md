@@ -279,6 +279,9 @@ authoring authorization は `consumed` となった。runtime publication、正�
 固定4 path の authoring は commit `14a60d18801ace55fc6334496f87bfccd85ce48d` で完了し、未署名
 candidate と8項目の owner review evidence を生成した。review status は `owner-decision-required`、runtime
 eligible count は0であり、次の固定摘要は review record の approval だけを対象とする。
+project owner は review semantic digest を明示承認し、独立 review record は `approved` となった。
+candidate canonical digest は不変で、runtime eligible count は0のままである。次は署名鍵や production
+endpoint を含まない staging configuration decision を別 gate として固定する必要がある。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
