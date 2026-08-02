@@ -49,15 +49,15 @@ describe('R7 signed bundle evidence review authoring decision', () => {
     )
   })
 
-  it('keeps authoring, real review, staging, and publication unauthorized', () => {
+  it('records consumed authoring while keeping real review and publication unauthorized', () => {
     const result = buildR7SignedBundleEvidenceReviewDecisionArtifacts({ root: Root })
     const report =
       result.artifacts['r7-signed-bundle-evidence-review-authoring-report.json']
 
     expect(report).toMatchObject({
-      status: 'OWNER_DECISION_REQUIRED_R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORING',
-      authorizationState: 'not-authorized',
-      authoringAuthorization: 'not-authorized',
+      status: 'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORED_REAL_REVIEW_NOT_AUTHORIZED',
+      authorizationState: 'consumed',
+      authoringAuthorization: 'consumed',
       routeCount: 2,
       allowedPublicEvidenceFieldCount: 10,
       prohibitedOutputFieldCount: 15,
@@ -92,21 +92,21 @@ describe('R7 signed bundle evidence review authoring decision', () => {
     ).toThrow('R7 signed bundle evidence review role separation mismatch')
   })
 
-  it('integrates the pending authoring decision into the compiler', () => {
+  it('integrates the implemented authoring decision into the compiler', () => {
     const artifacts = buildQuestGrowthArtifacts(Root)
     const sourceManifest = artifacts['source-manifest.json']
     const conflictReport = artifacts['conflict-and-gap-report.json']
 
     expect(sourceManifest.output).toMatchObject({
-      r7SignedBundleEvidenceReviewOwnerDecisionRequired: true,
+      r7SignedBundleEvidenceReviewOwnerDecisionRequired: false,
       r7SignedBundleEvidenceReviewAuthorizedNotImplemented: false,
-      r7SignedBundleEvidenceReviewImplemented: false,
+      r7SignedBundleEvidenceReviewImplemented: true,
       r7SignedBundleEvidenceReviewExecuted: false,
       r7SignedBundleEvidenceReviewRequiredCheckCount: 10,
-      r7SignedBundleEvidenceReviewAuthorizedPathCount: 0
+      r7SignedBundleEvidenceReviewAuthorizedPathCount: 4
     })
     expect(conflictReport.globalStops).toContain(
-      'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORING_OWNER_DECISION_REQUIRED'
+      'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORED_REAL_REVIEW_NOT_AUTHORIZED'
     )
   })
 })

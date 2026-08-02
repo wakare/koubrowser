@@ -1,9 +1,12 @@
 const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
+const {
+  validateReviewFiles
+} = require('./quest-growth-r7-signed-bundle-evidence-review')
 
 const CompilerVersion =
-  'quest-growth-r7-signed-bundle-evidence-review-decision-compiler/1'
+  'quest-growth-r7-signed-bundle-evidence-review-decision-compiler/2'
 const R7SignedBundleEvidenceReviewDecisionOutputFilenames = [
   'r7-signed-bundle-evidence-review-authoring-report.json'
 ]
@@ -20,6 +23,16 @@ const AuthorizedPaths = [
   'scripts/quest-growth-r7-signed-bundle-evidence-review.js',
   'src/common/__tests__/quest_growth_signed_bundle_evidence_review.test.ts'
 ]
+const FixedImplementationDigests = {
+  'knowledge/quest-growth/r7/signed-bundle-evidence-review.schema.json':
+    'sha256:20fb4b269ca49b680f669cfa317222de0485a1e84a863979e009a1ddd8b25139',
+  'knowledge/quest-growth/r7/fixtures/signed-bundle-evidence-review-anonymous.json':
+    'sha256:00728ca5562ce6ebf79cbc14ec43fffc13ed7a361ffd5082973db915bf1e0076',
+  'scripts/quest-growth-r7-signed-bundle-evidence-review.js':
+    'sha256:2f8a916cb066840ce863fe6059fa04e05bd793bf3f47bf277162e399026d1554',
+  'src/common/__tests__/quest_growth_signed_bundle_evidence_review.test.ts':
+    'sha256:9d39cbd700dcc9bc5634408f5b867ec04494c2e9f05dd24893ce8491bf736144'
+}
 const FixedRouteIds = [
   'route:expedition-05-resource-loop:draft-1',
   'route:1-5-basic-asw-three-battle:draft-1'
@@ -172,12 +185,12 @@ function validateR7SignedBundleEvidenceReviewAuthoringRequest(value, root) {
     value.requestId !==
       'decision:quest-growth-r7-signed-bundle-evidence-review-authoring' ||
     value.revision !== 1 ||
-    value.status !== 'draft' ||
-    value.scope !== 'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORING_ONLY' ||
-    value.implementationResult !== null
+    !['draft', 'implemented'].includes(value.status) ||
+    value.scope !== 'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORING_ONLY'
   ) {
     throw new Error('R7 signed bundle evidence review authoring scope mismatch')
   }
+  const implemented = value.status === 'implemented'
 
   exactKeys(
     value.sourceSnapshot,
@@ -267,8 +280,10 @@ function validateR7SignedBundleEvidenceReviewAuthoringRequest(value, root) {
   if (
     value.requestedAuthorization.gateId !==
       'r7-signed-bundle-evidence-review-authoring' ||
-    value.requestedAuthorization.authorizationState !== 'not-authorized' ||
-    value.requestedAuthorization.authoringAuthorization !== 'not-authorized' ||
+    value.requestedAuthorization.authorizationState !==
+      (implemented ? 'consumed' : 'not-authorized') ||
+    value.requestedAuthorization.authoringAuthorization !==
+      (implemented ? 'consumed' : 'not-authorized') ||
     value.requestedAuthorization.maximumRouteCount !== 2 ||
     !same(value.requestedAuthorization.authorizedPaths, AuthorizedPaths)
   ) {
@@ -348,6 +363,87 @@ function validateR7SignedBundleEvidenceReviewAuthoringRequest(value, root) {
     throw new Error('R7 signed bundle evidence review verification mismatch')
   }
 
+  if (implemented) {
+    exactKeys(
+      value.implementationResult,
+      [
+        'recordedAt',
+        'implementationCommit',
+        'changedPathDigests',
+        'validatorTestCount',
+        'fullTestCount',
+        'typecheckPassed',
+        'genericQuestGrowthCompileCheckPassed',
+        'allowedPublicEvidenceFieldCount',
+        'prohibitedOutputFieldCount',
+        'distinctRoleCount',
+        'requiredCheckCount',
+        'anonymousEphemeralEd25519FixturePassed',
+        'privateKeyPersisted',
+        'realSignedBundleReviewed',
+        'realPublicKeyOrFingerprintReviewed',
+        'realPrivateKeyHandled',
+        'realUrlConfigured',
+        'externalEndpointConnected',
+        'stagingAcceptancePerformed',
+        'runtimePublicationPerformed',
+        'defaultEnablementChanged',
+        'runtimeEligibleCount',
+        'installerBuilt',
+        'gameCommunicationChangesMade'
+      ],
+      'R7 signed bundle evidence review implementation result'
+    )
+    exactKeys(
+      value.implementationResult.changedPathDigests,
+      AuthorizedPaths,
+      'R7 signed bundle evidence review implementation digests'
+    )
+    if (
+      value.implementationResult.recordedAt !== '2026-08-02T13:05:40.609Z' ||
+      value.implementationResult.implementationCommit !==
+        '948dcb772ba21cf6fbb127d9ce249a4006fd1f03' ||
+      !same(value.implementationResult.changedPathDigests, FixedImplementationDigests) ||
+      value.implementationResult.validatorTestCount !== 10 ||
+      value.implementationResult.fullTestCount !== 1289 ||
+      value.implementationResult.typecheckPassed !== true ||
+      value.implementationResult.genericQuestGrowthCompileCheckPassed !== true ||
+      value.implementationResult.allowedPublicEvidenceFieldCount !== 10 ||
+      value.implementationResult.prohibitedOutputFieldCount !== 15 ||
+      value.implementationResult.distinctRoleCount !== 3 ||
+      value.implementationResult.requiredCheckCount !== 10 ||
+      value.implementationResult.anonymousEphemeralEd25519FixturePassed !== true ||
+      value.implementationResult.runtimeEligibleCount !== 0
+    ) {
+      throw new Error('R7 signed bundle evidence review implementation evidence mismatch')
+    }
+    for (const item of AuthorizedPaths) {
+      if (readDigest(root, item) !== value.implementationResult.changedPathDigests[item]) {
+        throw new Error(`R7 signed bundle evidence review implementation file drift: ${item}`)
+      }
+    }
+    for (const item of [
+      'privateKeyPersisted',
+      'realSignedBundleReviewed',
+      'realPublicKeyOrFingerprintReviewed',
+      'realPrivateKeyHandled',
+      'realUrlConfigured',
+      'externalEndpointConnected',
+      'stagingAcceptancePerformed',
+      'runtimePublicationPerformed',
+      'defaultEnablementChanged',
+      'installerBuilt',
+      'gameCommunicationChangesMade'
+    ]) {
+      if (value.implementationResult[item] !== false) {
+        throw new Error(`R7 signed bundle evidence review boundary widened: ${item}`)
+      }
+    }
+    validateReviewFiles(root)
+  } else if (value.implementationResult !== null) {
+    throw new Error('draft R7 signed bundle review request must not claim implementation')
+  }
+
   exactKeys(
     value.executionBoundary,
     [
@@ -378,9 +474,22 @@ function validateR7SignedBundleEvidenceReviewAuthoringRequest(value, root) {
     ['author', 'approver', 'reviewedAt', 'approvalDigest'],
     'R7 signed bundle evidence review decision review'
   )
+  const semanticDigest = signedBundleEvidenceReviewRequestSemanticDigest(value)
   if (
     value.review.author !==
-      'codex-r7-signed-bundle-evidence-review-decision-author' ||
+    'codex-r7-signed-bundle-evidence-review-decision-author'
+  ) {
+    throw new Error('R7 signed bundle evidence review reviewer contract mismatch')
+  }
+  if (implemented) {
+    if (
+      value.review.approver !== 'project-owner' ||
+      value.review.reviewedAt !== '2026-08-02T13:05:40.609Z' ||
+      value.review.approvalDigest !== semanticDigest
+    ) {
+      throw new Error('implemented R7 signed bundle review approval digest mismatch')
+    }
+  } else if (
     value.review.approver !== null ||
     value.review.reviewedAt !== null ||
     value.review.approvalDigest !== null
@@ -390,7 +499,8 @@ function validateR7SignedBundleEvidenceReviewAuthoringRequest(value, root) {
 
   return {
     value,
-    semanticDigest: signedBundleEvidenceReviewRequestSemanticDigest(value)
+    semanticDigest,
+    implemented
   }
 }
 
@@ -404,15 +514,17 @@ function buildR7SignedBundleEvidenceReviewDecisionArtifacts({ root }) {
     schemaVersion: 1,
     compilerVersion: CompilerVersion,
     generatedAt: request.value.sourceSnapshot.checkedAt,
-    status: 'OWNER_DECISION_REQUIRED_R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORING',
+    status: request.implemented
+      ? 'R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORED_REAL_REVIEW_NOT_AUTHORIZED'
+      : 'OWNER_DECISION_REQUIRED_R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORING',
     scope: request.value.scope,
     requestId: request.value.requestId,
     revision: request.value.revision,
     requestDigest: digest(requestRaw),
     semanticDigest: request.semanticDigest,
     gateId: request.value.requestedAuthorization.gateId,
-    authorizationState: 'not-authorized',
-    authoringAuthorization: 'not-authorized',
+    authorizationState: request.value.requestedAuthorization.authorizationState,
+    authoringAuthorization: request.value.requestedAuthorization.authoringAuthorization,
     authorizedPaths: request.value.requestedAuthorization.authorizedPaths,
     routeCount: request.value.requestedAuthorization.maximumRouteCount,
     allowedPublicEvidenceFieldCount:
@@ -439,12 +551,14 @@ function buildR7SignedBundleEvidenceReviewDecisionArtifacts({ root }) {
       r7SignedBundleEvidenceReviewAuthoringRequestDigest: digest(requestRaw)
     },
     output: {
-      r7SignedBundleEvidenceReviewOwnerDecisionRequired: true,
+      r7SignedBundleEvidenceReviewOwnerDecisionRequired: !request.implemented,
       r7SignedBundleEvidenceReviewAuthorizedNotImplemented: false,
-      r7SignedBundleEvidenceReviewImplemented: false,
+      r7SignedBundleEvidenceReviewImplemented: request.implemented,
       r7SignedBundleEvidenceReviewExecuted: false,
       r7SignedBundleEvidenceReviewRequiredCheckCount: report.requiredCheckCount,
-      r7SignedBundleEvidenceReviewAuthorizedPathCount: 0
+      r7SignedBundleEvidenceReviewAuthorizedPathCount: request.implemented
+        ? report.authorizedPaths.length
+        : 0
     }
   }
 }

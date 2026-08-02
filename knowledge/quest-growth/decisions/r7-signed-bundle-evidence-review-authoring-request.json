@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7SignedBundleEvidenceReviewAuthoringRequest/1alpha",
   "requestId": "decision:quest-growth-r7-signed-bundle-evidence-review-authoring",
   "revision": 1,
-  "status": "draft",
+  "status": "implemented",
   "scope": "R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORING_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "c9eb677382256f5c7734e76185a951af43eed521",
@@ -31,8 +31,8 @@
   },
   "requestedAuthorization": {
     "gateId": "r7-signed-bundle-evidence-review-authoring",
-    "authorizationState": "not-authorized",
-    "authoringAuthorization": "not-authorized",
+    "authorizationState": "consumed",
+    "authoringAuthorization": "consumed",
     "maximumRouteCount": 2,
     "authorizedPaths": [
       "knowledge/quest-growth/r7/signed-bundle-evidence-review.schema.json",
@@ -112,7 +112,37 @@
       "protected-game-communication-digests-remain-fixed"
     ]
   },
-  "implementationResult": null,
+  "implementationResult": {
+    "recordedAt": "2026-08-02T13:05:40.609Z",
+    "implementationCommit": "948dcb772ba21cf6fbb127d9ce249a4006fd1f03",
+    "changedPathDigests": {
+      "knowledge/quest-growth/r7/signed-bundle-evidence-review.schema.json": "sha256:20fb4b269ca49b680f669cfa317222de0485a1e84a863979e009a1ddd8b25139",
+      "knowledge/quest-growth/r7/fixtures/signed-bundle-evidence-review-anonymous.json": "sha256:00728ca5562ce6ebf79cbc14ec43fffc13ed7a361ffd5082973db915bf1e0076",
+      "scripts/quest-growth-r7-signed-bundle-evidence-review.js": "sha256:2f8a916cb066840ce863fe6059fa04e05bd793bf3f47bf277162e399026d1554",
+      "src/common/__tests__/quest_growth_signed_bundle_evidence_review.test.ts": "sha256:9d39cbd700dcc9bc5634408f5b867ec04494c2e9f05dd24893ce8491bf736144"
+    },
+    "validatorTestCount": 10,
+    "fullTestCount": 1289,
+    "typecheckPassed": true,
+    "genericQuestGrowthCompileCheckPassed": true,
+    "allowedPublicEvidenceFieldCount": 10,
+    "prohibitedOutputFieldCount": 15,
+    "distinctRoleCount": 3,
+    "requiredCheckCount": 10,
+    "anonymousEphemeralEd25519FixturePassed": true,
+    "privateKeyPersisted": false,
+    "realSignedBundleReviewed": false,
+    "realPublicKeyOrFingerprintReviewed": false,
+    "realPrivateKeyHandled": false,
+    "realUrlConfigured": false,
+    "externalEndpointConnected": false,
+    "stagingAcceptancePerformed": false,
+    "runtimePublicationPerformed": false,
+    "defaultEnablementChanged": false,
+    "runtimeEligibleCount": 0,
+    "installerBuilt": false,
+    "gameCommunicationChangesMade": false
+  },
   "executionBoundary": {
     "realSignedBundleReviewExecutionAuthorized": false,
     "realPublicKeyOrFingerprintReviewAuthorized": false,
@@ -143,8 +173,8 @@
   ],
   "review": {
     "author": "codex-r7-signed-bundle-evidence-review-decision-author",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T13:05:40.609Z",
+    "approvalDigest": "sha256:eb599466cdcf580d6a4fabad4439a274ca483d5f1d6888f80f3d467ed4ce2080"
   }
 }

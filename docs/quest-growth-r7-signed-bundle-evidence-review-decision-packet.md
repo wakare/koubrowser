@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-SIGNED-BUNDLE-EVIDENCE-REVIEW-AUTHORING`
 
-Status: `OWNER_DECISION_REQUIRED_R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORING`
+Status: `R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_AUTHORED_REAL_REVIEW_NOT_AUTHORIZED`
 
 ## 目的
 
@@ -111,7 +111,16 @@ validator で拒否する。
 - required check count: `10`
 - runtime eligible count: `0`
 
-推奨承認文面:
+## 承認・実装結果
+
+project owner は semantic digest
+`sha256:eb599466cdcf580d6a4fabad4439a274ca483d5f1d6888f80f3d467ed4ce2080` を明示承認した。
+固定4 path は commit `948dcb772ba21cf6fbb127d9ce249a4006fd1f03` で実装し、匿名・一時的な
+Ed25519 fixture による10 check と全1289 test は PASS した。authoring authorization は `consumed`、
+runtime eligible count は0である。実 signed bundle、実公開鍵・fingerprint、秘密鍵、URL、外部 endpoint、
+staging acceptance、runtime publication、default enablement は引き続き未承認である。
+
+承認時の固定文面:
 
 > 批准固定摘要 `sha256:eb599466cdcf580d6a4fabad4439a274ca483d5f1d6888f80f3d467ed4ce2080`
 > 对应的 `r7-signed-bundle-evidence-review-authoring` revision 1。仅授权 packet 固定4个路径，为当前两条
