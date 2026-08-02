@@ -102,8 +102,8 @@
 
 ### 現在の actionability baseline
 
-primary denominator 27 件に対し、現行の審査済み 9 route unit が任務全体を完了できるのは
-226、229、261、264、265、280、284、894 の 8 件（29.63%）である。257、845、893 の 3 件は一部
+primary denominator 27 件に対し、現行の審査済み 13 route unit が任務全体を完了できるのは
+226、229、261、264、265、280、284、845、894 の 9 件（33.33%）である。257、893 の 2 件は一部
 stage または機械判定できない hard fleet constraint が残り、残る 16 件には route unit が
 ない。この値は全利用者の表示任務に
 対する命中率ではなく、canonical recurring normal-sortie inventory 上のデータ充足率である。
@@ -114,10 +114,14 @@ stage または機械判定できない hard fleet constraint が残り、残る
 approved map template、canonical objective fact、evidence URL と runtime recipe が一致しない場合、
 compiler は生成を停止する。
 
+4-1、4-2、4-3、4-4、4-5 の組み合わせでは #845 を5段階の順序付き計画として完了できる。
+4-3 の H からボスへの分岐はランダム、4-5 は対潜・水上・対地の複合準備が必要という制約を
+route action と risk に保持し、固定到達や低難度であるかのようには表示しない。
+
 そのため本変更では、件数を増やすために未審査 Wiki 情報を取り込まず、まず route-ready
 だけを自動選択する UI と authority を固定する。次のデータ pilot は、代表 snapshot で
 zero-ready の原因を記録し、author と approver を分離できる場合に限り、小さな審査単位で
-追加する。29.63% をもって既定有効化や実用カバレッジ達成とは判断しない。
+追加する。33.33% をもって既定有効化や実用カバレッジ達成とは判断しない。
 
 ## 推奨アーキテクチャ
 

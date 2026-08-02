@@ -43,7 +43,20 @@ describe('QuestStrategyRoute.vue', () => {
     const wrapper = mount(QuestStrategyRoute, {
       props: {
         recommendations,
-        availableMapKeys: new Set(['1-2', '1-3', '1-4', '1-5', '2-1', '2-2', '2-3', '4-2']),
+        availableMapKeys: new Set([
+          '1-2',
+          '1-3',
+          '1-4',
+          '1-5',
+          '2-1',
+          '2-2',
+          '2-3',
+          '4-1',
+          '4-2',
+          '4-3',
+          '4-4',
+          '4-5'
+        ]),
         mapDataAvailable: true,
         activeQuestCount: 1,
         questCapacity: 5,
@@ -100,13 +113,24 @@ describe('QuestStrategyRoute.vue', () => {
     expect(wrapper.get('.quest-strategy-summary').text()).not.toContain('quest.strategy.uncovered')
   })
 
+  it('renders the complete five-map western quarterly route', async () => {
+    const wrapper = await render([recommendation(845, 'active')])
+
+    expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(5)
+    const routeText = wrapper.findAll('.quest-strategy-step').map((step) => step.text())
+    for (const mapKey of ['4-1', '4-2', '4-3', '4-4', '4-5']) {
+      expect(routeText.some((text) => text.includes(`"map":"${mapKey}"`))).toBe(true)
+    }
+    expect(wrapper.get('.quest-strategy-summary').text()).not.toContain('quest.strategy.uncovered')
+  })
+
   it('persists an explicit partial-route choice only after manual interaction', async () => {
-    const wrapper = await render([recommendation(229), recommendation(845, 'active')])
+    const wrapper = await render([recommendation(229), recommendation(893, 'active')])
     await wrapper.get('.quest-strategy-controls > summary').trigger('click')
     await wrapper.get('.quest-strategy-candidate-group > summary').trigger('click')
     const partial = wrapper
       .findAll('label.quest-strategy-candidate')
-      .find((candidate) => candidate.text().includes('#845'))
+      .find((candidate) => candidate.text().includes('#893'))
 
     expect(partial).toBeDefined()
     await partial!.get('input').setValue(true)
@@ -114,7 +138,7 @@ describe('QuestStrategyRoute.vue', () => {
     expect(JSON.parse(localStorage.getItem('questStrategyRouteSelection:v2') ?? 'null')).toEqual({
       schemaVersion: 2,
       mode: 'manual',
-      questIds: [229, 845]
+      questIds: [229, 893]
     })
   })
 })

@@ -32,7 +32,11 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '2-1': 'available',
         '2-2': 'available',
         '2-3': 'available',
-        '4-2': 'available'
+        '4-1': 'available',
+        '4-2': 'available',
+        '4-3': 'available',
+        '4-4': 'available',
+        '4-5': 'available'
       },
       questCapacity: {
         active: selectedQuestIds.length,
@@ -97,17 +101,18 @@ describe('quest strategy runtime v2 stage coverage', () => {
     ).toBe('route-unreviewed')
   })
 
-  it('reports complete, partial and remaining stages separately in a plan', () => {
+  it('assembles all five western stages into one complete quarterly plan', () => {
     const plan = build([229, 264, 845])
     const quarterly = plan.questCoverage.find((coverage) => coverage.questId === 845)!
 
     expect(plan.schemaVersion).toBe(2)
-    expect(plan.coveredQuestIds).toEqual([229, 264])
-    expect(plan.partialQuestIds).toEqual([845])
-    expect(plan.uncoveredQuestIds).toEqual([845])
-    expect(quarterly.contributedStageIndexes).toEqual([1])
-    expect(quarterly.remainingStageIndexes).toEqual([0, 2, 3, 4])
-    expect(plan.steps[0].partialQuestIds).toEqual([845])
+    expect(plan.coveredQuestIds).toEqual([229, 264, 845])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.uncoveredQuestIds).toEqual([])
+    expect(quarterly.contributedStageIndexes).toEqual([0, 1, 2, 3, 4])
+    expect(quarterly.remainingStageIndexes).toEqual([])
+    expect(plan.steps.map((step) => step.mapKey).sort()).toEqual(['4-1', '4-2', '4-3', '4-4', '4-5'])
+    expect(plan.steps.every((step) => !step.partialQuestIds.includes(845))).toBe(true)
   })
 
   it('uses five shared stages to complete the widest task set without hiding the 1-2 remainder', () => {

@@ -62,13 +62,13 @@ describe('quest strategy renderer adapter', () => {
       GeneratedAt
     )
 
-    expect(result.map((candidate) => candidate.questId)).toEqual([229, 845, 999])
+    expect(result.map((candidate) => candidate.questId)).toEqual([845, 229, 999])
     expect(result.map((candidate) => candidate.group)).toEqual([
       'route-ready',
-      'partial',
+      'route-ready',
       'diagnostic'
     ])
-    expect(result.map((candidate) => candidate.autoSelectable)).toEqual([true, false, false])
+    expect(result.map((candidate) => candidate.autoSelectable)).toEqual([true, true, false])
     expect(result.map((candidate) => candidate.selectable)).toEqual([true, true, false])
   })
 
@@ -82,8 +82,14 @@ describe('quest strategy renderer adapter', () => {
     const candidates = listQuestStrategyCandidates(recipes, input, GeneratedAt)
 
     expect(listQuestStrategyDefaultBundles(recipes, candidates, GeneratedAt)[0]).toEqual({
-      recipeIds: ['normal-4-2-western-periodic'],
-      questIds: [264, 229]
+      recipeIds: [
+        'normal-4-1-western-quarterly',
+        'normal-4-2-western-periodic',
+        'normal-4-3-western-quarterly',
+        'normal-4-4-western-quarterly',
+        'normal-4-5-western-quarterly'
+      ],
+      questIds: [264, 845, 229]
     })
     expect(
       listQuestStrategyDefaultBundles(
@@ -179,10 +185,10 @@ describe('quest strategy renderer adapter', () => {
 
     expect(
       result.filter((candidate) => candidate.group === 'route-ready').map((item) => item.questId)
-    ).toEqual([226, 229, 261, 264, 265, 280, 284, 894])
+    ).toEqual([226, 229, 261, 264, 265, 280, 284, 845, 894])
     expect(
       result.filter((candidate) => candidate.group === 'partial').map((item) => item.questId)
-    ).toEqual([257, 845, 893])
+    ).toEqual([257, 893])
   })
 
   it('builds a five-route default bundle for the two compatible southwest multi-stage tasks', () => {
@@ -275,7 +281,11 @@ describe('quest strategy renderer adapter', () => {
       '2-1': 'unknown',
       '2-2': 'unknown',
       '2-3': 'unknown',
-      '4-2': 'unknown'
+      '4-1': 'unknown',
+      '4-2': 'unknown',
+      '4-3': 'unknown',
+      '4-4': 'unknown',
+      '4-5': 'unknown'
     })
     expect(snapshot.questCapacity).toEqual({ active: 4, maximum: 5 })
     expect(JSON.stringify(snapshot)).not.toMatch(/name|shipId|instanceId/i)

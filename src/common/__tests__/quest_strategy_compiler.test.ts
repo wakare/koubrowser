@@ -26,7 +26,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     )
 
-    expect(output).toContain('27 facts, 9 routes, 22 stage contributions, 1 rejected objectives')
+    expect(output).toContain('27 facts, 13 routes, 26 stage contributions, 1 rejected objectives')
   })
 
   it('compiles exact stage contributions without promoting partial multi-stage quests', () => {
@@ -47,6 +47,18 @@ describe('quest strategy runtime v2 compiler', () => {
       bundle.objectiveFacts.find((fact) => fact.questId === 845)?.objectiveStages
     ).toHaveLength(5)
     expect(quarterly).toMatchObject([{ questId: 845, stageIndex: 1, mapKey: '4-2' }])
+    expect(
+      bundle.routes
+        .flatMap((route) => route.contributions)
+        .filter((contribution) => contribution.questId === 845)
+        .sort((left, right) => left.stageIndex - right.stageIndex)
+    ).toMatchObject([
+      { questId: 845, stageIndex: 0, mapKey: '4-1' },
+      { questId: 845, stageIndex: 1, mapKey: '4-2' },
+      { questId: 845, stageIndex: 2, mapKey: '4-3' },
+      { questId: 845, stageIndex: 3, mapKey: '4-4' },
+      { questId: 845, stageIndex: 4, mapKey: '4-5' }
+    ])
 
     const southwest = bundle.routes.find(
       (route) => route.routeId === 'normal-2-1-southwest-periodic'
@@ -78,7 +90,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     ])
     expect(withdrawals.withdrawals).toEqual([])
-    expect(withdrawals.dependencies).toHaveLength(9)
+    expect(withdrawals.dependencies).toHaveLength(13)
   })
 
   it('binds every runtime route to an approved template and exact objective facts', () => {

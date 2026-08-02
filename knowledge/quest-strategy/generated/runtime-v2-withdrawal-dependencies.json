@@ -169,6 +169,58 @@
         }
       ],
       "routeId": "normal-2-3-carrier-southwest-periodic"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-4-1-current",
+        "kcwiki-map-4-1-current"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 845,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-4-1-western-quarterly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-4-3-current",
+        "kcwiki-map-4-3-current"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 845,
+          "stageIndex": 2
+        }
+      ],
+      "routeId": "normal-4-3-western-quarterly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-4-4-current",
+        "kcwiki-map-4-4-current"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 845,
+          "stageIndex": 3
+        }
+      ],
+      "routeId": "normal-4-4-western-quarterly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-4-5-current",
+        "kcwiki-map-4-5-current"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 845,
+          "stageIndex": 4
+        }
+      ],
+      "routeId": "normal-4-5-western-quarterly"
     }
   ],
   "schemaVersion": 1,

@@ -752,11 +752,384 @@ const recipes = [
     validity: {
       reviewBy: '2026-11-01T00:00:00.000Z'
     }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-4-1-western-quarterly',
+    revision: 1,
+    title: '4-1 西方海域作戦',
+    status: 'approved',
+    questIds: [845],
+    objectives: [{ questId: 845, result: 'S', requiredCount: 1 }],
+    mapKey: '4-1',
+    routeLabels: ['A-B-D-H-J', 'C-F-D-H-J'],
+    targetNodes: ['J'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 1,
+          label: '正規空母・装甲空母 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.jyuujyun, ApiShipType.koujyun],
+          minimum: 2,
+          label: '重巡級 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 2,
+          label: '駆逐艦 2 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter],
+        minimum: 1,
+        required: false,
+        label: '艦上戦闘機（制空値36に余裕を加える）'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.Sonar, SlotitemType.LargeSonar],
+        minimum: 1,
+        required: false,
+        label: 'Dの対潜戦用ソナー'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'D の対潜戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: '水上戦・Jボス' }
+    ],
+    airState: {
+      target: 'superiority',
+      summary: 'Jボスの航空優勢境界36に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務845を受注し、4-1段階が残っていることを確認する',
+      '正規空母系1・重巡級2・軽巡洋艦1・駆逐艦2の6隻にし、現在の制空値を確認する',
+      '初手分岐に応じてA-B-D-H-JまたはC-F-D-H-Jを進み、大破時は進撃しない',
+      'JボスでS勝利し、4-1段階の進捗を確認する'
+    ],
+    cost: 'medium',
+    risk: 'medium',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-4-1-current',
+        sourceLabel: '艦これ攻略 Wiki - 4-1',
+        url: 'https://wikiwiki.jp/kancolle/西方海域/4-1',
+        reviewedAt: '2026-08-03T02:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '空母1以下・重巡級1以上・軽巡1・駆逐2でGを避ける分岐と制空境界を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-4-1-current',
+        sourceLabel: '舰娘百科 - 4-1',
+        url: 'https://zh.kcwiki.cn/wiki/西方海域/4-1',
+        reviewedAt: '2026-08-03T02:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '正規空母1・重巡級2・軽巡1・駆逐2の分岐と航空優勢境界を独立照合'
+      }
+    ],
+    validity: {
+      reviewBy: '2026-11-02T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-4-3-western-quarterly',
+    revision: 1,
+    title: '4-3 西方海域作戦',
+    status: 'approved',
+    questIds: [845],
+    objectives: [{ questId: 845, result: 'S', requiredCount: 1 }],
+    mapKey: '4-3',
+    routeLabels: ['D-H-N（HからNはランダム）'],
+    targetNodes: ['N'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.kei_kuubo],
+          minimum: 2,
+          label: '軽空母 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 3,
+          label: '駆逐艦 3 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter],
+        minimum: 2,
+        required: false,
+        label: '艦上戦闘機（制空値155に余裕を加える）'
+      },
+      {
+        equipmentTypeIds: [
+          SlotitemType.AntiGroundEquipment,
+          SlotitemType.LandingCraft,
+          SlotitemType.SpecialATank,
+          SlotitemType.LandingForce
+        ],
+        minimum: 2,
+        required: false,
+        label: '軽巡・駆逐用の対地装備 2 個以上'
+      }
+    ],
+    formations: [{ formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'H・Nボス' }],
+    airState: {
+      target: 'superiority',
+      summary: 'Nボスの航空優勢境界155に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務845を受注し、4-3段階が残っていることを確認する',
+      '軽空母2・軽巡洋艦1・駆逐艦3の6隻にし、対地装備と現在の制空値を確認する',
+      'D-Hへ進み、HからNボスへの分岐は固定できないため逸れた場合は再出撃する',
+      'Nボスの陸上型旗艦を含む敵艦隊にS勝利し、4-3段階の進捗を確認する'
+    ],
+    cost: 'medium',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-4-3-current',
+        sourceLabel: '艦これ攻略 Wiki - 4-3',
+        url: 'https://wikiwiki.jp/kancolle/西方海域/4-3',
+        reviewedAt: '2026-08-03T02:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '軽巡1・駆逐3でD、空母系2でHからN寄りとなる分岐、陸上型ボスと任務条件を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-4-3-current',
+        sourceLabel: '舰娘百科 - 4-3',
+        url: 'https://zh.kcwiki.cn/wiki/西方海域/4-3',
+        reviewedAt: '2026-08-03T02:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '軽空母2・軽巡1・駆逐3のD-H-N候補、制空と対地準備を独立照合'
+      }
+    ],
+    validity: {
+      reviewBy: '2026-11-02T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-4-4-western-quarterly',
+    revision: 1,
+    title: '4-4 西方海域作戦',
+    status: 'approved',
+    questIds: [845],
+    objectives: [{ questId: 845, result: 'S', requiredCount: 1 }],
+    mapKey: '4-4',
+    routeLabels: ['A-E-I-K'],
+    targetNodes: ['K'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 2,
+          label: '正規空母・装甲空母 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.jyuujyun, ApiShipType.koujyun],
+          minimum: 1,
+          label: '重巡級 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 2,
+          label: '駆逐艦 2 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter],
+        minimum: 2,
+        required: false,
+        label: '艦上戦闘機（制空値72に余裕を加える）'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.Sonar, SlotitemType.LargeSonar],
+        minimum: 1,
+        required: false,
+        label: 'Eとボス混成用ソナー'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.DepthCharge],
+        minimum: 1,
+        required: false,
+        label: 'Eとボス混成用爆雷'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'E の対潜戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'I・Kボス' }
+    ],
+    airState: {
+      target: 'superiority',
+      summary: 'Kボスの航空優勢境界72に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務845を受注し、4-4段階が残っていることを確認する',
+      '正規空母系2・重巡級1・軽巡洋艦1・駆逐艦2の6隻にし、駆逐艦1隻へソナーと爆雷を載せる',
+      'A-E-I-Kを進み、各戦闘後に損傷を確認して大破時は進撃しない',
+      '潜水艦を含むボス編成にも備えてKボスでS勝利し、4-4段階の進捗を確認する'
+    ],
+    cost: 'medium',
+    risk: 'medium',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-4-4-current',
+        sourceLabel: '艦これ攻略 Wiki - 4-4',
+        url: 'https://wikiwiki.jp/kancolle/西方海域/4-4',
+        reviewedAt: '2026-08-03T02:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '正規空母2・駆逐2・重巡級または軽巡を含むA-E-I-Kとボス潜水艦対策を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-4-4-current',
+        sourceLabel: '舰娘百科 - 4-4',
+        url: 'https://zh.kcwiki.cn/wiki/西方海域/4-4',
+        reviewedAt: '2026-08-03T02:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '空母2・重巡級1〜2・駆逐2のA-E-I-K編成とボス対潜準備を独立照合'
+      }
+    ],
+    validity: {
+      reviewBy: '2026-11-02T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-4-5-western-quarterly',
+    revision: 1,
+    title: '4-5 西方海域作戦',
+    status: 'approved',
+    questIds: [845],
+    objectives: [{ questId: 845, result: 'S', requiredCount: 1 }],
+    mapKey: '4-5',
+    routeLabels: ['A-D-H-T', 'C-D-H-T'],
+    targetNodes: ['T'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 2,
+          label: '正規空母・装甲空母 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 3,
+          label: '駆逐艦 3 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter],
+        minimum: 3,
+        required: false,
+        label: '艦上戦闘機（制空値207に余裕を加える）'
+      },
+      {
+        equipmentTypeIds: [
+          SlotitemType.AntiGroundEquipment,
+          SlotitemType.LandingCraft,
+          SlotitemType.SpecialATank,
+          SlotitemType.LandingForce
+        ],
+        minimum: 3,
+        required: false,
+        label: '軽巡・駆逐用の対地装備 3 個以上'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.Sonar, SlotitemType.LargeSonar],
+        minimum: 1,
+        required: false,
+        label: 'Dの対潜戦用ソナー'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'D の対潜戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'H・Tボス' }
+    ],
+    airState: {
+      target: 'superiority',
+      summary: 'Tボス通常編成の航空優勢境界207に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務845を受注し、4-5段階が残っていることと海域が開放済みであることを確認する',
+      '正規空母系2・軽巡洋艦1・駆逐艦3の6隻にし、対地装備と現在の制空値を確認する',
+      '初手の能動分岐でDを選び、A-D-H-TまたはC-D-H-Tを進んで大破時は進撃しない',
+      '陸上型の港湾棲姫を撃沈してTボスでS勝利し、任務845の達成を確認する'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-4-5-current',
+        sourceLabel: '艦これ攻略 Wiki - 4-5',
+        url: 'https://wikiwiki.jp/kancolle/西方海域/4-5',
+        reviewedAt: '2026-08-03T02:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '軽巡1・駆逐3の中央最短、対潜・水上・陸上型への複合準備と海域開放条件を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-4-5-current',
+        sourceLabel: '舰娘百科 - 4-5',
+        url: 'https://zh.kcwiki.cn/wiki/4-5',
+        reviewedAt: '2026-08-03T02:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '空母2・軽巡1・駆逐3のA/C-D-H-T、制空境界と対地準備を独立照合'
+      }
+    ],
+    validity: {
+      reviewBy: '2026-11-02T00:00:00.000Z'
+    }
   }
 ]
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.2',
+  version: '2026-08-03.3',
   recipes
 })

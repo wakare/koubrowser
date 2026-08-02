@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.2",
+  "manifestVersion": "2026-08-03.3",
   "sourceSnapshot": {
-    "repositoryCommit": "f8b5793ec16241f2202618f91b39ae78aece100c",
+    "repositoryCommit": "c66d2f1ccdd0a94aace74b71b227b814e1a739cb",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -591,6 +591,119 @@
         "validUntil": "2027-02-01T00:00:00.000Z",
         "evidenceReviewIds": ["map-2-3-wikiwiki-review", "map-2-3-kcwiki-review"]
       }
+    },
+    {
+      "templateId": "normal-map:4-1:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "4-1",
+      "routeLabels": ["A-B-D-H-J", "C-F-D-H-J"],
+      "targetNodes": ["J"],
+      "fleetConstraintRef": "legacy-recipe:normal-4-1-western-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "D の対潜戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "水上戦・Jボス" }
+      ],
+      "actions": [
+        "任務845を受注し、4-1段階が残っていることを確認する",
+        "正規空母系1・重巡級2・軽巡洋艦1・駆逐艦2の6隻にし、現在の制空値を確認する",
+        "初手分岐に応じてA-B-D-H-JまたはC-F-D-H-Jを進み、大破時は進撃しない",
+        "JボスでS勝利し、4-1段階の進捗を確認する"
+      ],
+      "cost": "medium",
+      "risk": "medium",
+      "review": {
+        "author": "codex-r8-western-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T02:00:00.000Z",
+        "reviewBy": "2026-11-02T00:00:00.000Z",
+        "validUntil": "2027-02-02T00:00:00.000Z",
+        "evidenceReviewIds": ["map-4-1-wikiwiki-current-review", "map-4-1-kcwiki-current-review"]
+      }
+    },
+    {
+      "templateId": "normal-map:4-3:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "4-3",
+      "routeLabels": ["D-H-N（HからNはランダム）"],
+      "targetNodes": ["N"],
+      "fleetConstraintRef": "legacy-recipe:normal-4-3-western-quarterly",
+      "formations": [{ "formationId": 1, "label": "単縦陣", "when": "H・Nボス" }],
+      "actions": [
+        "任務845を受注し、4-3段階が残っていることを確認する",
+        "軽空母2・軽巡洋艦1・駆逐艦3の6隻にし、対地装備と現在の制空値を確認する",
+        "D-Hへ進み、HからNボスへの分岐は固定できないため逸れた場合は再出撃する",
+        "Nボスの陸上型旗艦を含む敵艦隊にS勝利し、4-3段階の進捗を確認する"
+      ],
+      "cost": "medium",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-western-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T02:00:00.000Z",
+        "reviewBy": "2026-11-02T00:00:00.000Z",
+        "validUntil": "2027-02-02T00:00:00.000Z",
+        "evidenceReviewIds": ["map-4-3-wikiwiki-current-review", "map-4-3-kcwiki-current-review"]
+      }
+    },
+    {
+      "templateId": "normal-map:4-4:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "4-4",
+      "routeLabels": ["A-E-I-K"],
+      "targetNodes": ["K"],
+      "fleetConstraintRef": "legacy-recipe:normal-4-4-western-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "E の対潜戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "I・Kボス" }
+      ],
+      "actions": [
+        "任務845を受注し、4-4段階が残っていることを確認する",
+        "正規空母系2・重巡級1・軽巡洋艦1・駆逐艦2の6隻にし、駆逐艦1隻へソナーと爆雷を載せる",
+        "A-E-I-Kを進み、各戦闘後に損傷を確認して大破時は進撃しない",
+        "潜水艦を含むボス編成にも備えてKボスでS勝利し、4-4段階の進捗を確認する"
+      ],
+      "cost": "medium",
+      "risk": "medium",
+      "review": {
+        "author": "codex-r8-western-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T02:00:00.000Z",
+        "reviewBy": "2026-11-02T00:00:00.000Z",
+        "validUntil": "2027-02-02T00:00:00.000Z",
+        "evidenceReviewIds": ["map-4-4-wikiwiki-current-review", "map-4-4-kcwiki-current-review"]
+      }
+    },
+    {
+      "templateId": "normal-map:4-5:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "4-5",
+      "routeLabels": ["A-D-H-T", "C-D-H-T"],
+      "targetNodes": ["T"],
+      "fleetConstraintRef": "legacy-recipe:normal-4-5-western-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "D の対潜戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "H・Tボス" }
+      ],
+      "actions": [
+        "任務845を受注し、4-5段階が残っていることと海域が開放済みであることを確認する",
+        "正規空母系2・軽巡洋艦1・駆逐艦3の6隻にし、対地装備と現在の制空値を確認する",
+        "初手の能動分岐でDを選び、A-D-H-TまたはC-D-H-Tを進んで大破時は進撃しない",
+        "陸上型の港湾棲姫を撃沈してTボスでS勝利し、任務845の達成を確認する"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-western-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T02:00:00.000Z",
+        "reviewBy": "2026-11-02T00:00:00.000Z",
+        "validUntil": "2027-02-02T00:00:00.000Z",
+        "evidenceReviewIds": ["map-4-5-wikiwiki-current-review", "map-4-5-kcwiki-current-review"]
+      }
     }
   ],
   "composabilityRules": [
@@ -774,6 +887,86 @@
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-02T16:30:00.000Z",
       "validUntil": "2027-02-01T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-4-1-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/西方海域/4-1",
+      "sourceLabel": "艦これ攻略 Wiki - 4-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T02:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-4-1-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/西方海域/4-1",
+      "sourceLabel": "舰娘百科 - 4-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T02:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-4-3-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/西方海域/4-3",
+      "sourceLabel": "艦これ攻略 Wiki - 4-3",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T02:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-4-3-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/西方海域/4-3",
+      "sourceLabel": "舰娘百科 - 4-3",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T02:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-4-4-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/西方海域/4-4",
+      "sourceLabel": "艦これ攻略 Wiki - 4-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T02:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-4-4-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/西方海域/4-4",
+      "sourceLabel": "舰娘百科 - 4-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T02:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-4-5-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/西方海域/4-5",
+      "sourceLabel": "艦これ攻略 Wiki - 4-5",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T02:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-4-5-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/4-5",
+      "sourceLabel": "舰娘百科 - 4-5",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T02:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
       "confidence": "supported"
     }
   ],
