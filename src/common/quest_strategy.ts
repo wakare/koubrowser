@@ -70,6 +70,7 @@ export interface QuestStrategyRecipe {
   mapKey: string
   routeLabels: string[]
   targetNodes: string[]
+  targetCellIds?: number[]
   fleet: {
     minimumShips: number
     maximumShips: number
@@ -158,6 +159,7 @@ export interface StrategyRouteStep {
   mapKey: string
   routeLabels: string[]
   targetNodes: string[]
+  targetCellIds?: number[]
   fleet: QuestStrategyRecipe['fleet']
   equipmentTypeConstraints: StrategyEquipmentTypeConstraint[]
   formations: StrategyFormation[]
@@ -450,6 +452,7 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
       'mapKey',
       'routeLabels',
       'targetNodes',
+      'targetCellIds',
       'fleet',
       'equipmentTypeConstraints',
       'formations',
@@ -518,6 +521,9 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
     mapKey,
     routeLabels: uniqueStringsAt(record.routeLabels, `${path}.routeLabels`),
     targetNodes: uniqueStringsAt(record.targetNodes, `${path}.targetNodes`),
+    ...(record.targetCellIds === undefined
+      ? {}
+      : { targetCellIds: uniqueIntegersAt(record.targetCellIds, `${path}.targetCellIds`) }),
     fleet: {
       minimumShips,
       maximumShips,
@@ -1008,6 +1014,7 @@ function evaluateRecipe(
     mapKey: recipe.mapKey,
     routeLabels: [...recipe.routeLabels],
     targetNodes: [...recipe.targetNodes],
+    ...(recipe.targetCellIds === undefined ? {} : { targetCellIds: [...recipe.targetCellIds] }),
     fleet: {
       minimumShips: recipe.fleet.minimumShips,
       maximumShips: recipe.fleet.maximumShips,

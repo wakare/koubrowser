@@ -113,8 +113,8 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('loads thirteen reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.3')
+  it('loads sixteen reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.4')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
@@ -128,7 +128,10 @@ describe('quest strategy validation', () => {
       'normal-4-1-western-quarterly',
       'normal-4-3-western-quarterly',
       'normal-4-4-western-quarterly',
-      'normal-4-5-western-quarterly'
+      'normal-4-5-western-quarterly',
+      'normal-7-1-anchorage-quarterly',
+      'normal-7-2-g-anchorage-quarterly',
+      'normal-7-2-m-anchorage-quarterly'
     ])
     expect(
       BundledQuestStrategyKnowledge.recipes.every(
@@ -199,6 +202,15 @@ describe('quest strategy validation', () => {
     expect(() => normalizeQuestStrategyRecipes([mismatchedObjective])).toThrow(
       'questIds and objective questId values must match'
     )
+
+    expect(normalizeQuestStrategyRecipes([recipe('cell-bound', [101], { targetCellIds: [7] })])[0])
+      .toMatchObject({ targetCellIds: [7] })
+    expect(() =>
+      normalizeQuestStrategyRecipes([recipe('duplicate-cell', [101], { targetCellIds: [7, 7] })])
+    ).toThrow('duplicate values')
+    expect(() =>
+      normalizeQuestStrategyRecipes([recipe('invalid-cell', [101], { targetCellIds: [0] })])
+    ).toThrow('integer greater than or equal to 1 expected')
   })
 
   it('requires bounded validity for event-only knowledge', () => {

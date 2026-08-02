@@ -44,7 +44,7 @@
 - 整数 score、固定 tie-break、入力 fingerprint、`any` 前提の独立 alternative を実装
 - 合成 fixture と production 整合性テストで決定性、降格、失効、競合、
   preference、任務定義との map/rank/count 一致を検証
-- Wiki の現行海域・定期任務ページをレビューし、通常海域 9 recipe を同梱
+- Wiki の現行海域・定期任務ページをレビューし、通常海域 16 recipe を同梱
 - 既存任務指引内へ既定非表示の opt-in UI、score 内訳、次点、確認事項、
   recipe 非表示、実行要約を追加
 - 1～5 任務を最大 512 recipe から限界被覆で選ぶ bounded set-cover と性能 fixture を追加。
@@ -65,8 +65,15 @@
 | `normal-2-1-southwest-periodic`         | 226 / 280 / 284 / 894 | [2-1](https://wikiwiki.jp/kancolle/南西諸島海域/2-1)、[舰娘百科 2-1](https://zh.kcwiki.cn/wiki/2-1)            |
 | `normal-2-2-carrier-southwest-periodic` | 284 / 894             | [2-2](https://wikiwiki.jp/kancolle/南西諸島海域/2-2)、[舰娘百科 2-2](https://zh.kcwiki.cn/wiki/2-2)            |
 | `normal-2-3-carrier-southwest-periodic` | 284 / 894             | [2-3](https://wikiwiki.jp/kancolle/南西諸島海域/2-3)、[舰娘百科 2-3](https://zh.kcwiki.cn/wiki/2-3)            |
+| `normal-4-1-western-quarterly`          | 845                   | [4-1](https://wikiwiki.jp/kancolle/西方海域/4-1)、[舰娘百科 4-1](https://zh.kcwiki.cn/wiki/西方海域/4-1)     |
+| `normal-4-3-western-quarterly`          | 845                   | [4-3](https://wikiwiki.jp/kancolle/西方海域/4-3)、[舰娘百科 4-3](https://zh.kcwiki.cn/wiki/西方海域/4-3)     |
+| `normal-4-4-western-quarterly`          | 845                   | [4-4](https://wikiwiki.jp/kancolle/西方海域/4-4)、[舰娘百科 4-4](https://zh.kcwiki.cn/wiki/西方海域/4-4)     |
+| `normal-4-5-western-quarterly`          | 845                   | [4-5](https://wikiwiki.jp/kancolle/西方海域/4-5)、[舰娘百科 4-5](https://zh.kcwiki.cn/wiki/4-5)             |
+| `normal-7-1-anchorage-quarterly`        | 893                   | [7-1](https://wikiwiki.jp/kancolle/南西海域/7-1)、[舰娘百科 7-1](https://zh.kcwiki.cn/wiki/7-1)             |
+| `normal-7-2-g-anchorage-quarterly`      | 893                   | [7-2](https://wikiwiki.jp/kancolle/南西海域/7-2)、[舰娘百科 7-2](https://zh.kcwiki.cn/wiki/南西海域/7-2)    |
+| `normal-7-2-m-anchorage-quarterly`      | 893                   | [7-2](https://wikiwiki.jp/kancolle/南西海域/7-2)、[舰娘百科 7-2](https://zh.kcwiki.cn/wiki/南西海域/7-2)    |
 
-根拠には 2026-10-31 の再審査期限と 2027-07-31 の有効期限を設定した。
+根拠ごとに再審査期限と有効期限を設定し、新規追加分は 2026-11-02 / 2027-02-02 とした。
 再審査期限後は stale penalty と警告を付け、有効期限後は推薦から除外する。
 
 ## 絶対境界
@@ -102,9 +109,9 @@
 
 ### 現在の actionability baseline
 
-primary denominator 27 件に対し、現行の審査済み 13 route unit が任務全体を完了できるのは
-226、229、261、264、265、280、284、845、894 の 9 件（33.33%）である。257、893 の 2 件は一部
-stage または機械判定できない hard fleet constraint が残り、残る 16 件には route unit が
+primary denominator 27 件に対し、現行の審査済み 16 route unit が任務全体を完了できるのは
+226、229、261、264、265、280、284、845、893、894 の 10 件（37.04%）である。257 の 1 件は
+機械判定できない hard fleet constraint が残り、残る 16 件には route unit が
 ない。この値は全利用者の表示任務に
 対する命中率ではなく、canonical recurring normal-sortie inventory 上のデータ充足率である。
 
@@ -118,10 +125,16 @@ compiler は生成を停止する。
 4-3 の H からボスへの分岐はランダム、4-5 は対潜・水上・対地の複合準備が必要という制約を
 route action と risk に保持し、固定到達や低難度であるかのようには表示しない。
 
+1-5、7-1、7-2第一ゲージG、7-2第二ゲージMの組み合わせでは #893 を4段階の順序付き計画として
+完了できる。7-2は同一海域に二つの対象格があるため、recipe の `targetCellIds` と canonical
+objective の数値セルIDを完全一致させる。これによりG向けの対潜・水上混成編成がM段階へ、
+またはM向けの高速空母機動編成がG段階へ誤って寄与することを防ぐ。M段階は当月の第一ゲージ
+破壊後に進める解放順序も action に保持する。
+
 そのため本変更では、件数を増やすために未審査 Wiki 情報を取り込まず、まず route-ready
 だけを自動選択する UI と authority を固定する。次のデータ pilot は、代表 snapshot で
 zero-ready の原因を記録し、author と approver を分離できる場合に限り、小さな審査単位で
-追加する。33.33% をもって既定有効化や実用カバレッジ達成とは判断しない。
+追加する。37.04% をもって既定有効化や実用カバレッジ達成とは判断しない。
 
 ## 推奨アーキテクチャ
 

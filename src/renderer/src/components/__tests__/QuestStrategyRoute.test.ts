@@ -55,7 +55,9 @@ describe('QuestStrategyRoute.vue', () => {
           '4-2',
           '4-3',
           '4-4',
-          '4-5'
+          '4-5',
+          '7-1',
+          '7-2'
         ]),
         mapDataAvailable: true,
         activeQuestCount: 1,
@@ -124,13 +126,26 @@ describe('QuestStrategyRoute.vue', () => {
     expect(wrapper.get('.quest-strategy-summary').text()).not.toContain('quest.strategy.uncovered')
   })
 
+  it('renders the ordered anchorage route with distinct 7-2 targets', async () => {
+    const wrapper = await render([recommendation(893, 'active')])
+
+    expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(4)
+    const routeText = wrapper.findAll('.quest-strategy-step').map((step) => step.text())
+    expect(routeText.some((text) => text.includes('"map":"1-5"'))).toBe(true)
+    expect(routeText.some((text) => text.includes('"map":"7-1"'))).toBe(true)
+    expect(routeText.filter((text) => text.includes('"map":"7-2"'))).toHaveLength(2)
+    expect(routeText.some((text) => text.includes('G'))).toBe(true)
+    expect(routeText.some((text) => text.includes('M'))).toBe(true)
+    expect(wrapper.get('.quest-strategy-summary').text()).not.toContain('quest.strategy.uncovered')
+  })
+
   it('persists an explicit partial-route choice only after manual interaction', async () => {
-    const wrapper = await render([recommendation(229), recommendation(893, 'active')])
+    const wrapper = await render([recommendation(229), recommendation(257, 'active')])
     await wrapper.get('.quest-strategy-controls > summary').trigger('click')
     await wrapper.get('.quest-strategy-candidate-group > summary').trigger('click')
     const partial = wrapper
       .findAll('label.quest-strategy-candidate')
-      .find((candidate) => candidate.text().includes('#893'))
+      .find((candidate) => candidate.text().includes('#257'))
 
     expect(partial).toBeDefined()
     await partial!.get('input').setValue(true)
@@ -138,7 +153,7 @@ describe('QuestStrategyRoute.vue', () => {
     expect(JSON.parse(localStorage.getItem('questStrategyRouteSelection:v2') ?? 'null')).toEqual({
       schemaVersion: 2,
       mode: 'manual',
-      questIds: [229, 893]
+      questIds: [229, 257]
     })
   })
 })

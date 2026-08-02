@@ -41,6 +41,7 @@ interface QuestStrategyAuthoringManifest {
     mapKey: string
     routeLabels: string[]
     targetNodes: string[]
+    targetCellIds?: number[]
     fleetConstraintRef?: string
     formations: unknown[]
     actions: string[]
@@ -124,6 +125,7 @@ function validateRecipeAuthoringBindings(
       mapKey: template.mapKey,
       routeLabels: template.routeLabels,
       targetNodes: template.targetNodes,
+      targetCellIds: template.targetCellIds ?? [],
       formations: template.formations,
       actions: template.actions,
       cost: template.cost,
@@ -133,6 +135,7 @@ function validateRecipeAuthoringBindings(
       mapKey: recipe.mapKey,
       routeLabels: recipe.routeLabels,
       targetNodes: recipe.targetNodes,
+      targetCellIds: recipe.targetCellIds ?? [],
       formations: recipe.formations,
       actions: recipe.actions,
       cost: recipe.cost,
@@ -254,6 +257,7 @@ export function buildQuestStrategyV2Artifacts(root: string): Record<string, unkn
         contributions,
         routeLabels: recipe.routeLabels,
         targetNodes: recipe.targetNodes,
+        ...(recipe.targetCellIds === undefined ? {} : { targetCellIds: recipe.targetCellIds }),
         fleet: recipe.fleet,
         equipmentTypeConstraints: recipe.equipmentTypeConstraints,
         formations: recipe.formations,

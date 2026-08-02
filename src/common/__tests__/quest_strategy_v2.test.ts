@@ -36,7 +36,9 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '4-2': 'available',
         '4-3': 'available',
         '4-4': 'available',
-        '4-5': 'available'
+        '4-5': 'available',
+        '7-1': 'available',
+        '7-2': 'available'
       },
       questCapacity: {
         active: selectedQuestIds.length,
@@ -113,6 +115,37 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(quarterly.remainingStageIndexes).toEqual([])
     expect(plan.steps.map((step) => step.mapKey).sort()).toEqual(['4-1', '4-2', '4-3', '4-4', '4-5'])
     expect(plan.steps.every((step) => !step.partialQuestIds.includes(845))).toBe(true)
+  })
+
+  it('binds the two 7-2 targets to distinct cells and completes task 893', () => {
+    const firstGauge = BundledQuestStrategyKnowledge.recipes.find(
+      (item) => item.id === 'normal-7-2-g-anchorage-quarterly'
+    )!
+    const secondGauge = BundledQuestStrategyKnowledge.recipes.find(
+      (item) => item.id === 'normal-7-2-m-anchorage-quarterly'
+    )!
+
+    expect(auditQuestStrategyRecipeObjective(firstGauge, 893).contributions).toMatchObject([
+      { stageIndex: 2, mapKey: '7-2' }
+    ])
+    expect(auditQuestStrategyRecipeObjective(secondGauge, 893).contributions).toMatchObject([
+      { stageIndex: 3, mapKey: '7-2' }
+    ])
+
+    const plan = build([893])
+    expect(plan.coveredQuestIds).toEqual([893])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.steps.map((step) => [step.mapKey, step.targetNodes[0]])).toEqual([
+      ['1-5', 'J'],
+      ['7-1', 'K'],
+      ['7-2', 'G'],
+      ['7-2', 'M']
+    ])
+    expect(plan.questCoverage[0]).toMatchObject({
+      complete: true,
+      contributedStageIndexes: [0, 1, 2, 3],
+      remainingStageIndexes: []
+    })
   })
 
   it('uses five shared stages to complete the widest task set without hiding the 1-2 remainder', () => {

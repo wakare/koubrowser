@@ -1125,11 +1125,231 @@ const recipes = [
     validity: {
       reviewBy: '2026-11-02T00:00:00.000Z'
     }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-7-1-anchorage-quarterly',
+    revision: 1,
+    title: '7-1 ブルネイ泊地沖哨戒',
+    status: 'approved',
+    questIds: [893],
+    objectives: [{ questId: 893, result: 'S', requiredCount: 3 }],
+    mapKey: '7-1',
+    routeLabels: ['D-E-G-H-K'],
+    targetNodes: ['K'],
+    fleet: {
+      minimumShips: 5,
+      maximumShips: 5,
+      shipTypeConstraints: [
+        { shipTypeIds: [ApiShipType.keijyun], minimum: 1, label: '軽巡洋艦 1 隻' },
+        { shipTypeIds: [ApiShipType.kutikukan], minimum: 4, label: '駆逐艦 4 隻' }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Sonar, SlotitemType.LargeSonar],
+        minimum: 4,
+        required: false,
+        label: '先制対潜を行える艦へソナー'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.DepthCharge],
+        minimum: 4,
+        required: false,
+        label: '対潜火力を補う爆雷'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'D・H・Kボスの対潜戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'G の水上戦' }
+    ],
+    actions: [
+      '任務893を受注し、7-1段階が残っていることを確認する',
+      '軽巡洋艦1・駆逐艦4の5隻にし、4隻以上が先制対潜できる装備を優先する',
+      'D-E-G-H-Kを進み、Gの水上戦後に損傷を確認して大破時は進撃しない',
+      'KボスでS勝利を3回取り、7-1段階の進捗を確認する'
+    ],
+    cost: 'low',
+    risk: 'medium',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-7-1-current',
+        sourceLabel: '艦これ攻略 Wiki - 7-1',
+        url: 'https://wikiwiki.jp/kancolle/南西海域/7-1',
+        reviewedAt: '2026-08-03T03:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '軽巡1・駆逐4のD-E-G-H-K固定と対潜・水上混成への準備を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-7-1-current',
+        sourceLabel: '舰娘百科 - 7-1',
+        url: 'https://zh.kcwiki.cn/wiki/7-1',
+        reviewedAt: '2026-08-03T03:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '同編成の固定経路と4～5隻の先制対潜推奨を独立照合'
+      }
+    ],
+    validity: { reviewBy: '2026-11-02T00:00:00.000Z' }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-7-2-g-anchorage-quarterly',
+    revision: 1,
+    title: '7-2 タウイタウイ泊地沖 第一ゲージ',
+    status: 'approved',
+    questIds: [893],
+    objectives: [{ questId: 893, result: 'S', requiredCount: 3 }],
+    mapKey: '7-2',
+    routeLabels: ['C-E-G'],
+    targetNodes: ['G'],
+    targetCellIds: [7],
+    fleet: {
+      minimumShips: 4,
+      maximumShips: 4,
+      shipTypeConstraints: [
+        { shipTypeIds: [ApiShipType.keijyun], minimum: 1, label: '軽巡洋艦 1 隻' },
+        { shipTypeIds: [ApiShipType.kutikukan], minimum: 3, label: '駆逐艦 3 隻' }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Sonar, SlotitemType.LargeSonar],
+        minimum: 3,
+        required: false,
+        label: '先制対潜を行える艦へソナー'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.DepthCharge],
+        minimum: 3,
+        required: false,
+        label: '対潜火力を補う爆雷'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'C・E の対潜戦' },
+      { formationId: ApiFormation.fukujyuu, label: '複縦陣', when: 'Gボスの潜水・水上混成戦' }
+    ],
+    actions: [
+      '任務893を受注し、7-2のG段階が残っていることを確認する',
+      '軽巡洋艦1・駆逐艦3の4隻にし、先制対潜と水上艦への砲撃を両立させる',
+      'C-E-Gを進み、Gボスの潜水艦と水上艦をすべて撃沈してS勝利を3回取る',
+      '第一ゲージ破壊後に第二ゲージ側が開放されたことと任務進捗を確認する'
+    ],
+    cost: 'low',
+    risk: 'medium',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-7-2-current',
+        sourceLabel: '艦これ攻略 Wiki - 7-2',
+        url: 'https://wikiwiki.jp/kancolle/南西海域/7-2',
+        reviewedAt: '2026-08-03T03:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '第一ゲージのC-E-G、4隻編成とGボスS勝利に必要な対潜・水上両対応を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-7-2-current',
+        sourceLabel: '舰娘百科 - 7-2',
+        url: 'https://zh.kcwiki.cn/wiki/南西海域/7-2',
+        reviewedAt: '2026-08-03T03:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '軽巡1・駆逐3のC-E-Gと第一ゲージ破壊による第二ゲージ開放を独立照合'
+      }
+    ],
+    validity: { reviewBy: '2026-11-02T00:00:00.000Z' }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-7-2-m-anchorage-quarterly',
+    revision: 1,
+    title: '7-2 タウイタウイ泊地沖 第二ゲージ',
+    status: 'approved',
+    questIds: [893],
+    objectives: [{ questId: 893, result: 'S', requiredCount: 3 }],
+    mapKey: '7-2',
+    routeLabels: ['B-C-D-I-M'],
+    targetNodes: ['M'],
+    targetCellIds: [15],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        { shipTypeIds: [ApiShipType.kousoku_senkan], minimum: 1, label: '高速戦艦 1 隻' },
+        {
+          shipTypeIds: [ApiShipType.seiki_kuubo, ApiShipType.soukou_kuubo],
+          minimum: 1,
+          label: '正規空母系 1 隻'
+        },
+        { shipTypeIds: [ApiShipType.kei_kuubo], minimum: 1, label: '軽空母 1 隻' },
+        { shipTypeIds: [ApiShipType.koujyun], minimum: 1, label: '航空巡洋艦 1 隻' },
+        { shipTypeIds: [ApiShipType.kutikukan], minimum: 2, label: '駆逐艦 2 隻' }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter, SlotitemType.SeaplaneFighter],
+        minimum: 4,
+        required: false,
+        label: 'Mボス航空優勢359を目安にした戦闘機'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.RecAircraft, SlotitemType.RecSeaplane],
+        minimum: 2,
+        required: false,
+        label: '分岐点係数4で索敵値69以上を確保する偵察機'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.Sonar, SlotitemType.LargeSonar],
+        minimum: 1,
+        required: false,
+        label: '道中の対潜戦に備えるソナー'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: '潜水艦隊と遭遇した戦闘' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: '水上戦・Mボス' }
+    ],
+    airState: {
+      target: 'superiority',
+      summary: 'Mボス強編成の航空優勢境界359に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務893を受注し、当月の第一ゲージを破壊してM側を開放してから7-2のM段階を確認する',
+      '高速戦艦1・正規空母系1・軽空母1・航空巡洋艦1・駆逐艦2の全艦高速6隻にする',
+      '制空値359以上と分岐点係数4の索敵値69以上を目安に装備を確認する',
+      'B-C-D-I-Mを進んで大破時は進撃せず、MボスでS勝利を3回取って任務達成を確認する'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-7-2-current',
+        sourceLabel: '艦これ攻略 Wiki - 7-2',
+        url: 'https://wikiwiki.jp/kancolle/南西海域/7-2',
+        reviewedAt: '2026-08-03T03:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '第二ゲージの高速統一B-C-D-I-M、艦種条件、索敵値と制空境界を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-7-2-current',
+        sourceLabel: '舰娘百科 - 7-2',
+        url: 'https://zh.kcwiki.cn/wiki/南西海域/7-2',
+        reviewedAt: '2026-08-03T03:00:00.000Z',
+        validUntil: '2027-02-02T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '高速戦艦1・正規空母1・軽空母1・航巡1・駆逐2の経路と準備値を独立照合'
+      }
+    ],
+    validity: { reviewBy: '2026-11-02T00:00:00.000Z' }
   }
 ]
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.3',
+  version: '2026-08-03.4',
   recipes
 })

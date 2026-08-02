@@ -185,10 +185,10 @@ describe('quest strategy renderer adapter', () => {
 
     expect(
       result.filter((candidate) => candidate.group === 'route-ready').map((item) => item.questId)
-    ).toEqual([226, 229, 261, 264, 265, 280, 284, 845, 894])
+    ).toEqual([226, 229, 261, 264, 265, 280, 284, 845, 893, 894])
     expect(
       result.filter((candidate) => candidate.group === 'partial').map((item) => item.questId)
-    ).toEqual([257, 893])
+    ).toEqual([257])
   })
 
   it('builds a five-route default bundle for the two compatible southwest multi-stage tasks', () => {
@@ -285,7 +285,9 @@ describe('quest strategy renderer adapter', () => {
       '4-2': 'unknown',
       '4-3': 'unknown',
       '4-4': 'unknown',
-      '4-5': 'unknown'
+      '4-5': 'unknown',
+      '7-1': 'unknown',
+      '7-2': 'unknown'
     })
     expect(snapshot.questCapacity).toEqual({ active: 4, maximum: 5 })
     expect(JSON.stringify(snapshot)).not.toMatch(/name|shipId|instanceId/i)

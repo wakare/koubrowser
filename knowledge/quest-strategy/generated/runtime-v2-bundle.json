@@ -2354,6 +2354,360 @@
       "validity": {
         "reviewBy": "2026-11-02T00:00:00.000Z"
       }
+    },
+    {
+      "actions": [
+        "任務893を受注し、7-1段階が残っていることを確認する",
+        "軽巡洋艦1・駆逐艦4の5隻にし、4隻以上が先制対潜できる装備を優先する",
+        "D-E-G-H-Kを進み、Gの水上戦後に損傷を確認して大破時は進撃しない",
+        "KボスでS勝利を3回取り、7-1段階の進捗を確認する"
+      ],
+      "contributions": [
+        {
+          "mapKey": "7-1",
+          "questId": 893,
+          "requiredCount": 3,
+          "result": "S",
+          "stageIndex": 1
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            14,
+            40
+          ],
+          "label": "先制対潜を行える艦へソナー",
+          "minimum": 4,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            15
+          ],
+          "label": "対潜火力を補う爆雷",
+          "minimum": 4,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T03:00:00.000Z",
+          "sourceId": "wikiwiki-map-7-1-current",
+          "sourceLabel": "艦これ攻略 Wiki - 7-1",
+          "summary": "軽巡1・駆逐4のD-E-G-H-K固定と対潜・水上混成への準備を確認",
+          "url": "https://wikiwiki.jp/kancolle/南西海域/7-1",
+          "validUntil": "2027-02-02T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T03:00:00.000Z",
+          "sourceId": "kcwiki-map-7-1-current",
+          "sourceLabel": "舰娘百科 - 7-1",
+          "summary": "同編成の固定経路と4～5隻の先制対潜推奨を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/7-1",
+          "validUntil": "2027-02-02T00:00:00.000Z"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 5,
+        "minimumShips": 5,
+        "shipTypeConstraints": [
+          {
+            "label": "軽巡洋艦 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 4 隻",
+            "minimum": 4,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "D・H・Kボスの対潜戦"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "G の水上戦"
+        }
+      ],
+      "mapKey": "7-1",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-7-1-anchorage-quarterly",
+      "routeLabels": [
+        "D-E-G-H-K"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "K"
+      ],
+      "title": "7-1 ブルネイ泊地沖哨戒",
+      "validity": {
+        "reviewBy": "2026-11-02T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務893を受注し、7-2のG段階が残っていることを確認する",
+        "軽巡洋艦1・駆逐艦3の4隻にし、先制対潜と水上艦への砲撃を両立させる",
+        "C-E-Gを進み、Gボスの潜水艦と水上艦をすべて撃沈してS勝利を3回取る",
+        "第一ゲージ破壊後に第二ゲージ側が開放されたことと任務進捗を確認する"
+      ],
+      "contributions": [
+        {
+          "mapKey": "7-2",
+          "questId": 893,
+          "requiredCount": 3,
+          "result": "S",
+          "stageIndex": 2
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            14,
+            40
+          ],
+          "label": "先制対潜を行える艦へソナー",
+          "minimum": 3,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            15
+          ],
+          "label": "対潜火力を補う爆雷",
+          "minimum": 3,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T03:00:00.000Z",
+          "sourceId": "wikiwiki-map-7-2-current",
+          "sourceLabel": "艦これ攻略 Wiki - 7-2",
+          "summary": "第一ゲージのC-E-G、4隻編成とGボスS勝利に必要な対潜・水上両対応を確認",
+          "url": "https://wikiwiki.jp/kancolle/南西海域/7-2",
+          "validUntil": "2027-02-02T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T03:00:00.000Z",
+          "sourceId": "kcwiki-map-7-2-current",
+          "sourceLabel": "舰娘百科 - 7-2",
+          "summary": "軽巡1・駆逐3のC-E-Gと第一ゲージ破壊による第二ゲージ開放を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/南西海域/7-2",
+          "validUntil": "2027-02-02T00:00:00.000Z"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 4,
+        "minimumShips": 4,
+        "shipTypeConstraints": [
+          {
+            "label": "軽巡洋艦 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 3 隻",
+            "minimum": 3,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "C・E の対潜戦"
+        },
+        {
+          "formationId": 2,
+          "label": "複縦陣",
+          "when": "Gボスの潜水・水上混成戦"
+        }
+      ],
+      "mapKey": "7-2",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-7-2-g-anchorage-quarterly",
+      "routeLabels": [
+        "C-E-G"
+      ],
+      "status": "approved",
+      "targetCellIds": [
+        7
+      ],
+      "targetNodes": [
+        "G"
+      ],
+      "title": "7-2 タウイタウイ泊地沖 第一ゲージ",
+      "validity": {
+        "reviewBy": "2026-11-02T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務893を受注し、当月の第一ゲージを破壊してM側を開放してから7-2のM段階を確認する",
+        "高速戦艦1・正規空母系1・軽空母1・航空巡洋艦1・駆逐艦2の全艦高速6隻にする",
+        "制空値359以上と分岐点係数4の索敵値69以上を目安に装備を確認する",
+        "B-C-D-I-Mを進んで大破時は進撃せず、MボスでS勝利を3回取って任務達成を確認する"
+      ],
+      "airState": {
+        "summary": "Mボス強編成の航空優勢境界359に搭載機損耗分の余裕を加える",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "7-2",
+          "questId": 893,
+          "requiredCount": 3,
+          "result": "S",
+          "stageIndex": 3
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6,
+            45
+          ],
+          "label": "Mボス航空優勢359を目安にした戦闘機",
+          "minimum": 4,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            9,
+            10
+          ],
+          "label": "分岐点係数4で索敵値69以上を確保する偵察機",
+          "minimum": 2,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            14,
+            40
+          ],
+          "label": "道中の対潜戦に備えるソナー",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T03:00:00.000Z",
+          "sourceId": "wikiwiki-map-7-2-current",
+          "sourceLabel": "艦これ攻略 Wiki - 7-2",
+          "summary": "第二ゲージの高速統一B-C-D-I-M、艦種条件、索敵値と制空境界を確認",
+          "url": "https://wikiwiki.jp/kancolle/南西海域/7-2",
+          "validUntil": "2027-02-02T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T03:00:00.000Z",
+          "sourceId": "kcwiki-map-7-2-current",
+          "sourceLabel": "舰娘百科 - 7-2",
+          "summary": "高速戦艦1・正規空母1・軽空母1・航巡1・駆逐2の経路と準備値を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/南西海域/7-2",
+          "validUntil": "2027-02-02T00:00:00.000Z"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "高速戦艦 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              8
+            ]
+          },
+          {
+            "label": "正規空母系 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              11,
+              18
+            ]
+          },
+          {
+            "label": "軽空母 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              7
+            ]
+          },
+          {
+            "label": "航空巡洋艦 1 隻",
+            "minimum": 1,
+            "shipTypeIds": [
+              6
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "潜水艦隊と遭遇した戦闘"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "水上戦・Mボス"
+        }
+      ],
+      "mapKey": "7-2",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-7-2-m-anchorage-quarterly",
+      "routeLabels": [
+        "B-C-D-I-M"
+      ],
+      "status": "approved",
+      "targetCellIds": [
+        15
+      ],
+      "targetNodes": [
+        "M"
+      ],
+      "title": "7-2 タウイタウイ泊地沖 第二ゲージ",
+      "validity": {
+        "reviewBy": "2026-11-02T00:00:00.000Z"
+      }
     }
   ],
   "schemaVersion": 2,
@@ -2362,11 +2716,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:bfb357adedd1b0a7bf294c6c97f7985365d59925c66e1fdf4abd0b416bf16794",
-    "legacyKnowledgeDigest": "sha256:43132869ac91eff0b0ca416af4bef30cfedd823be722ea892208abdaab706b4a",
-    "pilotAuthoringManifestDigest": "sha256:29660049d4aeb7900fb01215db3452e215573bbc85b2dd6f47e259de7b54a522",
+    "inventoryDigest": "sha256:6ad6cd8d63fe1f24e3eac16bd5b42f59e45741c37ed702a3e850ce0f430f0084",
+    "legacyKnowledgeDigest": "sha256:66cd7b95051a00d1856e8f83bd32a2a6966f2e50a28c8bfb45f5a8ae2c17d784",
+    "pilotAuthoringManifestDigest": "sha256:f3aeab4e18f696fd3cf5b24e2a3c39bba3de23ac2d12988daf69cfd75ae8a2fb",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "c66d2f1ccdd0a94aace74b71b227b814e1a739cb"
+    "repositoryCommit": "99c4fdba990697d5fee706120801d8534e56cf14"
   },
-  "version": "2026-08-03.3.v2"
+  "version": "2026-08-03.4.v2"
 }

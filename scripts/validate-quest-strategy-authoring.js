@@ -516,13 +516,21 @@ function validateMapTemplate(value, description, approvedEvidenceReviewIds) {
     'templateId',
     approvedEvidenceReviewIds,
     ['mapKey', 'routeLabels', 'targetNodes', 'formations', 'actions', 'cost', 'risk'],
-    ['fleetConstraintRef']
+    ['fleetConstraintRef', 'targetCellIds']
   )
   if (!MapKeyPattern.test(text(value.mapKey, `${description} mapKey`))) {
     throw new Error(`invalid ${description} mapKey`)
   }
   uniqueArray(value.routeLabels, `${description} routeLabels`, text, 1)
   uniqueArray(value.targetNodes, `${description} targetNodes`, text, 1)
+  if (value.targetCellIds !== undefined) {
+    uniqueArray(
+      value.targetCellIds,
+      `${description} targetCellIds`,
+      (cellId, cellDescription) => integer(cellId, cellDescription, 1),
+      1
+    )
+  }
   if (value.fleetConstraintRef !== undefined) {
     identifier(value.fleetConstraintRef, `${description} fleetConstraintRef`)
   }

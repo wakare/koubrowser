@@ -154,6 +154,24 @@ describe('quest strategy coverage contract', () => {
 
   it('accepts independently reviewed synthetic authoring entries', () => {
     expect(validateAuthoringManifest(reviewedManifest())).toBeTruthy()
+
+    const cellBound = reviewedManifest()
+    ;(cellBound.mapTemplates[0] as Record<string, unknown>).targetCellIds = [7]
+    expect(validateAuthoringManifest(cellBound)).toBeTruthy()
+  })
+
+  it('rejects invalid target cell bindings in authoring templates', () => {
+    const duplicateCells = reviewedManifest()
+    ;(duplicateCells.mapTemplates[0] as Record<string, unknown>).targetCellIds = [7, 7]
+    expect(() => validateAuthoringManifest(duplicateCells)).toThrow(
+      'duplicate map templates[0] targetCellIds'
+    )
+
+    const invalidCell = reviewedManifest()
+    ;(invalidCell.mapTemplates[0] as Record<string, unknown>).targetCellIds = [0]
+    expect(() => validateAuthoringManifest(invalidCell)).toThrow(
+      'invalid map templates[0] targetCellIds[0]'
+    )
   })
 
   it('rejects self-approved knowledge and permissive unknown-hard-fact handling', () => {

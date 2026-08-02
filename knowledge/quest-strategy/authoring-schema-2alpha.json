@@ -315,6 +315,15 @@
             "minLength": 1
           }
         },
+        "targetCellIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
         "fleetConstraintRef": {
           "$ref": "#/$defs/identifier"
         },

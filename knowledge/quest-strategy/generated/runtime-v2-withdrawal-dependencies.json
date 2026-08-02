@@ -221,6 +221,45 @@
         }
       ],
       "routeId": "normal-4-5-western-quarterly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-7-1-current",
+        "kcwiki-map-7-1-current"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 893,
+          "stageIndex": 1
+        }
+      ],
+      "routeId": "normal-7-1-anchorage-quarterly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-7-2-current",
+        "kcwiki-map-7-2-current"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 893,
+          "stageIndex": 2
+        }
+      ],
+      "routeId": "normal-7-2-g-anchorage-quarterly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-7-2-current",
+        "kcwiki-map-7-2-current"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 893,
+          "stageIndex": 3
+        }
+      ],
+      "routeId": "normal-7-2-m-anchorage-quarterly"
     }
   ],
   "schemaVersion": 1,

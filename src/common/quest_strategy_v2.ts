@@ -100,14 +100,22 @@ function matchingStageIndexes(
   objective: StrategyQuestObjective,
   stages: readonly QuestStrategyInventoryObjectiveStage[]
 ): number[] {
+  const targetCellIds = [...(recipe.targetCellIds ?? [])].sort((left, right) => left - right)
   const result: number[] = []
   for (let stageIndex = 0; stageIndex < stages.length; stageIndex += 1) {
     const stage = stages[stageIndex]
     if (
       stage.requiredCount === objective.requiredCount &&
-      stage.targets.some(
-        (target) => target.mapKey === recipe.mapKey && target.result === objective.result
-      )
+      stage.targets.some((target) => {
+        if (target.mapKey !== recipe.mapKey || target.result !== objective.result) {
+          return false
+        }
+        const stageTargetCells = [...target.targetCells].sort((left, right) => left - right)
+        return (
+          targetCellIds.length === stageTargetCells.length &&
+          targetCellIds.every((cellId, index) => cellId === stageTargetCells[index])
+        )
+      })
     ) {
       result.push(stageIndex)
     }

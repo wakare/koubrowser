@@ -212,6 +212,39 @@
         }
       ],
       "recipeId": "normal-4-5-western-quarterly"
+    },
+    {
+      "lossless": false,
+      "objectives": [
+        {
+          "lossless": false,
+          "questId": 893,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-7-1-anchorage-quarterly"
+    },
+    {
+      "lossless": false,
+      "objectives": [
+        {
+          "lossless": false,
+          "questId": 893,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-7-2-g-anchorage-quarterly"
+    },
+    {
+      "lossless": false,
+      "objectives": [
+        {
+          "lossless": false,
+          "questId": 893,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-7-2-m-anchorage-quarterly"
     }
   ],
   "compiledRecipeMaximum": 512,
@@ -250,7 +283,7 @@
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "c66d2f1ccdd0a94aace74b71b227b814e1a739cb"
+    "repositoryCommit": "99c4fdba990697d5fee706120801d8534e56cf14"
   },
   "unsupportedQuestIds": [
     {

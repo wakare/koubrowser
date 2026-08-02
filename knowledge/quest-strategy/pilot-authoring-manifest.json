@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.3",
+  "manifestVersion": "2026-08-03.4",
   "sourceSnapshot": {
-    "repositoryCommit": "c66d2f1ccdd0a94aace74b71b227b814e1a739cb",
+    "repositoryCommit": "99c4fdba990697d5fee706120801d8534e56cf14",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -704,6 +704,95 @@
         "validUntil": "2027-02-02T00:00:00.000Z",
         "evidenceReviewIds": ["map-4-5-wikiwiki-current-review", "map-4-5-kcwiki-current-review"]
       }
+    },
+    {
+      "templateId": "normal-map:7-1:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "7-1",
+      "routeLabels": ["D-E-G-H-K"],
+      "targetNodes": ["K"],
+      "fleetConstraintRef": "legacy-recipe:normal-7-1-anchorage-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "D・H・Kボスの対潜戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "G の水上戦" }
+      ],
+      "actions": [
+        "任務893を受注し、7-1段階が残っていることを確認する",
+        "軽巡洋艦1・駆逐艦4の5隻にし、4隻以上が先制対潜できる装備を優先する",
+        "D-E-G-H-Kを進み、Gの水上戦後に損傷を確認して大破時は進撃しない",
+        "KボスでS勝利を3回取り、7-1段階の進捗を確認する"
+      ],
+      "cost": "low",
+      "risk": "medium",
+      "review": {
+        "author": "codex-r8-anchorage-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T03:00:00.000Z",
+        "reviewBy": "2026-11-02T00:00:00.000Z",
+        "validUntil": "2027-02-02T00:00:00.000Z",
+        "evidenceReviewIds": ["map-7-1-wikiwiki-current-review", "map-7-1-kcwiki-current-review"]
+      }
+    },
+    {
+      "templateId": "normal-map:7-2-g:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "7-2",
+      "routeLabels": ["C-E-G"],
+      "targetNodes": ["G"],
+      "targetCellIds": [7],
+      "fleetConstraintRef": "legacy-recipe:normal-7-2-g-anchorage-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "C・E の対潜戦" },
+        { "formationId": 2, "label": "複縦陣", "when": "Gボスの潜水・水上混成戦" }
+      ],
+      "actions": [
+        "任務893を受注し、7-2のG段階が残っていることを確認する",
+        "軽巡洋艦1・駆逐艦3の4隻にし、先制対潜と水上艦への砲撃を両立させる",
+        "C-E-Gを進み、Gボスの潜水艦と水上艦をすべて撃沈してS勝利を3回取る",
+        "第一ゲージ破壊後に第二ゲージ側が開放されたことと任務進捗を確認する"
+      ],
+      "cost": "low",
+      "risk": "medium",
+      "review": {
+        "author": "codex-r8-anchorage-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T03:00:00.000Z",
+        "reviewBy": "2026-11-02T00:00:00.000Z",
+        "validUntil": "2027-02-02T00:00:00.000Z",
+        "evidenceReviewIds": ["map-7-2-wikiwiki-current-review", "map-7-2-kcwiki-current-review"]
+      }
+    },
+    {
+      "templateId": "normal-map:7-2-m:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "7-2",
+      "routeLabels": ["B-C-D-I-M"],
+      "targetNodes": ["M"],
+      "targetCellIds": [15],
+      "fleetConstraintRef": "legacy-recipe:normal-7-2-m-anchorage-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "潜水艦隊と遭遇した戦闘" },
+        { "formationId": 1, "label": "単縦陣", "when": "水上戦・Mボス" }
+      ],
+      "actions": [
+        "任務893を受注し、当月の第一ゲージを破壊してM側を開放してから7-2のM段階を確認する",
+        "高速戦艦1・正規空母系1・軽空母1・航空巡洋艦1・駆逐艦2の全艦高速6隻にする",
+        "制空値359以上と分岐点係数4の索敵値69以上を目安に装備を確認する",
+        "B-C-D-I-Mを進んで大破時は進撃せず、MボスでS勝利を3回取って任務達成を確認する"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-anchorage-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T03:00:00.000Z",
+        "reviewBy": "2026-11-02T00:00:00.000Z",
+        "validUntil": "2027-02-02T00:00:00.000Z",
+        "evidenceReviewIds": ["map-7-2-wikiwiki-current-review", "map-7-2-kcwiki-current-review"]
+      }
     }
   ],
   "composabilityRules": [
@@ -966,6 +1055,46 @@
       "sourceLabel": "舰娘百科 - 4-5",
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-03T02:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-7-1-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/南西海域/7-1",
+      "sourceLabel": "艦これ攻略 Wiki - 7-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T03:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-7-1-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/7-1",
+      "sourceLabel": "舰娘百科 - 7-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T03:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-7-2-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/南西海域/7-2",
+      "sourceLabel": "艦これ攻略 Wiki - 7-2",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T03:00:00.000Z",
+      "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-7-2-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/南西海域/7-2",
+      "sourceLabel": "舰娘百科 - 7-2",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T03:00:00.000Z",
       "validUntil": "2027-02-02T00:00:00.000Z",
       "confidence": "supported"
     }
