@@ -1,12 +1,12 @@
 {
   "authoringSchema": "QuestGrowthR7RealAccountAcceptanceRequest/1alpha",
   "requestId": "decision:quest-growth-r7-real-account-readonly-acceptance",
-  "revision": 4,
-  "status": "approved",
+  "revision": 5,
+  "status": "draft",
   "scope": "R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY",
   "sourceSnapshot": {
-    "auditedBaseCommit": "804cf1bc180240b67e2f1d2f51443f4bd5399f2d",
-    "checkedAt": "2026-08-02T04:19:24.515Z"
+    "auditedBaseCommit": "c4029506602a409801ebfff1636e587bdd59cc30",
+    "checkedAt": "2026-08-02T04:49:34.432Z"
   },
   "approvalBasis": {
     "realAccountGateSemanticDigest": "sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb",
@@ -27,7 +27,7 @@
   "requestedAuthorization": {
     "gateId": "r7-real-account-readonly-acceptance",
     "authorizationState": "authorized",
-    "executionAuthorization": "authorized",
+    "executionAuthorization": "not-authorized",
     "maximumAcceptedRoutes": 2,
     "acceptanceMode": "owner-login-readonly-redacted"
   },
@@ -165,6 +165,26 @@
     "productionCodeChangesAuthorized": false,
     "routeContentChangesAuthorized": false
   },
+  "proposedHarnessAmendment": {
+    "revision": 5,
+    "supersedesRevision": 4,
+    "reasonCode": "SEPARATE_ROUTE_ACCEPTANCE_FROM_GENERIC_WORKSPACE_REGRESSION",
+    "changes": [
+      "replace-real-account-wide-workspace-sweep-with-dedicated-route-panel-size-checks",
+      "preserve-custom-page-label-order-visibility-and-active-page",
+      "check-current-and-one-controlled-window-size-with-full-bounds-restore",
+      "emit-only-redacted-layout-diagnostics",
+      "verify-custom-layout-with-anonymous-signed-fixture"
+    ],
+    "authorizedPaths": [
+      "scripts/electron-smoke.js",
+      "src/main/__tests__/electron-smoke-script.test.ts"
+    ],
+    "anonymousCustomLayoutFixtureRequired": true,
+    "realAccountExecutionAuthorized": false,
+    "productionCodeChangesAuthorized": false,
+    "routeContentChangesAuthorized": false
+  },
   "executionResult": {
     "recordedAt": "2026-08-02T04:44:15.520Z",
     "approvedSemanticDigest": "sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c",
@@ -205,8 +225,8 @@
   ],
   "review": {
     "author": "codex-r7-real-account-decision-author",
-    "approver": "project-owner",
-    "reviewedAt": "2026-08-02T04:34:53.559Z",
-    "approvalDigest": "sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c"
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
   }
 }

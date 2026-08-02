@@ -168,7 +168,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
+      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -189,7 +189,9 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
-    expect(report.globalStops).toContain('R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED')
+    expect(report.globalStops).toContain(
+      'R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED'
+    )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
@@ -726,7 +728,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('records the revision 4 post-route layout timeout as fail closed', () => {
+  it('requires owner approval for the revision 5 harness amendment', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -756,14 +758,21 @@ describe('quest growth authoring contract', () => {
       retryAuthorizationReasonCode: string
       maximumRetryExecutions: number
       harnessChangesAuthorized: boolean
+      proposedHarnessAmendmentReasonCode: string
+      proposedHarnessAmendmentChangeCount: number
+      proposedHarnessAmendmentAuthorizedPathCount: number
+      anonymousCustomLayoutFixtureRequired: boolean
+      realAccountExecutionAuthorized: boolean
     }>('generated', 'r7-real-account-acceptance-report.json')
 
-    expect(report.status).toBe('REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED')
+    expect(report.status).toBe(
+      'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT'
+    )
     expect(report.semanticDigest).toBe(
-      'sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c'
+      'sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402'
     )
     expect(report.authorizationState).toBe('authorized')
-    expect(report.executionAuthorization).toBe('consumed')
+    expect(report.executionAuthorization).toBe('not-authorized')
     expect(report.acceptanceMode).toBe('owner-login-readonly-redacted')
     expect(report.maximumAcceptedRoutes).toBe(2)
     expect(report.requiredCheckCount).toBe(12)
@@ -779,6 +788,13 @@ describe('quest growth authoring contract', () => {
     )
     expect(report.maximumRetryExecutions).toBe(1)
     expect(report.harnessChangesAuthorized).toBe(false)
+    expect(report.proposedHarnessAmendmentReasonCode).toBe(
+      'SEPARATE_ROUTE_ACCEPTANCE_FROM_GENERIC_WORKSPACE_REGRESSION'
+    )
+    expect(report.proposedHarnessAmendmentChangeCount).toBe(5)
+    expect(report.proposedHarnessAmendmentAuthorizedPathCount).toBe(2)
+    expect(report.anonymousCustomLayoutFixtureRequired).toBe(true)
+    expect(report.realAccountExecutionAuthorized).toBe(false)
     expect(report.priorAttemptReasonCode).toBe('TASK_WORKSPACE_PAGE_NOT_VISIBLE')
     expect(report.harnessAmendmentReasonCode).toBe(
       'TALL_AND_COMPACT_TASK_GUIDE_LAYOUT_SELECTION'

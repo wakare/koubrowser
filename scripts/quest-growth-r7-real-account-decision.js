@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const R7RealAccountDecisionCompilerVersion =
-  'quest-growth-r7-real-account-decision-compiler/11'
+  'quest-growth-r7-real-account-decision-compiler/12'
 const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -141,6 +141,26 @@ const ExpectedRetryAuthorization = {
   productionCodeChangesAuthorized: false,
   routeContentChangesAuthorized: false
 }
+const ExpectedProposedHarnessAmendment = {
+  revision: 5,
+  supersedesRevision: 4,
+  reasonCode: 'SEPARATE_ROUTE_ACCEPTANCE_FROM_GENERIC_WORKSPACE_REGRESSION',
+  changes: [
+    'replace-real-account-wide-workspace-sweep-with-dedicated-route-panel-size-checks',
+    'preserve-custom-page-label-order-visibility-and-active-page',
+    'check-current-and-one-controlled-window-size-with-full-bounds-restore',
+    'emit-only-redacted-layout-diagnostics',
+    'verify-custom-layout-with-anonymous-signed-fixture'
+  ],
+  authorizedPaths: [
+    'scripts/electron-smoke.js',
+    'src/main/__tests__/electron-smoke-script.test.ts'
+  ],
+  anonymousCustomLayoutFixtureRequired: true,
+  realAccountExecutionAuthorized: false,
+  productionCodeChangesAuthorized: false,
+  routeContentChangesAuthorized: false
+}
 const ExpectedProhibited = [
   'credential-handling-by-agent',
   'agent-click-game-start',
@@ -257,6 +277,7 @@ function validateR7RealAccountAcceptanceRequest(
       'priorAttempt',
       'harnessAmendment',
       'retryAuthorization',
+      'proposedHarnessAmendment',
       'executionResult',
       'executionBoundary',
       'stillProhibited',
@@ -267,7 +288,7 @@ function validateR7RealAccountAcceptanceRequest(
   if (
     value.authoringSchema !== 'QuestGrowthR7RealAccountAcceptanceRequest/1alpha' ||
     value.requestId !== 'decision:quest-growth-r7-real-account-readonly-acceptance' ||
-    value.revision !== 4 ||
+    value.revision !== 5 ||
     !['draft', 'approved'].includes(value.status) ||
     value.scope !== 'R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY'
   ) {
@@ -458,6 +479,14 @@ function validateR7RealAccountAcceptanceRequest(
     throw new Error('R7 acceptance retry authorization mismatch')
   }
   exactKeys(
+    value.proposedHarnessAmendment,
+    Object.keys(ExpectedProposedHarnessAmendment),
+    'R7 proposed acceptance harness amendment'
+  )
+  if (!same(value.proposedHarnessAmendment, ExpectedProposedHarnessAmendment)) {
+    throw new Error('R7 proposed acceptance harness amendment mismatch')
+  }
+  exactKeys(
     value.executionResult,
     Object.keys(ExpectedExecutionResult),
     'R7 acceptance execution result'
@@ -528,7 +557,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       : request.value.sourceSnapshot.checkedAt,
     status: request.approved
       ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED'
-      : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY',
+      : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT',
     scope: request.value.scope,
     requestId: request.value.requestId,
     revision: request.value.revision,
@@ -564,6 +593,16 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     retryAuthorizationReasonCode: request.value.retryAuthorization.reasonCode,
     maximumRetryExecutions: request.value.retryAuthorization.maximumExecutions,
     harnessChangesAuthorized: request.value.retryAuthorization.harnessChangesAuthorized,
+    proposedHarnessAmendmentReasonCode:
+      request.value.proposedHarnessAmendment.reasonCode,
+    proposedHarnessAmendmentChangeCount:
+      request.value.proposedHarnessAmendment.changes.length,
+    proposedHarnessAmendmentAuthorizedPathCount:
+      request.value.proposedHarnessAmendment.authorizedPaths.length,
+    anonymousCustomLayoutFixtureRequired:
+      request.value.proposedHarnessAmendment.anonymousCustomLayoutFixtureRequired,
+    realAccountExecutionAuthorized:
+      request.value.proposedHarnessAmendment.realAccountExecutionAuthorized,
     anonymousHiddenLayoutFixtureRequired:
       request.value.harnessAmendment.anonymousHiddenLayoutFixtureRequired,
     anonymousTallLayoutFixtureRequired:

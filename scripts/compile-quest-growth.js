@@ -971,7 +971,7 @@ function buildQuestGrowthArtifacts(root) {
           : r7RealAccountDecision.output.r7RealAccountAcceptanceAuthorizedRouteCount > 0
           ? 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
           : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
-            ? 'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
+            ? 'R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED'
           : r7RendererDecision.output.r7RendererAuthorizedRouteCount > 0
           ? 'R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED'
           : r7RouteReviewDecision.output.r7ReviewedConcreteRouteCount > 0
@@ -1020,7 +1020,7 @@ function buildQuestGrowthArtifacts(root) {
       ...(r7RealAccountDecision.output.r7RealAccountAcceptanceFailClosed
         ? ['R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED']
         : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
-          ? ['R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED']
+          ? ['R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED']
           : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'])
     ]
   }

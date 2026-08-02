@@ -70,6 +70,8 @@ route 検査前に fail closed した。承認は消費済みで、runtime publi
 revision 4 は同じ harness と同じ2 route を使う1回限りの再試行として project owner が承認した。
 固定2 route の検査後、汎用 responsive workspace sweep が user-customized layout で timeout したため、
 全体は fail closed、実行承認は消費済みである。
+revision 5 はこの汎用 sweep を route acceptance 専用の layout check へ分離する harness amendment の
+authoring approval 待ちであり、実アカウント再実行は含まない。
 
 ## 提案する output class
 

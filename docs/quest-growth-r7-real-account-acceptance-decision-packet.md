@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_4_FAIL_CLOSED`
+Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_REVISION_5_HARNESS_AMENDMENT`
 
 ## 目的
 
@@ -167,9 +167,11 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 ## 固定摘要
 
 - acceptance request semantic digest:
-  `sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c`
+  `sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402`
 - request raw digest:
-  `sha256:84aebfa98d9b91e5784c16500e0c256517edf0ccebf218cdd3757666bfbc1281`
+  `sha256:b714b74c2b26f0612c1112a5552cc17325aa5dec9716e55f2b7ccd5a7b327347`
+- revision 4 approved semantic digest:
+  `sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c`
 - revision 3 approved semantic digest:
   `sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945`
 - approved revision 2 request raw digest:
@@ -201,18 +203,22 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - revision 4 checked route count: `2`
 - revision 4 maximum executions: `1`
 - revision 4 harness changes authorized: `false`
+- revision 5 harness amendment authoring: `not-authorized`
+- revision 5 authorized path count: `2`
+- revision 5 anonymous custom-layout fixture required: `true`
+- revision 5 real-account execution authorization: `not-authorized`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
 
 推奨承認文面:
 
-> 批准固定摘要 `sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c`
-> 对应的 `r7-real-account-readonly-acceptance` revision 4 retry authorization。仅允许沿用 revision 3
-> 已固定并通过匿名 fixture 的 layout-aware harness，对原固定的两条 reviewed route 再执行一次原范围的
-> 只读、脱敏验收；project owner 必须手动处理登录并只点击一次 GAME START。Codex 不得处理凭据、点击
-> GAME START、执行游戏操作、修改游戏通信、保存截图/raw log/account snapshot、修改 harness、路线或
-> production code；不授权 runtime publication、默认启用或其他 route family。
+> 批准固定摘要 `sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402`
+> 对应的 `r7-real-account-readonly-acceptance` revision 5 harness amendment authoring。仅授权修改
+> `scripts/electron-smoke.js` 与 `src/main/__tests__/electron-smoke-script.test.ts`：将实账号路线验收与通用
+> `--wide-workspace` 默认标签回归分离，改为在当前尺寸及一个受控尺寸检查路线面板横向溢出，完整保留并恢复
+> 用户页面名称、顺序、可见性、活动页面及窗口边界，并以匿名 signed custom-layout fixture 验证；诊断输出必须
+> 脱敏。不授权实账号执行、production code、路线内容、游戏通信、runtime publication、默认启用或其他 route family。
 
 ## 承認結果と現在の結論
 
@@ -230,3 +236,17 @@ project owner は本 packet の固定摘要を明示承認した。account data 
 検査は完了したが、その後の汎用 `--wide-workspace` surface layout sweep が user-customized page labels と既定 label の
 一致を待って timeout した。全12 check を完了できなかったため全体は fail closed、execution authorization は
 `consumed` とする。新しい固定摘要の承認なしに再実行または harness 修正をしない。
+
+## revision 5 proposed harness amendment
+
+revision 5 は実アカウント実行を許可せず、次の harness authoring と匿名 fixture だけを申請する。
+
+- 実アカウント route acceptance から汎用 `--wide-workspace` exact-label sweep を分離する
+- 現在サイズと1つの制御サイズで route panel の横 overflow だけを専用検査する
+- user-customized page label、順序、可視性、active page、window bounds を保存・復元する
+- timeout diagnostic は名称、真偽値、client / scroll 寸法だけに脱敏する
+- anonymous signed custom-layout fixture で復元と fail-closed 条件を検証する
+
+変更可能な path は `scripts/electron-smoke.js` と
+`src/main/__tests__/electron-smoke-script.test.ts` の2件だけとする。production code、route content、
+実アカウント再実行、runtime publication、default enablement は許可しない。
