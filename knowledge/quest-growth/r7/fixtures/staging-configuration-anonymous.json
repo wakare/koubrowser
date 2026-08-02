@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "configurationId": "r7.staging.anonymous.20260802.1",
+  "mode": "anonymous-authoring-fixture",
+  "candidate": {
+    "version": "r7.candidate.20260802.1",
+    "canonicalDigest": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c",
+    "routeBindings": [
+      {
+        "routeId": "route:expedition-05-resource-loop:draft-1",
+        "routeFamily": "expedition-resource-periodic-loop",
+        "revision": 1,
+        "semanticDigest": "sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a",
+        "status": "reviewed"
+      },
+      {
+        "routeId": "route:1-5-basic-asw-three-battle:draft-1",
+        "routeFamily": "anti-submarine-foundation",
+        "revision": 1,
+        "semanticDigest": "sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d",
+        "status": "reviewed"
+      }
+    ]
+  },
+  "endpointContract": {
+    "endpointClass": "reserved-invalid-placeholder",
+    "manifestUrl": "https://r7-staging.invalid/data/manifest.json",
+    "credentialsAllowed": false,
+    "externalConnectionAllowed": false
+  },
+  "trustContract": {
+    "algorithm": "Ed25519",
+    "keyMaterialState": "absent-separate-gate-required",
+    "fingerprintState": "absent-separate-gate-required"
+  },
+  "runtimeContract": {
+    "publicationAuthorized": false,
+    "defaultEnabled": false,
+    "runtimeEligibleCount": 0,
+    "sessionOnly": true,
+    "fallback": "bundled-opt-in-catalog"
+  },
+  "prohibitions": [
+    "key-material",
+    "bundle-signing",
+    "real-staging-or-production-url",
+    "external-endpoint-connection",
+    "runtime-publication",
+    "default-enablement",
+    "other-route-family",
+    "game-communication-mutation",
+    "installer-build"
+  ]
+}

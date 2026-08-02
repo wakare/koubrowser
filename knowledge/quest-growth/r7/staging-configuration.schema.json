@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://koubrowser.invalid/schema/quest-growth-r7-staging-configuration-1.json",
+  "title": "QuestGrowthR7StagingConfigurationAuthoringFixture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "configurationId",
+    "mode",
+    "candidate",
+    "endpointContract",
+    "trustContract",
+    "runtimeContract",
+    "prohibitions"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "configurationId": {
+      "const": "r7.staging.anonymous.20260802.1"
+    },
+    "mode": {
+      "const": "anonymous-authoring-fixture"
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "canonicalDigest", "routeBindings"],
+      "properties": {
+        "version": {
+          "const": "r7.candidate.20260802.1"
+        },
+        "canonicalDigest": {
+          "const": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c"
+        },
+        "routeBindings": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/resourcesRoute"
+            },
+            {
+              "$ref": "#/$defs/aswRoute"
+            }
+          ],
+          "items": false
+        }
+      }
+    },
+    "endpointContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "endpointClass",
+        "manifestUrl",
+        "credentialsAllowed",
+        "externalConnectionAllowed"
+      ],
+      "properties": {
+        "endpointClass": {
+          "const": "reserved-invalid-placeholder"
+        },
+        "manifestUrl": {
+          "const": "https://r7-staging.invalid/data/manifest.json"
+        },
+        "credentialsAllowed": {
+          "const": false
+        },
+        "externalConnectionAllowed": {
+          "const": false
+        }
+      }
+    },
+    "trustContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "keyMaterialState", "fingerprintState"],
+      "properties": {
+        "algorithm": {
+          "const": "Ed25519"
+        },
+        "keyMaterialState": {
+          "const": "absent-separate-gate-required"
+        },
+        "fingerprintState": {
+          "const": "absent-separate-gate-required"
+        }
+      }
+    },
+    "runtimeContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publicationAuthorized",
+        "defaultEnabled",
+        "runtimeEligibleCount",
+        "sessionOnly",
+        "fallback"
+      ],
+      "properties": {
+        "publicationAuthorized": {
+          "const": false
+        },
+        "defaultEnabled": {
+          "const": false
+        },
+        "runtimeEligibleCount": {
+          "const": 0
+        },
+        "sessionOnly": {
+          "const": true
+        },
+        "fallback": {
+          "const": "bundled-opt-in-catalog"
+        }
+      }
+    },
+    "prohibitions": {
+      "const": [
+        "key-material",
+        "bundle-signing",
+        "real-staging-or-production-url",
+        "external-endpoint-connection",
+        "runtime-publication",
+        "default-enablement",
+        "other-route-family",
+        "game-communication-mutation",
+        "installer-build"
+      ]
+    }
+  },
+  "$defs": {
+    "resourcesRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routeId", "routeFamily", "revision", "semanticDigest", "status"],
+      "properties": {
+        "routeId": {
+          "const": "route:expedition-05-resource-loop:draft-1"
+        },
+        "routeFamily": {
+          "const": "expedition-resource-periodic-loop"
+        },
+        "revision": {
+          "const": 1
+        },
+        "semanticDigest": {
+          "const": "sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a"
+        },
+        "status": {
+          "const": "reviewed"
+        }
+      }
+    },
+    "aswRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routeId", "routeFamily", "revision", "semanticDigest", "status"],
+      "properties": {
+        "routeId": {
+          "const": "route:1-5-basic-asw-three-battle:draft-1"
+        },
+        "routeFamily": {
+          "const": "anti-submarine-foundation"
+        },
+        "revision": {
+          "const": 1
+        },
+        "semanticDigest": {
+          "const": "sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d"
+        },
+        "status": {
+          "const": "reviewed"
+        }
+      }
+    }
+  }
+}
