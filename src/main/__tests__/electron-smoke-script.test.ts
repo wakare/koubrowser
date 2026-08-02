@@ -19,6 +19,9 @@ interface SmokeOptions {
   summary: boolean
   workspacePages: boolean
   taskGuide: boolean
+  taskGuideHiddenLayoutFixture: boolean
+  taskGuideTallLayoutFixture: boolean
+  taskGuideCustomLayoutFixture: boolean
   wideWorkspace: boolean
   requireDisplayProfile?: string
   requireLiveProfile?: string
@@ -586,6 +589,32 @@ interface SmokeScript {
     context: string
   ) => Promise<void>
   summarizeSmokeResult: (result: Record<string, unknown>) => Record<string, unknown>
+  isRoutePanelAcceptanceMode: (options: Partial<SmokeOptions>) => boolean
+  routePanelRestorationSummary: (
+    before: {
+      workspaceLayout: string | null
+      panelViewState: string | null
+      activePages: Record<string, string | null>
+      editorOpen: Record<string, boolean>
+      questFilter: string | null
+    },
+    after: {
+      workspaceLayout: string | null
+      panelViewState: string | null
+      activePages: Record<string, string | null>
+      editorOpen: Record<string, boolean>
+      questFilter: string | null
+    }
+  ) => {
+    pageNamesOrderVisibilityRestored: boolean
+    activePagesRestored: boolean
+    panelEditorsRestored: boolean
+    questFilterRestored: boolean
+  }
+  selectRoutePanelControlledSize: (
+    workArea: { width: number; height: number },
+    currentSize: { width: number; height: number }
+  ) => { width: number; height: number }
   writeSmokeSummaryFile: (
     directory: string | undefined,
     summary: Record<string, unknown>
@@ -693,6 +722,7 @@ describe('Electron smoke script', () => {
       taskGuide: false,
       taskGuideHiddenLayoutFixture: false,
       taskGuideTallLayoutFixture: false,
+      taskGuideCustomLayoutFixture: false,
       wideWorkspace: false,
       requireDisplayProfile: undefined,
       requireLiveProfile: undefined,
@@ -732,6 +762,7 @@ describe('Electron smoke script', () => {
       taskGuide: true,
       taskGuideHiddenLayoutFixture: false,
       taskGuideTallLayoutFixture: false,
+      taskGuideCustomLayoutFixture: false,
       wideWorkspace: true,
       requireDisplayProfile: undefined,
       requireLiveProfile: undefined,
@@ -790,6 +821,21 @@ describe('Electron smoke script', () => {
       dataUpdateFixture: true,
       taskGuide: true,
       taskGuideTallLayoutFixture: true
+    })
+    expect(
+      smoke.parseArgs([
+        '--layout-fixture',
+        '--data-update-fixture',
+        '--task-guide',
+        '--wide-workspace',
+        '--task-guide-custom-layout-fixture'
+      ])
+    ).toMatchObject({
+      layoutFixture: true,
+      dataUpdateFixture: true,
+      taskGuide: true,
+      wideWorkspace: true,
+      taskGuideCustomLayoutFixture: true
     })
     expect(
       smoke.parseArgs([
@@ -860,6 +906,67 @@ describe('Electron smoke script', () => {
     })
   })
 
+  it('separates route-panel acceptance from generic wide-workspace regression', () => {
+    expect(
+      smoke.isRoutePanelAcceptanceMode({
+        manualGameStart: true,
+        taskGuide: true,
+        wideWorkspace: true
+      })
+    ).toBe(true)
+    expect(
+      smoke.isRoutePanelAcceptanceMode({
+        allowGameStart: true,
+        taskGuide: true,
+        wideWorkspace: true
+      })
+    ).toBe(false)
+    expect(
+      smoke.isRoutePanelAcceptanceMode({
+        layoutFixture: true,
+        taskGuide: true,
+        wideWorkspace: true,
+        taskGuideCustomLayoutFixture: true
+      })
+    ).toBe(true)
+
+    expect(
+      smoke.selectRoutePanelControlledSize(
+        { width: 1920, height: 1040 },
+        { width: 1600, height: 800 }
+      )
+    ).toEqual({ width: 1440, height: 800 })
+    expect(() =>
+      smoke.selectRoutePanelControlledSize(
+        { width: 1200, height: 700 },
+        { width: 1200, height: 700 }
+      )
+    ).toThrow('ROUTE_PANEL_CONTROLLED_SIZE_UNAVAILABLE')
+  })
+
+  it('reports custom layout restoration without returning page names or identifiers', () => {
+    const before = {
+      workspaceLayout: '{"pages":[{"title":"private"}]}',
+      panelViewState: '{"activeWorkspacePages":{"secondary":"user-private"}}',
+      activePages: { primary: 'primary-overview', secondary: 'user-private' },
+      editorOpen: { primary: false, secondary: false },
+      questFilter: 'current'
+    }
+    expect(smoke.routePanelRestorationSummary(before, { ...before })).toEqual({
+      pageNamesOrderVisibilityRestored: true,
+      activePagesRestored: true,
+      panelEditorsRestored: true,
+      questFilterRestored: true
+    })
+    const changed = smoke.routePanelRestorationSummary(before, {
+      ...before,
+      workspaceLayout: '{"pages":[{"title":"changed"}]}'
+    })
+    expect(changed.pageNamesOrderVisibilityRestored).toBe(false)
+    expect(JSON.stringify(changed)).not.toContain('private')
+    expect(JSON.stringify(changed)).not.toContain('user-')
+  })
+
   it('rejects unsafe or incomplete command options', () => {
     expect(() => smoke.parseArgs(['--task-guide'])).toThrow(
       '--task-guide requires --allow-game-start, --manual-game-start, or --layout-fixture'
@@ -882,8 +989,28 @@ describe('Electron smoke script', () => {
         '--task-guide-tall-layout-fixture'
       ])
     ).toThrow(
-      '--task-guide-hidden-layout-fixture and --task-guide-tall-layout-fixture are mutually exclusive'
+      '--task-guide layout fixtures are mutually exclusive'
     )
+    expect(() =>
+      smoke.parseArgs([
+        '--layout-fixture',
+        '--task-guide',
+        '--wide-workspace',
+        '--task-guide-custom-layout-fixture'
+      ])
+    ).toThrow(
+      '--task-guide-custom-layout-fixture requires --layout-fixture, --data-update-fixture, --task-guide, and --wide-workspace'
+    )
+    expect(() =>
+      smoke.parseArgs([
+        '--layout-fixture',
+        '--data-update-fixture',
+        '--task-guide',
+        '--wide-workspace',
+        '--task-guide-tall-layout-fixture',
+        '--task-guide-custom-layout-fixture'
+      ])
+    ).toThrow('--task-guide layout fixtures are mutually exclusive')
     expect(() => smoke.parseArgs(['--data-update-fixture', '--task-guide'])).toThrow(
       '--data-update-fixture requires --layout-fixture'
     )

@@ -195,6 +195,8 @@ function usage() {
     '                      Hide the task page before isolated task-guide inspection.',
     '  --task-guide-tall-layout-fixture',
     '                      Inspect the primary task guide in an isolated tall layout.',
+    '  --task-guide-custom-layout-fixture',
+    '                      Verify route-panel restoration with an anonymous signed custom layout.',
     '  --wide-workspace    Temporarily inspect the complete available wide work area.',
     '  --require-display-profile <issue-23|issue-34>',
     '                      Require the exact physical display topology reported by that issue.',
@@ -226,6 +228,7 @@ function parseArgs(argv) {
     taskGuide: false,
     taskGuideHiddenLayoutFixture: false,
     taskGuideTallLayoutFixture: false,
+    taskGuideCustomLayoutFixture: false,
     wideWorkspace: false,
     requireDisplayProfile: undefined,
     requireLiveProfile: undefined,
@@ -260,6 +263,8 @@ function parseArgs(argv) {
       options.taskGuideHiddenLayoutFixture = true
     } else if (argument === '--task-guide-tall-layout-fixture') {
       options.taskGuideTallLayoutFixture = true
+    } else if (argument === '--task-guide-custom-layout-fixture') {
+      options.taskGuideCustomLayoutFixture = true
     } else if (argument === '--wide-workspace') {
       options.wideWorkspace = true
     } else if (argument === '--help') {
@@ -419,9 +424,25 @@ function parseArgs(argv) {
       '--task-guide-tall-layout-fixture requires --layout-fixture and --task-guide'
     )
   }
-  if (options.taskGuideHiddenLayoutFixture && options.taskGuideTallLayoutFixture) {
+  if (
+    options.taskGuideCustomLayoutFixture &&
+    (!options.layoutFixture ||
+      !options.dataUpdateFixture ||
+      !options.taskGuide ||
+      !options.wideWorkspace)
+  ) {
     throw new Error(
-      '--task-guide-hidden-layout-fixture and --task-guide-tall-layout-fixture are mutually exclusive'
+      '--task-guide-custom-layout-fixture requires --layout-fixture, --data-update-fixture, --task-guide, and --wide-workspace'
+    )
+  }
+  const taskGuideLayoutFixtureCount = [
+    options.taskGuideHiddenLayoutFixture,
+    options.taskGuideTallLayoutFixture,
+    options.taskGuideCustomLayoutFixture
+  ].filter(Boolean).length
+  if (taskGuideLayoutFixtureCount > 1) {
+    throw new Error(
+      '--task-guide layout fixtures are mutually exclusive'
     )
   }
   if (
@@ -1076,6 +1097,44 @@ function workspaceBoundsForSize(
     ),
     width: targetWidth,
     height: targetHeight
+  }
+}
+
+function isRoutePanelAcceptanceMode(options) {
+  return Boolean(
+    options.taskGuide &&
+      options.wideWorkspace &&
+      (options.manualGameStart || options.taskGuideCustomLayoutFixture)
+  )
+}
+
+function selectRoutePanelControlledSize(workArea, currentSize) {
+  const candidates = [
+    { width: NarrowWorkspaceWidth, height: NarrowWorkspaceHeight },
+    { width: SurfaceWorkspaceWidth, height: NarrowWorkspaceHeight },
+    { width: MinimumWorkspaceWidth, height: 700 }
+  ]
+  const selected = candidates.find(
+    (candidate) =>
+      candidate.width <= workArea.width &&
+      candidate.height <= workArea.height &&
+      (Math.abs(candidate.width - currentSize.width) > 1 ||
+        Math.abs(candidate.height - currentSize.height) > 1)
+  )
+  if (!selected) {
+    throw new Error('ROUTE_PANEL_CONTROLLED_SIZE_UNAVAILABLE')
+  }
+  return selected
+}
+
+function routePanelRestorationSummary(before, after) {
+  return {
+    pageNamesOrderVisibilityRestored: before.workspaceLayout === after.workspaceLayout,
+    activePagesRestored:
+      before.panelViewState === after.panelViewState &&
+      isDeepStrictEqual(before.activePages, after.activePages),
+    panelEditorsRestored: isDeepStrictEqual(before.editorOpen, after.editorOpen),
+    questFilterRestored: before.questFilter === after.questFilter
   }
 }
 
@@ -6742,15 +6801,22 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
           ...document.querySelectorAll(
             ${JSON.stringify(`${workspaceSelector} .workspace-panel`)}
           )
-        ].map((panel) => ({
-          name: panel.dataset.panelName ?? null,
-          visible: panel.getClientRects().length > 0,
+        ]
+        const visiblePanels = panels.filter((panel) => panel.getClientRects().length > 0)
+        const dimensions = visiblePanels.map((panel) => ({
           clientWidth: panel.clientWidth,
           scrollWidth: panel.scrollWidth
         }))
         return {
-          activePage: active?.textContent.trim() ?? null,
-          panels
+          workspaceArea: ${JSON.stringify(workspaceState.area)},
+          activePageKind: active?.dataset.workspacePageId?.startsWith('user-')
+            ? 'custom'
+            : active
+            ? 'built-in'
+            : 'missing',
+          panelCount: panels.length,
+          visiblePanelCount: visiblePanels.length,
+          dimensions
         }
       })()`)
       error.message += `; diagnostic=${JSON.stringify(diagnostic)}`
@@ -7196,6 +7262,430 @@ async function inspectTallTaskGuideLayoutFixture(
   }
 }
 
+async function prepareCustomTaskGuideLayoutFixture(session, timeoutMs) {
+  const selectSecondaryPage = async (pageId, description) => {
+    await session.evaluate(`document.querySelector(
+      '.assist-workspace--secondary .workspace-page-tabs ' +
+      'button[data-workspace-page-id=${JSON.stringify(pageId)}]'
+    )?.click()`)
+    return waitFor(
+      () =>
+        session.evaluate(`document.querySelector(
+          '.assist-workspace--secondary .workspace-page-tabs ' +
+          'button[role="tab"][aria-selected="true"]'
+        )?.dataset.workspacePageId === ${JSON.stringify(pageId)}`),
+      description,
+      timeoutMs
+    )
+  }
+  const setEditorOpen = async (open) => {
+    await session.evaluate(`(() => {
+      const workspace = document.querySelector('.assist-workspace--secondary')
+      const editor = workspace?.querySelector('.workspace-layout-editor')
+      if (${JSON.stringify(open)}) {
+        if (!editor) workspace?.querySelector('.workspace-layout-button')?.click()
+      } else {
+        editor?.querySelector(':scope > header button')?.click()
+      }
+    })()`)
+    await waitFor(
+      () =>
+        session.evaluate(`Boolean(document.querySelector(
+          '.assist-workspace--secondary .workspace-layout-editor'
+        )) === ${JSON.stringify(open)}`),
+      `the anonymous custom-layout editor to ${open ? 'open' : 'close'}`,
+      timeoutMs
+    )
+  }
+  const addCustomPage = async (title) => {
+    const previousIds = await session.evaluate(`[
+      ...document.querySelectorAll(
+        '.assist-workspace--secondary .workspace-page-tabs ' +
+        'button[data-workspace-page-id^="user-"]'
+      )
+    ].map((button) => button.dataset.workspacePageId)`)
+    await session.evaluate(`document.querySelector(
+      '.assist-workspace--secondary .workspace-add-page-button'
+    )?.click()`)
+    const pageId = await waitFor(
+      () =>
+        session.evaluate(`(() => {
+          const previous = new Set(${JSON.stringify(previousIds)})
+          const active = document.querySelector(
+            '.assist-workspace--secondary .workspace-page-tabs ' +
+            'button[role="tab"][aria-selected="true"]'
+          )
+          const pageId = active?.dataset.workspacePageId
+          return pageId?.startsWith('user-') && !previous.has(pageId) ? pageId : null
+        })()`),
+      'an anonymous custom workspace page to be created',
+      timeoutMs
+    )
+    await session.evaluate(`(() => {
+      const input = document.querySelector(
+        '.assist-workspace--secondary .workspace-layout-editor ' +
+        'input[aria-label="ページ名"]'
+      )
+      if (!(input instanceof HTMLInputElement)) return false
+      input.value = ${JSON.stringify(title)}
+      input.dispatchEvent(new Event('change', { bubbles: true }))
+      return true
+    })()`)
+    await waitFor(
+      () =>
+        session.evaluate(`(() => {
+          const pageId = ${JSON.stringify(pageId)}
+          try {
+            const layout = JSON.parse(
+              localStorage.getItem('rendererState:main:workspace-layout') ?? '{}'
+            )
+            return layout.pages?.find((page) => page.id === pageId)?.title ===
+              ${JSON.stringify(title)}
+          } catch {
+            return false
+          }
+        })()`),
+      'the anonymous custom workspace page name to be stored',
+      timeoutMs
+    )
+    await setEditorOpen(false)
+    return pageId
+  }
+
+  await selectSecondaryPage(
+    'secondary-operations',
+    'the anonymous custom-layout source page'
+  )
+  const firstPageId = await addCustomPage('匿名検証ページ A')
+  const secondPageId = await addCustomPage('匿名検証ページ B')
+  await setEditorOpen(true)
+  await session.evaluate(`(() => {
+    const buttons = [...document.querySelectorAll(
+      '.assist-workspace--secondary .workspace-page-actions button'
+    )]
+    buttons.find((button) => button.textContent.trim() === '←')?.click()
+  })()`)
+  await waitFor(
+    () =>
+      session.evaluate(`(() => {
+        try {
+          const layout = JSON.parse(
+            localStorage.getItem('rendererState:main:workspace-layout') ?? '{}'
+          )
+          const ids = layout.pages
+            ?.filter((page) => page.area === 'secondary' && page.userCreated)
+            .map((page) => page.id) ?? []
+          return ids.indexOf(${JSON.stringify(secondPageId)}) <
+            ids.indexOf(${JSON.stringify(firstPageId)})
+        } catch {
+          return false
+        }
+      })()`),
+    'the anonymous custom workspace page order to be stored',
+    timeoutMs
+  )
+  await setEditorOpen(false)
+
+  await selectSecondaryPage('secondary-drops', 'the anonymous page visibility fixture')
+  await setEditorOpen(true)
+  await session.evaluate(`(() => {
+    const buttons = document.querySelectorAll(
+      '.assist-workspace--secondary .workspace-layout-visibility-actions button'
+    )
+    buttons[1]?.click()
+  })()`)
+  await setEditorOpen(false)
+  await waitFor(
+    () =>
+      session.evaluate(`Boolean(document.querySelector(
+        '.assist-workspace--secondary .workspace-page-empty .is-danger:not([disabled])'
+      ))`),
+    'the anonymous built-in page to become empty',
+    timeoutMs
+  )
+  await session.evaluate(`(() => {
+    const button = document.querySelector(
+      '.assist-workspace--secondary .workspace-page-empty .is-danger:not([disabled])'
+    )
+    if (!button) return
+    const originalConfirm = window.confirm
+    window.confirm = () => true
+    try {
+      button.click()
+    } finally {
+      window.confirm = originalConfirm
+    }
+  })()`)
+  await waitFor(
+    () =>
+      session.evaluate(`!document.querySelector(
+        '.assist-workspace--secondary .workspace-page-tabs ' +
+        'button[data-workspace-page-id="secondary-drops"]'
+      )`),
+    'the anonymous built-in page visibility to be stored',
+    timeoutMs
+  )
+  await selectSecondaryPage(firstPageId, 'the anonymous active custom workspace page')
+
+  return waitFor(
+    () =>
+      session.evaluate(`(() => {
+        try {
+          const layout = JSON.parse(
+            localStorage.getItem('rendererState:main:workspace-layout') ?? '{}'
+          )
+          const view = JSON.parse(localStorage.getItem('panelViewState:main') ?? '{}')
+          const customPages = layout.pages?.filter(
+            (page) => page.area === 'secondary' && page.userCreated
+          ) ?? []
+          const hiddenPages = layout.pages?.filter(
+            (page) => page.area === 'secondary' && page.visible === false
+          ) ?? []
+          const active = document.querySelector(
+            '.assist-workspace--secondary .workspace-page-tabs ' +
+            'button[role="tab"][aria-selected="true"]'
+          )?.dataset.workspacePageId
+          const ready =
+            customPages.length === 2 &&
+            hiddenPages.some((page) => page.id === 'secondary-drops') &&
+            active === ${JSON.stringify(firstPageId)} &&
+            view.activeWorkspacePages?.secondary === ${JSON.stringify(firstPageId)} &&
+            !document.querySelector(
+              '.assist-workspace--secondary .workspace-layout-editor'
+            )
+          return ready
+            ? {
+                signedDataFixture: true,
+                customPageCount: customPages.length,
+                hiddenPageCount: hiddenPages.length,
+                customOrderChanged:
+                  customPages[0]?.id === ${JSON.stringify(secondPageId)},
+                activePageIsCustom: active?.startsWith('user-') ?? false
+              }
+            : null
+        } catch {
+          return null
+        }
+      })()`),
+    'the anonymous signed custom-layout fixture to settle',
+    timeoutMs
+  )
+}
+
+async function captureRoutePanelAcceptanceState(session) {
+  return session.evaluate(`(() => {
+    const areas = ['primary', 'secondary']
+    return {
+      workspaceLayout: localStorage.getItem('rendererState:main:workspace-layout'),
+      panelViewState: localStorage.getItem('panelViewState:main'),
+      questFilter: localStorage.getItem('questGuideViewFilter:v1'),
+      activePages: Object.fromEntries(
+        areas.map((area) => [
+          area,
+          document.querySelector(
+            '.assist-workspace--' + area + ' .workspace-page-tabs ' +
+            'button[role="tab"][aria-selected="true"]'
+          )?.dataset.workspacePageId ?? null
+        ])
+      ),
+      editorOpen: Object.fromEntries(
+        areas.map((area) => [
+          area,
+          Boolean(document.querySelector(
+            '.assist-workspace--' + area + ' .workspace-layout-editor'
+          ))
+        ])
+      )
+    }
+  })()`)
+}
+
+function routePanelLayoutSummary(taskGuide) {
+  const strategy = taskGuide?.questStrategyUpdate
+  const reviewed = strategy?.reviewedRouteChecks ?? []
+  const fallback = strategy?.fallback
+  const dimensions = [
+    ...reviewed.map((item) => ({
+      focus: item.focus,
+      clientWidth: item.clientWidth,
+      scrollWidth: item.scrollWidth
+    })),
+    ...(fallback
+      ? [
+          {
+            focus: fallback.focus,
+            clientWidth: fallback.clientWidth,
+            scrollWidth: fallback.scrollWidth
+          }
+        ]
+      : [])
+  ]
+  const contained =
+    reviewed.length === 2 &&
+    Boolean(fallback) &&
+    dimensions.every((item) => item.scrollWidth <= item.clientWidth + 1)
+  if (!contained) {
+    throw new Error(
+      `ROUTE_PANEL_HORIZONTAL_OVERFLOW: ${JSON.stringify({
+        reviewedRouteCount: reviewed.length,
+        fallbackPresent: Boolean(fallback),
+        dimensions
+      })}`
+    )
+  }
+  return {
+    reviewedRouteCount: reviewed.length,
+    fallbackChecked: true,
+    noHorizontalOverflow: true,
+    dimensions
+  }
+}
+
+function boundsMatch(left, right, tolerance = 2) {
+  return (
+    left &&
+    right &&
+    ['x', 'y', 'width', 'height'].every(
+      (key) => Math.abs(Number(left[key]) - Number(right[key])) <= tolerance
+    )
+  )
+}
+
+function windowStateMatches(left, right) {
+  return (
+    left.maximized === right.maximized &&
+    boundsMatch(left.bounds, right.bounds) &&
+    (!left.maximized || boundsMatch(left.normalBounds, right.normalBounds))
+  )
+}
+
+async function inspectRoutePanelResponsiveAcceptance(
+  session,
+  timeoutMs,
+  expectedQuestKnowledge,
+  originalState,
+  currentTaskGuide
+) {
+  const controlSession = session.screenshotSession ?? session
+  const originalWindow = await controlSession.call('Smoke.getWindowState')
+  const originalApp = await inspectApp(session)
+  const topology = await controlSession.call('Smoke.getDisplayTopology')
+  const display = topology.displays.find((candidate) => candidate.id === topology.currentDisplayId)
+  if (!display) {
+    throw new Error('ROUTE_PANEL_CURRENT_DISPLAY_UNAVAILABLE')
+  }
+  const workArea = {
+    left: display.workArea.x,
+    top: display.workArea.y,
+    width: display.workArea.width,
+    height: display.workArea.height
+  }
+  const controlledSize = selectRoutePanelControlledSize(workArea, {
+    width: originalApp.document.clientWidth,
+    height: originalApp.document.clientHeight
+  })
+  const restoreBounds = originalWindow.maximized
+    ? originalWindow.normalBounds
+    : originalWindow.bounds
+  const controlledBounds = workspaceBoundsForSize(
+    workArea,
+    controlledSize.width,
+    controlledSize.height,
+    { left: restoreBounds.x, top: restoreBounds.y }
+  )
+  const current = routePanelLayoutSummary(currentTaskGuide)
+  let controlled
+  let leftOriginalMaximizedState = false
+
+  try {
+    if (originalWindow.maximized) {
+      await session.evaluate(`window.api.toggleMaximize()`)
+      leftOriginalMaximizedState = true
+      await waitFor(
+        async () => {
+          const state = await controlSession.call('Smoke.getWindowState')
+          return state.maximized ? undefined : state
+        },
+        'the route-panel acceptance window to leave maximized state',
+        timeoutMs
+      )
+    }
+    await session.evaluate(`(() => {
+      const bounds = ${JSON.stringify(controlledBounds)}
+      window.resizeTo(bounds.width, bounds.height)
+      window.moveTo(bounds.left, bounds.top)
+    })()`)
+    await waitForStableAppSize(
+      session,
+      controlledBounds.width,
+      controlledBounds.height,
+      'the controlled route-panel acceptance size',
+      timeoutMs
+    )
+    controlled = routePanelLayoutSummary(
+      await inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge)
+    )
+  } finally {
+    await session.evaluate(`(() => {
+      const bounds = ${JSON.stringify({
+        left: restoreBounds.x,
+        top: restoreBounds.y,
+        width: restoreBounds.width,
+        height: restoreBounds.height
+      })}
+      window.resizeTo(bounds.width, bounds.height)
+      window.moveTo(bounds.left, bounds.top)
+    })()`)
+    if (originalWindow.maximized && leftOriginalMaximizedState) {
+      await session.evaluate(`window.api.toggleMaximize()`)
+      await waitFor(
+        async () => {
+          const state = await controlSession.call('Smoke.getWindowState')
+          return state.maximized ? state : undefined
+        },
+        'the original maximized state after route-panel acceptance',
+        timeoutMs
+      )
+    }
+    await waitForStableAppSize(
+      session,
+      originalApp.document.clientWidth,
+      originalApp.document.clientHeight,
+      'the original size after route-panel acceptance',
+      timeoutMs
+    )
+  }
+
+  const restored = await waitFor(
+    async () => {
+      const state = await captureRoutePanelAcceptanceState(session)
+      const windowState = await controlSession.call('Smoke.getWindowState')
+      const summary = routePanelRestorationSummary(originalState, state)
+      const windowBoundsRestored = windowStateMatches(originalWindow, windowState)
+      return Object.values(summary).every(Boolean) && windowBoundsRestored
+        ? { ...summary, windowBoundsRestored }
+        : undefined
+    },
+    'the redacted route-panel acceptance state restoration',
+    timeoutMs
+  )
+
+  return {
+    genericWideWorkspaceRegressionSkipped: true,
+    current: {
+      windowWidth: originalApp.document.clientWidth,
+      windowHeight: originalApp.document.clientHeight,
+      ...current
+    },
+    controlled: {
+      windowWidth: controlledBounds.width,
+      windowHeight: controlledBounds.height,
+      ...controlled
+    },
+    restored
+  }
+}
+
 function summarizeSmokeResult(result) {
   const summarizeApp = (app) => ({
     surface: app.surface,
@@ -7496,6 +7986,8 @@ function summarizeSmokeResult(result) {
           tallLayoutFixture: result.taskGuide.tallLayoutFixture
         }
       : undefined,
+    customTaskGuideLayoutFixture: result.customTaskGuideLayoutFixture,
+    routePanelAcceptance: result.routePanelAcceptance,
     workspaceResizeSweep:
       result.workspaceResizeSweep?.map((entry) => ({
         step: entry.step,
@@ -7578,6 +8070,8 @@ async function ensureWorkspaceSurface(session, app, timeoutMs) {
 async function run(options) {
   const previousRunDeadline = activeRunDeadline
   const progress = createSmokeProgress()
+  const routePanelAcceptanceMode = isRoutePanelAcceptanceMode(options)
+  const runGenericLayoutFixture = options.layoutFixture && !routePanelAcceptanceMode
   const repoRoot = path.resolve(__dirname, '..')
   const builtMain = path.join(repoRoot, 'out', 'main', 'index.js')
   const executable = electronExecutable(repoRoot)
@@ -8449,7 +8943,7 @@ async function run(options) {
       progress('workspace', 'ensuring workspace layout mode')
       app = await ensureWorkspaceSurface(appSession, app, options.timeoutMs)
     }
-    const zoomShortcutPolicy = options.layoutFixture
+    const zoomShortcutPolicy = runGenericLayoutFixture
       ? await inspectGameZoomShortcutPolicy(
           appSession,
           new IpcSession(child, 'game', smokeIpcToken),
@@ -8464,14 +8958,14 @@ async function run(options) {
         `${zoomShortcutPolicy.resizeSweep.length}-step game-only resize and Ctrl+0/Ctrl++ preserved factor ${zoomShortcutPolicy.preservedFactor}`
       )
     }
-    const muteReloadPolicy = options.layoutFixture
+    const muteReloadPolicy = runGenericLayoutFixture
       ? await inspectMuteReloadPolicy(appSession, options.timeoutMs)
       : undefined
     if (muteReloadPolicy) {
       app = await inspectApp(appSession)
       progress('mute-policy', 'muted state survived application reload and was restored')
     }
-    const titlebarCapacityFixture = options.layoutFixture
+    const titlebarCapacityFixture = runGenericLayoutFixture
       ? await inspectTitlebarCapacityFixture(appSession, options.timeoutMs, screenshotDirectory)
       : undefined
     if (titlebarCapacityFixture) {
@@ -8480,7 +8974,7 @@ async function run(options) {
         `${titlebarCapacityFixture.ship.text} ships and ${titlebarCapacityFixture.slotitem.text} equipment rendered with near-limit warnings`
       )
     }
-    const captureNoticeFixture = options.layoutFixture
+    const captureNoticeFixture = runGenericLayoutFixture
       ? await inspectCaptureNoticeFixture(
           appSession,
           layoutFixtureOption?.captureDirectory,
@@ -8495,7 +8989,7 @@ async function run(options) {
         `${captureNoticeFixture.filename} saved as a valid ${captureNoticeFixture.file.width}x${captureNoticeFixture.file.height} PNG and named by the success notice`
       )
     }
-    const recordingSaveFixture = options.layoutFixture
+    const recordingSaveFixture = runGenericLayoutFixture
       ? await inspectRecordingSaveFixture(
           appSession,
           layoutFixtureOption?.captureDirectory,
@@ -8510,7 +9004,7 @@ async function run(options) {
         `${recordingSaveFixture.filename} saved as a valid game-only WebM under the configured custom directory`
       )
     }
-    const transportFixture = options.layoutFixture
+    const transportFixture = runGenericLayoutFixture
       ? await inspectTransportFixture(appSession, options.timeoutMs, screenshotDirectory)
       : undefined
     if (transportFixture) {
@@ -8561,6 +9055,37 @@ async function run(options) {
         `${liveAcceptance.profile} rendered ${liveAcceptance.missionCheck.rowCount} mission-check rows from ready account data`
       )
     }
+    const customTaskGuideLayoutFixture = options.taskGuideCustomLayoutFixture
+      ? await prepareCustomTaskGuideLayoutFixture(appSession, options.timeoutMs)
+      : undefined
+    const routePanelOriginalState = routePanelAcceptanceMode
+      ? await captureRoutePanelAcceptanceState(appSession)
+      : undefined
+    const taskGuide = options.taskGuide
+      ? options.taskGuideTallLayoutFixture
+        ? await inspectTallTaskGuideLayoutFixture(
+            appSession,
+            options.timeoutMs,
+            dataUpdateExpectation
+          )
+        : options.taskGuideHiddenLayoutFixture
+        ? await inspectHiddenTaskGuideLayoutFixture(
+            appSession,
+            options.timeoutMs,
+            dataUpdateExpectation
+          )
+        : await inspectTaskGuide(appSession, options.timeoutMs, dataUpdateExpectation)
+      : undefined
+    const routePanelAcceptance = routePanelAcceptanceMode
+      ? await inspectRoutePanelResponsiveAcceptance(
+          appSession,
+          options.timeoutMs,
+          dataUpdateExpectation,
+          routePanelOriginalState,
+          taskGuide
+        )
+      : undefined
+    const runGenericWorkspaceRegression = options.wideWorkspace && !routePanelAcceptanceMode
     const result = {
       dataSource,
       isolatedUserData: options.layoutFixture,
@@ -8599,10 +9124,10 @@ async function run(options) {
       displayTopology,
       displayAcceptance,
       recordingSource: await inspectRecordingSource(appSession),
-      recordingSources: options.layoutFixture
+      recordingSources: runGenericLayoutFixture
         ? await inspectFixtureRecordingSources(appSession, options.timeoutMs)
         : undefined,
-      hpGaugeFixture: options.layoutFixture
+      hpGaugeFixture: runGenericLayoutFixture
         ? await inspectHpGaugeFixture(appSession, options.timeoutMs, screenshotDirectory)
         : undefined,
       zoomShortcutPolicy,
@@ -8611,14 +9136,15 @@ async function run(options) {
       captureNoticeFixture,
       recordingSaveFixture,
       transportFixture,
-      missionCheckFixture: options.layoutFixture
+      missionCheckFixture: runGenericLayoutFixture
         ? await inspectMissionCheck(appSession, options.timeoutMs, screenshotDirectory)
         : undefined,
-      titlebarColorFixture: options.layoutFixture
+      titlebarColorFixture: runGenericLayoutFixture
         ? await inspectTitlebarColorFixture(appSession, options.timeoutMs, screenshotDirectory)
         : undefined,
       app,
-      workspacePages: options.workspacePages
+      customTaskGuideLayoutFixture,
+      workspacePages: options.workspacePages && !routePanelAcceptanceMode
         ? await inspectWorkspacePages(
             appSession,
             options.timeoutMs,
@@ -8628,35 +9154,22 @@ async function run(options) {
           )
         : undefined,
       workspaceModuleVisibility:
-        options.layoutFixture && options.workspacePages
+        options.layoutFixture && options.workspacePages && !routePanelAcceptanceMode
           ? await inspectWorkspaceModuleVisibility(
               appSession,
               options.timeoutMs,
               screenshotDirectory
             )
           : undefined,
-      taskGuide: options.taskGuide
-        ? options.taskGuideTallLayoutFixture
-          ? await inspectTallTaskGuideLayoutFixture(
-              appSession,
-              options.timeoutMs,
-              dataUpdateExpectation
-            )
-          : options.taskGuideHiddenLayoutFixture
-          ? await inspectHiddenTaskGuideLayoutFixture(
-              appSession,
-              options.timeoutMs,
-              dataUpdateExpectation
-            )
-          : await inspectTaskGuide(appSession, options.timeoutMs, dataUpdateExpectation)
-        : undefined,
-      workspaceResizeSweep: options.wideWorkspace
+      taskGuide,
+      routePanelAcceptance,
+      workspaceResizeSweep: runGenericWorkspaceRegression
         ? await inspectWorkspaceResizeSweep(appSession, options.timeoutMs)
         : undefined,
-      workspaceSizes: options.wideWorkspace
+      workspaceSizes: runGenericWorkspaceRegression
         ? await inspectWorkspaceSizeCases(appSession, options.timeoutMs, screenshotDirectory)
         : undefined,
-      displayWorkspaces: options.wideWorkspace
+      displayWorkspaces: runGenericWorkspaceRegression
         ? await inspectDisplayWorkspaceCases(
             appSession,
             options.timeoutMs,
@@ -8664,7 +9177,7 @@ async function run(options) {
             screenshotDirectory
           )
         : undefined,
-      wideWorkspace: options.wideWorkspace
+      wideWorkspace: runGenericWorkspaceRegression
         ? await inspectWideWorkspace(appSession, options.timeoutMs, screenshotDirectory)
         : undefined
     }
@@ -8674,7 +9187,11 @@ async function run(options) {
         'mission check hidden, persisted through editor reopen, restored, and previous page recovered'
       )
     }
-    if (options.layoutFixture && options.wideWorkspace && !options.accountRestoreFixture) {
+    if (
+      options.layoutFixture &&
+      runGenericWorkspaceRegression &&
+      !options.accountRestoreFixture
+    ) {
       progress('restart', 'persisting and restarting the Surface workspace')
       const preparedRestart = await prepareWorkspaceRestartState(appSession, options.timeoutMs)
       await appSession.screenshotSession.call('Smoke.quit')
@@ -8777,7 +9294,7 @@ async function run(options) {
       result.displayAcceptance.restartVerified = true
       result.displayAcceptance.zoomResetVerified = Boolean(result.layoutRestart.gameAfterZoomReset)
     }
-    if (options.layoutFixture && !options.accountRestoreFixture && !options.pseudoLocale) {
+    if (runGenericLayoutFixture && !options.accountRestoreFixture && !options.pseudoLocale) {
       result.capacityBoundaryFixture = await inspectCapacityBoundaryFixture(
         appSession,
         options.timeoutMs,
@@ -8914,6 +9431,9 @@ module.exports = {
   WideWorkspaceMinHeight,
   WideWorkspaceMinWidth,
   metricsAreContained,
+  isRoutePanelAcceptanceMode,
+  routePanelRestorationSummary,
+  selectRoutePanelControlledSize,
   physicalDisplaySize,
   inspectDisplayAcceptanceProfile,
   missionCheckAcceptanceFailure,
