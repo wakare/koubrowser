@@ -168,7 +168,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
+      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -189,7 +189,7 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
-    expect(report.globalStops).toContain('R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN')
+    expect(report.globalStops).toContain('R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED')
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
@@ -726,7 +726,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('authorizes the fixed harness amendment without claiming acceptance ran', () => {
+  it('records the fixed harness attempt as fail-closed without route inspection', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -746,16 +746,26 @@ describe('quest growth authoring contract', () => {
       priorAttemptReasonCode: string
       harnessAmendmentReasonCode: string
       anonymousHiddenLayoutFixtureRequired: boolean
+      acceptanceReasonCode: string
+      routeInspectionStarted: boolean
+      checkedRouteCount: number
+      pageFilterPanelWindowStateRestored: boolean
+      applicationProcessClosed: boolean
     }>('generated', 'r7-real-account-acceptance-report.json')
 
-    expect(report.status).toBe('REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED')
+    expect(report.status).toBe('REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED')
     expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(report.authorizationState).toBe('authorized')
-    expect(report.executionAuthorization).toBe('authorized')
+    expect(report.executionAuthorization).toBe('consumed')
     expect(report.acceptanceMode).toBe('owner-login-readonly-redacted')
     expect(report.maximumAcceptedRoutes).toBe(2)
     expect(report.requiredCheckCount).toBe(12)
-    expect(report.actualAcceptanceStatus).toBe('retry-authorized-not-run')
+    expect(report.actualAcceptanceStatus).toBe('fail-closed')
+    expect(report.acceptanceReasonCode).toBe('SECONDARY_TASK_PAGE_OMITTED_BY_TALL_LAYOUT')
+    expect(report.routeInspectionStarted).toBe(false)
+    expect(report.checkedRouteCount).toBe(0)
+    expect(report.pageFilterPanelWindowStateRestored).toBe(true)
+    expect(report.applicationProcessClosed).toBe(true)
     expect(report.priorAttemptReasonCode).toBe('TASK_WORKSPACE_PAGE_NOT_VISIBLE')
     expect(report.harnessAmendmentReasonCode).toBe(
       'USER_CUSTOMIZED_WORKSPACE_LAYOUT_COMPATIBILITY'

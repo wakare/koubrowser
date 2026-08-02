@@ -966,7 +966,9 @@ function buildQuestGrowthArtifacts(root) {
     runtimePromotion: {
       status: 'blocked',
       reason:
-        r7RealAccountDecision.output.r7RealAccountAcceptanceAuthorizedRouteCount > 0
+        r7RealAccountDecision.output.r7RealAccountAcceptanceFailClosed
+          ? 'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
+          : r7RealAccountDecision.output.r7RealAccountAcceptanceAuthorizedRouteCount > 0
           ? 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
           : r7RealAccountDecision.output
                 .r7RealAccountAcceptanceAmendmentOwnerDecisionRequired
@@ -1016,10 +1018,12 @@ function buildQuestGrowthArtifacts(root) {
       ...([...decisionRubrics.rubrics.values()].some((item) => item.status !== 'approved')
         ? ['DECISION_RUBRICS_NOT_INDEPENDENTLY_APPROVED']
         : []),
-      ...(r7RealAccountDecision.output
-        .r7RealAccountAcceptanceAmendmentOwnerDecisionRequired
-        ? ['R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED']
-        : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'])
+      ...(r7RealAccountDecision.output.r7RealAccountAcceptanceFailClosed
+        ? ['R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED']
+        : r7RealAccountDecision.output
+              .r7RealAccountAcceptanceAmendmentOwnerDecisionRequired
+          ? ['R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED']
+          : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'])
     ]
   }
   return {

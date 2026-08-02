@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_AMENDMENT_AUTHORIZED_NOT_RUN`
+Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED`
 
 ## 目的
 
@@ -14,7 +14,8 @@ Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_AMENDMENT_AUTHORIZED_NOT_RUN`
 revision 1 harness が開けず、route 検査前に fail closed した。revision 2 はこの layout 互換性と
 固定12 check の検査漏れだけを補う。gate の承認は維持するが、revision 2 の実行は再承認まで
 `not-authorized` とした。project owner は固定摘要を明示承認し、revision 2 の実行は
-`authorized`、再試行はまだ `not-run` である。
+`authorized` とした。再試行は account data ready 後、tall layout で task page を解決できず、
+route 検査前に再び fail closed した。この1回分の実行承認は消費済みである。
 
 machine-readable request は
 [`r7-real-account-acceptance-request.json`](../knowledge/quest-growth/decisions/r7-real-account-acceptance-request.json)、
@@ -77,6 +78,24 @@ production code と route 内容は変更せず、固定 harness に次の3点�
 匿名 signed data-update + hidden-layout fixture では、2 route、fallback、session-only、page / panel / active-page
 復元がすべて PASS した。
 
+## revision 2 の実行結果
+
+- result: `fail-closed`
+- stage: `task-page-resolution-before-route-inspection`
+- reason: `SECONDARY_TASK_PAGE_OMITTED_BY_TALL_LAYOUT`
+- account data ready: `true`
+- route inspection started: `false`
+- checked route count: `0`
+- owner の `GAME START` 後のゲーム操作: `false`
+- screenshot / raw log / account export: `false`
+- page / filter / panel / window state restored: `true`
+- 実行プロセスは終了済み
+
+source 確認の結果、`secondary-tasks` は `compactHeightOnly` である。live 窓は高さ
+1408 px だったため、page の persisted `visible` は `true` のまま tab からだけ省かれた。
+revision 2 が参照する hidden page list は persisted `visible=false` の page だけを含むため、復元対象を
+見つけられなかった。
+
 ## 実行前 gate
 
 承認後も次がすべて PASS するまで実アカウント session を開始しない。
@@ -135,6 +154,8 @@ screenshot capture、raw log retention、account data export はすべて禁止�
   `sha256:c93a7c03e6afe77f272852dcaf32ad342e61f2cb7c2b7e8f9f8f125c631f0380`
 - approved revision 2 request raw digest:
   `sha256:409132e26bd5b131da0049d715408438a13bd59c028eca6dea2dea48d899f446`
+- executed revision 2 request raw digest:
+  `sha256:afbb49115286691761c8d3be4842832887e2d447676f2c00b6f33fb552d76c35`
 - revision 1 approved semantic digest:
   `sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe`
 - revision 2 smoke harness digest:
@@ -144,7 +165,8 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - route count: `2`
 - required checks: `12`
 - prior acceptance status: `blocked-before-route-inspection`
-- revision 2 acceptance status: `retry-authorized-not-run`
+- revision 2 acceptance status: `fail-closed`
+- revision 2 execution authorization: `consumed`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
@@ -161,6 +183,6 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 
 ## 承認結果と現在の結論
 
-project owner は revision 2 修訂固定摘要を明示承認した。`executionAuthorization` は
-`authorized`、actual status は `retry-authorized-not-run` である。preflight 完了後に固定 harness を
-1回だけ再実行できる。runtime publication、default enablement、他 family は未承認のままである。
+project owner は revision 2 修訂固定摘要を明示承認し、1回の再試行は fail closed で終了した。
+`executionAuthorization` は `consumed`、actual status は `fail-closed` である。追加の harness 変更、
+実アカウント再試行、runtime publication、default enablement、他 family はいずれも未承認である。

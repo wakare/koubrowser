@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const R7RealAccountDecisionCompilerVersion =
-  'quest-growth-r7-real-account-decision-compiler/4'
+  'quest-growth-r7-real-account-decision-compiler/5'
 const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -108,6 +108,24 @@ const ExpectedHarnessAmendment = {
   productionCodeChangesAuthorized: false,
   routeContentChangesAuthorized: false
 }
+const ExpectedExecutionResult = {
+  recordedAt: '2026-08-02T03:31:02.695Z',
+  approvedSemanticDigest:
+    'sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e',
+  requestRevision: 2,
+  status: 'fail-closed',
+  stage: 'task-page-resolution-before-route-inspection',
+  reasonCode: 'SECONDARY_TASK_PAGE_OMITTED_BY_TALL_LAYOUT',
+  accountDataReady: true,
+  routeInspectionStarted: false,
+  checkedRouteCount: 0,
+  gameActionAfterOwnerGameStart: false,
+  rawEvidenceRetained: false,
+  screenshotCaptured: false,
+  accountDataExported: false,
+  pageFilterPanelWindowStateRestored: true,
+  applicationProcessClosed: true
+}
 const ExpectedProhibited = [
   'credential-handling-by-agent',
   'agent-click-game-start',
@@ -182,7 +200,9 @@ function timestamp(value, description) {
 
 function realAccountRequestSemanticDigest(value) {
   const payload = Object.fromEntries(
-    Object.entries(value).filter(([key]) => key !== 'status' && key !== 'review')
+    Object.entries(value).filter(
+      ([key]) => key !== 'status' && key !== 'review' && key !== 'executionResult'
+    )
   )
   return digest(
     canonicalJson({
@@ -221,6 +241,7 @@ function validateR7RealAccountAcceptanceRequest(
       'abortConditions',
       'priorAttempt',
       'harnessAmendment',
+      'executionResult',
       'executionBoundary',
       'stillProhibited',
       'review'
@@ -413,6 +434,15 @@ function validateR7RealAccountAcceptanceRequest(
     throw new Error('R7 acceptance harness amendment mismatch')
   }
   exactKeys(
+    value.executionResult,
+    Object.keys(ExpectedExecutionResult),
+    'R7 acceptance execution result'
+  )
+  timestamp(value.executionResult.recordedAt, 'R7 acceptance execution result recordedAt')
+  if (!same(value.executionResult, ExpectedExecutionResult)) {
+    throw new Error('R7 acceptance execution result mismatch')
+  }
+  exactKeys(
     value.executionBoundary,
     [
       'productionCodeChangesAuthorized',
@@ -470,10 +500,10 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     schemaVersion: 1,
     compilerVersion: R7RealAccountDecisionCompilerVersion,
     generatedAt: request.approved
-      ? request.value.review.reviewedAt
+      ? request.value.executionResult.recordedAt
       : request.value.sourceSnapshot.checkedAt,
     status: request.approved
-      ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED'
+      ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED'
       : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT',
     scope: request.value.scope,
     requestId: request.value.requestId,
@@ -483,7 +513,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     gateId: request.value.requestedAuthorization.gateId,
     gateSemanticDigest: request.value.approvalBasis.realAccountGateSemanticDigest,
     authorizationState: 'authorized',
-    executionAuthorization: request.approved ? 'authorized' : 'not-authorized',
+    executionAuthorization: request.approved ? 'consumed' : 'not-authorized',
     acceptanceMode: request.value.requestedAuthorization.acceptanceMode,
     maximumAcceptedRoutes: request.value.requestedAuthorization.maximumAcceptedRoutes,
     routeBindings: request.value.routeBindings,
@@ -496,8 +526,16 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     accountDataExportAllowed: false,
     protectedCommunicationDigests: request.value.approvalBasis.protectedCommunicationDigests,
     actualAcceptanceStatus: request.approved
-      ? 'retry-authorized-not-run'
+      ? request.value.executionResult.status
       : request.value.priorAttempt.result,
+    acceptanceStage: request.value.executionResult.stage,
+    acceptanceReasonCode: request.value.executionResult.reasonCode,
+    accountDataReady: request.value.executionResult.accountDataReady,
+    routeInspectionStarted: request.value.executionResult.routeInspectionStarted,
+    checkedRouteCount: request.value.executionResult.checkedRouteCount,
+    pageFilterPanelWindowStateRestored:
+      request.value.executionResult.pageFilterPanelWindowStateRestored,
+    applicationProcessClosed: request.value.executionResult.applicationProcessClosed,
     priorAttemptReasonCode: request.value.priorAttempt.reasonCode,
     harnessAmendmentReasonCode: request.value.harnessAmendment.reasonCode,
     harnessAmendmentChangeCount: request.value.harnessAmendment.changes.length,
@@ -515,9 +553,8 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       r7RealAccountAcceptanceRouteCount: report.routeBindings.length,
       r7RealAccountAcceptanceRequiredCheckCount: report.requiredCheckCount,
       r7RealAccountAcceptanceAmendmentOwnerDecisionRequired: !request.approved,
-      r7RealAccountAcceptanceAuthorizedRouteCount: request.approved
-        ? report.routeBindings.length
-        : 0
+      r7RealAccountAcceptanceFailClosed: request.approved,
+      r7RealAccountAcceptanceAuthorizedRouteCount: 0
     }
   }
 }
