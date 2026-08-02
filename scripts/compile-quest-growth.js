@@ -979,6 +979,8 @@ function buildQuestGrowthArtifacts(root) {
       reason:
         r7RealAccountDecision.output.r7RealAccountAcceptanceFailClosed
           ? 'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
+          : r7RealAccountDecision.output.r7RealAccountAcceptancePassed
+          ? 'R7_REAL_ACCOUNT_ACCEPTANCE_PASSED_PUBLICATION_NOT_AUTHORIZED'
           : r7RealAccountDecision.output.r7RealAccountAcceptanceAuthorizedRouteCount > 0
           ? 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
           : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
@@ -1030,6 +1032,8 @@ function buildQuestGrowthArtifacts(root) {
         : []),
       ...(r7RealAccountDecision.output.r7RealAccountAcceptanceFailClosed
         ? ['R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED']
+        : r7RealAccountDecision.output.r7RealAccountAcceptancePassed
+          ? ['R7_REAL_ACCOUNT_ACCEPTANCE_PASSED_PUBLICATION_NOT_AUTHORIZED']
         : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
           ? ['R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED']
           : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'])

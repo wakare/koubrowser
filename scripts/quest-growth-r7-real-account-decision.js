@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const R7RealAccountDecisionCompilerVersion =
-  'quest-growth-r7-real-account-decision-compiler/13'
+  'quest-growth-r7-real-account-decision-compiler/14'
 const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -137,17 +137,23 @@ const ExpectedPreviousExecutionResult = {
   applicationProcessClosed: true
 }
 const ExpectedExecutionResult = {
-  recordedAt: '2026-08-02T07:34:16.399Z',
+  recordedAt: '2026-08-02T08:22:53.365Z',
   approvedSemanticDigest:
-    'sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6',
-  requestRevision: 6,
-  status: 'fail-closed',
-  stage: 'current-route-panel-layout-before-fixed-content-check',
-  reasonCode: 'QUEST_STRATEGY_CURRENT_SIZE_HORIZONTAL_OVERFLOW',
+    'sha256:497bc51162e26ac696db7219bc876ff56dd0bbfd932e5dddec89a5460a405930',
+  requestRevision: 7,
+  status: 'pass',
+  stage: 'reviewed-route-readonly-acceptance-complete',
+  reasonCode: 'R7_REVIEWED_ROUTES_READONLY_ACCEPTANCE_PASSED',
   accountDataReady: true,
   routeInspectionStarted: true,
-  checkedRouteCount: 0,
-  layoutDiagnostic: { clientWidth: 221, scrollWidth: 257 },
+  checkedRouteCount: 2,
+  layoutDiagnostic: { clientWidth: 146, scrollWidth: 146 },
+  currentSizeNoHorizontalOverflow: true,
+  controlledSizeNoHorizontalOverflow: true,
+  routeContentMatches: true,
+  manualConfirmationVisible: true,
+  unsetFallbackChecked: true,
+  sessionOnlyState: true,
   gameActionAfterOwnerGameStart: false,
   rawEvidenceRetained: false,
   screenshotCaptured: false,
@@ -699,6 +705,8 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
   })
   const executionConsumed =
     request.approved && request.value.executionResult.requestRevision === request.value.revision
+  const acceptancePassed = executionConsumed && request.value.executionResult.status === 'pass'
+  const acceptanceFailClosed = executionConsumed && !acceptancePassed
   const report = {
     schemaVersion: 1,
     compilerVersion: R7RealAccountDecisionCompilerVersion,
@@ -708,7 +716,9 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       ? request.value.review.reviewedAt
       : request.value.sourceSnapshot.checkedAt,
     status: executionConsumed
-      ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED'
+      ? acceptancePassed
+        ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_PASSED'
+        : 'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED'
       : request.approved
       ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED'
       : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY',
@@ -743,6 +753,14 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     routeInspectionStarted: request.value.executionResult.routeInspectionStarted,
     checkedRouteCount: request.value.executionResult.checkedRouteCount,
     layoutDiagnostic: request.value.executionResult.layoutDiagnostic,
+    currentSizeNoHorizontalOverflow:
+      request.value.executionResult.currentSizeNoHorizontalOverflow ?? false,
+    controlledSizeNoHorizontalOverflow:
+      request.value.executionResult.controlledSizeNoHorizontalOverflow ?? false,
+    routeContentMatches: request.value.executionResult.routeContentMatches ?? false,
+    manualConfirmationVisible: request.value.executionResult.manualConfirmationVisible ?? false,
+    unsetFallbackChecked: request.value.executionResult.unsetFallbackChecked ?? false,
+    sessionOnlyState: request.value.executionResult.sessionOnlyState ?? false,
     pageFilterPanelWindowStateRestored:
       request.value.executionResult.pageFilterPanelWindowStateRestored,
     applicationProcessClosed: request.value.executionResult.applicationProcessClosed,
@@ -810,7 +828,8 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       r7RealAccountAcceptanceRouteCount: report.routeBindings.length,
       r7RealAccountAcceptanceRequiredCheckCount: report.requiredCheckCount,
       r7RealAccountAcceptanceOwnerDecisionRequired: !request.approved,
-      r7RealAccountAcceptanceFailClosed: executionConsumed,
+      r7RealAccountAcceptanceFailClosed: acceptanceFailClosed,
+      r7RealAccountAcceptancePassed: acceptancePassed,
       r7RealAccountAcceptanceAuthorizedRouteCount: request.approved && !executionConsumed
         ? report.routeBindings.length
         : 0

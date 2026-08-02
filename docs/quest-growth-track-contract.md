@@ -262,7 +262,9 @@ route content 詳細検査前に fail closed し、execution authorization は `
 authorized とした。実アカウント再実行は引き続き未承認である。
 実装と匿名 `221px` regression は PASS 済みで、revision 7 post-fix retry は別の固定摘要に分離した。
 project owner は revision 7 の固定摘要を明示承認し、固定済みの2 route に対する最大1回の実アカウント
-只読・脱敏実行を `authorized` とした。runtime publication、default enablement、他 family は未承認のままとする。
+只読・脱敏実行を `authorized` とした。固定 harness の実行は2 route、unset fallback、session-only state、
+current / controlled size の横 overflow、UI state 復元をすべて確認して PASS し、execution authorization は
+`consumed` となった。runtime publication、default enablement、他 family は未承認のままとする。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

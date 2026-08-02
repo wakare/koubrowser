@@ -303,6 +303,13 @@ runtime publication、default enablement、他 family は含まない。project 
 明示承認し、execution authorization は `authorized` である。実行結果を記録するまでは
 `REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED` として扱う。
 
+固定 harness による最大1回の実行は `2026-08-02T08:22:53.365Z` に PASS した。原2 reviewed route の
+content / semantic digest、manual confirmation、resources / asw focus、unset fallback、session-only state を
+確認し、current size と controlled `1600 x 800` の双方で横 overflow はなかった。page / filter / panel /
+window state は復元され、application process は終了した。screenshot、raw log、account snapshot、ゲーム操作、
+通信変更はなく、execution authorization は `consumed` とする。runtime publication と default enablement は
+引き続き未承認である。
+
 revision 7 固定摘要:
 
 - semantic digest:

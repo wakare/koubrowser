@@ -27,7 +27,7 @@
   "requestedAuthorization": {
     "gateId": "r7-real-account-readonly-acceptance",
     "authorizationState": "authorized",
-    "executionAuthorization": "authorized",
+    "executionAuthorization": "consumed",
     "maximumAcceptedRoutes": 2,
     "acceptanceMode": "owner-login-readonly-redacted"
   },
@@ -251,19 +251,25 @@
     "applicationProcessClosed": true
   },
   "executionResult": {
-    "recordedAt": "2026-08-02T07:34:16.399Z",
-    "approvedSemanticDigest": "sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6",
-    "requestRevision": 6,
-    "status": "fail-closed",
-    "stage": "current-route-panel-layout-before-fixed-content-check",
-    "reasonCode": "QUEST_STRATEGY_CURRENT_SIZE_HORIZONTAL_OVERFLOW",
+    "recordedAt": "2026-08-02T08:22:53.365Z",
+    "approvedSemanticDigest": "sha256:497bc51162e26ac696db7219bc876ff56dd0bbfd932e5dddec89a5460a405930",
+    "requestRevision": 7,
+    "status": "pass",
+    "stage": "reviewed-route-readonly-acceptance-complete",
+    "reasonCode": "R7_REVIEWED_ROUTES_READONLY_ACCEPTANCE_PASSED",
     "accountDataReady": true,
     "routeInspectionStarted": true,
-    "checkedRouteCount": 0,
+    "checkedRouteCount": 2,
     "layoutDiagnostic": {
-      "clientWidth": 221,
-      "scrollWidth": 257
+      "clientWidth": 146,
+      "scrollWidth": 146
     },
+    "currentSizeNoHorizontalOverflow": true,
+    "controlledSizeNoHorizontalOverflow": true,
+    "routeContentMatches": true,
+    "manualConfirmationVisible": true,
+    "unsetFallbackChecked": true,
+    "sessionOnlyState": true,
     "gameActionAfterOwnerGameStart": false,
     "rawEvidenceRetained": false,
     "screenshotCaptured": false,
