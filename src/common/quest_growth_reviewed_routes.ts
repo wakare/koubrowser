@@ -50,6 +50,21 @@ interface QuestGrowthReviewedRouteCatalog {
   routes: QuestGrowthReviewedRoute[]
 }
 
+export interface QuestGrowthRuntimeRouteBinding {
+  readonly routeId: string
+  readonly routeFamily: string
+  readonly revision: number
+  readonly semanticDigest: string
+  readonly status: 'reviewed' | 'withdrawn'
+}
+
+export interface QuestGrowthRuntimeRouteUpdate {
+  readonly schemaVersion: 1
+  readonly version: string
+  readonly publicationAuthorization: 'R7_RUNTIME_SIGNED_CANDIDATE'
+  readonly routes: readonly QuestGrowthRuntimeRouteBinding[]
+}
+
 export type QuestGrowthRouteSelection =
   | { state: 'available'; routes: readonly QuestGrowthReviewedRoute[] }
   | {
@@ -72,11 +87,108 @@ const ApprovedRouteBindings = {
   }
 } as const
 
+const RuntimeRouteVersionPattern = /^[0-9A-Za-z][0-9A-Za-z._-]{0,63}$/
+
+let activeRuntimeRouteUpdate: QuestGrowthRuntimeRouteUpdate | null = null
+
 export const QuestGrowthReviewedRouteCatalog =
   routeCatalogJson as unknown as QuestGrowthReviewedRouteCatalog
 
 function validTimestamp(value: string | null): value is string {
   return typeof value === 'string' && value.length > 0 && Number.isFinite(Date.parse(value))
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function requireExactKeys(
+  value: Record<string, unknown>,
+  required: readonly string[],
+  description: string
+): void {
+  const allowed = new Set(required)
+  if (
+    required.some((key) => !Object.prototype.hasOwnProperty.call(value, key)) ||
+    Object.keys(value).some((key) => !allowed.has(key))
+  ) {
+    throw new Error(`${description} has unsupported or missing fields`)
+  }
+}
+
+export function validateQuestGrowthRuntimeRouteUpdate(
+  value: unknown
+): QuestGrowthRuntimeRouteUpdate {
+  if (!isRecord(value)) {
+    throw new Error('quest growth route update must be an object')
+  }
+  requireExactKeys(
+    value,
+    ['schemaVersion', 'version', 'publicationAuthorization', 'routes'],
+    'quest growth route update'
+  )
+  if (
+    value.schemaVersion !== 1 ||
+    typeof value.version !== 'string' ||
+    !RuntimeRouteVersionPattern.test(value.version) ||
+    value.publicationAuthorization !== 'R7_RUNTIME_SIGNED_CANDIDATE' ||
+    !Array.isArray(value.routes) ||
+    value.routes.length !== 2
+  ) {
+    throw new Error('invalid quest growth route update')
+  }
+
+  const seenRouteIds = new Set<string>()
+  const routes = value.routes.map((route, index): QuestGrowthRuntimeRouteBinding => {
+    const description = `quest growth route binding ${index}`
+    if (!isRecord(route)) {
+      throw new Error(`${description} must be an object`)
+    }
+    requireExactKeys(
+      route,
+      ['routeId', 'routeFamily', 'revision', 'semanticDigest', 'status'],
+      description
+    )
+    if (typeof route.routeId !== 'string' || seenRouteIds.has(route.routeId)) {
+      throw new Error(`invalid ${description} route ID`)
+    }
+    const approved = ApprovedRouteBindings[
+      route.routeId as keyof typeof ApprovedRouteBindings
+    ]
+    if (
+      !approved ||
+      route.routeFamily !== approved.family ||
+      route.revision !== approved.revision ||
+      route.semanticDigest !== approved.digest ||
+      (route.status !== 'reviewed' && route.status !== 'withdrawn')
+    ) {
+      throw new Error(`${description} does not match a fixed reviewed route`)
+    }
+    seenRouteIds.add(route.routeId)
+    return {
+      routeId: route.routeId,
+      routeFamily: approved.family,
+      revision: approved.revision,
+      semanticDigest: approved.digest,
+      status: route.status
+    }
+  })
+  if (seenRouteIds.size !== Object.keys(ApprovedRouteBindings).length) {
+    throw new Error('quest growth route update does not cover every fixed route')
+  }
+  return {
+    schemaVersion: 1,
+    version: value.version,
+    publicationAuthorization: 'R7_RUNTIME_SIGNED_CANDIDATE',
+    routes
+  }
+}
+
+export function setQuestGrowthRuntimeRouteUpdate(
+  update: QuestGrowthRuntimeRouteUpdate | null
+): void {
+  activeRuntimeRouteUpdate =
+    update === null ? null : validateQuestGrowthRuntimeRouteUpdate(update)
 }
 
 function routeIsDisplayable(route: QuestGrowthReviewedRoute, now: number): boolean {
@@ -114,6 +226,15 @@ export function selectQuestGrowthReviewedRoutes(
   now: Date | number,
   catalog: QuestGrowthReviewedRouteCatalog = QuestGrowthReviewedRouteCatalog
 ): QuestGrowthRouteSelection {
+  const runtimeBinding =
+    catalog === QuestGrowthReviewedRouteCatalog
+      ? activeRuntimeRouteUpdate?.routes.find((route) => {
+          const approved = ApprovedRouteBindings[
+            route.routeId as keyof typeof ApprovedRouteBindings
+          ]
+          return approved?.focus === focus
+        })
+      : undefined
   if (
     catalog.publicationAuthorization !== 'R7_NOT_AUTHORIZED' ||
     !Array.isArray(catalog.routes) ||
@@ -123,6 +244,11 @@ export function selectQuestGrowthReviewedRoutes(
   }
   if (!['resources', 'asw'].includes(focus)) {
     return { state: 'select-focus', routes: [] }
+  }
+  if (activeRuntimeRouteUpdate && catalog === QuestGrowthReviewedRouteCatalog) {
+    if (!runtimeBinding || runtimeBinding.status === 'withdrawn') {
+      return { state: 'knowledge-review-required', routes: [] }
+    }
   }
   const timestamp = now instanceof Date ? now.getTime() : now
   if (!Number.isFinite(timestamp)) {

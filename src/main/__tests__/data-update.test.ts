@@ -25,6 +25,7 @@ import {
 } from '@main/data-update'
 import { getActiveQuestKnowledgeUpdate, setActiveDataDirectory } from '@main/data-path'
 import { BundledQuestStrategyKnowledge } from '@common/quest_strategy_knowledge'
+import { QuestGrowthReviewedRouteCatalog } from '@common/quest_growth_reviewed_routes'
 
 const temporaryDirectories: string[] = []
 
@@ -60,6 +61,21 @@ function createMapData(no: number): Buffer {
     }),
     'utf8'
   )
+}
+
+function createGrowthRouteUpdate(status: 'reviewed' | 'withdrawn' = 'reviewed') {
+  return {
+    schemaVersion: 1,
+    version: 'signed-growth-routes-1',
+    publicationAuthorization: 'R7_RUNTIME_SIGNED_CANDIDATE',
+    routes: QuestGrowthReviewedRouteCatalog.routes.map((route) => ({
+      routeId: route.routeId,
+      routeFamily: route.routeFamily,
+      revision: route.revision,
+      semanticDigest: route.review.approvalDigest,
+      status
+    }))
+  }
 }
 
 function createPublishedBundle(options: {
@@ -408,7 +424,8 @@ describe('data update', () => {
           schemaVersion: 1,
           version: '2026.07.29.quest-strategy',
           recipes: [BundledQuestStrategyKnowledge.recipes[0]]
-        }
+        },
+        growthRoutes: createGrowthRouteUpdate()
       }),
       'utf8'
     )
@@ -444,6 +461,9 @@ describe('data update', () => {
         })
       ]
     })
+    expect(getActiveQuestKnowledgeUpdate()?.growthRoutes).toEqual(
+      createGrowthRouteUpdate()
+    )
   })
 
   it('rejects malformed quest knowledge before activating the bundle', async () => {
@@ -637,7 +657,8 @@ describe('data update', () => {
           schemaVersion: 1,
           version: '2026.07.29.publisher-strategy',
           recipes: [BundledQuestStrategyKnowledge.recipes[2]]
-        }
+        },
+        growthRoutes: createGrowthRouteUpdate()
       }),
       'utf8'
     )
@@ -703,6 +724,63 @@ describe('data update', () => {
         { cwd: process.cwd(), stdio: 'pipe' }
       )
     ).toThrow()
+  })
+
+  it('rejects a digest-mismatched growth route before signing a bundle', () => {
+    const root = createTemporaryDirectory()
+    const source = path.join(root, 'source')
+    const output = path.join(root, 'output')
+    const privateKeyPath = path.join(root, 'private-key.pem')
+    const questKnowledgePath = path.join(root, 'quest-knowledge.json')
+    const keys = createSigningKeys()
+    const growthRoutes = createGrowthRouteUpdate()
+    growthRoutes.routes[0].semanticDigest = 'sha256:'.padEnd(71, '0')
+    mkdirSync(source)
+    writeFileSync(path.join(source, '001_01_map.json'), createMapData(3))
+    writeFileSync(
+      questKnowledgePath,
+      JSON.stringify({
+        schemaVersion: 1,
+        claims: [
+          {
+            source: 'wikiwiki',
+            sourceLabel: '日本語攻略Wiki',
+            url: 'https://wikiwiki.jp/kancolle/任務/出撃任務',
+            lastVerifiedAt: '2026-07-29',
+            dataVersion: 'ページ確認 2026-07-29',
+            questId: 900003,
+            questTitle: '不正経路テスト任務',
+            prerequisites: []
+          }
+        ],
+        growthRoutes
+      }),
+      'utf8'
+    )
+    writeFileSync(privateKeyPath, keys.privateKey.export({ format: 'pem', type: 'pkcs8' }), 'utf8')
+
+    expect(() =>
+      execFileSync(
+        process.execPath,
+        [
+          path.resolve(process.cwd(), 'scripts/create-data-update-bundle.js'),
+          '--version',
+          '2026.07.29.invalid-growth',
+          '--published-at',
+          '2026-07-29T04:00:00.000Z',
+          '--private-key',
+          privateKeyPath,
+          '--source',
+          source,
+          '--quest-knowledge',
+          questKnowledgePath,
+          '--output',
+          output
+        ],
+        { cwd: process.cwd(), stdio: 'pipe' }
+      )
+    ).toThrow()
+    expect(existsSync(path.join(output, 'manifest.json'))).toBe(false)
   })
 
   it('publishes with an encrypted private key without putting its passphrase on the command line', () => {

@@ -65,6 +65,14 @@ interface SmokeScript {
   DataUpdateFixtureQuestTitle: string
   DataUpdateFixtureStrategyVersion: string
   DataUpdateFixtureStrategyRecipeId: string
+  DataUpdateFixtureGrowthRouteVersion: string
+  DataUpdateFixtureGrowthRoutes: readonly {
+    routeId: string
+    routeFamily: string
+    revision: number
+    semanticDigest: string
+    status: string
+  }[]
   DisplayAcceptanceProfiles: readonly string[]
   LiveAcceptanceProfiles: readonly string[]
   DefaultPort: number
@@ -445,6 +453,8 @@ interface SmokeScript {
     mapSpot: SmokeScript['DataUpdateFixtureMapSpot']
     questId: number
     questTitle: string
+    growthRouteVersion: string
+    growthRoutes: SmokeScript['DataUpdateFixtureGrowthRoutes']
     manifest: Record<string, unknown>
     mapData: Buffer
     data: Buffer
@@ -458,6 +468,8 @@ interface SmokeScript {
     mapSpot: SmokeScript['DataUpdateFixtureMapSpot']
     questId: number
     questTitle: string
+    growthRouteVersion: string
+    growthRoutes: SmokeScript['DataUpdateFixtureGrowthRoutes']
     manifest: Record<string, unknown>
     mapData: Buffer
     data: Buffer
@@ -503,6 +515,8 @@ interface SmokeScript {
     mapSpot?: SmokeScript['DataUpdateFixtureMapSpot']
     questId?: number
     questTitle?: string
+    growthRouteVersion?: string | null
+    growthRoutes?: { routeId: string; status: string }[]
   }>
   loadDataUpdatePublicKeyFile: (filename: string) => string
   createAccountRestoreFixture: (
@@ -1372,6 +1386,16 @@ describe('Electron smoke script', () => {
     ).toMatchObject({
       spots: [smoke.DataUpdateFixtureMapSpot]
     })
+    expect(
+      JSON.parse(
+        readFileSync(path.join(active?.directory ?? '', 'quest', 'knowledge.json'), 'utf8')
+      ).growthRoutes
+    ).toEqual({
+      schemaVersion: 1,
+      version: smoke.DataUpdateFixtureGrowthRouteVersion,
+      publicationAuthorization: 'R7_RUNTIME_SIGNED_CANDIDATE',
+      routes: smoke.DataUpdateFixtureGrowthRoutes
+    })
     expect(fixture).toEqual(
       expect.objectContaining({
         mapAreaId: smoke.DataUpdateFixtureMapAreaId,
@@ -1379,7 +1403,9 @@ describe('Electron smoke script', () => {
         mapPath: smoke.DataUpdateFixtureMapPath,
         mapSpot: smoke.DataUpdateFixtureMapSpot,
         questId: smoke.DataUpdateFixtureQuestId,
-        questTitle: smoke.DataUpdateFixtureQuestTitle
+        questTitle: smoke.DataUpdateFixtureQuestTitle,
+        growthRouteVersion: smoke.DataUpdateFixtureGrowthRouteVersion,
+        growthRoutes: smoke.DataUpdateFixtureGrowthRoutes
       })
     )
   })
@@ -1409,7 +1435,12 @@ describe('Electron smoke script', () => {
       mapPath: fixture.mapPath,
       mapSpot: fixture.mapSpot,
       questId: fixture.questId,
-      questTitle: fixture.questTitle
+      questTitle: fixture.questTitle,
+      growthRouteVersion: fixture.growthRouteVersion,
+      growthRoutes: fixture.growthRoutes.map((route) => ({
+        routeId: route.routeId,
+        status: route.status
+      }))
     })
 
     writeFileSync(publicKeyFile, 'not-a-public-key\n', 'utf8')

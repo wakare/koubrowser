@@ -16,6 +16,21 @@ const MaxBundleBytes = 64 * 1024 * 1024
 const MaxBundleFiles = 512
 const MaxQuestClaims = 4096
 const MaxQuestId = 9_999_999
+const GrowthRouteVersionPattern = /^[0-9A-Za-z][0-9A-Za-z._-]{0,63}$/
+const ApprovedGrowthRouteBindings = Object.freeze({
+  'route:expedition-05-resource-loop:draft-1': Object.freeze({
+    routeFamily: 'expedition-resource-periodic-loop',
+    revision: 1,
+    semanticDigest:
+      'sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a'
+  }),
+  'route:1-5-basic-asw-three-battle:draft-1': Object.freeze({
+    routeFamily: 'anti-submarine-foundation',
+    revision: 1,
+    semanticDigest:
+      'sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d'
+  })
+})
 
 function fail(message) {
   console.error(message)
@@ -237,6 +252,56 @@ function validateQuestClaim(value, index) {
   }
 }
 
+function validateQuestGrowthRoutes(value) {
+  if (!isRecord(value)) {
+    throw new Error('quest growth route update must be an object')
+  }
+  requireExactKeys(
+    value,
+    ['schemaVersion', 'version', 'publicationAuthorization', 'routes'],
+    [],
+    'quest growth route update'
+  )
+  if (
+    value.schemaVersion !== 1 ||
+    typeof value.version !== 'string' ||
+    !GrowthRouteVersionPattern.test(value.version) ||
+    value.publicationAuthorization !== 'R7_RUNTIME_SIGNED_CANDIDATE' ||
+    !Array.isArray(value.routes) ||
+    value.routes.length !== 2
+  ) {
+    throw new Error('invalid quest growth route update')
+  }
+  const seenRouteIds = new Set()
+  value.routes.forEach((route, index) => {
+    const description = `quest growth route binding ${index}`
+    if (!isRecord(route)) {
+      throw new Error(`${description} must be an object`)
+    }
+    requireExactKeys(
+      route,
+      ['routeId', 'routeFamily', 'revision', 'semanticDigest', 'status'],
+      [],
+      description
+    )
+    const approved = ApprovedGrowthRouteBindings[route.routeId]
+    if (
+      !approved ||
+      seenRouteIds.has(route.routeId) ||
+      route.routeFamily !== approved.routeFamily ||
+      route.revision !== approved.revision ||
+      route.semanticDigest !== approved.semanticDigest ||
+      (route.status !== 'reviewed' && route.status !== 'withdrawn')
+    ) {
+      throw new Error(`${description} does not match a fixed reviewed route`)
+    }
+    seenRouteIds.add(route.routeId)
+  })
+  if (seenRouteIds.size !== Object.keys(ApprovedGrowthRouteBindings).length) {
+    throw new Error('quest growth route update does not cover every fixed route')
+  }
+}
+
 function validateQuestKnowledgeData(data, filename) {
   if (data.byteLength === 0 || data.byteLength > MaxDataFileBytes) {
     throw new Error(`invalid quest knowledge file size: ${filename}`)
@@ -245,7 +310,12 @@ function validateQuestKnowledgeData(data, filename) {
   if (!isRecord(value)) {
     throw new Error('quest knowledge update must be an object')
   }
-  requireExactKeys(value, ['schemaVersion', 'claims'], ['strategy'], 'quest knowledge update')
+  requireExactKeys(
+    value,
+    ['schemaVersion', 'claims'],
+    ['strategy', 'growthRoutes'],
+    'quest knowledge update'
+  )
   if (
     value.schemaVersion !== 1 ||
     !Array.isArray(value.claims) ||
@@ -265,6 +335,9 @@ function validateQuestKnowledgeData(data, filename) {
   })
   if (value.strategy !== undefined) {
     validateQuestStrategyKnowledge(value.strategy)
+  }
+  if (value.growthRoutes !== undefined) {
+    validateQuestGrowthRoutes(value.growthRoutes)
   }
 }
 

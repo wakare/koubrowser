@@ -6,6 +6,7 @@ import {
   type QuestKnowledgeUpdate
 } from '@common/quest_knowledge_update'
 import { BundledQuestStrategyKnowledge } from '@common/quest_strategy_knowledge'
+import { QuestGrowthReviewedRouteCatalog } from '@common/quest_growth_reviewed_routes'
 
 function createUpdate(
   overrides: Partial<QuestKnowledgeUpdate['claims'][number]> = {}
@@ -30,6 +31,21 @@ function createUpdate(
         ...overrides
       }
     ]
+  }
+}
+
+function growthRoutes() {
+  return {
+    schemaVersion: 1 as const,
+    version: 'signed-growth-routes-1',
+    publicationAuthorization: 'R7_RUNTIME_SIGNED_CANDIDATE' as const,
+    routes: QuestGrowthReviewedRouteCatalog.routes.map((route) => ({
+      routeId: route.routeId,
+      routeFamily: route.routeFamily,
+      revision: route.revision,
+      semanticDigest: route.review.approvalDigest!,
+      status: 'reviewed' as const
+    }))
   }
 }
 
@@ -71,6 +87,23 @@ describe('quest knowledge update', () => {
           ...update.strategy,
           executable: 'alert(1)'
         }
+      })
+    ).toThrow('unsupported or missing fields')
+  })
+
+  it('parses strict signed growth routes and rejects withdrawn-content expansion', () => {
+    const update: QuestKnowledgeUpdate = {
+      ...createUpdate(),
+      growthRoutes: growthRoutes()
+    }
+
+    expect(parseQuestKnowledgeUpdate(JSON.stringify(update)).growthRoutes).toEqual(
+      update.growthRoutes
+    )
+    expect(() =>
+      validateQuestKnowledgeUpdate({
+        ...update,
+        growthRoutes: { ...update.growthRoutes, executable: 'alert(1)' }
       })
     ).toThrow('unsupported or missing fields')
   })

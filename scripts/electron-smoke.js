@@ -126,6 +126,25 @@ const DataUpdateFixtureQuestTitle = '署名更新スモーク任務'
 const DataUpdateFixtureVersion = 'smoke.quest.1'
 const DataUpdateFixtureStrategyVersion = 'smoke.strategy.1'
 const DataUpdateFixtureStrategyRecipeId = 'signed-smoke-route'
+const DataUpdateFixtureGrowthRouteVersion = 'smoke.growth-routes.1'
+const DataUpdateFixtureGrowthRoutes = Object.freeze([
+  Object.freeze({
+    routeId: 'route:expedition-05-resource-loop:draft-1',
+    routeFamily: 'expedition-resource-periodic-loop',
+    revision: 1,
+    semanticDigest:
+      'sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a',
+    status: 'reviewed'
+  }),
+  Object.freeze({
+    routeId: 'route:1-5-basic-asw-three-battle:draft-1',
+    routeFamily: 'anti-submarine-foundation',
+    revision: 1,
+    semanticDigest:
+      'sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d',
+    status: 'withdrawn'
+  })
+])
 const DataUpdateFixtureMapAreaId = 1
 const DataUpdateFixtureMapNo = 1
 const DataUpdateFixtureMapPath = 'map/001_01_map.json'
@@ -1386,6 +1405,12 @@ function createSignedDataUpdateFixture() {
           }
         }
       ]
+    },
+    growthRoutes: {
+      schemaVersion: 1,
+      version: DataUpdateFixtureGrowthRouteVersion,
+      publicationAuthorization: 'R7_RUNTIME_SIGNED_CANDIDATE',
+      routes: DataUpdateFixtureGrowthRoutes
     }
   }
   const mapData = Buffer.from(JSON.stringify(map), 'utf8')
@@ -1422,6 +1447,8 @@ function createSignedDataUpdateFixture() {
     questTitle: DataUpdateFixtureQuestTitle,
     strategyVersion: DataUpdateFixtureStrategyVersion,
     strategyRecipeId: DataUpdateFixtureStrategyRecipeId,
+    growthRouteVersion: DataUpdateFixtureGrowthRouteVersion,
+    growthRoutes: DataUpdateFixtureGrowthRoutes,
     manifest,
     mapData,
     data
@@ -1618,6 +1645,7 @@ async function dataUpdateInstalledBundleState(cacheRoot, publicKey) {
     )
     const claim = questKnowledge.claims?.[0]
     const strategy = questKnowledge.strategy
+    const growthRoutes = questKnowledge.growthRoutes
     if (!mapExpectation || !claim || typeof strategy?.version !== 'string') {
       return { ready: false }
     }
@@ -1634,7 +1662,15 @@ async function dataUpdateInstalledBundleState(cacheRoot, publicKey) {
       questId: claim.questId,
       questTitle: claim.questTitle,
       strategyVersion: strategy.version,
-      strategyRecipeId: strategy.recipes?.[0]?.id ?? null
+      strategyRecipeId: strategy.recipes?.[0]?.id ?? null,
+      growthRouteVersion:
+        typeof growthRoutes?.version === 'string' ? growthRoutes.version : null,
+      growthRoutes: Array.isArray(growthRoutes?.routes)
+        ? growthRoutes.routes.map((route) => ({
+            routeId: route.routeId,
+            status: route.status
+          }))
+        : []
     }
   } catch {
     return { ready: false }
@@ -6313,6 +6349,9 @@ async function inspectTaskGuide(
   ) {
     throw new Error('The fixed reviewed-route catalog is unavailable for task-guide inspection')
   }
+  const signedGrowthRouteStatusById = Object.fromEntries(
+    (expectedQuestKnowledge?.growthRoutes ?? []).map((route) => [route.routeId, route.status])
+  )
   const workspaceState = await session.evaluate(`(() => {
     const primary = document.querySelector('.assist-workspace--primary')
     const area = primary ? 'primary' : 'secondary'
@@ -6651,13 +6690,16 @@ async function inspectTaskGuide(
       )
     const reviewedRouteChecks = []
     for (const focus of ['resources', 'asw']) {
-      const expectedRoute = expectedReviewedRouteByFocus[focus]
+      const fixedRoute = expectedReviewedRouteByFocus[focus]
+      const signedStatus = signedGrowthRouteStatusById[fixedRoute.routeId]
+      const expectedRoute = signedStatus === 'withdrawn' ? undefined : fixedRoute
       const result = await inspectGrowthRouteFocus(focus, expectedRoute)
+      const expectedReviewed = expectedRoute !== undefined
       if (
-        result.routeCount !== 1 ||
-        result.fallbackVisible ||
+        result.routeCount !== (expectedReviewed ? 1 : 0) ||
+        result.fallbackVisible === expectedReviewed ||
         !result.contentMatches ||
-        !result.manualConfirmationVisible ||
+        result.manualConfirmationVisible !== expectedReviewed ||
         result.scrollWidth > result.clientWidth + 1 ||
         result.panelScrollWidth > result.panelClientWidth + 1
       ) {
@@ -6667,8 +6709,9 @@ async function inspectTaskGuide(
       }
       reviewedRouteChecks.push({
         focus,
-        routeId: expectedRoute.routeId,
-        routeSemanticDigest: expectedRoute.review.approvalDigest,
+        routeId: fixedRoute.routeId,
+        routeSemanticDigest: fixedRoute.review.approvalDigest,
+        signedStatus: signedStatus ?? 'bundled',
         routeCount: result.routeCount,
         contentMatches: result.contentMatches,
         manualConfirmationVisible: result.manualConfirmationVisible,
@@ -6711,6 +6754,13 @@ async function inspectTaskGuide(
         panelScrollWidth: fallback.panelScrollWidth
       },
       sessionOnlyState: true,
+      signedGrowthRouteUpdate:
+        expectedQuestKnowledge?.growthRouteVersion === undefined
+          ? undefined
+          : {
+              version: expectedQuestKnowledge.growthRouteVersion,
+              bindings: expectedQuestKnowledge.growthRoutes
+            },
       narrowPanelFixture:
         narrowRoutePanelWidth === undefined
           ? undefined
@@ -9538,6 +9588,8 @@ module.exports = {
   DataUpdateFixtureQuestTitle,
   DataUpdateFixtureStrategyVersion,
   DataUpdateFixtureStrategyRecipeId,
+  DataUpdateFixtureGrowthRouteVersion,
+  DataUpdateFixtureGrowthRoutes,
   DataUpdateFixtureMapAreaId,
   DataUpdateFixtureMapNo,
   DataUpdateFixtureMapPath,

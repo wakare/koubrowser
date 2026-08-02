@@ -20,6 +20,7 @@ import { AppSetting } from '@common/store'
 import { Quest } from '@common/record'
 import { setCuratedQuestKnowledgeUpdate } from '@common/quest_knowledge'
 import { setQuestStrategyKnowledgeUpdate } from '@renderer/store/quest_strategy'
+import { setQuestGrowthRuntimeRouteUpdate } from '@common/quest_growth_reviewed_routes'
 
 let requiredRecvedCallback: (()=> void) | null = null;
 
@@ -37,6 +38,7 @@ function onRequired(msg: RequiredMessage) {
   onAppSetting(msg.appSetting);
   setCuratedQuestKnowledgeUpdate(msg.questKnowledgeUpdate);
   setQuestStrategyKnowledgeUpdate(msg.questKnowledgeUpdate?.strategy ?? null);
+  setQuestGrowthRuntimeRouteUpdate(msg.questKnowledgeUpdate?.growthRoutes ?? null);
 
   console.log('stream got map info >> ', msg.mapInfo)
   Object.assign(mapInfo, msg.mapInfo)

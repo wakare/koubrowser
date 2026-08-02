@@ -1,8 +1,11 @@
 import { createRequire } from 'node:module'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import {
   QuestGrowthReviewedRouteCatalog,
-  selectQuestGrowthReviewedRoutes
+  selectQuestGrowthReviewedRoutes,
+  setQuestGrowthRuntimeRouteUpdate,
+  validateQuestGrowthRuntimeRouteUpdate,
+  type QuestGrowthRuntimeRouteUpdate
 } from '../quest_growth_reviewed_routes'
 
 const require = createRequire(import.meta.url)
@@ -10,6 +13,27 @@ const { routeReviewSemanticDigest } = require('../../../scripts/quest-growth-r7-
   routeReviewSemanticDigest: (value: Record<string, unknown>) => string
 }
 const ReviewedAt = new Date('2026-08-02T02:07:16.639Z')
+
+function runtimeUpdate(
+  statuses: Partial<Record<string, 'reviewed' | 'withdrawn'>> = {}
+): QuestGrowthRuntimeRouteUpdate {
+  return {
+    schemaVersion: 1,
+    version: 'signed-growth-routes-1',
+    publicationAuthorization: 'R7_RUNTIME_SIGNED_CANDIDATE',
+    routes: QuestGrowthReviewedRouteCatalog.routes.map((route) => ({
+      routeId: route.routeId,
+      routeFamily: route.routeFamily,
+      revision: route.revision,
+      semanticDigest: route.review.approvalDigest!,
+      status: statuses[route.routeId] ?? 'reviewed'
+    }))
+  }
+}
+
+afterEach(() => {
+  setQuestGrowthRuntimeRouteUpdate(null)
+})
 
 describe('reviewed quest growth routes', () => {
   it('selects exactly one reviewed manual-check route for each approved focus', () => {
@@ -78,5 +102,66 @@ describe('reviewed quest growth routes', () => {
     const serialized = JSON.stringify(QuestGrowthReviewedRouteCatalog)
     expect(QuestGrowthReviewedRouteCatalog.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
     expect(serialized).not.toMatch(/api_member|accountId|cookie|token|rawPayload/i)
+  })
+
+  it('accepts only the two fixed reviewed bindings from a signed candidate', () => {
+    const update = runtimeUpdate()
+
+    expect(validateQuestGrowthRuntimeRouteUpdate(update)).toEqual(update)
+    setQuestGrowthRuntimeRouteUpdate(update)
+    expect(selectQuestGrowthReviewedRoutes('resources', ReviewedAt).state).toBe('available')
+    expect(selectQuestGrowthReviewedRoutes('asw', ReviewedAt).state).toBe('available')
+  })
+
+  it('uses a newer signed withdrawal instead of falling back to an older route', () => {
+    setQuestGrowthRuntimeRouteUpdate(
+      runtimeUpdate({ 'route:1-5-basic-asw-three-battle:draft-1': 'withdrawn' })
+    )
+
+    expect(selectQuestGrowthReviewedRoutes('resources', ReviewedAt).state).toBe('available')
+    expect(selectQuestGrowthReviewedRoutes('asw', ReviewedAt)).toEqual({
+      state: 'knowledge-review-required',
+      routes: []
+    })
+  })
+
+  it('restores the bundled opt-in catalog when no signed route update is active', () => {
+    setQuestGrowthRuntimeRouteUpdate(
+      runtimeUpdate({ 'route:expedition-05-resource-loop:draft-1': 'withdrawn' })
+    )
+    expect(selectQuestGrowthReviewedRoutes('resources', ReviewedAt).state).toBe(
+      'knowledge-review-required'
+    )
+
+    setQuestGrowthRuntimeRouteUpdate(null)
+    expect(selectQuestGrowthReviewedRoutes('resources', ReviewedAt).state).toBe('available')
+  })
+
+  it('rejects draft, digest-mismatched, unknown-version and unknown-field updates', () => {
+    const draft = structuredClone(runtimeUpdate()) as unknown as {
+      routes: { status: string }[]
+    }
+    draft.routes[0].status = 'draft'
+    expect(() => validateQuestGrowthRuntimeRouteUpdate(draft)).toThrow(
+      'does not match a fixed reviewed route'
+    )
+
+    const digestMismatch = structuredClone(runtimeUpdate()) as unknown as {
+      routes: { semanticDigest: string }[]
+    }
+    digestMismatch.routes[0].semanticDigest = 'sha256:'.padEnd(71, '0')
+    expect(() => validateQuestGrowthRuntimeRouteUpdate(digestMismatch)).toThrow(
+      'does not match a fixed reviewed route'
+    )
+
+    const unknownVersion = { ...runtimeUpdate(), schemaVersion: 2 }
+    expect(() => validateQuestGrowthRuntimeRouteUpdate(unknownVersion)).toThrow(
+      'invalid quest growth route update'
+    )
+
+    const unknownField = { ...runtimeUpdate(), executable: 'alert(1)' }
+    expect(() => validateQuestGrowthRuntimeRouteUpdate(unknownField)).toThrow(
+      'unsupported or missing fields'
+    )
   })
 })
