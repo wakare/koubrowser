@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://koubrowser.invalid/schema/quest-growth-r7-signed-bundle-evidence-review-1.json",
+  "title": "QuestGrowthR7SignedBundleEvidenceReview",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dataVersion",
+    "publishedAt",
+    "manifestSha256",
+    "questKnowledgeSha256",
+    "publicKeySha256",
+    "fileCount",
+    "payloadBytes",
+    "routeCount",
+    "requiredCheckCount",
+    "redactedAcceptanceStatus"
+  ],
+  "properties": {
+    "dataVersion": {
+      "type": "string",
+      "pattern": "^[0-9A-Za-z][0-9A-Za-z._-]{0,63}$"
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "manifestSha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "questKnowledgeSha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "publicKeySha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "fileCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 512
+    },
+    "payloadBytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 67108864
+    },
+    "routeCount": {
+      "const": 2
+    },
+    "requiredCheckCount": {
+      "const": 10
+    },
+    "redactedAcceptanceStatus": {
+      "enum": ["review-passed", "anonymous-fixture-passed"]
+    }
+  }
+}
