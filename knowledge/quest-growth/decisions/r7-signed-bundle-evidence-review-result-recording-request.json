@@ -1,0 +1,131 @@
+{
+  "requestSchema": "QuestGrowthR7SignedBundleEvidenceReviewResultRecordingRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-signed-bundle-evidence-review-result-recording",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDING_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "b1a5f72becef0f7c12a1915c7fef1cf24f74155b",
+    "checkedAt": "2026-08-02T14:18:33.969Z"
+  },
+  "approvalBasis": {
+    "executionSemanticDigest": "sha256:dad3d775d17865f0f8f78000af1adc8b1d204e0d820e483638cc0c202d10c177",
+    "executionRequestDigest": "sha256:a3b90552a94601c2d7677da458dc228c7c8d38183fe2738c140c98c68522b131",
+    "executionReportDigest": "sha256:68e5d2cb3e743ef977a71bd1c8ebc3f4effeb91066059f28fc553351b6ff587e",
+    "reviewHarnessDigest": "sha256:2f8a916cb066840ce863fe6059fa04e05bd793bf3f47bf277162e399026d1554",
+    "resultSchemaDigest": "sha256:20fb4b269ca49b680f669cfa317222de0485a1e84a863979e009a1ddd8b25139",
+    "candidateVersion": "r7.candidate.20260802.1",
+    "maximumExecutions": 1,
+    "completedExecutionCount": 1
+  },
+  "requestedAuthorization": {
+    "gateId": "r7-signed-bundle-evidence-review-result-recording",
+    "authorizationState": "not-authorized",
+    "resultRecordingAuthorization": "not-authorized",
+    "maximumRecords": 1,
+    "repositoryMutationAuthorizedAfterApproval": true,
+    "executionRerunAuthorized": false
+  },
+  "recordingContract": {
+    "mode": "single-existing-redacted-pass-result-record",
+    "recordOnlyAlreadyObservedExecution": true,
+    "bundleOrPublicKeyReadAllowed": false,
+    "networkAccessAllowed": false,
+    "rawOutputPersistenceAllowed": false,
+    "redactedResultPersistenceAllowedAfterApproval": true,
+    "requiredRouteIds": [
+      "route:expedition-05-resource-loop:draft-1",
+      "route:1-5-basic-asw-three-battle:draft-1"
+    ],
+    "allowedPublicEvidenceFields": [
+      "dataVersion",
+      "publishedAt",
+      "manifestSha256",
+      "questKnowledgeSha256",
+      "publicKeySha256",
+      "fileCount",
+      "payloadBytes",
+      "routeCount",
+      "requiredCheckCount",
+      "redactedAcceptanceStatus"
+    ],
+    "prohibitedRecordFields": [
+      "privateKey",
+      "passphrase",
+      "credential",
+      "token",
+      "publicKeyBytes",
+      "manifestUrl",
+      "stagingUrl",
+      "productionUrl",
+      "localPath",
+      "accountData",
+      "personalIdentifier",
+      "rawLog",
+      "screenshot",
+      "bundleBytes",
+      "signatureBytes"
+    ],
+    "authorizedRepositoryPathsAfterApproval": [
+      "knowledge/quest-growth/decisions/r7-signed-bundle-evidence-review-result-recording-request.json",
+      "knowledge/quest-growth/generated/r7-signed-bundle-evidence-review-result-recording-report.json",
+      "knowledge/quest-growth/generated/source-manifest.json",
+      "knowledge/quest-growth/generated/conflict-and-gap-report.json"
+    ]
+  },
+  "requiredChecks": [
+    "prior-execution-approval-and-fixed-harness-digests-match",
+    "completed-execution-count-is-exactly-one",
+    "execution-is-not-rerun-and-inputs-are-not-read",
+    "record-contains-exactly-the-ten-public-evidence-fields",
+    "record-contains-none-of-the-fifteen-prohibited-fields",
+    "recorded-acceptance-status-is-review-passed",
+    "record-remains-bound-to-the-two-reviewed-routes",
+    "publication-default-enablement-and-runtime-eligibility-remain-unchanged",
+    "no-url-endpoint-secret-account-data-or-game-communication-is-accessed",
+    "only-the-four-authorized-governance-artifacts-are-mutated"
+  ],
+  "abortConditions": [
+    "approval-basis-or-fixed-digest-mismatch",
+    "recording-would-require-rerunning-the-review-or-reading-inputs",
+    "observed-result-cannot-be-represented-by-the-strict-ten-field-schema",
+    "raw-output-path-url-secret-account-data-or-prohibited-field-would-be-persisted",
+    "recording-would-change-publication-default-enablement-runtime-eligibility-or-route-content",
+    "recording-would-mutate-outside-the-four-authorized-governance-artifacts"
+  ],
+  "executionBoundary": {
+    "existingRedactedResultRecordingAuthorizedAfterApproval": true,
+    "executionRerunAuthorized": false,
+    "bundleOrPublicKeyReadAuthorized": false,
+    "privateKeyOrPassphraseHandlingAuthorized": false,
+    "credentialHandlingAuthorized": false,
+    "realUrlOrEndpointAuthorized": false,
+    "stagingAcceptanceAuthorized": false,
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false,
+    "otherRouteFamiliesAuthorized": false,
+    "gameCommunicationChangesAuthorized": false,
+    "installerBuildRequiredAtThisGate": false
+  },
+  "stillProhibited": [
+    "execution-rerun-or-input-reread",
+    "private-key-or-passphrase-handling",
+    "credential-or-account-data-access",
+    "bundle-signing-or-mutation",
+    "real-url-or-external-endpoint",
+    "raw-output-or-prohibited-field-persistence",
+    "staging-acceptance",
+    "runtime-publication",
+    "default-enablement",
+    "other-route-family",
+    "game-communication-mutation",
+    "installer-build"
+  ],
+  "recordedResult": null,
+  "review": {
+    "author": "codex-r7-signed-bundle-evidence-review-result-recording-decision-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

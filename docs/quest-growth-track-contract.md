@@ -312,6 +312,10 @@ harness、匿名 ephemeral Ed25519 signed fixture を commit `948dcb772ba21cf6fb
 へ分離した。固定 harness、固定2 route、owner が明示する public bundle / public key の2 input、公開10 field、
 禁止15 field と10 check だけを対象とする。fixed-digest approval と2 input の明示提供前は execution を行わず、
 runtime eligible count は0のままとする。
+既に完了した review の脱敏結果を再実行なしで governance record に保存する判断は
+[`quest-growth-r7-signed-bundle-evidence-review-result-recording-decision-packet.md`](quest-growth-r7-signed-bundle-evidence-review-result-recording-decision-packet.md)
+で固定する。result recording packet は結果値そのものを事前保存せず、承認後に許可する10 field、4 path、
+最大1 record と execution rerun / input reread 禁止だけを固定する。
 署名前の `QuestKnowledgeUpdate` 入力は、既存258 reviewed claim と固定2 route を合成する
 `data:quest-growth:r7:materialize` で生成し、checked-in candidate の SHA-256 を固定した。この段階では鍵生成、
 bundle signing、実 signed bundle review、staging acceptance または publication を行わない。
