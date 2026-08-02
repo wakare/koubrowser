@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const R7RealAccountDecisionCompilerVersion =
-  'quest-growth-r7-real-account-decision-compiler/7'
+  'quest-growth-r7-real-account-decision-compiler/8'
 const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -113,14 +113,14 @@ const ExpectedHarnessAmendment = {
   routeContentChangesAuthorized: false
 }
 const ExpectedExecutionResult = {
-  recordedAt: '2026-08-02T03:31:02.695Z',
+  recordedAt: '2026-08-02T04:07:59.588Z',
   approvedSemanticDigest:
-    'sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e',
-  requestRevision: 2,
+    'sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945',
+  requestRevision: 3,
   status: 'fail-closed',
-  stage: 'task-page-resolution-before-route-inspection',
-  reasonCode: 'SECONDARY_TASK_PAGE_OMITTED_BY_TALL_LAYOUT',
-  accountDataReady: true,
+  stage: 'manual-game-start-before-account-data',
+  reasonCode: 'MANUAL_LOGIN_TIMEOUT_BEFORE_ACCOUNT_DATA',
+  accountDataReady: false,
   routeInspectionStarted: false,
   checkedRouteCount: 0,
   gameActionAfterOwnerGameStart: false,
@@ -504,10 +504,10 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     schemaVersion: 1,
     compilerVersion: R7RealAccountDecisionCompilerVersion,
     generatedAt: request.approved
-      ? request.value.review.reviewedAt
+      ? request.value.executionResult.recordedAt
       : request.value.sourceSnapshot.checkedAt,
     status: request.approved
-      ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED'
+      ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED'
       : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT',
     scope: request.value.scope,
     requestId: request.value.requestId,
@@ -517,7 +517,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     gateId: request.value.requestedAuthorization.gateId,
     gateSemanticDigest: request.value.approvalBasis.realAccountGateSemanticDigest,
     authorizationState: 'authorized',
-    executionAuthorization: request.approved ? 'authorized' : 'not-authorized',
+    executionAuthorization: request.approved ? 'consumed' : 'not-authorized',
     acceptanceMode: request.value.requestedAuthorization.acceptanceMode,
     maximumAcceptedRoutes: request.value.requestedAuthorization.maximumAcceptedRoutes,
     routeBindings: request.value.routeBindings,
@@ -529,9 +529,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     rawLogRetentionAllowed: false,
     accountDataExportAllowed: false,
     protectedCommunicationDigests: request.value.approvalBasis.protectedCommunicationDigests,
-    actualAcceptanceStatus: request.approved
-      ? 'retry-authorized-not-run'
-      : request.value.executionResult.status,
+    actualAcceptanceStatus: request.value.executionResult.status,
     acceptanceStage: request.value.executionResult.stage,
     acceptanceReasonCode: request.value.executionResult.reasonCode,
     accountDataReady: request.value.executionResult.accountDataReady,
@@ -559,10 +557,8 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       r7RealAccountAcceptanceRouteCount: report.routeBindings.length,
       r7RealAccountAcceptanceRequiredCheckCount: report.requiredCheckCount,
       r7RealAccountAcceptanceAmendmentOwnerDecisionRequired: !request.approved,
-      r7RealAccountAcceptanceFailClosed: false,
-      r7RealAccountAcceptanceAuthorizedRouteCount: request.approved
-        ? report.routeBindings.length
-        : 0
+      r7RealAccountAcceptanceFailClosed: request.approved,
+      r7RealAccountAcceptanceAuthorizedRouteCount: 0
     }
   }
 }

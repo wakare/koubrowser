@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_3_AUTHORIZED_NOT_RUN`
+Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_3_FAIL_CLOSED`
 
 ## 目的
 
@@ -186,7 +186,11 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - prior acceptance status: `blocked-before-route-inspection`
 - revision 2 acceptance status: `fail-closed`
 - revision 2 execution authorization: `consumed`
-- revision 3 execution authorization: `authorized` (one run, not yet consumed)
+- revision 3 execution authorization: `consumed`
+- revision 3 acceptance status: `fail-closed`
+- revision 3 reason: `MANUAL_LOGIN_TIMEOUT_BEFORE_ACCOUNT_DATA`
+- revision 3 account data ready: `false`
+- revision 3 checked route count: `0`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
@@ -204,7 +208,7 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 ## 承認結果と現在の結論
 
 project owner は revision 2 修訂固定摘要を明示承認し、1回の再試行は fail closed で終了した。
-revision 3 は匿名 fixture まで完了し、project owner は固定摘要を明示承認した。
-`executionAuthorization` は `authorized`、actual status は `retry-authorized-not-run` である。
-preflight 完了後に固定 harness を1回だけ再実行できる。runtime publication、default enablement、
-他 family は未承認のままである。
+revision 3 は匿名 fixture まで完了し、project owner は固定摘要を明示承認した。固定 harness は
+DMM login page で account data を待機したが、5分以内に login / GAME START が完了せず、route 検査前に
+fail closed した。`executionAuthorization` は `consumed` であり、新しい固定摘要の承認なしに再実行しない。
+runtime publication、default enablement、他 family は未承認のままである。

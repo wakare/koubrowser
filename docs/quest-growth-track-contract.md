@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R7_REAL_ACCOUNT_ACCEPTANCE_REVISION_3_AUTHORIZED_NOT_RUN`
+Status: `R7_REAL_ACCOUNT_ACCEPTANCE_REVISION_3_FAIL_CLOSED`
 
 ## モデル境界
 
@@ -194,7 +194,7 @@ compiler version、input digest、output digest を固定する。
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
 本データで上書きしない。R6 lineage は exact commit
 `6b52e143af9fcab1dbb00b74f7e89bcf695e5e38` を別の audit snapshot として保持する。
-`R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN` を downstream stop に固定する。
+`R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED` を downstream stop に固定する。
 authoring catalog の2 reviewed route は承認済み opt-in UI だけに出力し、pure evaluator、adapter、
 runtime bundle へは出力してはならない。
 
@@ -246,8 +246,8 @@ fail closed し、実行承認は消費済みである。現在の status は
 `REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED`、reason は `SECONDARY_TASK_PAGE_OMITTED_BY_TALL_LAYOUT`、
 checked route count は0である。
 revision 3 は tall / compact layout-aware harness と両匿名 fixture まで完了した。現在の status は
-`REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED`、revision 3 execution は `authorized` である。
-承認範囲は固定2 route の1回の只読・脱敏再実行に限る。
+`REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED`、revision 3 execution は `consumed` である。
+DMM login page で account data を待機したまま timeout したため、route 検査は開始せず checked route count は0である。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
