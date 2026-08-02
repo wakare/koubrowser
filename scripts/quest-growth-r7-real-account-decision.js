@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const R7RealAccountDecisionCompilerVersion =
-  'quest-growth-r7-real-account-decision-compiler/9'
+  'quest-growth-r7-real-account-decision-compiler/10'
 const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -12,7 +12,7 @@ const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const FixedRendererSemanticDigest =
   'sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363'
 const ApprovedRealAccountSemanticDigest =
-  'sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945'
+  'sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c'
 const FocusByFamily = {
   'expedition-resource-periodic-loop': 'resources',
   'anti-submarine-foundation': 'asw'
@@ -524,10 +524,10 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     schemaVersion: 1,
     compilerVersion: R7RealAccountDecisionCompilerVersion,
     generatedAt: request.approved
-      ? request.value.executionResult.recordedAt
+      ? request.value.review.reviewedAt
       : request.value.sourceSnapshot.checkedAt,
     status: request.approved
-      ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED'
+      ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED'
       : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY',
     scope: request.value.scope,
     requestId: request.value.requestId,
@@ -537,7 +537,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     gateId: request.value.requestedAuthorization.gateId,
     gateSemanticDigest: request.value.approvalBasis.realAccountGateSemanticDigest,
     authorizationState: 'authorized',
-    executionAuthorization: request.approved ? 'consumed' : 'not-authorized',
+    executionAuthorization: request.approved ? 'authorized' : 'not-authorized',
     acceptanceMode: request.value.requestedAuthorization.acceptanceMode,
     maximumAcceptedRoutes: request.value.requestedAuthorization.maximumAcceptedRoutes,
     routeBindings: request.value.routeBindings,
@@ -549,7 +549,9 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     rawLogRetentionAllowed: false,
     accountDataExportAllowed: false,
     protectedCommunicationDigests: request.value.approvalBasis.protectedCommunicationDigests,
-    actualAcceptanceStatus: request.value.executionResult.status,
+    actualAcceptanceStatus: request.approved
+      ? 'retry-authorized-not-run'
+      : request.value.executionResult.status,
     acceptanceStage: request.value.executionResult.stage,
     acceptanceReasonCode: request.value.executionResult.reasonCode,
     accountDataReady: request.value.executionResult.accountDataReady,
@@ -580,8 +582,10 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       r7RealAccountAcceptanceRouteCount: report.routeBindings.length,
       r7RealAccountAcceptanceRequiredCheckCount: report.requiredCheckCount,
       r7RealAccountAcceptanceOwnerDecisionRequired: !request.approved,
-      r7RealAccountAcceptanceFailClosed: request.approved,
-      r7RealAccountAcceptanceAuthorizedRouteCount: 0
+      r7RealAccountAcceptanceFailClosed: false,
+      r7RealAccountAcceptanceAuthorizedRouteCount: request.approved
+        ? report.routeBindings.length
+        : 0
     }
   }
 }

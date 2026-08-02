@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_REVISION_4_RETRY`
+Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_4_AUTHORIZED_NOT_RUN`
 
 ## 目的
 
@@ -194,7 +194,7 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - revision 3 reason: `MANUAL_LOGIN_TIMEOUT_BEFORE_ACCOUNT_DATA`
 - revision 3 account data ready: `false`
 - revision 3 checked route count: `0`
-- revision 4 execution authorization: `not-authorized`
+- revision 4 execution authorization: `authorized` (one run, not yet consumed)
 - revision 4 maximum executions: `1`
 - revision 4 harness changes authorized: `false`
 - runtime eligible count: `0`
@@ -222,5 +222,5 @@ runtime publication、default enablement、他 family は未承認のままで�
 
 revision 4 は harness、production code、route content を変更しない。revision 3 と同じ layout-aware harness、
 同じ2件の reviewed route、同じ5分の owner manual login window を使用する1回限りの再試行だけを申請する。
-現在の `executionAuthorization` は `not-authorized` であり、本 packet の固定摘要を project owner が
-明示承認するまで実アカウント session を開始しない。
+project owner は本 packet の固定摘要を明示承認した。現在の `executionAuthorization` は `authorized` で、
+preflight 完了後に同じ harness と同じ2 route を1回だけ再検査できる。

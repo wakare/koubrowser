@@ -168,7 +168,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
+      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -189,9 +189,7 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
-    expect(report.globalStops).toContain(
-      'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
-    )
+    expect(report.globalStops).toContain('R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN')
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
@@ -728,7 +726,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('requires owner approval for the bounded revision 4 retry', () => {
+  it('authorizes the bounded revision 4 retry without claiming it ran', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -760,16 +758,16 @@ describe('quest growth authoring contract', () => {
       harnessChangesAuthorized: boolean
     }>('generated', 'r7-real-account-acceptance-report.json')
 
-    expect(report.status).toBe('OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY')
+    expect(report.status).toBe('REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED')
     expect(report.semanticDigest).toBe(
       'sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c'
     )
     expect(report.authorizationState).toBe('authorized')
-    expect(report.executionAuthorization).toBe('not-authorized')
+    expect(report.executionAuthorization).toBe('authorized')
     expect(report.acceptanceMode).toBe('owner-login-readonly-redacted')
     expect(report.maximumAcceptedRoutes).toBe(2)
     expect(report.requiredCheckCount).toBe(12)
-    expect(report.actualAcceptanceStatus).toBe('fail-closed')
+    expect(report.actualAcceptanceStatus).toBe('retry-authorized-not-run')
     expect(report.acceptanceReasonCode).toBe('MANUAL_LOGIN_TIMEOUT_BEFORE_ACCOUNT_DATA')
     expect(report.accountDataReady).toBe(false)
     expect(report.routeInspectionStarted).toBe(false)
