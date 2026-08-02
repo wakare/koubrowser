@@ -1,0 +1,67 @@
+{
+  "reviewSchema": "QuestGrowthR7RuntimePublicationCandidateReview/1alpha",
+  "reviewId": "review:quest-growth-r7-runtime-publication-candidate-1",
+  "revision": 1,
+  "status": "owner-decision-required",
+  "createdAt": "2026-08-02T10:55:16.725Z",
+  "candidate": {
+    "path": "knowledge/quest-growth/r7/runtime-publication-candidate.json",
+    "version": "r7.candidate.20260802.1",
+    "canonicalDigest": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c",
+    "routeCount": 2,
+    "candidateAuthor": "codex-r7-publication-candidate-author",
+    "signatureMode": "none-canonical-payload-only"
+  },
+  "evidenceBasis": {
+    "routeCatalogDigest": "sha256:cc2c83195c01c846ba3da89d2731264081e1374b74a190f046f75f9d59e776a4",
+    "runtimeAuthoringSemanticDigest": "sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104",
+    "runtimeAuthoringImplementationCommit": "221a1643730ba6da4dee831602ea7c06682f4632",
+    "protectedCommunicationDigests": {
+      "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+      "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
+      "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e"
+    }
+  },
+  "checks": [
+    {
+      "checkId": "candidate-has-exactly-two-fixed-reviewed-route-bindings",
+      "evidence": "2 bindings; both status reviewed; fixed route IDs and semantic digests"
+    },
+    {
+      "checkId": "candidate-schema-version-and-fields-are-strict",
+      "evidence": "schemaVersion 1; exact candidate and binding keys"
+    },
+    {
+      "checkId": "candidate-canonical-digest-is-reproducible",
+      "evidence": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c"
+    },
+    {
+      "checkId": "route-content-and-reviewed-route-digests-are-unchanged",
+      "evidence": "route catalog sha256:cc2c83195c01c846ba3da89d2731264081e1374b74a190f046f75f9d59e776a4"
+    },
+    {
+      "checkId": "both-route-currentness-windows-cover-the-review-time",
+      "evidence": "reviewBy resources 2026-10-30T00:00:00.000Z; asw 2026-09-30T00:00:00.000Z"
+    },
+    {
+      "checkId": "reviewer-is-independent-from-candidate-author",
+      "evidence": "candidate author codex-r7-publication-candidate-author; required reviewer project-owner"
+    },
+    {
+      "checkId": "no-signature-private-key-or-distribution-endpoint-is-used",
+      "evidence": "canonical payload only; no manifest, signature, key, URL, or endpoint"
+    },
+    {
+      "checkId": "protected-game-communication-digests-remain-fixed",
+      "evidence": "3 protected path digests match the approved authoring basis"
+    }
+  ],
+  "decision": null,
+  "review": {
+    "author": "codex-r7-publication-candidate-review-packet-author",
+    "requiredReviewerRole": "project-owner",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

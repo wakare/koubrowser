@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "version": "r7.candidate.20260802.1",
+  "publicationAuthorization": "R7_RUNTIME_SIGNED_CANDIDATE",
+  "routes": [
+    {
+      "routeId": "route:expedition-05-resource-loop:draft-1",
+      "routeFamily": "expedition-resource-periodic-loop",
+      "revision": 1,
+      "semanticDigest": "sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a",
+      "status": "reviewed"
+    },
+    {
+      "routeId": "route:1-5-basic-asw-three-battle:draft-1",
+      "routeFamily": "anti-submarine-foundation",
+      "revision": 1,
+      "semanticDigest": "sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d",
+      "status": "reviewed"
+    }
+  ]
+}
