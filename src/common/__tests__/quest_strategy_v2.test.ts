@@ -29,6 +29,7 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '1-3': 'available',
         '1-4': 'available',
         '1-5': 'available',
+        '1-6': 'available',
         '2-1': 'available',
         '2-2': 'available',
         '2-3': 'available',
@@ -128,7 +129,13 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(plan.uncoveredQuestIds).toEqual([])
     expect(quarterly.contributedStageIndexes).toEqual([0, 1, 2, 3, 4])
     expect(quarterly.remainingStageIndexes).toEqual([])
-    expect(plan.steps.map((step) => step.mapKey).sort()).toEqual(['4-1', '4-2', '4-3', '4-4', '4-5'])
+    expect(plan.steps.map((step) => step.mapKey).sort()).toEqual([
+      '4-1',
+      '4-2',
+      '4-3',
+      '4-4',
+      '4-5'
+    ])
     expect(plan.steps.every((step) => !step.partialQuestIds.includes(845))).toBe(true)
   })
 
@@ -152,6 +159,15 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(plan.partialQuestIds).toEqual([])
     expect(plan.uncoveredQuestIds).toEqual([])
     expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-2-4-okinoshima-periodic'])
+  })
+
+  it('uses the reviewed 1-6 transport route to complete the quarterly arrival task', () => {
+    const plan = build([861])
+
+    expect(plan.coveredQuestIds).toEqual([861])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.uncoveredQuestIds).toEqual([])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-1-6-transport-quarterly'])
   })
 
   it('assembles all three northern patrol stages and shares 3-3 with the weekly', () => {

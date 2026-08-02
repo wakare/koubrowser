@@ -2011,6 +2011,108 @@
     },
     {
       "actions": [
+        "任務861を受注し、1-6到達回数が残っていることを確認する",
+        "補給艦2・駆逐艦4の6隻にする。艦種が補給艦の状態であることを確認し、搭載可能なら水上戦闘機や対空カットインを用意する",
+        "A-E-Gを進み、GからKへ逸れた場合は撤退して再出撃する。Fへ進んだ場合も各戦闘後に損傷を確認し、大破時は進撃しない",
+        "A-E-G-F-B-NでNへ到達し、任務進捗を確認して合計2回まで繰り返す"
+      ],
+      "contributions": [
+        {
+          "mapKey": "1-6",
+          "questId": 861,
+          "requiredCount": 2,
+          "result": "arrival",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "medium",
+      "equipmentTypeConstraints": [],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T07:00:00.000Z",
+          "sourceId": "wikiwiki-map-1-6-current",
+          "sourceLabel": "艦これ攻略 Wiki - 1-6",
+          "summary": "補給艦2・駆逐艦4の下ルート、Gからのランダム分岐、任務861のN到達2回を確認",
+          "url": "https://wikiwiki.jp/kancolle/鎮守府海域/1-6",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T07:00:00.000Z",
+          "sourceId": "kcwiki-map-1-6-current",
+          "sourceLabel": "舰娘百科 - 1-6",
+          "summary": "補給艦2・駆逐艦4のA-E-G-F-B-N候補、G分岐と任務条件を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/1-6",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "補給艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              22
+            ]
+          },
+          {
+            "label": "駆逐艦 4 隻",
+            "maximum": 4,
+            "minimum": 4,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "E の対潜戦"
+        },
+        {
+          "formationId": 3,
+          "label": "輪形陣",
+          "when": "F の航空戦"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "B の水上戦"
+        }
+      ],
+      "mapKey": "1-6",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-1-6-transport-quarterly",
+      "routeLabels": [
+        "A-E-G-F-B-N（GからFはランダム）"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "N"
+      ],
+      "title": "1-6 強行輸送艦隊",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務873を受注し、3-1段階が残っていることを確認する",
         "正規空母系1・軽空母1・軽巡洋艦1・重巡級1・駆逐艦2の6隻にする",
         "C-F-Gを進み、F戦後に損傷を確認して大破時は進撃しない",
@@ -3394,11 +3496,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:13b2efc40fc7ea2ccb9751ec4b2cb98ee802307357213542b67511065f8b97fd",
-    "legacyKnowledgeDigest": "sha256:eaa918fff1b4a2c9ea5904d6b3b0f650cde64d8e81fd3963940778f320c3b3e3",
-    "pilotAuthoringManifestDigest": "sha256:6fab4d4c2474d84fb4c61be253385490341df44be53c34e1007d05a6aec49dbe",
+    "inventoryDigest": "sha256:48f456fc4632f32727a5265fd43655f9f72124c5768c48c314fb29a148c3eff9",
+    "legacyKnowledgeDigest": "sha256:efd6993189479ecc2a92e7758066164563fb45e6142f211879ee5f6c25aa8715",
+    "pilotAuthoringManifestDigest": "sha256:2e2e6bcc57b5779718562251d25fa4c1e176f2a233277e50c7b5f9e17f9c5e2a",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "e588374019f8b086c23ced2c9ba8b7aa5a42ec18"
+    "repositoryCommit": "977ceb1f1e8b53b298b88d9cb771859de3cb8499"
   },
-  "version": "2026-08-03.8.v2"
+  "version": "2026-08-03.9.v2"
 }

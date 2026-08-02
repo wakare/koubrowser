@@ -44,7 +44,7 @@
 - 整数 score、固定 tie-break、入力 fingerprint、`any` 前提の独立 alternative を実装
 - 合成 fixture と production 整合性テストで決定性、降格、失効、競合、
   preference、任務定義との map/rank/count 一致を検証
-- Wiki の現行海域・定期任務ページをレビューし、通常海域 21 recipe を同梱
+- Wiki の現行海域・定期任務ページをレビューし、通常海域 22 recipe を同梱
 - 既存任務指引内へ既定非表示の opt-in UI、score 内訳、次点、確認事項、
   recipe 非表示、実行要約を追加
 - 1～5 任務を最大 512 recipe から限界被覆で選ぶ bounded set-cover と性能 fixture を追加。
@@ -66,17 +66,18 @@
 | `normal-2-2-carrier-southwest-periodic` | 284 / 894             | [2-2](https://wikiwiki.jp/kancolle/南西諸島海域/2-2)、[舰娘百科 2-2](https://zh.kcwiki.cn/wiki/2-2)            |
 | `normal-2-3-carrier-southwest-periodic` | 284 / 894             | [2-3](https://wikiwiki.jp/kancolle/南西諸島海域/2-3)、[舰娘百科 2-3](https://zh.kcwiki.cn/wiki/2-3)            |
 | `normal-2-4-okinoshima-periodic`        | 226 / 822             | [2-4](https://wikiwiki.jp/kancolle/南西諸島海域/2-4)、[舰娘百科 2-4](https://zh.kcwiki.cn/wiki/2-4)            |
-| `normal-3-1-northern-quarterly`         | 873                   | [3-1](https://wikiwiki.jp/kancolle/北方海域/3-1)、[舰娘百科 3-1](https://zh.kcwiki.cn/wiki/3-1)              |
-| `normal-3-2-northern-quarterly`         | 873                   | [3-2](https://wikiwiki.jp/kancolle/北方海域/3-2)、[舰娘百科 3-2](https://zh.kcwiki.cn/wiki/3-2)              |
-| `normal-3-3-northern-weekly`            | 241 / 873             | [3-3](https://wikiwiki.jp/kancolle/北方海域/3-3)、[舰娘百科 3-3](https://zh.kcwiki.cn/wiki/3-3)              |
-| `normal-4-1-western-quarterly`          | 845                   | [4-1](https://wikiwiki.jp/kancolle/西方海域/4-1)、[舰娘百科 4-1](https://zh.kcwiki.cn/wiki/西方海域/4-1)     |
-| `normal-4-3-western-quarterly`          | 845                   | [4-3](https://wikiwiki.jp/kancolle/西方海域/4-3)、[舰娘百科 4-3](https://zh.kcwiki.cn/wiki/西方海域/4-3)     |
-| `normal-4-4-western-quarterly`          | 242 / 845             | [4-4](https://wikiwiki.jp/kancolle/西方海域/4-4)、[舰娘百科 4-4](https://zh.kcwiki.cn/wiki/西方海域/4-4)     |
-| `normal-5-2-coral-weekly`               | 243                   | [5-2](https://wikiwiki.jp/kancolle/南方海域/5-2)、[舰娘百科 5-2](https://zh.kcwiki.cn/wiki/5-2)              |
-| `normal-4-5-western-quarterly`          | 845                   | [4-5](https://wikiwiki.jp/kancolle/西方海域/4-5)、[舰娘百科 4-5](https://zh.kcwiki.cn/wiki/4-5)             |
-| `normal-7-1-anchorage-quarterly`        | 893                   | [7-1](https://wikiwiki.jp/kancolle/南西海域/7-1)、[舰娘百科 7-1](https://zh.kcwiki.cn/wiki/7-1)             |
-| `normal-7-2-g-anchorage-quarterly`      | 893                   | [7-2](https://wikiwiki.jp/kancolle/南西海域/7-2)、[舰娘百科 7-2](https://zh.kcwiki.cn/wiki/南西海域/7-2)    |
-| `normal-7-2-m-anchorage-quarterly`      | 893                   | [7-2](https://wikiwiki.jp/kancolle/南西海域/7-2)、[舰娘百科 7-2](https://zh.kcwiki.cn/wiki/南西海域/7-2)    |
+| `normal-1-6-transport-quarterly`        | 861                   | [1-6](https://wikiwiki.jp/kancolle/鎮守府海域/1-6)、[舰娘百科 1-6](https://zh.kcwiki.cn/wiki/1-6)              |
+| `normal-3-1-northern-quarterly`         | 873                   | [3-1](https://wikiwiki.jp/kancolle/北方海域/3-1)、[舰娘百科 3-1](https://zh.kcwiki.cn/wiki/3-1)                |
+| `normal-3-2-northern-quarterly`         | 873                   | [3-2](https://wikiwiki.jp/kancolle/北方海域/3-2)、[舰娘百科 3-2](https://zh.kcwiki.cn/wiki/3-2)                |
+| `normal-3-3-northern-weekly`            | 241 / 873             | [3-3](https://wikiwiki.jp/kancolle/北方海域/3-3)、[舰娘百科 3-3](https://zh.kcwiki.cn/wiki/3-3)                |
+| `normal-4-1-western-quarterly`          | 845                   | [4-1](https://wikiwiki.jp/kancolle/西方海域/4-1)、[舰娘百科 4-1](https://zh.kcwiki.cn/wiki/西方海域/4-1)       |
+| `normal-4-3-western-quarterly`          | 845                   | [4-3](https://wikiwiki.jp/kancolle/西方海域/4-3)、[舰娘百科 4-3](https://zh.kcwiki.cn/wiki/西方海域/4-3)       |
+| `normal-4-4-western-quarterly`          | 242 / 845             | [4-4](https://wikiwiki.jp/kancolle/西方海域/4-4)、[舰娘百科 4-4](https://zh.kcwiki.cn/wiki/西方海域/4-4)       |
+| `normal-5-2-coral-weekly`               | 243                   | [5-2](https://wikiwiki.jp/kancolle/南方海域/5-2)、[舰娘百科 5-2](https://zh.kcwiki.cn/wiki/5-2)                |
+| `normal-4-5-western-quarterly`          | 845                   | [4-5](https://wikiwiki.jp/kancolle/西方海域/4-5)、[舰娘百科 4-5](https://zh.kcwiki.cn/wiki/4-5)                |
+| `normal-7-1-anchorage-quarterly`        | 893                   | [7-1](https://wikiwiki.jp/kancolle/南西海域/7-1)、[舰娘百科 7-1](https://zh.kcwiki.cn/wiki/7-1)                |
+| `normal-7-2-g-anchorage-quarterly`      | 893                   | [7-2](https://wikiwiki.jp/kancolle/南西海域/7-2)、[舰娘百科 7-2](https://zh.kcwiki.cn/wiki/南西海域/7-2)       |
+| `normal-7-2-m-anchorage-quarterly`      | 893                   | [7-2](https://wikiwiki.jp/kancolle/南西海域/7-2)、[舰娘百科 7-2](https://zh.kcwiki.cn/wiki/南西海域/7-2)       |
 
 根拠ごとに再審査期限と有効期限を設定し、新規追加分は 2026-11-02 / 2027-02-02 とした。
 再審査期限後は stale penalty と警告を付け、有効期限後は推薦から除外する。
@@ -114,9 +115,9 @@
 
 ### 現在の actionability baseline
 
-primary denominator 27 件に対し、現行の審査済み 21 route unit が任務全体を完了できるのは
-226、229、241、242、243、257、261、264、265、280、284、822、845、873、893、894 の 16 件（59.26%）である。partial は
-0 件で、残る 11 件には route unit がない。この値は全利用者の表示任務に
+primary denominator 27 件に対し、現行の審査済み 22 route unit が任務全体を完了できるのは
+226、229、241、242、243、257、261、264、265、280、284、822、845、861、873、893、894 の 17 件（62.96%）である。partial は
+0 件で、残る 10 件には route unit がない。この値は全利用者の表示任務に
 対する命中率ではなく、canonical recurring normal-sortie inventory 上のデータ充足率である。
 
 1-2、1-3、1-4、2-1、2-2、2-3 の組み合わせにより、#280、#284、#894 は各 stage を失わずに
@@ -139,6 +140,11 @@ route action と risk に保持し、固定到達や低難度であるかのよ�
 3-2は高速+統一でもC-E/C-Gの分岐があり、通常高速ではHを経由する場合があるため、固定最短とは
 表示しない。3-3は既存#241と同時進行できる。
 
+#861 は補給艦2・駆逐4で1-6のNへ2回到達する単段階計画として表示する。A-E-G-F-B-Nを
+候補にするが、GからFは固定ではなくKへ逸れる場合があるため、その場合は撤退して再出撃する。
+補給艦の改装状態による艦種差、F航空戦への対空準備、各戦闘後の損傷確認をactionに残し、
+到達保証や大破進撃を示唆しない。
+
 #241、#242、#243 の週次チェーンは、3-3 の A-C-G-M、4-4 の A-E-I-K、5-2 の
 B-C-E-F-O を一つの順序付き計画として表示する。#241 は正規空母系1・軽空母1・重巡級1・
 軽巡1・駆逐2で北方海域のB勝利以上を5回、#242 は既存4-4編成を再利用してボス勝利、#243 は
@@ -160,7 +166,7 @@ constraint が欠けた recipe は引き続き `route-unreviewed` へ fail close
 そのため本変更では、件数を増やすために未審査 Wiki 情報を取り込まず、まず route-ready
 だけを自動選択する UI と authority を固定する。次のデータ pilot は、代表 snapshot で
 zero-ready の原因を記録し、author と approver を分離できる場合に限り、小さな審査単位で
-追加する。59.26% をもって既定有効化や実用カバレッジ達成とは判断しない。
+追加する。62.96% をもって既定有効化や実用カバレッジ達成とは判断しない。
 
 ## 推奨アーキテクチャ
 

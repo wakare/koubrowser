@@ -195,6 +195,20 @@
     },
     {
       "evidenceDependencies": [
+        "wikiwiki-map-1-6-current",
+        "kcwiki-map-1-6-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 861,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-1-6-transport-quarterly"
+    },
+    {
+      "evidenceDependencies": [
         "wikiwiki-map-3-1-current",
         "kcwiki-map-3-1-current",
         "wikiwiki-periodic-sortie"

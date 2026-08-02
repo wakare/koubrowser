@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.8",
+  "manifestVersion": "2026-08-03.9",
   "sourceSnapshot": {
-    "repositoryCommit": "e588374019f8b086c23ced2c9ba8b7aa5a42ec18",
+    "repositoryCommit": "977ceb1f1e8b53b298b88d9cb771859de3cb8499",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -396,6 +396,34 @@
       }
     },
     {
+      "factId": "quest:861:objective",
+      "questId": 861,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "977ceb1f1e8b53b298b88d9cb771859de3cb8499",
+        "projectionDigest": "sha256:f35e70fefccc329eea8e3117b5e394bf1f4542f1faa8c19a0365f71b838b3ef4"
+      },
+      "classification": "lossless-v1",
+      "objectiveStages": [
+        {
+          "requiredCount": 2,
+          "targets": [{ "mapKey": "1-6", "result": "arrival", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-transport-route-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T07:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
       "factId": "quest:873:objective",
       "questId": 873,
       "revision": 1,
@@ -549,11 +577,7 @@
         "reviewedAt": "2026-08-03T03:30:00.000Z",
         "reviewBy": "2026-11-02T00:00:00.000Z",
         "validUntil": "2027-02-02T00:00:00.000Z",
-        "evidenceReviewIds": [
-          "map-1-4-review",
-          "map-1-4-kcwiki-review",
-          "periodic-sortie-review"
-        ]
+        "evidenceReviewIds": ["map-1-4-review", "map-1-4-kcwiki-review", "periodic-sortie-review"]
       }
     },
     {
@@ -774,6 +798,40 @@
         "evidenceReviewIds": [
           "map-2-4-wikiwiki-current-review",
           "map-2-4-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:1-6:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "1-6",
+      "routeLabels": ["A-E-G-F-B-N（GからFはランダム）"],
+      "targetNodes": ["N"],
+      "fleetConstraintRef": "legacy-recipe:normal-1-6-transport-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "E の対潜戦" },
+        { "formationId": 3, "label": "輪形陣", "when": "F の航空戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "B の水上戦" }
+      ],
+      "actions": [
+        "任務861を受注し、1-6到達回数が残っていることを確認する",
+        "補給艦2・駆逐艦4の6隻にする。艦種が補給艦の状態であることを確認し、搭載可能なら水上戦闘機や対空カットインを用意する",
+        "A-E-Gを進み、GからKへ逸れた場合は撤退して再出撃する。Fへ進んだ場合も各戦闘後に損傷を確認し、大破時は進撃しない",
+        "A-E-G-F-B-NでNへ到達し、任務進捗を確認して合計2回まで繰り返す"
+      ],
+      "cost": "medium",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-transport-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T07:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-1-6-wikiwiki-current-review",
+          "map-1-6-kcwiki-current-review",
           "periodic-sortie-review"
         ]
       }
@@ -1308,6 +1366,26 @@
       "sourceLabel": "舰娘百科 - 2-4",
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-03T05:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-1-6-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/鎮守府海域/1-6",
+      "sourceLabel": "艦これ攻略 Wiki - 1-6",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T07:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-1-6-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/1-6",
+      "sourceLabel": "舰娘百科 - 1-6",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T07:00:00.000Z",
       "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },

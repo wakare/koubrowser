@@ -837,7 +837,8 @@ const recipes = [
         reviewedAt: '2026-08-03T05:00:00.000Z',
         validUntil: '2027-02-03T00:00:00.000Z',
         confidence: 'supported',
-        summary: '重巡級1以下・軽巡1・駆逐4のB-G-H-L-P固定と軽量編成のS勝利リスク、任務822のS勝利2回を確認'
+        summary:
+          '重巡級1以下・軽巡1・駆逐4のB-G-H-L-P固定と軽量編成のS勝利リスク、任務822のS勝利2回を確認'
       },
       {
         sourceId: 'kcwiki-map-2-4-current',
@@ -847,6 +848,74 @@ const recipes = [
         validUntil: '2027-02-03T00:00:00.000Z',
         confidence: 'supported',
         summary: '航巡1・軽巡1・駆逐4の固定経路、L航空優勢84と軽量編成の火力注意を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-1-6-transport-quarterly',
+    revision: 1,
+    title: '1-6 強行輸送艦隊',
+    status: 'approved',
+    questIds: [861],
+    objectives: [{ questId: 861, result: 'arrival', requiredCount: 2 }],
+    mapKey: '1-6',
+    routeLabels: ['A-E-G-F-B-N（GからFはランダム）'],
+    targetNodes: ['N'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.hokyuukan],
+          minimum: 2,
+          maximum: 2,
+          label: '補給艦 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 4,
+          maximum: 4,
+          label: '駆逐艦 4 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'E の対潜戦' },
+      { formationId: ApiFormation.rinkei, label: '輪形陣', when: 'F の航空戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'B の水上戦' }
+    ],
+    actions: [
+      '任務861を受注し、1-6到達回数が残っていることを確認する',
+      '補給艦2・駆逐艦4の6隻にする。艦種が補給艦の状態であることを確認し、搭載可能なら水上戦闘機や対空カットインを用意する',
+      'A-E-Gを進み、GからKへ逸れた場合は撤退して再出撃する。Fへ進んだ場合も各戦闘後に損傷を確認し、大破時は進撃しない',
+      'A-E-G-F-B-NでNへ到達し、任務進捗を確認して合計2回まで繰り返す'
+    ],
+    cost: 'medium',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-1-6-current',
+        sourceLabel: '艦これ攻略 Wiki - 1-6',
+        url: 'https://wikiwiki.jp/kancolle/鎮守府海域/1-6',
+        reviewedAt: '2026-08-03T07:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '補給艦2・駆逐艦4の下ルート、Gからのランダム分岐、任務861のN到達2回を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-1-6-current',
+        sourceLabel: '舰娘百科 - 1-6',
+        url: 'https://zh.kcwiki.cn/wiki/1-6',
+        reviewedAt: '2026-08-03T07:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '補給艦2・駆逐艦4のA-E-G-F-B-N候補、G分岐と任務条件を独立照合'
       },
       PeriodicSortieEvidence
     ],
@@ -1103,7 +1172,8 @@ const recipes = [
         reviewedAt: '2026-08-03T04:00:00.000Z',
         validUntil: '2027-02-03T00:00:00.000Z',
         confidence: 'supported',
-        summary: '正規空母1・大型艦と空母系合計2・駆逐2以上・潜水艦なしのA-C-G-Mと軽巡入り任務873を確認'
+        summary:
+          '正規空母1・大型艦と空母系合計2・駆逐2以上・潜水艦なしのA-C-G-Mと軽巡入り任務873を確認'
       },
       {
         sourceId: 'kcwiki-map-3-3-current',
@@ -1112,7 +1182,8 @@ const recipes = [
         reviewedAt: '2026-08-03T04:00:00.000Z',
         validUntil: '2027-02-03T00:00:00.000Z',
         confidence: 'supported',
-        summary: '正規空母1・軽空母1・軽巡を含む巡洋艦級2・駆逐2の固定経路、制空境界、任務873を独立照合'
+        summary:
+          '正規空母1・軽空母1・軽巡を含む巡洋艦級2・駆逐2の固定経路、制空境界、任務873を独立照合'
       },
       PeriodicSortieEvidence
     ],
@@ -1813,6 +1884,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.8',
+  version: '2026-08-03.9',
   recipes
 })

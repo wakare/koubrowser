@@ -113,8 +113,8 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('loads twenty-one reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.8')
+  it('loads twenty-two reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.9')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
@@ -126,6 +126,7 @@ describe('quest strategy validation', () => {
       'normal-2-2-carrier-southwest-periodic',
       'normal-2-3-carrier-southwest-periodic',
       'normal-2-4-okinoshima-periodic',
+      'normal-1-6-transport-quarterly',
       'normal-3-1-northern-quarterly',
       'normal-3-2-northern-quarterly',
       'normal-3-3-northern-weekly',
@@ -152,6 +153,7 @@ describe('quest strategy validation', () => {
         item.id.includes('logistics-line') ||
         item.id.includes('2-1') ||
         item.id.includes('2-4') ||
+        item.id.includes('transport-quarterly') ||
         item.id.includes('western-quarterly') ||
         item.id.includes('northern-') ||
         item.id.includes('coral-weekly')
@@ -171,7 +173,12 @@ describe('quest strategy validation', () => {
               max?: readonly number[]
             }
           | undefined
-        const expectedRank = objective.result === 'victory' ? 'B' : objective.result
+        const expectedRank =
+          objective.result === 'victory'
+            ? 'B'
+            : objective.result === 'arrival'
+              ? ''
+              : objective.result
         const mapIndex =
           stuff?.maps?.findIndex(
             (map) =>
@@ -211,8 +218,9 @@ describe('quest strategy validation', () => {
       'questIds and objective questId values must match'
     )
 
-    expect(normalizeQuestStrategyRecipes([recipe('cell-bound', [101], { targetCellIds: [7] })])[0])
-      .toMatchObject({ targetCellIds: [7] })
+    expect(
+      normalizeQuestStrategyRecipes([recipe('cell-bound', [101], { targetCellIds: [7] })])[0]
+    ).toMatchObject({ targetCellIds: [7] })
     expect(() =>
       normalizeQuestStrategyRecipes([recipe('duplicate-cell', [101], { targetCellIds: [7, 7] })])
     ).toThrow('duplicate values')
@@ -248,9 +256,7 @@ describe('quest strategy validation', () => {
           ...boundedFleet,
           fleet: {
             ...boundedFleet.fleet,
-            shipTypeConstraints: [
-              { shipTypeIds: [3], minimum: 2, maximum: 1, label: '不正な上限' }
-            ]
+            shipTypeConstraints: [{ shipTypeIds: [3], minimum: 2, maximum: 1, label: '不正な上限' }]
           }
         }
       ])
