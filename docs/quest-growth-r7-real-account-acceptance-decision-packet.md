@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_REVISION_5_HARNESS_AMENDMENT`
+Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_REVISION_6_RETRY`
 
 ## 目的
 
@@ -19,6 +19,10 @@ route 検査前に再び fail closed した。この1回分の実行承認は消
 revision 3 は tall / compact layout の表示先を判定する harness 修訂だけを固定し、実アカウントの
 追加実行を承認したが、owner manual login window 内に account data が ready にならず fail closed した。
 revision 4 は同じ harness と同じ2 route の1回限りの再試行だけを再承認対象とする。
+revision 5 は project owner が固定摘要どおり authoring を承認し、専用 route-panel size check と
+匿名 signed custom-layout fixture を実装した。fixture は2 route、unset fallback、custom page の
+名称・順序・可視性、active page、filter、editor、window bounds の復元を確認して PASS した。
+revision 6 はこの固定 harness と同じ2 route を使う1回限りの只読再試行だけを承認対象とする。
 
 machine-readable request は
 [`r7-real-account-acceptance-request.json`](../knowledge/quest-growth/decisions/r7-real-account-acceptance-request.json)、
@@ -125,7 +129,7 @@ npm run data:quest-growth:verify
 npm run smoke:data-update
 ```
 
-さらに、implementation base `804cf1bc180240b67e2f1d2f51443f4bd5399f2d` に固定した route、
+さらに、harness implementation commit `5a220292cee3a595b7121712e45f7fac3a95bdc0` に固定した route、
 renderer、harness、ゲーム通信保護3ファイルの digest を compiler で照合する。通常の甲ブラウザが
 終了しており、owner がバックアップを確認したことも開始条件とする。
 
@@ -167,9 +171,11 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 ## 固定摘要
 
 - acceptance request semantic digest:
-  `sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402`
+  `sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6`
 - request raw digest:
-  `sha256:b714b74c2b26f0612c1112a5552cc17325aa5dec9716e55f2b7ccd5a7b327347`
+  `sha256:29132f44e5d3ad66129ba0818297ef3e82cadded04ab7ae43ab5286e99d73dbf`
+- revision 5 approved semantic digest:
+  `sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402`
 - revision 4 approved semantic digest:
   `sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c`
 - revision 3 approved semantic digest:
@@ -203,22 +209,29 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - revision 4 checked route count: `2`
 - revision 4 maximum executions: `1`
 - revision 4 harness changes authorized: `false`
-- revision 5 harness amendment authoring: `not-authorized`
+- revision 5 harness amendment authoring: `approved-and-implemented`
 - revision 5 authorized path count: `2`
 - revision 5 anonymous custom-layout fixture required: `true`
 - revision 5 real-account execution authorization: `not-authorized`
+- revision 5 implementation commit: `5a220292cee3a595b7121712e45f7fac3a95bdc0`
+- revision 5 smoke harness digest:
+  `sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400`
+- revision 5 anonymous signed custom-layout fixture: `PASS`
+- revision 6 maximum executions: `1`
+- revision 6 execution authorization: `not-authorized`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
 
 推奨承認文面:
 
-> 批准固定摘要 `sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402`
-> 对应的 `r7-real-account-readonly-acceptance` revision 5 harness amendment authoring。仅授权修改
-> `scripts/electron-smoke.js` 与 `src/main/__tests__/electron-smoke-script.test.ts`：将实账号路线验收与通用
-> `--wide-workspace` 默认标签回归分离，改为在当前尺寸及一个受控尺寸检查路线面板横向溢出，完整保留并恢复
-> 用户页面名称、顺序、可见性、活动页面及窗口边界，并以匿名 signed custom-layout fixture 验证；诊断输出必须
-> 脱敏。不授权实账号执行、production code、路线内容、游戏通信、runtime publication、默认启用或其他 route family。
+> 批准固定摘要 `sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6`
+> 对应的 `r7-real-account-readonly-acceptance` revision 6 retry。仅授权沿用 implementation commit
+> `5a220292cee3a595b7121712e45f7fac3a95bdc0`、harness digest
+> `sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400`，对固定的两条
+> reviewed route 再执行一次原范围的只读、脱敏验收；project owner 必须手动处理登录并只点击一次
+> GAME START。Codex 不得处理凭据、点击 GAME START、执行游戏操作、修改游戏通信、保存截图/raw log/
+> account snapshot、修改 harness、production code 或路线；不授权 runtime publication、默认启用或其他 route family。
 
 ## 承認結果と現在の結論
 
@@ -250,3 +263,16 @@ revision 5 は実アカウント実行を許可せず、次の harness authoring
 変更可能な path は `scripts/electron-smoke.js` と
 `src/main/__tests__/electron-smoke-script.test.ts` の2件だけとする。production code、route content、
 実アカウント再実行、runtime publication、default enablement は許可しない。
+
+project owner は revision 5 の固定摘要を承認した。implementation commit は
+`5a220292cee3a595b7121712e45f7fac3a95bdc0`、smoke harness digest は
+`sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400` である。
+匿名 signed custom-layout fixture は current `1316 x 632` と controlled `1600 x 800` の両方で
+2 route と unset fallback の横 overflow がなく、custom page と window state の復元を確認して PASS した。
+
+## revision 6 retry request
+
+revision 6 は revision 5 で固定・検証した harness を変更せず、同じ2 reviewed route に対する
+1回限りの只読・脱敏実アカウント再試行だけを申請する。汎用 `--wide-workspace` regression は実行せず、
+現在サイズと1つの controlled size だけを検査する。実行は新しい semantic digest の project owner
+明示承認まで `not-authorized` とする。

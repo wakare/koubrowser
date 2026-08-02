@@ -24,7 +24,7 @@ const {
   buildR7RealAccountDecisionArtifacts
 } = require('./quest-growth-r7-real-account-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/19'
+const CompilerVersion = 'quest-growth-authoring-compiler/20'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -971,7 +971,7 @@ function buildQuestGrowthArtifacts(root) {
           : r7RealAccountDecision.output.r7RealAccountAcceptanceAuthorizedRouteCount > 0
           ? 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
           : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
-            ? 'R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED'
+            ? 'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
           : r7RendererDecision.output.r7RendererAuthorizedRouteCount > 0
           ? 'R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED'
           : r7RouteReviewDecision.output.r7ReviewedConcreteRouteCount > 0
@@ -1020,7 +1020,7 @@ function buildQuestGrowthArtifacts(root) {
       ...(r7RealAccountDecision.output.r7RealAccountAcceptanceFailClosed
         ? ['R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED']
         : r7RealAccountDecision.output.r7RealAccountAcceptanceOwnerDecisionRequired
-          ? ['R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED']
+          ? ['R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED']
           : ['R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'])
     ]
   }

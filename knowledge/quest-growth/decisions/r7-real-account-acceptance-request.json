@@ -1,12 +1,12 @@
 {
   "authoringSchema": "QuestGrowthR7RealAccountAcceptanceRequest/1alpha",
   "requestId": "decision:quest-growth-r7-real-account-readonly-acceptance",
-  "revision": 5,
+  "revision": 6,
   "status": "draft",
   "scope": "R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY",
   "sourceSnapshot": {
-    "auditedBaseCommit": "c4029506602a409801ebfff1636e587bdd59cc30",
-    "checkedAt": "2026-08-02T04:49:34.432Z"
+    "auditedBaseCommit": "5a220292cee3a595b7121712e45f7fac3a95bdc0",
+    "checkedAt": "2026-08-02T05:18:24.048Z"
   },
   "approvalBasis": {
     "realAccountGateSemanticDigest": "sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb",
@@ -17,7 +17,7 @@
     "routeSelectorDigest": "sha256:c68ad63ce313a3ea1514a7d5588b8dd463fa0be4b49e49e10fbcdaf4ebd999f2",
     "growthComponentDigest": "sha256:c50c847d7b392759d94f65a8dd8bbaea8a047b1d12b5f4a5f6f308cded1e9947",
     "questGuideDigest": "sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4",
-    "smokeHarnessDigest": "sha256:b334b4ef74f8ce6a29a6ccdfbcbb825df832dbedb28eefccd8eb7982af61bf3a",
+    "smokeHarnessDigest": "sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400",
     "protectedCommunicationDigests": {
       "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
       "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
@@ -182,6 +182,54 @@
     ],
     "anonymousCustomLayoutFixtureRequired": true,
     "realAccountExecutionAuthorized": false,
+    "productionCodeChangesAuthorized": false,
+    "routeContentChangesAuthorized": false
+  },
+  "harnessAmendmentImplementation": {
+    "revision": 5,
+    "approvedSemanticDigest": "sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402",
+    "implementationCommit": "5a220292cee3a595b7121712e45f7fac3a95bdc0",
+    "smokeHarnessDigest": "sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400",
+    "authorizedPathsChanged": [
+      "scripts/electron-smoke.js",
+      "src/main/__tests__/electron-smoke-script.test.ts"
+    ],
+    "anonymousSignedCustomLayoutFixturePassed": true,
+    "currentSize": {
+      "width": 1316,
+      "height": 632
+    },
+    "controlledSize": {
+      "width": 1600,
+      "height": 800
+    },
+    "reviewedRouteCount": 2,
+    "unsetFallbackChecked": true,
+    "pageNamesOrderVisibilityRestored": true,
+    "activePagesRestored": true,
+    "panelEditorsRestored": true,
+    "questFilterRestored": true,
+    "windowBoundsRestored": true,
+    "typecheckPassed": true,
+    "targetedTestCount": 41,
+    "nonGovernanceTestsPassed": true,
+    "realAccountExecutionPerformed": false,
+    "productionCodeChangesMade": false,
+    "routeContentChangesMade": false,
+    "gameCommunicationChangesMade": false
+  },
+  "retryRequest": {
+    "revision": 6,
+    "supersedesRevision": 5,
+    "reasonCode": "HARNESS_AMENDMENT_IMPLEMENTED_AND_ANONYMOUSLY_VERIFIED",
+    "maximumExecutions": 1,
+    "manualLoginTimeoutMs": 300000,
+    "sameReviewedRoutesOnly": true,
+    "fixedHarnessDigest": "sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400",
+    "genericWideWorkspaceRegressionExcluded": true,
+    "currentAndControlledSizeRequired": true,
+    "realAccountExecutionAuthorized": false,
+    "harnessChangesAuthorized": false,
     "productionCodeChangesAuthorized": false,
     "routeContentChangesAuthorized": false
   },

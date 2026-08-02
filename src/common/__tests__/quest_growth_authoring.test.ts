@@ -168,7 +168,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED'
+      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -190,7 +190,7 @@ describe('quest growth authoring contract', () => {
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
     expect(report.globalStops).toContain(
-      'R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED'
+      'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -728,7 +728,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('requires owner approval for the revision 5 harness amendment', () => {
+  it('requires owner approval for the revision 6 real-account retry', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -763,13 +763,22 @@ describe('quest growth authoring contract', () => {
       proposedHarnessAmendmentAuthorizedPathCount: number
       anonymousCustomLayoutFixtureRequired: boolean
       realAccountExecutionAuthorized: boolean
+      harnessAmendmentImplementationCommit: string
+      harnessAmendmentImplementationPassed: boolean
+      harnessAmendmentRealAccountExecutionPerformed: boolean
+      harnessAmendmentTargetedTestCount: number
+      retryRequestReasonCode: string
+      retryRequestMaximumExecutions: number
+      retryRequestFixedHarnessDigest: string
+      retryRequestGenericWideWorkspaceRegressionExcluded: boolean
+      retryRequestCurrentAndControlledSizeRequired: boolean
     }>('generated', 'r7-real-account-acceptance-report.json')
 
     expect(report.status).toBe(
-      'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT'
+      'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY'
     )
     expect(report.semanticDigest).toBe(
-      'sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402'
+      'sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6'
     )
     expect(report.authorizationState).toBe('authorized')
     expect(report.executionAuthorization).toBe('not-authorized')
@@ -795,6 +804,21 @@ describe('quest growth authoring contract', () => {
     expect(report.proposedHarnessAmendmentAuthorizedPathCount).toBe(2)
     expect(report.anonymousCustomLayoutFixtureRequired).toBe(true)
     expect(report.realAccountExecutionAuthorized).toBe(false)
+    expect(report.harnessAmendmentImplementationCommit).toBe(
+      '5a220292cee3a595b7121712e45f7fac3a95bdc0'
+    )
+    expect(report.harnessAmendmentImplementationPassed).toBe(true)
+    expect(report.harnessAmendmentRealAccountExecutionPerformed).toBe(false)
+    expect(report.harnessAmendmentTargetedTestCount).toBe(41)
+    expect(report.retryRequestReasonCode).toBe(
+      'HARNESS_AMENDMENT_IMPLEMENTED_AND_ANONYMOUSLY_VERIFIED'
+    )
+    expect(report.retryRequestMaximumExecutions).toBe(1)
+    expect(report.retryRequestFixedHarnessDigest).toBe(
+      'sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400'
+    )
+    expect(report.retryRequestGenericWideWorkspaceRegressionExcluded).toBe(true)
+    expect(report.retryRequestCurrentAndControlledSizeRequired).toBe(true)
     expect(report.priorAttemptReasonCode).toBe('TASK_WORKSPACE_PAGE_NOT_VISIBLE')
     expect(report.harnessAmendmentReasonCode).toBe(
       'TALL_AND_COMPACT_TASK_GUIDE_LAYOUT_SELECTION'

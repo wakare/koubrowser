@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const R7RealAccountDecisionCompilerVersion =
-  'quest-growth-r7-real-account-decision-compiler/12'
+  'quest-growth-r7-real-account-decision-compiler/13'
 const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -11,8 +11,7 @@ const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const FixedRendererSemanticDigest =
   'sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363'
-const ApprovedRealAccountSemanticDigest =
-  'sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c'
+const ApprovedRealAccountSemanticDigest = undefined
 const FocusByFamily = {
   'expedition-resource-periodic-loop': 'resources',
   'anti-submarine-foundation': 'asw'
@@ -161,6 +160,51 @@ const ExpectedProposedHarnessAmendment = {
   productionCodeChangesAuthorized: false,
   routeContentChangesAuthorized: false
 }
+const ExpectedHarnessAmendmentImplementation = {
+  revision: 5,
+  approvedSemanticDigest:
+    'sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402',
+  implementationCommit: '5a220292cee3a595b7121712e45f7fac3a95bdc0',
+  smokeHarnessDigest:
+    'sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400',
+  authorizedPathsChanged: [
+    'scripts/electron-smoke.js',
+    'src/main/__tests__/electron-smoke-script.test.ts'
+  ],
+  anonymousSignedCustomLayoutFixturePassed: true,
+  currentSize: { width: 1316, height: 632 },
+  controlledSize: { width: 1600, height: 800 },
+  reviewedRouteCount: 2,
+  unsetFallbackChecked: true,
+  pageNamesOrderVisibilityRestored: true,
+  activePagesRestored: true,
+  panelEditorsRestored: true,
+  questFilterRestored: true,
+  windowBoundsRestored: true,
+  typecheckPassed: true,
+  targetedTestCount: 41,
+  nonGovernanceTestsPassed: true,
+  realAccountExecutionPerformed: false,
+  productionCodeChangesMade: false,
+  routeContentChangesMade: false,
+  gameCommunicationChangesMade: false
+}
+const ExpectedRetryRequest = {
+  revision: 6,
+  supersedesRevision: 5,
+  reasonCode: 'HARNESS_AMENDMENT_IMPLEMENTED_AND_ANONYMOUSLY_VERIFIED',
+  maximumExecutions: 1,
+  manualLoginTimeoutMs: 300000,
+  sameReviewedRoutesOnly: true,
+  fixedHarnessDigest:
+    'sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400',
+  genericWideWorkspaceRegressionExcluded: true,
+  currentAndControlledSizeRequired: true,
+  realAccountExecutionAuthorized: false,
+  harnessChangesAuthorized: false,
+  productionCodeChangesAuthorized: false,
+  routeContentChangesAuthorized: false
+}
 const ExpectedProhibited = [
   'credential-handling-by-agent',
   'agent-click-game-start',
@@ -278,6 +322,8 @@ function validateR7RealAccountAcceptanceRequest(
       'harnessAmendment',
       'retryAuthorization',
       'proposedHarnessAmendment',
+      'harnessAmendmentImplementation',
+      'retryRequest',
       'executionResult',
       'executionBoundary',
       'stillProhibited',
@@ -288,7 +334,7 @@ function validateR7RealAccountAcceptanceRequest(
   if (
     value.authoringSchema !== 'QuestGrowthR7RealAccountAcceptanceRequest/1alpha' ||
     value.requestId !== 'decision:quest-growth-r7-real-account-readonly-acceptance' ||
-    value.revision !== 5 ||
+    value.revision !== 6 ||
     !['draft', 'approved'].includes(value.status) ||
     value.scope !== 'R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY'
   ) {
@@ -487,6 +533,18 @@ function validateR7RealAccountAcceptanceRequest(
     throw new Error('R7 proposed acceptance harness amendment mismatch')
   }
   exactKeys(
+    value.harnessAmendmentImplementation,
+    Object.keys(ExpectedHarnessAmendmentImplementation),
+    'R7 acceptance harness amendment implementation'
+  )
+  if (!same(value.harnessAmendmentImplementation, ExpectedHarnessAmendmentImplementation)) {
+    throw new Error('R7 acceptance harness amendment implementation mismatch')
+  }
+  exactKeys(value.retryRequest, Object.keys(ExpectedRetryRequest), 'R7 acceptance retry request')
+  if (!same(value.retryRequest, ExpectedRetryRequest)) {
+    throw new Error('R7 acceptance retry request mismatch')
+  }
+  exactKeys(
     value.executionResult,
     Object.keys(ExpectedExecutionResult),
     'R7 acceptance execution result'
@@ -553,11 +611,11 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     schemaVersion: 1,
     compilerVersion: R7RealAccountDecisionCompilerVersion,
     generatedAt: request.approved
-      ? request.value.executionResult.recordedAt
+      ? request.value.review.reviewedAt
       : request.value.sourceSnapshot.checkedAt,
     status: request.approved
-      ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED'
-      : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT',
+      ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED'
+      : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY',
     scope: request.value.scope,
     requestId: request.value.requestId,
     revision: request.value.revision,
@@ -566,7 +624,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     gateId: request.value.requestedAuthorization.gateId,
     gateSemanticDigest: request.value.approvalBasis.realAccountGateSemanticDigest,
     authorizationState: 'authorized',
-    executionAuthorization: request.approved ? 'consumed' : 'not-authorized',
+    executionAuthorization: request.approved ? 'authorized' : 'not-authorized',
     acceptanceMode: request.value.requestedAuthorization.acceptanceMode,
     maximumAcceptedRoutes: request.value.requestedAuthorization.maximumAcceptedRoutes,
     routeBindings: request.value.routeBindings,
@@ -603,6 +661,21 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       request.value.proposedHarnessAmendment.anonymousCustomLayoutFixtureRequired,
     realAccountExecutionAuthorized:
       request.value.proposedHarnessAmendment.realAccountExecutionAuthorized,
+    harnessAmendmentImplementationCommit:
+      request.value.harnessAmendmentImplementation.implementationCommit,
+    harnessAmendmentImplementationPassed:
+      request.value.harnessAmendmentImplementation.anonymousSignedCustomLayoutFixturePassed,
+    harnessAmendmentTargetedTestCount:
+      request.value.harnessAmendmentImplementation.targetedTestCount,
+    harnessAmendmentRealAccountExecutionPerformed:
+      request.value.harnessAmendmentImplementation.realAccountExecutionPerformed,
+    retryRequestReasonCode: request.value.retryRequest.reasonCode,
+    retryRequestMaximumExecutions: request.value.retryRequest.maximumExecutions,
+    retryRequestFixedHarnessDigest: request.value.retryRequest.fixedHarnessDigest,
+    retryRequestGenericWideWorkspaceRegressionExcluded:
+      request.value.retryRequest.genericWideWorkspaceRegressionExcluded,
+    retryRequestCurrentAndControlledSizeRequired:
+      request.value.retryRequest.currentAndControlledSizeRequired,
     anonymousHiddenLayoutFixtureRequired:
       request.value.harnessAmendment.anonymousHiddenLayoutFixtureRequired,
     anonymousTallLayoutFixtureRequired:
@@ -619,8 +692,10 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       r7RealAccountAcceptanceRouteCount: report.routeBindings.length,
       r7RealAccountAcceptanceRequiredCheckCount: report.requiredCheckCount,
       r7RealAccountAcceptanceOwnerDecisionRequired: !request.approved,
-      r7RealAccountAcceptanceFailClosed: request.approved,
-      r7RealAccountAcceptanceAuthorizedRouteCount: 0
+      r7RealAccountAcceptanceFailClosed: false,
+      r7RealAccountAcceptanceAuthorizedRouteCount: request.approved
+        ? report.routeBindings.length
+        : 0
     }
   }
 }

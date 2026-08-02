@@ -77,7 +77,7 @@
       "readableIndependentSourceIds": []
     }
   ],
-  "compilerVersion": "quest-growth-authoring-compiler/19",
+  "compilerVersion": "quest-growth-authoring-compiler/20",
   "decisionRubricAudits": [
     {
       "acceptanceTestCount": 2,
@@ -147,7 +147,7 @@
   "globalStops": [
     "NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE",
     "OBSERVABILITY_GAPS_REMAIN",
-    "R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED"
+    "R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED"
   ],
   "milestoneGaps": [
     {

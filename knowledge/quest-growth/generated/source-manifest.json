@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/19",
+  "compilerVersion": "quest-growth-authoring-compiler/20",
   "output": {
     "approvedDecisionRubricCount": 8,
     "approvedMilestoneCount": 8,
@@ -52,7 +52,7 @@
     "unavailableObservableCount": 2
   },
   "runtimePromotion": {
-    "reason": "R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED",
+    "reason": "R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED",
     "status": "blocked"
   },
   "schemaVersion": 1,
@@ -82,7 +82,7 @@
     "r7EvidenceSnapshotDigest": "sha256:877cc52a7dcaaf661cb3a90d5b2579657de84e12612ee5bc5ecdb62fa761bc53",
     "r7PilotContentAuthorizationRequestDigest": "sha256:e952cc1d4e7ab563e69bd9bd91838d889788f1029780dcb23530cbcc1ac16961",
     "r7PilotRouteReviewRequestDigest": "sha256:fcf0710d84e65579de441443ea171751c4623e3dd18f410e5903291d166cf308",
-    "r7RealAccountAcceptanceRequestDigest": "sha256:b714b74c2b26f0612c1112a5552cc17325aa5dec9716e55f2b7ccd5a7b327347",
+    "r7RealAccountAcceptanceRequestDigest": "sha256:29132f44e5d3ad66129ba0818297ef3e82cadded04ab7ae43ab5286e99d73dbf",
     "r7RendererIntegrationRequestDigest": "sha256:d6365849f42e2fdb42178b3aceccdffafe0232a981c214a3e71f11cd1b3227e2",
     "r7RouteCatalogDigest": "sha256:cc2c83195c01c846ba3da89d2731264081e1374b74a190f046f75f9d59e776a4",
     "r7SchemaFixtureDigest": "sha256:2d12869aba8f285a92d517acead74c139d8a571d4afaff6ae5a97cfc295b857c",
