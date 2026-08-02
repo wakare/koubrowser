@@ -299,6 +299,11 @@ staging evidence authoring の decision-only request は、公開 evidence 10 fi
 synthetic fixture を commit `6082e74f8445953bd762ce1549565c819c03aca9` で実装した。10 check は PASS、authoring
 authorization は `consumed`、runtime eligible count は0である。鍵、実在 endpoint、signed bundle、staging
 acceptance、runtime publication、default enablement は引き続き禁止する。
+次の signed bundle evidence review harness は、固定2 route、公開 evidence 10 field、禁止 output 15 field、
+独立3 role、10 check と固定4 path だけを
+[`quest-growth-r7-signed-bundle-evidence-review-decision-packet.md`](quest-growth-r7-signed-bundle-evidence-review-decision-packet.md)
+へ decision-only request として分離した。owner fixed-digest approval 前は authoring も未承認であり、実 signed
+bundle / 公開鍵の review、秘密鍵、実在 URL、staging acceptance、runtime publication は引き続き禁止する。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
