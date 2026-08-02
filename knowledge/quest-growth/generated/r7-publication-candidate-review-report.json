@@ -1,5 +1,5 @@
 {
-  "authoringAuthorization": "authorized",
+  "authoringAuthorization": "consumed",
   "authorizationState": "authorized",
   "authorizedPaths": [
     "knowledge/quest-growth/r7/runtime-publication-candidate.json",
@@ -7,14 +7,18 @@
     "scripts/quest-growth-r7-publication-candidate.js",
     "src/common/__tests__/quest_growth_publication_candidate.test.ts"
   ],
+  "candidateCanonicalDigest": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c",
+  "candidateReviewSemanticDigest": "sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c",
   "candidateVersion": "r7.candidate.20260802.1",
-  "compilerVersion": "quest-growth-r7-publication-candidate-review-decision-compiler/1",
+  "compilerVersion": "quest-growth-r7-publication-candidate-review-decision-compiler/2",
   "defaultEnablementAuthorization": "R7_NOT_AUTHORIZED",
   "gateId": "r7-publication-candidate-review-authoring",
-  "generatedAt": "2026-08-02T10:53:39.949Z",
+  "generatedAt": "2026-08-02T10:59:45.609Z",
+  "implementationCommit": "14a60d18801ace55fc6334496f87bfccd85ce48d",
   "maximumCandidateRoutes": 2,
+  "ownerReviewStatus": "owner-decision-required",
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
-  "requestDigest": "sha256:d88e40b81ca8fe4dbeac04c129f586a4a1762dba69adf72f02a2fd0f264ecd58",
+  "requestDigest": "sha256:8cddc440ab6c434f92a2724c2b33057c167bf27c7eac1cfb002c719a4a87652f",
   "requestId": "decision:quest-growth-r7-publication-candidate-review-authoring",
   "requiredCheckCount": 8,
   "requiredRouteCount": 2,
@@ -24,7 +28,7 @@
   "scope": "R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_ONLY",
   "semanticDigest": "sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33",
   "signatureMode": "none-canonical-payload-only",
-  "status": "R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED",
+  "status": "R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORED_OWNER_DECISION_REQUIRED",
   "stillProhibited": [
     "bundle-signing",
     "private-key-or-credential-handling",

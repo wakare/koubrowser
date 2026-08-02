@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const CompilerVersion = 'quest-growth-r7-publication-candidate-review-decision-compiler/1'
+const CompilerVersion = 'quest-growth-r7-publication-candidate-review-decision-compiler/2'
 const OutputFilenames = ['r7-publication-candidate-review-report.json']
 const FixedSemanticDigest =
   'sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33'
@@ -63,6 +63,17 @@ const ExpectedProhibited = [
   'automatic-game-operation',
   'installer-publication'
 ]
+const FixedImplementationCommit = '14a60d18801ace55fc6334496f87bfccd85ce48d'
+const FixedImplementationDigests = {
+  'knowledge/quest-growth/r7/runtime-publication-candidate.json':
+    'sha256:92cd036faf74f262633edca062b63e7a2ce61081a8cf6666fa7ad697f6beae0b',
+  'knowledge/quest-growth/reviews/r7-runtime-publication-candidate-review.json':
+    'sha256:183de25db816181a83d58c23662efcf35fa5236f51fec22a0ba91f1a06c827b6',
+  'scripts/quest-growth-r7-publication-candidate.js':
+    'sha256:381c9e877627a486ad2be6eff302930a45521b9ecdc9f1d576359018dda53a13',
+  'src/common/__tests__/quest_growth_publication_candidate.test.ts':
+    'sha256:9972a8ee7e8fbfbfda312926448a2c29cbaaa5942b0add9506454b7681cdde2d'
+}
 
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize)
@@ -99,6 +110,79 @@ function exactKeys(value, required, description) {
 
 function same(left, right) {
   return JSON.stringify(left) === JSON.stringify(right)
+}
+
+function validateImplementationResult(value) {
+  exactKeys(
+    value,
+    [
+      'recordedAt',
+      'approvedSemanticDigest',
+      'implementationCommit',
+      'changedPaths',
+      'changedPathDigests',
+      'candidateVersion',
+      'candidateCanonicalDigest',
+      'candidateReviewSemanticDigest',
+      'candidateRouteCount',
+      'requiredCheckCount',
+      'candidateTestCount',
+      'fullTestCount',
+      'typecheckPassed',
+      'validatorCliPassed',
+      'candidateUnsigned',
+      'reviewStatus',
+      'routeContentChangesMade',
+      'bundleSigningPerformed',
+      'privateKeyHandled',
+      'productionPayloadGenerated',
+      'runtimePublicationPerformed',
+      'defaultEnablementChanged',
+      'installerBuilt',
+      'gameCommunicationChangesMade'
+    ],
+    'R7 publication candidate implementation result'
+  )
+  exactKeys(value.changedPathDigests, AuthorizedPaths, 'R7 candidate implementation digests')
+  if (
+    !TimestampPattern.test(value.recordedAt) ||
+    !Number.isFinite(Date.parse(value.recordedAt)) ||
+    value.approvedSemanticDigest !== FixedSemanticDigest ||
+    value.implementationCommit !== FixedImplementationCommit ||
+    !same(value.changedPaths, AuthorizedPaths) ||
+    !same(value.changedPathDigests, FixedImplementationDigests) ||
+    value.candidateVersion !== 'r7.candidate.20260802.1' ||
+    value.candidateCanonicalDigest !==
+      'sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c' ||
+    value.candidateReviewSemanticDigest !==
+      'sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c' ||
+    value.candidateRouteCount !== 2 ||
+    value.requiredCheckCount !== 8 ||
+    value.candidateTestCount !== 8 ||
+    value.fullTestCount !== 1245 ||
+    value.reviewStatus !== 'owner-decision-required'
+  ) {
+    throw new Error('R7 publication candidate implementation evidence mismatch')
+  }
+  for (const item of ['typecheckPassed', 'validatorCliPassed', 'candidateUnsigned']) {
+    if (value[item] !== true) {
+      throw new Error(`R7 publication candidate implementation check failed: ${item}`)
+    }
+  }
+  for (const item of [
+    'routeContentChangesMade',
+    'bundleSigningPerformed',
+    'privateKeyHandled',
+    'productionPayloadGenerated',
+    'runtimePublicationPerformed',
+    'defaultEnablementChanged',
+    'installerBuilt',
+    'gameCommunicationChangesMade'
+  ]) {
+    if (value[item] !== false) {
+      throw new Error(`R7 publication candidate implementation boundary widened: ${item}`)
+    }
+  }
 }
 
 function publicationCandidateReviewRequestSemanticDigest(value) {
@@ -224,7 +308,11 @@ function validateR7PublicationCandidateReviewRequest(value, { root, base }) {
     value.requestedAuthorization.authorizationState !==
       (approved ? 'authorized' : 'not-authorized') ||
     value.requestedAuthorization.authoringAuthorization !==
-      (approved ? 'authorized' : 'not-authorized') ||
+      (approved
+        ? value.implementationResult === null
+          ? 'authorized'
+          : 'consumed'
+        : 'not-authorized') ||
     value.requestedAuthorization.maximumCandidateRoutes !== 2 ||
     !same(value.requestedAuthorization.authorizedPaths, AuthorizedPaths)
   ) {
@@ -277,7 +365,10 @@ function validateR7PublicationCandidateReviewRequest(value, { root, base }) {
     throw new Error('R7 publication candidate independent review mismatch')
   }
   if (value.implementationResult !== null) {
-    throw new Error('R7 publication candidate request must not claim implementation')
+    if (!approved) {
+      throw new Error('draft R7 publication candidate request must not claim implementation')
+    }
+    validateImplementationResult(value.implementationResult)
   }
 
   exactKeys(
@@ -340,10 +431,14 @@ function buildR7PublicationCandidateReviewDecisionArtifacts({ root, base }) {
   const report = {
     schemaVersion: 1,
     compilerVersion: CompilerVersion,
-    generatedAt: request.approved
+    generatedAt: request.value.implementationResult
+      ? request.value.implementationResult.recordedAt
+      : request.approved
       ? request.value.review.reviewedAt
       : request.value.sourceSnapshot.checkedAt,
-    status: request.approved
+    status: request.value.implementationResult
+      ? 'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORED_OWNER_DECISION_REQUIRED'
+      : request.approved
       ? 'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED'
       : 'OWNER_DECISION_REQUIRED_R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING',
     scope: request.value.scope,
@@ -353,7 +448,14 @@ function buildR7PublicationCandidateReviewDecisionArtifacts({ root, base }) {
     semanticDigest: request.semanticDigest,
     gateId: request.value.requestedAuthorization.gateId,
     authorizationState: request.approved ? 'authorized' : 'not-authorized',
-    authoringAuthorization: request.approved ? 'authorized' : 'not-authorized',
+    authoringAuthorization:
+      request.value.requestedAuthorization.authoringAuthorization,
+    implementationCommit: request.value.implementationResult?.implementationCommit ?? null,
+    candidateCanonicalDigest:
+      request.value.implementationResult?.candidateCanonicalDigest ?? null,
+    candidateReviewSemanticDigest:
+      request.value.implementationResult?.candidateReviewSemanticDigest ?? null,
+    ownerReviewStatus: request.value.implementationResult?.reviewStatus ?? null,
     maximumCandidateRoutes: request.value.requestedAuthorization.maximumCandidateRoutes,
     authorizedPaths: request.value.requestedAuthorization.authorizedPaths,
     candidateVersion: request.value.candidateContract.candidateVersion,
@@ -370,7 +472,10 @@ function buildR7PublicationCandidateReviewDecisionArtifacts({ root, base }) {
     source: { r7PublicationCandidateReviewRequestDigest: digest(requestRaw) },
     output: {
       r7PublicationCandidateReviewOwnerDecisionRequired: !request.approved,
-      r7PublicationCandidateReviewAuthorizedNotImplemented: request.approved,
+      r7PublicationCandidateReviewAuthorizedNotImplemented:
+        request.approved && request.value.implementationResult === null,
+      r7PublicationCandidateReviewImplemented:
+        request.approved && request.value.implementationResult !== null,
       r7PublicationCandidateReviewAuthorizedPathCount: request.approved
         ? report.authorizedPaths.length
         : 0,

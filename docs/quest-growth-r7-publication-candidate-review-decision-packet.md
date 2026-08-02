@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-PUBLICATION-CANDIDATE-REVIEW-AUTHORING`
 
-Status: `R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED`
+Status: `R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORED_OWNER_DECISION_REQUIRED`
 
 ## 目的
 
@@ -90,3 +90,26 @@ project owner は `2026-08-02T10:53:39.949Z` に semantic digest
 `sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33` を明示承認した。
 固定4 path の未署名 candidate と独立 review record authoring だけが authorized であり、署名、production
 payload、runtime publication、default enablement、installer publication は未承認である。
+
+## authoring result と owner review 摘要
+
+- implementation commit: `14a60d18801ace55fc6334496f87bfccd85ce48d`
+- candidate canonical digest:
+  `sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c`
+- independent review semantic digest:
+  `sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c`
+- candidate route count: `2`
+- required check count: `8`
+- candidate validator tests: `8`
+- full tests: `1245`
+- signature mode: `none-canonical-payload-only`
+- review status: `owner-decision-required`
+
+次の owner review 推奨承認文面:
+
+> 批准固定 candidate review 摘要
+> `sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c`
+> 对应的 `r7-runtime-publication-candidate` version `r7.candidate.20260802.1`。确认 candidate 仅包含固定
+> 两条 reviewed route、8项审查证据及未签名 canonical payload，并允许将独立 review record 标记为
+> approved。仅授权 review decision 记录；不授权 bundle/manifest 签名、私钥或凭据处理、production
+> payload/URL/公钥、真实分发端点、runtime publication、默认启用、其他 route family、游戏通信修改或安装包发布。

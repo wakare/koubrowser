@@ -1072,7 +1072,10 @@ function buildQuestGrowthArtifacts(root) {
         : r7PublicationCandidateReviewDecision.output
             .r7PublicationCandidateReviewAuthorizedNotImplemented
           ? ['R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED']
-          : [])
+          : r7PublicationCandidateReviewDecision.output
+              .r7PublicationCandidateReviewImplemented
+            ? ['R7_PUBLICATION_CANDIDATE_OWNER_REVIEW_REQUIRED']
+            : [])
     ]
   }
   return {

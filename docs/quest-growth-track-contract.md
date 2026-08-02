@@ -276,6 +276,9 @@ authoring authorization は `consumed` となった。runtime publication、正�
 次は署名前の canonical candidate payload と独立 review record だけを
 [`quest-growth-r7-publication-candidate-review-decision-packet.md`](quest-growth-r7-publication-candidate-review-decision-packet.md)
 に分離した。署名、production endpoint、runtime publication、default enablement はこの gate に含めない。
+固定4 path の authoring は commit `14a60d18801ace55fc6334496f87bfccd85ce48d` で完了し、未署名
+candidate と8項目の owner review evidence を生成した。review status は `owner-decision-required`、runtime
+eligible count は0であり、次の固定摘要は review record の approval だけを対象とする。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

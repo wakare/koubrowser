@@ -228,7 +228,7 @@ describe('quest growth authoring contract', () => {
       'R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_PUBLICATION_NOT_AUTHORIZED'
     )
     expect(report.globalStops).toContain(
-      'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED'
+      'R7_PUBLICATION_CANDIDATE_OWNER_REVIEW_REQUIRED'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -1232,14 +1232,30 @@ describe('quest growth authoring contract', () => {
       requiredCheckCount: number
       runtimeEligibleCount: number
       publicationAuthorization: string
+      implementationCommit: string
+      candidateCanonicalDigest: string
+      candidateReviewSemanticDigest: string
+      ownerReviewStatus: string
     }>('generated', 'r7-publication-candidate-review-report.json')
 
-    expect(report.status).toBe('R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED')
+    expect(report.status).toBe(
+      'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORED_OWNER_DECISION_REQUIRED'
+    )
     expect(report.semanticDigest).toBe(
       'sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33'
     )
     expect(report.authorizationState).toBe('authorized')
-    expect(report.authoringAuthorization).toBe('authorized')
+    expect(report.authoringAuthorization).toBe('consumed')
+    expect(report.implementationCommit).toBe(
+      '14a60d18801ace55fc6334496f87bfccd85ce48d'
+    )
+    expect(report.candidateCanonicalDigest).toBe(
+      'sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c'
+    )
+    expect(report.candidateReviewSemanticDigest).toBe(
+      'sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c'
+    )
+    expect(report.ownerReviewStatus).toBe('owner-decision-required')
     expect(report.maximumCandidateRoutes).toBe(2)
     expect(report.authorizedPaths).toHaveLength(4)
     expect(report.candidateVersion).toBe('r7.candidate.20260802.1')
@@ -1268,6 +1284,18 @@ describe('quest growth authoring contract', () => {
         base: GrowthDirectory
       })
     ).toThrow('R7 publication candidate authoring authorization mismatch')
+
+    const evidenceTampered = structuredClone(request) as typeof request & {
+      implementationResult: { candidateCanonicalDigest: string }
+    }
+    evidenceTampered.implementationResult.candidateCanonicalDigest =
+      'sha256:0000000000000000000000000000000000000000000000000000000000000000'
+    expect(() =>
+      validateR7PublicationCandidateReviewRequest(evidenceTampered, {
+        root: process.cwd(),
+        base: GrowthDirectory
+      })
+    ).toThrow('R7 publication candidate implementation evidence mismatch')
   })
 
   it('keeps publication candidate approval metadata outside the fixed digest', () => {

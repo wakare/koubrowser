@@ -26,7 +26,7 @@
   "requestedAuthorization": {
     "gateId": "r7-publication-candidate-review-authoring",
     "authorizationState": "authorized",
-    "authoringAuthorization": "authorized",
+    "authoringAuthorization": "consumed",
     "maximumCandidateRoutes": 2,
     "authorizedPaths": [
       "knowledge/quest-growth/r7/runtime-publication-candidate.json",
@@ -74,7 +74,42 @@
       "protected-game-communication-digests-remain-fixed"
     ]
   },
-  "implementationResult": null,
+  "implementationResult": {
+    "recordedAt": "2026-08-02T10:59:45.609Z",
+    "approvedSemanticDigest": "sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33",
+    "implementationCommit": "14a60d18801ace55fc6334496f87bfccd85ce48d",
+    "changedPaths": [
+      "knowledge/quest-growth/r7/runtime-publication-candidate.json",
+      "knowledge/quest-growth/reviews/r7-runtime-publication-candidate-review.json",
+      "scripts/quest-growth-r7-publication-candidate.js",
+      "src/common/__tests__/quest_growth_publication_candidate.test.ts"
+    ],
+    "changedPathDigests": {
+      "knowledge/quest-growth/r7/runtime-publication-candidate.json": "sha256:92cd036faf74f262633edca062b63e7a2ce61081a8cf6666fa7ad697f6beae0b",
+      "knowledge/quest-growth/reviews/r7-runtime-publication-candidate-review.json": "sha256:183de25db816181a83d58c23662efcf35fa5236f51fec22a0ba91f1a06c827b6",
+      "scripts/quest-growth-r7-publication-candidate.js": "sha256:381c9e877627a486ad2be6eff302930a45521b9ecdc9f1d576359018dda53a13",
+      "src/common/__tests__/quest_growth_publication_candidate.test.ts": "sha256:9972a8ee7e8fbfbfda312926448a2c29cbaaa5942b0add9506454b7681cdde2d"
+    },
+    "candidateVersion": "r7.candidate.20260802.1",
+    "candidateCanonicalDigest": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c",
+    "candidateReviewSemanticDigest": "sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c",
+    "candidateRouteCount": 2,
+    "requiredCheckCount": 8,
+    "candidateTestCount": 8,
+    "fullTestCount": 1245,
+    "typecheckPassed": true,
+    "validatorCliPassed": true,
+    "candidateUnsigned": true,
+    "reviewStatus": "owner-decision-required",
+    "routeContentChangesMade": false,
+    "bundleSigningPerformed": false,
+    "privateKeyHandled": false,
+    "productionPayloadGenerated": false,
+    "runtimePublicationPerformed": false,
+    "defaultEnablementChanged": false,
+    "installerBuilt": false,
+    "gameCommunicationChangesMade": false
+  },
   "executionBoundary": {
     "bundleSigningAuthorized": false,
     "privateKeyHandlingAuthorized": false,
