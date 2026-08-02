@@ -286,3 +286,40 @@ quest strategy container が client width `221`、scroll width `257` となっ�
 詳細検査前に fail closed した。ゲーム内操作、screenshot、raw log、account snapshot はなく、page / filter /
 panel / window state を復元して application process を終了した。1回分の execution authorization は
 `consumed` とする。
+
+## revision 7 post-fix retry request
+
+responsive layout fix は semantic digest
+`sha256:3b7c6d8b5806cb5c0e850d3a197d9f276d49a90a55cdf75a3a3d03ee031f1e43` の承認範囲で実装し、
+implementation commit `dd6220f7efc4696a6bd8224b5f628dca7a4d08d7` に固定した。匿名 signed fixture は
+current `1316 x 632` と controlled `1600 x 800` の双方で、closed / resources / asw / unset の
+route panel を client `221` / scroll `221` として PASS した。
+
+revision 7 は新しい component digest
+`sha256:60ea3622f93e058a00ad6d062eb3fcef5dbb1e5f1decd90e6a0e975023b9f60d` と harness digest
+`sha256:5de07f3430079efba6c710d4848463086643582821635eda73c2fc73be1e527c` を固定し、原2 reviewed route の
+只読・脱敏受入を最大1回だけ再試行する request である。production / harness / route の追加変更、
+runtime publication、default enablement、他 family は含まない。現在は owner decision required であり、
+execution authorization は `not-authorized` である。
+
+revision 7 固定摘要:
+
+- semantic digest:
+  `sha256:497bc51162e26ac696db7219bc876ff56dd0bbfd932e5dddec89a5460a405930`
+- request raw digest:
+  `sha256:b20d9651432f383588ec697946b0af26597ec4490c7afd4a173c683bc71a22d7`
+- audited base commit: `88a89521d22e17401ff4c4db7889597376b5f552`
+- maximum executions: `1`
+- panel regression client width: `221`
+- runtime eligible count: `0`
+
+推奨承認文面:
+
+> 批准固定摘要 `sha256:497bc51162e26ac696db7219bc876ff56dd0bbfd932e5dddec89a5460a405930`
+> 对应的 `r7-real-account-readonly-acceptance` revision 7 post-fix retry。仅允许沿用 implementation commit
+> `dd6220f7efc4696a6bd8224b5f628dca7a4d08d7`、component digest
+> `sha256:60ea3622f93e058a00ad6d062eb3fcef5dbb1e5f1decd90e6a0e975023b9f60d` 和 harness digest
+> `sha256:5de07f3430079efba6c710d4848463086643582821635eda73c2fc73be1e527c`，对原固定的两条 reviewed route
+> 再执行一次原范围的只读、脱敏验收；project owner 必须手动处理登录并只点击一次 GAME START。Codex 不得
+> 处理凭据、点击 GAME START、执行游戏操作、修改 production/harness/路线或游戏通信、保存截图/raw log/account
+> snapshot；不授权 runtime publication、默认启用或其他 route family。

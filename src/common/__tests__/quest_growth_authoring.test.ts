@@ -178,7 +178,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
+      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -200,7 +200,7 @@ describe('quest growth authoring contract', () => {
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
     expect(report.globalStops).toContain(
-      'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
+      'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -345,7 +345,9 @@ describe('quest growth authoring contract', () => {
     expect(report.status).toBe('REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED')
     expect(report.scope).toBe('R7_DECISION_ONLY')
     expect(report.requestDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
-    expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(report.semanticDigest).toBe(
+      'sha256:29a541841298790180ab782eafc5555668d915b8fbf81405f8bb61d572b70ae9'
+    )
     expect(report.authorizationGates).toHaveLength(6)
     expect(report.authorizationGates[0]).toEqual({
       gateId: 'r7-schema-output-class',
@@ -738,7 +740,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('records the revision 6 real-account retry as fail closed without widening scope', () => {
+  it('requests a revision 7 post-fix retry without widening scope', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -785,16 +787,25 @@ describe('quest growth authoring contract', () => {
       retryRequestExecutionAuthorized: boolean
       layoutDiagnostic: { clientWidth: number; scrollWidth: number }
       previousAcceptanceReasonCode: string
+      responsiveLayoutFixImplementationCommit: string
+      responsiveLayoutFixAnonymousFixturePassed: boolean
+      responsiveLayoutFixPanelClientWidth: number
+      responsiveLayoutFixMaximumPanelScrollWidth: number
+      postFixRetryReasonCode: string
+      postFixRetryMaximumExecutions: number
+      postFixRetryFixedGrowthComponentDigest: string
+      postFixRetryFixedHarnessDigest: string
+      postFixRetryPanelClientWidthRegression: number
     }>('generated', 'r7-real-account-acceptance-report.json')
 
     expect(report.status).toBe(
-      'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED'
+      'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY'
     )
     expect(report.semanticDigest).toBe(
-      'sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6'
+      'sha256:497bc51162e26ac696db7219bc876ff56dd0bbfd932e5dddec89a5460a405930'
     )
     expect(report.authorizationState).toBe('authorized')
-    expect(report.executionAuthorization).toBe('consumed')
+    expect(report.executionAuthorization).toBe('not-authorized')
     expect(report.acceptanceMode).toBe('owner-login-readonly-redacted')
     expect(report.maximumAcceptedRoutes).toBe(2)
     expect(report.requiredCheckCount).toBe(12)
@@ -839,6 +850,23 @@ describe('quest growth authoring contract', () => {
     expect(report.retryRequestGenericWideWorkspaceRegressionExcluded).toBe(true)
     expect(report.retryRequestCurrentAndControlledSizeRequired).toBe(true)
     expect(report.retryRequestExecutionAuthorized).toBe(false)
+    expect(report.responsiveLayoutFixImplementationCommit).toBe(
+      'dd6220f7efc4696a6bd8224b5f628dca7a4d08d7'
+    )
+    expect(report.responsiveLayoutFixAnonymousFixturePassed).toBe(true)
+    expect(report.responsiveLayoutFixPanelClientWidth).toBe(221)
+    expect(report.responsiveLayoutFixMaximumPanelScrollWidth).toBe(221)
+    expect(report.postFixRetryReasonCode).toBe(
+      'RESPONSIVE_LAYOUT_FIX_IMPLEMENTED_AND_ANONYMOUSLY_VERIFIED'
+    )
+    expect(report.postFixRetryMaximumExecutions).toBe(1)
+    expect(report.postFixRetryFixedGrowthComponentDigest).toBe(
+      'sha256:60ea3622f93e058a00ad6d062eb3fcef5dbb1e5f1decd90e6a0e975023b9f60d'
+    )
+    expect(report.postFixRetryFixedHarnessDigest).toBe(
+      'sha256:5de07f3430079efba6c710d4848463086643582821635eda73c2fc73be1e527c'
+    )
+    expect(report.postFixRetryPanelClientWidthRegression).toBe(221)
     expect(report.priorAttemptReasonCode).toBe('TASK_WORKSPACE_PAGE_NOT_VISIBLE')
     expect(report.harnessAmendmentReasonCode).toBe(
       'TALL_AND_COMPACT_TASK_GUIDE_LAYOUT_SELECTION'

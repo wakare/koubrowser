@@ -15,6 +15,10 @@ const FixedQuestGuideDigest =
   'sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4'
 const FixedSmokeHarnessDigest =
   'sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400'
+const FixedAcceptanceSemanticDigest =
+  'sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6'
+const FixedAcceptanceReportDigest =
+  'sha256:9160340cfacd68dad68e2232b73166404eccd64b0227064b63ace06b657ea197'
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
@@ -178,22 +182,15 @@ function validateR7ResponsiveLayoutFixRequest(value, { root, base }) {
     throw new Error('invalid R7 layout source timestamp')
   }
 
-  const realAccountReportPath = path.join(
-    base,
-    'generated',
-    'r7-real-account-acceptance-report.json'
-  )
-  const realAccountReportRaw = fs.readFileSync(realAccountReportPath)
-  const realAccountReport = JSON.parse(realAccountReportRaw)
   const expectedFailureBasis = {
-    acceptanceSemanticDigest: realAccountReport.semanticDigest,
-    acceptanceReportDigest: digest(realAccountReportRaw),
+    acceptanceSemanticDigest: FixedAcceptanceSemanticDigest,
+    acceptanceReportDigest: FixedAcceptanceReportDigest,
     acceptanceResultCommit: value.sourceSnapshot.auditedBaseCommit,
     growthComponentDigest: FixedGrowthComponentDigest,
     questGuideDigest: FixedQuestGuideDigest,
     smokeHarnessDigest: FixedSmokeHarnessDigest,
-    reasonCode: realAccountReport.acceptanceReasonCode,
-    layoutDiagnostic: realAccountReport.layoutDiagnostic,
+    reasonCode: 'QUEST_STRATEGY_CURRENT_SIZE_HORIZONTAL_OVERFLOW',
+    layoutDiagnostic: { clientWidth: 221, scrollWidth: 257 },
     protectedCommunicationDigests: Object.fromEntries(
       ProtectedPaths.map((item) => [
         item,
@@ -211,9 +208,6 @@ function validateR7ResponsiveLayoutFixRequest(value, { root, base }) {
     throw new Error('R7 responsive layout failure basis mismatch')
   }
   if (
-    realAccountReport.status !== 'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED' ||
-    realAccountReport.executionAuthorization !== 'consumed' ||
-    realAccountReport.checkedRouteCount !== 0 ||
     value.failureBasis.layoutDiagnostic.clientWidth !== 221 ||
     value.failureBasis.layoutDiagnostic.scrollWidth !== 257
   ) {

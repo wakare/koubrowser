@@ -260,6 +260,8 @@ route content 詳細検査前に fail closed し、execution authorization は `
 [`quest-growth-r7-responsive-layout-fix-decision-packet.md`](quest-growth-r7-responsive-layout-fix-decision-packet.md)
 に固定した。project owner は固定摘要を承認し、4 path の renderer / anonymous fixture authoring だけを
 authorized とした。実アカウント再実行は引き続き未承認である。
+実装と匿名 `221px` regression は PASS 済みで、revision 7 post-fix retry は owner decision required として
+別の固定摘要に分離した。最大1回の実アカウント只読実行は、revision 7 摘要の明示承認まで開始しない。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

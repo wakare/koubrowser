@@ -14,11 +14,11 @@ const FixedRendererSemanticDigest =
 const ApprovedRealAccountSemanticDigest =
   'sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6'
 const FixedGrowthComponentDigest =
-  'sha256:c50c847d7b392759d94f65a8dd8bbaea8a047b1d12b5f4a5f6f308cded1e9947'
+  'sha256:60ea3622f93e058a00ad6d062eb3fcef5dbb1e5f1decd90e6a0e975023b9f60d'
 const FixedQuestGuideDigest =
   'sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4'
 const FixedSmokeHarnessDigest =
-  'sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400'
+  'sha256:5de07f3430079efba6c710d4848463086643582821635eda73c2fc73be1e527c'
 const FocusByFamily = {
   'expedition-resource-periodic-loop': 'resources',
   'anti-submarine-foundation': 'asw'
@@ -231,6 +231,37 @@ const ExpectedRetryRequest = {
   productionCodeChangesAuthorized: false,
   routeContentChangesAuthorized: false
 }
+const ExpectedResponsiveLayoutFixImplementation = {
+  approvedSemanticDigest:
+    'sha256:3b7c6d8b5806cb5c0e850d3a197d9f276d49a90a55cdf75a3a3d03ee031f1e43',
+  implementationCommit: 'dd6220f7efc4696a6bd8224b5f628dca7a4d08d7',
+  implementationReportDigest:
+    'sha256:d438f3b7b352c9a59fab22ed4f44859847e490b1b7c7b4f018c7db30b1320c50',
+  growthComponentDigest: FixedGrowthComponentDigest,
+  smokeHarnessDigest: FixedSmokeHarnessDigest,
+  anonymousSignedFixturePassed: true,
+  panelClientWidth: 221,
+  maximumPanelScrollWidth: 221,
+  currentAndControlledWindowPassed: true,
+  pagePanelFilterWindowStateRestored: true,
+  realAccountExecutionPerformed: false
+}
+const ExpectedPostFixRetryRequest = {
+  revision: 7,
+  supersedesRevision: 6,
+  reasonCode: 'RESPONSIVE_LAYOUT_FIX_IMPLEMENTED_AND_ANONYMOUSLY_VERIFIED',
+  maximumExecutions: 1,
+  manualLoginTimeoutMs: 300000,
+  sameReviewedRoutesOnly: true,
+  fixedGrowthComponentDigest: FixedGrowthComponentDigest,
+  fixedHarnessDigest: FixedSmokeHarnessDigest,
+  currentAndControlledSizeRequired: true,
+  panelClientWidthRegression: 221,
+  realAccountExecutionAuthorized: false,
+  harnessChangesAuthorized: false,
+  productionCodeChangesAuthorized: false,
+  routeContentChangesAuthorized: false
+}
 const ExpectedProhibited = [
   'credential-handling-by-agent',
   'agent-click-game-start',
@@ -356,6 +387,8 @@ function validateR7RealAccountAcceptanceRequest(
       'retryRequest',
       'previousExecutionResult',
       'executionResult',
+      'responsiveLayoutFixImplementation',
+      'postFixRetryRequest',
       'executionBoundary',
       'stillProhibited',
       'review'
@@ -365,7 +398,7 @@ function validateR7RealAccountAcceptanceRequest(
   if (
     value.authoringSchema !== 'QuestGrowthR7RealAccountAcceptanceRequest/1alpha' ||
     value.requestId !== 'decision:quest-growth-r7-real-account-readonly-acceptance' ||
-    value.revision !== 6 ||
+    value.revision !== 7 ||
     !['draft', 'approved'].includes(value.status) ||
     value.scope !== 'R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY'
   ) {
@@ -595,6 +628,22 @@ function validateR7RealAccountAcceptanceRequest(
     throw new Error('R7 acceptance execution result mismatch')
   }
   exactKeys(
+    value.responsiveLayoutFixImplementation,
+    Object.keys(ExpectedResponsiveLayoutFixImplementation),
+    'R7 responsive layout fix implementation'
+  )
+  if (!same(value.responsiveLayoutFixImplementation, ExpectedResponsiveLayoutFixImplementation)) {
+    throw new Error('R7 responsive layout fix implementation mismatch')
+  }
+  exactKeys(
+    value.postFixRetryRequest,
+    Object.keys(ExpectedPostFixRetryRequest),
+    'R7 post-fix retry request'
+  )
+  if (!same(value.postFixRetryRequest, ExpectedPostFixRetryRequest)) {
+    throw new Error('R7 post-fix retry request mismatch')
+  }
+  exactKeys(
     value.executionBoundary,
     [
       'productionCodeChangesAuthorized',
@@ -730,6 +779,21 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     retryRequestCurrentAndControlledSizeRequired:
       request.value.retryRequest.currentAndControlledSizeRequired,
     retryRequestExecutionAuthorized: request.approved && !executionConsumed,
+    responsiveLayoutFixImplementationCommit:
+      request.value.responsiveLayoutFixImplementation.implementationCommit,
+    responsiveLayoutFixAnonymousFixturePassed:
+      request.value.responsiveLayoutFixImplementation.anonymousSignedFixturePassed,
+    responsiveLayoutFixPanelClientWidth:
+      request.value.responsiveLayoutFixImplementation.panelClientWidth,
+    responsiveLayoutFixMaximumPanelScrollWidth:
+      request.value.responsiveLayoutFixImplementation.maximumPanelScrollWidth,
+    postFixRetryReasonCode: request.value.postFixRetryRequest.reasonCode,
+    postFixRetryMaximumExecutions: request.value.postFixRetryRequest.maximumExecutions,
+    postFixRetryFixedGrowthComponentDigest:
+      request.value.postFixRetryRequest.fixedGrowthComponentDigest,
+    postFixRetryFixedHarnessDigest: request.value.postFixRetryRequest.fixedHarnessDigest,
+    postFixRetryPanelClientWidthRegression:
+      request.value.postFixRetryRequest.panelClientWidthRegression,
     anonymousHiddenLayoutFixtureRequired:
       request.value.harnessAmendment.anonymousHiddenLayoutFixtureRequired,
     anonymousTallLayoutFixtureRequired:
