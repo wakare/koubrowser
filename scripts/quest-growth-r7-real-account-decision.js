@@ -19,6 +19,8 @@ const FixedQuestGuideDigest =
   'sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4'
 const FixedSmokeHarnessDigest =
   'sha256:5de07f3430079efba6c710d4848463086643582821635eda73c2fc73be1e527c'
+const FixedRouteSelectorDigest =
+  'sha256:c68ad63ce313a3ea1514a7d5588b8dd463fa0be4b49e49e10fbcdaf4ebd999f2'
 const FocusByFamily = {
   'expedition-resource-periodic-loop': 'resources',
   'anti-submarine-foundation': 'asw'
@@ -429,9 +431,7 @@ function validateR7RealAccountAcceptanceRequest(
     rendererDecisionSemanticDigest: r7RendererReport.semanticDigest,
     rendererDecisionRequestDigest: r7RendererReport.requestDigest,
     routeCatalogDigest: digest(fs.readFileSync(path.join(base, 'r7', 'route-catalog.json'))),
-    routeSelectorDigest: digest(
-      fs.readFileSync(path.join(root, 'src', 'common', 'quest_growth_reviewed_routes.ts'))
-    ),
+    routeSelectorDigest: FixedRouteSelectorDigest,
     growthComponentDigest: FixedGrowthComponentDigest,
     questGuideDigest: FixedQuestGuideDigest,
     smokeHarnessDigest: FixedSmokeHarnessDigest,

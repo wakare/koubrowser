@@ -1054,7 +1054,9 @@ function buildQuestGrowthArtifacts(root) {
         : r7RuntimePublicationDecision.output
             .r7RuntimePublicationAuthoringAuthorizedNotImplemented
           ? ['R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED']
-          : [])
+          : r7RuntimePublicationDecision.output.r7RuntimePublicationAuthoringImplemented
+            ? ['R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_PUBLICATION_NOT_AUTHORIZED']
+            : [])
     ]
   }
   return {

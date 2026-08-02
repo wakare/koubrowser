@@ -213,7 +213,7 @@ describe('quest growth authoring contract', () => {
       'R7_REAL_ACCOUNT_ACCEPTANCE_PASSED_PUBLICATION_NOT_AUTHORIZED'
     )
     expect(report.globalStops).toContain(
-      'R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED'
+      'R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_PUBLICATION_NOT_AUTHORIZED'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -1081,7 +1081,7 @@ describe('quest growth authoring contract', () => {
     ).toThrow('R7 responsive layout failure basis mismatch')
   })
 
-  it('keeps runtime publication authoring decision-only and unimplemented', () => {
+  it('records implemented runtime publication authoring without authorizing publication', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -1098,14 +1098,24 @@ describe('quest growth authoring contract', () => {
       publicationAuthorization: string
       defaultEnablementAuthorization: string
       productionDeploymentConfigurationAuthorization: string
+      implementationCommit: string
+      implementationVerifiedAt: string
+      anonymousSignedElectronSmokePassed: boolean
     }>('generated', 'r7-runtime-publication-authoring-report.json')
 
-    expect(report.status).toBe('R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED')
+    expect(report.status).toBe(
+      'R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_ANONYMOUSLY_VERIFIED'
+    )
     expect(report.semanticDigest).toBe(
       'sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104'
     )
     expect(report.authorizationState).toBe('authorized')
-    expect(report.implementationAuthorization).toBe('authorized')
+    expect(report.implementationAuthorization).toBe('consumed')
+    expect(report.implementationCommit).toBe(
+      '221a1643730ba6da4dee831602ea7c06682f4632'
+    )
+    expect(report.implementationVerifiedAt).toBe('2026-08-02T10:18:37.608Z')
+    expect(report.anonymousSignedElectronSmokePassed).toBe(true)
     expect(report.maximumPublishedRoutes).toBe(2)
     expect(report.authorizedPaths).toHaveLength(9)
     expect(report.changeCount).toBe(6)
@@ -1141,6 +1151,28 @@ describe('quest growth authoring contract', () => {
         base: GrowthDirectory
       })
     ).toThrow('R7 runtime publication authoring authorization mismatch')
+  })
+
+  it('rejects runtime publication implementation evidence drift', () => {
+    const request = read<
+      Record<string, unknown> & {
+        implementationResult: { changedPathDigests: Record<string, string> }
+      }
+    >('decisions', 'r7-runtime-publication-authoring-request.json')
+    const tampered = structuredClone(request)
+    tampered.implementationResult.changedPathDigests[
+      'src/common/quest_growth_reviewed_routes.ts'
+    ] = tampered.implementationResult.changedPathDigests['src/renderer/src/stream.ts']
+
+    expect(runtimePublicationRequestSemanticDigest(tampered)).toBe(
+      runtimePublicationRequestSemanticDigest(request)
+    )
+    expect(() =>
+      validateR7RuntimePublicationAuthoringRequest(tampered, {
+        root: process.cwd(),
+        base: GrowthDirectory
+      })
+    ).toThrow('R7 runtime publication implementation evidence mismatch')
   })
 
   it('keeps the runtime publication digest stable across approval metadata only', () => {

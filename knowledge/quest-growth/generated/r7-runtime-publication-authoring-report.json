@@ -1,4 +1,5 @@
 {
+  "anonymousSignedElectronSmokePassed": true,
   "anonymousSignedFixtureRequired": true,
   "authorizationState": "authorized",
   "authorizedPaths": [
@@ -13,16 +14,18 @@
     "src/main/__tests__/electron-smoke-script.test.ts"
   ],
   "changeCount": 6,
-  "compilerVersion": "quest-growth-r7-runtime-publication-decision-compiler/1",
+  "compilerVersion": "quest-growth-r7-runtime-publication-decision-compiler/2",
   "defaultEnablementAuthorization": "R7_NOT_AUTHORIZED",
   "gateId": "r7-runtime-publication-authoring",
-  "generatedAt": "2026-08-02T10:05:55.362Z",
-  "implementationAuthorization": "authorized",
+  "generatedAt": "2026-08-02T10:18:37.608Z",
+  "implementationAuthorization": "consumed",
+  "implementationCommit": "221a1643730ba6da4dee831602ea7c06682f4632",
+  "implementationVerifiedAt": "2026-08-02T10:18:37.608Z",
   "maximumPublishedRoutes": 2,
   "productionDeploymentConfigurationAuthorization": "R7_NOT_AUTHORIZED",
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
   "realAccountAcceptanceStatus": "REAL_ACCOUNT_READONLY_ACCEPTANCE_PASSED",
-  "requestDigest": "sha256:72b5f91dd4e32aff23e244ad3d7705808a0f86e4295a06a3a39beb4a72069ca5",
+  "requestDigest": "sha256:5d304eae83b0b9a8b28aa2dcf7de7944da0515425b2fbf9688033100fe24253b",
   "requestId": "decision:quest-growth-r7-runtime-publication-authoring",
   "requiredCheckCount": 8,
   "revision": 1,
@@ -31,7 +34,7 @@
   "schemaVersion": 1,
   "scope": "R7_RUNTIME_PUBLICATION_AUTHORING_ONLY",
   "semanticDigest": "sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104",
-  "status": "R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED",
+  "status": "R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_ANONYMOUSLY_VERIFIED",
   "stillProhibited": [
     "runtime-publication",
     "default-enablement",

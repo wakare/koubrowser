@@ -270,6 +270,9 @@ schema / validator、session-only bridge、rollback fallback と匿名 signed fi
 [`quest-growth-r7-runtime-publication-decision-packet.md`](quest-growth-r7-runtime-publication-decision-packet.md)
 に固定した。project owner は固定摘要を承認し、9 path の authoring と匿名 signed fixture だけを
 authorized とした。実際の publication、production URL / public key、default enablement は許可しない。
+固定9 path の実装と匿名 signed fixture は commit `221a1643730ba6da4dee831602ea7c06682f4632` で PASS し、
+authoring authorization は `consumed` となった。runtime publication、正式配布設定、default enablement は
+引き続き独立 gate とし、runtime eligible count は0のままとする。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

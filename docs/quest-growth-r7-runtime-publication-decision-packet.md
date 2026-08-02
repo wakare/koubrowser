@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-RUNTIME-PUBLICATION-AUTHORING`
 
-Status: `R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED`
+Status: `R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_ANONYMOUSLY_VERIFIED`
 
 ## 目的
 
@@ -100,4 +100,8 @@ authoring 与匿名 fixture PASS 只产生 publication candidate evidence。以�
 
 project owner は `2026-08-02T10:05:55.362Z` に semantic digest
 `sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104` を明示承認した。
-固定9 path の authoring と匿名 signed fixture だけが authorized であり、implementation result は未記録である。
+固定9 path の実装は commit `221a1643730ba6da4dee831602ea7c06682f4632` に限定し、typecheck、
+84件の targeted test、1234件の full test、production build、匿名 Ed25519 Electron smoke を通過した。
+1件の reviewed binding、1件の signed withdrawal、bundled fallback と session-only state を確認済みである。
+implementation authorization は `consumed` としたが、runtime eligible count は0のままであり、実際の
+publication、production URL / public key、default enablement、installer build は未実施・未承認である。

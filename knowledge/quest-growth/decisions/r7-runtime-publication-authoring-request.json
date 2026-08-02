@@ -31,7 +31,7 @@
   "requestedAuthorization": {
     "gateId": "r7-runtime-publication-authoring",
     "authorizationState": "authorized",
-    "implementationAuthorization": "authorized",
+    "implementationAuthorization": "consumed",
     "maximumPublishedRoutes": 2,
     "authorizedPaths": [
       "src/common/quest_growth_reviewed_routes.ts",
@@ -82,7 +82,55 @@
       "protected-game-communication-digests-remain-fixed"
     ]
   },
-  "implementationResult": null,
+  "implementationResult": {
+    "recordedAt": "2026-08-02T10:18:37.608Z",
+    "approvedSemanticDigest": "sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104",
+    "implementationCommit": "221a1643730ba6da4dee831602ea7c06682f4632",
+    "changedPaths": [
+      "src/common/quest_growth_reviewed_routes.ts",
+      "src/common/quest_knowledge_update.ts",
+      "src/renderer/src/stream.ts",
+      "scripts/create-data-update-bundle.js",
+      "scripts/electron-smoke.js",
+      "src/common/__tests__/quest_growth_reviewed_routes.test.ts",
+      "src/common/__tests__/quest_knowledge_update.test.ts",
+      "src/main/__tests__/data-update.test.ts",
+      "src/main/__tests__/electron-smoke-script.test.ts"
+    ],
+    "changedPathDigests": {
+      "src/common/quest_growth_reviewed_routes.ts": "sha256:e1fd5803a820a920dada7cbf7c9a0b1d9905644f55a7e8cecef878e5ae1d1ff4",
+      "src/common/quest_knowledge_update.ts": "sha256:9bab023396e4698119efdc402a2a8b3f7b14469598de861bfa8e437253c5300e",
+      "src/renderer/src/stream.ts": "sha256:17d5b64e48f698ebdf182f8f188ab318285dac92b87accf86d16ef421c0e215e",
+      "scripts/create-data-update-bundle.js": "sha256:f3e6b43b5b7aef3b4a2eb6720a34eed86d620b30ac97d024db3c9ce8b8b3d5ae",
+      "scripts/electron-smoke.js": "sha256:d02f92bd9883cf693ae5ac238929c05e188e68da0038248bef22d7406047dfe4",
+      "src/common/__tests__/quest_growth_reviewed_routes.test.ts": "sha256:88b9d2a5f5bbee659ff67a6e814026bdb9f022029070dcb31d6dcaebfb056ace",
+      "src/common/__tests__/quest_knowledge_update.test.ts": "sha256:01e340fe32d40cad652a48e46c07aa3061f12043b8709829fec30df950433562",
+      "src/main/__tests__/data-update.test.ts": "sha256:eb4ae225a4be6109e52c71c9b7dec7168e882fd50b3c6e3bf815983b41d72c4c",
+      "src/main/__tests__/electron-smoke-script.test.ts": "sha256:0fc39fb92828cce8692bf3833a85407ca09520915353f0cf7ddcc40550383756"
+    },
+    "reviewedRouteTestCount": 9,
+    "questKnowledgeTestCount": 6,
+    "dataUpdateTestCount": 27,
+    "smokeScriptTestCount": 42,
+    "targetedTestCount": 84,
+    "fullTestCount": 1234,
+    "typecheckPassed": true,
+    "productionBuildPassed": true,
+    "anonymousSignedElectronSmokePassed": true,
+    "signedFixtureRouteCount": 2,
+    "reviewedBindingCount": 1,
+    "withdrawnBindingCount": 1,
+    "bundledFallbackPassed": true,
+    "sessionOnlyStatePreserved": true,
+    "productionDeploymentConfigurationChanged": false,
+    "routeContentChangesMade": false,
+    "mainOrPreloadProductionChangesMade": false,
+    "gameCommunicationChangesMade": false,
+    "runtimePublicationPerformed": false,
+    "defaultEnablementChanged": false,
+    "realDistributionEndpointUsed": false,
+    "installerBuilt": false
+  },
   "executionBoundary": {
     "runtimePublicationAuthorized": false,
     "defaultEnablementAuthorized": false,
