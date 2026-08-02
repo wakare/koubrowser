@@ -1105,6 +1105,8 @@ function buildQuestGrowthArtifacts(root) {
           : []),
       ...(r7StagingEvidenceDecision.output.r7StagingEvidenceOwnerDecisionRequired
         ? ['R7_STAGING_EVIDENCE_AUTHORING_OWNER_DECISION_REQUIRED']
+        : r7StagingEvidenceDecision.output.r7StagingEvidenceImplemented
+          ? ['R7_STAGING_EVIDENCE_AUTHORED_REAL_EVIDENCE_NOT_AUTHORIZED']
         : [])
     ]
   }

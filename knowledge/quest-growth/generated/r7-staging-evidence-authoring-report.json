@@ -1,15 +1,15 @@
 {
   "allowedPublicEvidenceFieldCount": 10,
   "anonymousFixtureRequired": true,
-  "authoringAuthorization": "not-authorized",
-  "authorizationState": "not-authorized",
+  "authoringAuthorization": "consumed",
+  "authorizationState": "consumed",
   "authorizedPaths": [
     "knowledge/quest-growth/r7/staging-evidence.schema.json",
     "knowledge/quest-growth/r7/fixtures/staging-evidence-anonymous.json",
     "scripts/quest-growth-r7-staging-evidence.js",
     "src/common/__tests__/quest_growth_staging_evidence.test.ts"
   ],
-  "compilerVersion": "quest-growth-r7-staging-evidence-decision-compiler/1",
+  "compilerVersion": "quest-growth-r7-staging-evidence-decision-compiler/2",
   "defaultEnablementAuthorization": "R7_NOT_AUTHORIZED",
   "gateId": "r7-staging-evidence-authoring",
   "generatedAt": "2026-08-02T12:04:18.616Z",
@@ -17,7 +17,7 @@
   "prohibitedEvidenceFieldCount": 11,
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
   "realEndpointPresent": false,
-  "requestDigest": "sha256:36e1714c265cbf2f80e83f5dd1ac709024d0252df07f1cb78a3e6711046a96d0",
+  "requestDigest": "sha256:29ff310209968d940c5e0324946b5ad6a224c8315a26ee544257d28108f8101e",
   "requestId": "decision:quest-growth-r7-staging-evidence-authoring",
   "requiredCheckCount": 10,
   "requiredRoleCount": 3,
@@ -27,7 +27,7 @@
   "schemaVersion": 1,
   "scope": "R7_STAGING_EVIDENCE_AUTHORING_ONLY",
   "semanticDigest": "sha256:17bb4894a614e0f07157a3aa38a956d3d86b586a134fb2e301a249da4e4b63b3",
-  "status": "OWNER_DECISION_REQUIRED_R7_STAGING_EVIDENCE_AUTHORING",
+  "status": "R7_STAGING_EVIDENCE_AUTHORED_REAL_EVIDENCE_NOT_AUTHORIZED",
   "stillProhibited": [
     "key-material-or-passphrase",
     "bundle-signing",

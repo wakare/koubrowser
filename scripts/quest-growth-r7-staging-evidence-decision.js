@@ -1,8 +1,11 @@
 const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
+const {
+  validateStagingEvidenceFiles
+} = require('./quest-growth-r7-staging-evidence')
 
-const CompilerVersion = 'quest-growth-r7-staging-evidence-decision-compiler/1'
+const CompilerVersion = 'quest-growth-r7-staging-evidence-decision-compiler/2'
 const R7StagingEvidenceDecisionOutputFilenames = [
   'r7-staging-evidence-authoring-report.json'
 ]
@@ -19,6 +22,16 @@ const AuthorizedPaths = [
   'scripts/quest-growth-r7-staging-evidence.js',
   'src/common/__tests__/quest_growth_staging_evidence.test.ts'
 ]
+const FixedImplementationDigests = {
+  'knowledge/quest-growth/r7/staging-evidence.schema.json':
+    'sha256:bfaccc42c1ec101a8d14ebc09e6583ccd2a3fe3a5f11431f76cadd5e8b37a12c',
+  'knowledge/quest-growth/r7/fixtures/staging-evidence-anonymous.json':
+    'sha256:c1b1963f3f2eb6f16503edf9cb35361e38285c1c6a771782e4c88a6c8227171c',
+  'scripts/quest-growth-r7-staging-evidence.js':
+    'sha256:12cb4eec9cda6b8fbce7686fad819c92026ea22b96d1751098727bf75003fabc',
+  'src/common/__tests__/quest_growth_staging_evidence.test.ts':
+    'sha256:754d8f870ca24612fece47de2d1875a7ba2bd6fbf13b5b367d77c3f008046ef8'
+}
 const AllowedPublicEvidenceFields = [
   'dataVersion',
   'publishedAt',
@@ -160,12 +173,12 @@ function validateR7StagingEvidenceAuthoringRequest(value, root) {
     value.authoringSchema !== 'QuestGrowthR7StagingEvidenceAuthoringRequest/1alpha' ||
     value.requestId !== 'decision:quest-growth-r7-staging-evidence-authoring' ||
     value.revision !== 1 ||
-    value.status !== 'draft' ||
-    value.scope !== 'R7_STAGING_EVIDENCE_AUTHORING_ONLY' ||
-    value.implementationResult !== null
+    !['draft', 'implemented'].includes(value.status) ||
+    value.scope !== 'R7_STAGING_EVIDENCE_AUTHORING_ONLY'
   ) {
     throw new Error('R7 staging evidence authoring scope mismatch')
   }
+  const implemented = value.status === 'implemented'
 
   exactKeys(value.sourceSnapshot, ['auditedBaseCommit', 'checkedAt'], 'R7 evidence source')
   if (
@@ -237,8 +250,10 @@ function validateR7StagingEvidenceAuthoringRequest(value, root) {
   )
   if (
     value.requestedAuthorization.gateId !== 'r7-staging-evidence-authoring' ||
-    value.requestedAuthorization.authorizationState !== 'not-authorized' ||
-    value.requestedAuthorization.authoringAuthorization !== 'not-authorized' ||
+    value.requestedAuthorization.authorizationState !==
+      (implemented ? 'consumed' : 'not-authorized') ||
+    value.requestedAuthorization.authoringAuthorization !==
+      (implemented ? 'consumed' : 'not-authorized') ||
     value.requestedAuthorization.maximumRouteCount !== 2 ||
     !same(value.requestedAuthorization.authorizedPaths, AuthorizedPaths)
   ) {
@@ -320,6 +335,87 @@ function validateR7StagingEvidenceAuthoringRequest(value, root) {
     throw new Error('R7 staging evidence verification mismatch')
   }
 
+  if (implemented) {
+    exactKeys(
+      value.implementationResult,
+      [
+        'recordedAt',
+        'implementationCommit',
+        'changedPathDigests',
+        'validatorTestCount',
+        'fullTestCount',
+        'typecheckPassed',
+        'genericQuestGrowthCompileCheckPassed',
+        'publicEvidenceFieldCount',
+        'prohibitedEvidenceFieldCount',
+        'distinctRoleCount',
+        'requiredCheckCount',
+        'syntheticOnly',
+        'keyMaterialHandled',
+        'realFingerprintHandled',
+        'credentialHandled',
+        'bundleSigningPerformed',
+        'realUrlConfigured',
+        'externalEndpointConnected',
+        'stagingAcceptancePerformed',
+        'runtimePublicationPerformed',
+        'defaultEnablementChanged',
+        'runtimeEligibleCount',
+        'installerBuilt',
+        'gameCommunicationChangesMade'
+      ],
+      'R7 staging evidence implementation result'
+    )
+    exactKeys(
+      value.implementationResult.changedPathDigests,
+      AuthorizedPaths,
+      'R7 staging evidence implementation digests'
+    )
+    if (
+      value.implementationResult.recordedAt !== '2026-08-02T12:16:38.725Z' ||
+      value.implementationResult.implementationCommit !==
+        '6082e74f8445953bd762ce1549565c819c03aca9' ||
+      !same(value.implementationResult.changedPathDigests, FixedImplementationDigests) ||
+      value.implementationResult.validatorTestCount !== 10 ||
+      value.implementationResult.fullTestCount !== 1274 ||
+      value.implementationResult.typecheckPassed !== true ||
+      value.implementationResult.genericQuestGrowthCompileCheckPassed !== true ||
+      value.implementationResult.publicEvidenceFieldCount !== 10 ||
+      value.implementationResult.prohibitedEvidenceFieldCount !== 11 ||
+      value.implementationResult.distinctRoleCount !== 3 ||
+      value.implementationResult.requiredCheckCount !== 10 ||
+      value.implementationResult.syntheticOnly !== true ||
+      value.implementationResult.runtimeEligibleCount !== 0
+    ) {
+      throw new Error('R7 staging evidence implementation evidence mismatch')
+    }
+    for (const item of AuthorizedPaths) {
+      if (readDigest(root, item) !== value.implementationResult.changedPathDigests[item]) {
+        throw new Error(`R7 staging evidence implementation file drift: ${item}`)
+      }
+    }
+    for (const item of [
+      'keyMaterialHandled',
+      'realFingerprintHandled',
+      'credentialHandled',
+      'bundleSigningPerformed',
+      'realUrlConfigured',
+      'externalEndpointConnected',
+      'stagingAcceptancePerformed',
+      'runtimePublicationPerformed',
+      'defaultEnablementChanged',
+      'installerBuilt',
+      'gameCommunicationChangesMade'
+    ]) {
+      if (value.implementationResult[item] !== false) {
+        throw new Error(`R7 staging evidence implementation boundary widened: ${item}`)
+      }
+    }
+    validateStagingEvidenceFiles(root)
+  } else if (value.implementationResult !== null) {
+    throw new Error('draft R7 staging evidence request must not claim implementation')
+  }
+
   exactKeys(
     value.executionBoundary,
     [
@@ -345,8 +441,19 @@ function validateR7StagingEvidenceAuthoringRequest(value, root) {
   }
 
   exactKeys(value.review, ['author', 'approver', 'reviewedAt', 'approvalDigest'], 'R7 evidence review')
-  if (
-    value.review.author !== 'codex-r7-staging-evidence-decision-author' ||
+  const semanticDigest = stagingEvidenceRequestSemanticDigest(value)
+  if (value.review.author !== 'codex-r7-staging-evidence-decision-author') {
+    throw new Error('R7 staging evidence reviewer contract mismatch')
+  }
+  if (implemented) {
+    if (
+      value.review.approver !== 'project-owner' ||
+      value.review.reviewedAt !== '2026-08-02T12:16:38.725Z' ||
+      value.review.approvalDigest !== semanticDigest
+    ) {
+      throw new Error('implemented R7 staging evidence approval digest mismatch')
+    }
+  } else if (
     value.review.approver !== null ||
     value.review.reviewedAt !== null ||
     value.review.approvalDigest !== null
@@ -356,7 +463,8 @@ function validateR7StagingEvidenceAuthoringRequest(value, root) {
 
   return {
     value,
-    semanticDigest: stagingEvidenceRequestSemanticDigest(value)
+    semanticDigest,
+    implemented
   }
 }
 
@@ -367,15 +475,17 @@ function buildR7StagingEvidenceDecisionArtifacts({ root }) {
     schemaVersion: 1,
     compilerVersion: CompilerVersion,
     generatedAt: request.value.sourceSnapshot.checkedAt,
-    status: 'OWNER_DECISION_REQUIRED_R7_STAGING_EVIDENCE_AUTHORING',
+    status: request.implemented
+      ? 'R7_STAGING_EVIDENCE_AUTHORED_REAL_EVIDENCE_NOT_AUTHORIZED'
+      : 'OWNER_DECISION_REQUIRED_R7_STAGING_EVIDENCE_AUTHORING',
     scope: request.value.scope,
     requestId: request.value.requestId,
     revision: request.value.revision,
     requestDigest: digest(requestRaw),
     semanticDigest: request.semanticDigest,
     gateId: request.value.requestedAuthorization.gateId,
-    authorizationState: 'not-authorized',
-    authoringAuthorization: 'not-authorized',
+    authorizationState: request.value.requestedAuthorization.authorizationState,
+    authoringAuthorization: request.value.requestedAuthorization.authoringAuthorization,
     authorizedPaths: request.value.requestedAuthorization.authorizedPaths,
     routeCount: request.value.requestedAuthorization.maximumRouteCount,
     allowedPublicEvidenceFieldCount:
@@ -400,11 +510,13 @@ function buildR7StagingEvidenceDecisionArtifacts({ root }) {
       r7StagingEvidenceAuthoringRequestDigest: digest(requestRaw)
     },
     output: {
-      r7StagingEvidenceOwnerDecisionRequired: true,
+      r7StagingEvidenceOwnerDecisionRequired: !request.implemented,
       r7StagingEvidenceAuthorizedNotImplemented: false,
-      r7StagingEvidenceImplemented: false,
+      r7StagingEvidenceImplemented: request.implemented,
       r7StagingEvidenceRequiredCheckCount: report.requiredCheckCount,
-      r7StagingEvidenceAuthorizedPathCount: 0
+      r7StagingEvidenceAuthorizedPathCount: request.implemented
+        ? report.authorizedPaths.length
+        : 0
     }
   }
 }

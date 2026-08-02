@@ -44,14 +44,14 @@ describe('R7 staging evidence authoring decision', () => {
     )
   })
 
-  it('keeps evidence authoring and all execution unauthorized', () => {
+  it('records consumed evidence authoring while all execution stays unauthorized', () => {
     const result = buildR7StagingEvidenceDecisionArtifacts({ root: Root })
     const report = result.artifacts['r7-staging-evidence-authoring-report.json']
 
     expect(report).toMatchObject({
-      status: 'OWNER_DECISION_REQUIRED_R7_STAGING_EVIDENCE_AUTHORING',
-      authorizationState: 'not-authorized',
-      authoringAuthorization: 'not-authorized',
+      status: 'R7_STAGING_EVIDENCE_AUTHORED_REAL_EVIDENCE_NOT_AUTHORIZED',
+      authorizationState: 'consumed',
+      authoringAuthorization: 'consumed',
       routeCount: 2,
       requiredRoleCount: 3,
       requiredCheckCount: 10,
@@ -84,20 +84,20 @@ describe('R7 staging evidence authoring decision', () => {
     )
   })
 
-  it('integrates the pending decision into the authoring compiler', () => {
+  it('integrates the implemented authoring gate into the compiler', () => {
     const artifacts = buildQuestGrowthArtifacts(Root)
     const sourceManifest = artifacts['source-manifest.json']
     const conflictReport = artifacts['conflict-and-gap-report.json']
 
     expect(sourceManifest.output).toMatchObject({
-      r7StagingEvidenceOwnerDecisionRequired: true,
+      r7StagingEvidenceOwnerDecisionRequired: false,
       r7StagingEvidenceAuthorizedNotImplemented: false,
-      r7StagingEvidenceImplemented: false,
+      r7StagingEvidenceImplemented: true,
       r7StagingEvidenceRequiredCheckCount: 10,
-      r7StagingEvidenceAuthorizedPathCount: 0
+      r7StagingEvidenceAuthorizedPathCount: 4
     })
     expect(conflictReport.globalStops).toContain(
-      'R7_STAGING_EVIDENCE_AUTHORING_OWNER_DECISION_REQUIRED'
+      'R7_STAGING_EVIDENCE_AUTHORED_REAL_EVIDENCE_NOT_AUTHORIZED'
     )
   })
 })

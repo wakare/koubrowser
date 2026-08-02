@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-STAGING-EVIDENCE-AUTHORING`
 
-Status: `OWNER_DECISION_REQUIRED_R7_STAGING_EVIDENCE_AUTHORING`
+Status: `R7_STAGING_EVIDENCE_AUTHORED_REAL_EVIDENCE_NOT_AUTHORIZED`
 
 ## 目的
 
@@ -127,6 +127,12 @@ publication を実行せず、reviewer と operator は private key にアクセ
 > family、游戏通信修改或安装包构建。
 
 ## 批准后仍需独立判断
+
+project owner は固定摘要を明示承認し、固定4 path の最終実装を commit
+`6082e74f8445953bd762ce1549565c819c03aca9` で完了した。strict schema、offline validator、匿名 synthetic
+fixture の10 check は PASS し、authoring authorization は `consumed` となった。実鍵・fingerprint、実在 URL、
+signed bundle、staging acceptance、runtime publication、default enablement は未承認で、runtime eligible count は
+0のままである。
 
 authoring と匿名 fixture PASS 後も、次を別 gate とする。
 

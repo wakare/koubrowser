@@ -295,8 +295,10 @@ review は `approved` となった。次の独立 gate は鍵 material や実在
 staging evidence authoring の decision-only request は、公開 evidence 10 field、禁止 field 11件、独立3 role、
 10 check と固定4 path に限定して
 [`quest-growth-r7-staging-evidence-decision-packet.md`](quest-growth-r7-staging-evidence-decision-packet.md)
-へ分離した。owner fixed-digest approval 前は authoring も未承認であり、鍵、実在 endpoint、signed bundle、
-staging acceptance、runtime publication、default enablement は引き続き禁止する。
+へ分離した。project owner は固定摘要を明示承認し、固定4 path の strict schema、offline validator、匿名
+synthetic fixture を commit `6082e74f8445953bd762ce1549565c819c03aca9` で実装した。10 check は PASS、authoring
+authorization は `consumed`、runtime eligible count は0である。鍵、実在 endpoint、signed bundle、staging
+acceptance、runtime publication、default enablement は引き続き禁止する。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

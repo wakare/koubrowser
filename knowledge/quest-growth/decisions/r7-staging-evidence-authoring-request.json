@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7StagingEvidenceAuthoringRequest/1alpha",
   "requestId": "decision:quest-growth-r7-staging-evidence-authoring",
   "revision": 1,
-  "status": "draft",
+  "status": "implemented",
   "scope": "R7_STAGING_EVIDENCE_AUTHORING_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "341b1edfb3c1e9b74c99368f15d3adcd599aac09",
@@ -27,8 +27,8 @@
   },
   "requestedAuthorization": {
     "gateId": "r7-staging-evidence-authoring",
-    "authorizationState": "not-authorized",
-    "authoringAuthorization": "not-authorized",
+    "authorizationState": "consumed",
+    "authoringAuthorization": "consumed",
     "maximumRouteCount": 2,
     "authorizedPaths": [
       "knowledge/quest-growth/r7/staging-evidence.schema.json",
@@ -103,7 +103,37 @@
       "protected-game-communication-digests-remain-fixed"
     ]
   },
-  "implementationResult": null,
+  "implementationResult": {
+    "recordedAt": "2026-08-02T12:16:38.725Z",
+    "implementationCommit": "6082e74f8445953bd762ce1549565c819c03aca9",
+    "changedPathDigests": {
+      "knowledge/quest-growth/r7/staging-evidence.schema.json": "sha256:bfaccc42c1ec101a8d14ebc09e6583ccd2a3fe3a5f11431f76cadd5e8b37a12c",
+      "knowledge/quest-growth/r7/fixtures/staging-evidence-anonymous.json": "sha256:c1b1963f3f2eb6f16503edf9cb35361e38285c1c6a771782e4c88a6c8227171c",
+      "scripts/quest-growth-r7-staging-evidence.js": "sha256:12cb4eec9cda6b8fbce7686fad819c92026ea22b96d1751098727bf75003fabc",
+      "src/common/__tests__/quest_growth_staging_evidence.test.ts": "sha256:754d8f870ca24612fece47de2d1875a7ba2bd6fbf13b5b367d77c3f008046ef8"
+    },
+    "validatorTestCount": 10,
+    "fullTestCount": 1274,
+    "typecheckPassed": true,
+    "genericQuestGrowthCompileCheckPassed": true,
+    "publicEvidenceFieldCount": 10,
+    "prohibitedEvidenceFieldCount": 11,
+    "distinctRoleCount": 3,
+    "requiredCheckCount": 10,
+    "syntheticOnly": true,
+    "keyMaterialHandled": false,
+    "realFingerprintHandled": false,
+    "credentialHandled": false,
+    "bundleSigningPerformed": false,
+    "realUrlConfigured": false,
+    "externalEndpointConnected": false,
+    "stagingAcceptancePerformed": false,
+    "runtimePublicationPerformed": false,
+    "defaultEnablementChanged": false,
+    "runtimeEligibleCount": 0,
+    "installerBuilt": false,
+    "gameCommunicationChangesMade": false
+  },
   "executionBoundary": {
     "keyMaterialHandlingAuthorized": false,
     "bundleSigningAuthorized": false,
@@ -132,8 +162,8 @@
   ],
   "review": {
     "author": "codex-r7-staging-evidence-decision-author",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T12:16:38.725Z",
+    "approvalDigest": "sha256:17bb4894a614e0f07157a3aa38a956d3d86b586a134fb2e301a249da4e4b63b3"
   }
 }
