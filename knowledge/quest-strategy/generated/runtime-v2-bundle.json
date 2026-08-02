@@ -2298,6 +2298,152 @@
     },
     {
       "actions": [
+        "任務259を受注し、指定艦3隻と5-1のS勝利が残っていることを確認する",
+        "大和型・長門型・伊勢型・扶桑型から3隻、軽巡洋艦1・駆逐艦2の6隻にする。指定艦が正しい基礎艦に属するか確認する",
+        "制空値287以上へ余裕を加え、Aのうずしお対策の電探とEの潜水艦対策を用意する",
+        "B-E-G-JまたはA-D-E-G-Jを進む。Eが潜水艦編成なら単横陣、D・G・Jは単縦陣を選び、大破時は進撃しない",
+        "JボスでS勝利を取り、任務259の達成表示を確認する"
+      ],
+      "airState": {
+        "summary": "D航空優勢287・Jボス航空優勢252に搭載機損耗分の余裕を加える",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "5-1",
+          "questId": 259,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6,
+            45
+          ],
+          "label": "D航空優勢287・Jボス航空優勢252へ余裕を加える艦戦・水上戦闘機",
+          "minimum": 3,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            14
+          ],
+          "label": "Eの潜水艦編成に備えるソナー",
+          "minimum": 1,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            12,
+            13
+          ],
+          "label": "Aのうずしおを通る場合の電探 3 個",
+          "minimum": 3,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T14:00:00.000Z",
+          "sourceId": "wikiwiki-map-5-1-surface-striking-current",
+          "sourceLabel": "艦これ攻略 Wiki - 5-1",
+          "summary": "指定4艦型から3隻・軽巡1・自由2、ボスS勝利、駆逐2によるB-E-G-JまたはA-D-E-G-J、E潜水艦とG高リスクを確認",
+          "url": "https://wikiwiki.jp/kancolle/南方海域/5-1",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T14:00:00.000Z",
+          "sourceId": "kcwiki-map-5-1-surface-striking-current",
+          "sourceLabel": "舰娘百科 - 5-1",
+          "summary": "指定艦3・軽巡1・駆逐2、B-E-G-JまたはA-D-E-G-J、D航空優勢287・J航空優勢252を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/5-1",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              131,
+              143,
+              80,
+              81,
+              77,
+              87,
+              26,
+              27
+            ],
+            "label": "大和型・長門型・伊勢型・扶桑型から 3 隻（改装段階は問わない）",
+            "maximum": 3,
+            "minimum": 3
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "E が潜水艦編成の場合"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "D・G・Jボスの水上戦"
+        }
+      ],
+      "mapKey": "5-1",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-5-1-surface-striking-monthly",
+      "routeLabels": [
+        "B-E-G-J / A-D-E-G-J"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "J"
+      ],
+      "title": "5-1 水上打撃部隊マンスリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務861を受注し、1-6到達回数が残っていることを確認する",
         "補給艦2・駆逐艦4の6隻にする。艦種が補給艦の状態であることを確認し、搭載可能なら水上戦闘機や対空カットインを用意する",
         "A-E-Gを進み、GからKへ逸れた場合は撤退して再出撃する。Fへ進んだ場合も各戦闘後に損傷を確認し、大破時は進撃しない",
@@ -4664,11 +4810,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:dad7cbe1019b4cd73f6e069ac9fd9b7265d9b5b4b5feb52c50a8a16df03d8f87",
-    "legacyKnowledgeDigest": "sha256:87dd759c80325b06c5b56ce61e3c2e78507b3fbe95ccbb8e7817763d0387a243",
-    "pilotAuthoringManifestDigest": "sha256:d207391b6149602a7918a7a9b92bfcdd0b4e54ecd13ba7907120a70ebd2498b0",
+    "inventoryDigest": "sha256:4f7bbbb1aef771ef1680d05d88a59e6c42e3f3fba8614cbbd457c8e2b0af1fd6",
+    "legacyKnowledgeDigest": "sha256:31aa60d70dad00f381dd2a76b1627c529c16827a08360bb68f91db9d83661228",
+    "pilotAuthoringManifestDigest": "sha256:4e2296d9ddc402a568d10631fad8b1296d828e17ea54493de6372cf19e2488f3",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "eb9b57cef5a0d78f8616731761ed1b8eb0dd849f"
+    "repositoryCommit": "8dae8e39ac6168860f8f01f7478c8afd945f18d6"
   },
-  "version": "2026-08-03.15.v2"
+  "version": "2026-08-03.16.v2"
 }

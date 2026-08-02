@@ -254,6 +254,38 @@ describe('quest strategy runtime v2 stage coverage', () => {
     ])
   })
 
+  it('requires three reviewed battleships from the designated classes for quest 259', () => {
+    const recipe = BundledQuestStrategyKnowledge.recipes.find(
+      (item) => item.id === 'normal-5-1-surface-striking-monthly'
+    )!
+
+    expect(recipe.fleet.specificShipConstraints).toEqual([
+      {
+        baseShipIds: [131, 143, 80, 81, 77, 87, 26, 27],
+        minimum: 3,
+        maximum: 3,
+        label: '大和型・長門型・伊勢型・扶桑型から 3 隻（改装段階は問わない）'
+      }
+    ])
+    expect(auditQuestStrategyRecipeObjective(recipe, 259)).toMatchObject({
+      complete: true,
+      coverageStatus: 'route-ready',
+      contributions: [{ stageIndex: 0, mapKey: '5-1', machineConstraintComplete: true }]
+    })
+    expect(
+      auditQuestStrategyRecipeObjective(
+        { ...recipe, fleet: { ...recipe.fleet, specificShipConstraints: undefined } },
+        259
+      ).coverageStatus
+    ).toBe('route-unreviewed')
+
+    const plan = build([259])
+    expect(plan.coveredQuestIds).toEqual([259])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual([
+      'normal-5-1-surface-striking-monthly'
+    ])
+  })
+
   it('uses the reviewed 1-6 transport route to complete the quarterly arrival task', () => {
     const plan = build([861])
 

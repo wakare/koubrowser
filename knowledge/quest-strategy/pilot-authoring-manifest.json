@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.15",
+  "manifestVersion": "2026-08-03.16",
   "sourceSnapshot": {
-    "repositoryCommit": "eb9b57cef5a0d78f8616731761ed1b8eb0dd849f",
+    "repositoryCommit": "8dae8e39ac6168860f8f01f7478c8afd945f18d6",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -187,6 +187,34 @@
         "author": "codex-r8-fifth-squadron-fact-author",
         "approver": "project-owner",
         "reviewedAt": "2026-08-03T13:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:259:objective",
+      "questId": 259,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "8dae8e39ac6168860f8f01f7478c8afd945f18d6",
+        "projectionDigest": "sha256:5bd044aee1f18085fb2d5c426bda216bcac4ea31d18d41b6cf40f77f6cd244f1"
+      },
+      "classification": "opaque-constraint",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "5-1", "result": "S", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-surface-striking-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T14:00:00.000Z",
         "reviewBy": "2026-11-03T00:00:00.000Z",
         "validUntil": "2027-02-03T00:00:00.000Z",
         "evidenceReviewIds": ["periodic-sortie-review"]
@@ -1054,6 +1082,40 @@
       }
     },
     {
+      "templateId": "normal-map:5-1:surface-striking-r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "5-1",
+      "routeLabels": ["B-E-G-J / A-D-E-G-J"],
+      "targetNodes": ["J"],
+      "fleetConstraintRef": "legacy-recipe:normal-5-1-surface-striking-monthly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "E が潜水艦編成の場合" },
+        { "formationId": 1, "label": "単縦陣", "when": "D・G・Jボスの水上戦" }
+      ],
+      "actions": [
+        "任務259を受注し、指定艦3隻と5-1のS勝利が残っていることを確認する",
+        "大和型・長門型・伊勢型・扶桑型から3隻、軽巡洋艦1・駆逐艦2の6隻にする。指定艦が正しい基礎艦に属するか確認する",
+        "制空値287以上へ余裕を加え、Aのうずしお対策の電探とEの潜水艦対策を用意する",
+        "B-E-G-JまたはA-D-E-G-Jを進む。Eが潜水艦編成なら単横陣、D・G・Jは単縦陣を選び、大破時は進撃しない",
+        "JボスでS勝利を取り、任務259の達成表示を確認する"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-surface-striking-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T14:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-5-1-wikiwiki-surface-striking-current-review",
+          "map-5-1-kcwiki-surface-striking-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
       "templateId": "normal-map:1-6:r8-reviewed",
       "revision": 1,
       "status": "approved",
@@ -1857,6 +1919,26 @@
       "sourceLabel": "舰娘百科 - 2-5",
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-03T13:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-5-1-wikiwiki-surface-striking-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/南方海域/5-1",
+      "sourceLabel": "艦これ攻略 Wiki - 5-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T14:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-5-1-kcwiki-surface-striking-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/5-1",
+      "sourceLabel": "舰娘百科 - 5-1",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T14:00:00.000Z",
       "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },

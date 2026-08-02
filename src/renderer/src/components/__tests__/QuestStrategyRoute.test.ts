@@ -52,6 +52,7 @@ describe('QuestStrategyRoute.vue', () => {
           '2-2',
           '2-3',
           '2-5',
+          '5-1',
           '4-1',
           '4-2',
           '4-3',
@@ -146,6 +147,14 @@ describe('QuestStrategyRoute.vue', () => {
     expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(1)
     expect(wrapper.get('.quest-strategy-step').text()).toContain('妙高・那智・羽黒')
     expect(wrapper.get('.quest-strategy-step').text()).toContain('B-F-J-O')
+  })
+
+  it('shows the designated battleship classes and both reviewed 5-1 starts', async () => {
+    const wrapper = await render([recommendation(259, 'active')])
+
+    expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(1)
+    expect(wrapper.get('.quest-strategy-step').text()).toContain('大和型・長門型・伊勢型・扶桑型')
+    expect(wrapper.get('.quest-strategy-step').text()).toContain('B-E-G-J / A-D-E-G-J')
   })
 
   it('persists an explicit reviewed-route choice only after manual interaction', async () => {

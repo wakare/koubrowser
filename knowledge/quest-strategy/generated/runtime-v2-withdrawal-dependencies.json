@@ -227,6 +227,20 @@
     },
     {
       "evidenceDependencies": [
+        "wikiwiki-map-5-1-surface-striking-current",
+        "kcwiki-map-5-1-surface-striking-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 259,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-5-1-surface-striking-monthly"
+    },
+    {
+      "evidenceDependencies": [
         "wikiwiki-map-1-6-current",
         "kcwiki-map-1-6-current",
         "wikiwiki-periodic-sortie"

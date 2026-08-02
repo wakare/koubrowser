@@ -1064,6 +1064,107 @@ const recipes = [
   },
   {
     schemaVersion: 1,
+    id: 'normal-5-1-surface-striking-monthly',
+    revision: 1,
+    title: '5-1 水上打撃部隊マンスリー',
+    status: 'approved',
+    questIds: [259],
+    objectives: [{ questId: 259, result: 'S', requiredCount: 1 }],
+    mapKey: '5-1',
+    routeLabels: ['B-E-G-J / A-D-E-G-J'],
+    targetNodes: ['J'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 2,
+          maximum: 2,
+          label: '駆逐艦 2 隻'
+        }
+      ],
+      specificShipConstraints: [
+        {
+          baseShipIds: [131, 143, 80, 81, 77, 87, 26, 27],
+          minimum: 3,
+          maximum: 3,
+          label: '大和型・長門型・伊勢型・扶桑型から 3 隻（改装段階は問わない）'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter, SlotitemType.SeaplaneFighter],
+        minimum: 3,
+        required: false,
+        label: 'D航空優勢287・Jボス航空優勢252へ余裕を加える艦戦・水上戦闘機'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.Sonar],
+        minimum: 1,
+        required: false,
+        label: 'Eの潜水艦編成に備えるソナー'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.SmallRadar, SlotitemType.LargeRadar],
+        minimum: 3,
+        required: false,
+        label: 'Aのうずしおを通る場合の電探 3 個'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'E が潜水艦編成の場合' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'D・G・Jボスの水上戦' }
+    ],
+    airState: {
+      target: 'superiority',
+      summary: 'D航空優勢287・Jボス航空優勢252に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務259を受注し、指定艦3隻と5-1のS勝利が残っていることを確認する',
+      '大和型・長門型・伊勢型・扶桑型から3隻、軽巡洋艦1・駆逐艦2の6隻にする。指定艦が正しい基礎艦に属するか確認する',
+      '制空値287以上へ余裕を加え、Aのうずしお対策の電探とEの潜水艦対策を用意する',
+      'B-E-G-JまたはA-D-E-G-Jを進む。Eが潜水艦編成なら単横陣、D・G・Jは単縦陣を選び、大破時は進撃しない',
+      'JボスでS勝利を取り、任務259の達成表示を確認する'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-5-1-surface-striking-current',
+        sourceLabel: '艦これ攻略 Wiki - 5-1',
+        url: 'https://wikiwiki.jp/kancolle/南方海域/5-1',
+        reviewedAt: '2026-08-03T14:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '指定4艦型から3隻・軽巡1・自由2、ボスS勝利、駆逐2によるB-E-G-JまたはA-D-E-G-J、E潜水艦とG高リスクを確認'
+      },
+      {
+        sourceId: 'kcwiki-map-5-1-surface-striking-current',
+        sourceLabel: '舰娘百科 - 5-1',
+        url: 'https://zh.kcwiki.cn/wiki/5-1',
+        reviewedAt: '2026-08-03T14:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '指定艦3・軽巡1・駆逐2、B-E-G-JまたはA-D-E-G-J、D航空優勢287・J航空優勢252を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
     id: 'normal-1-6-transport-quarterly',
     revision: 1,
     title: '1-6 強行輸送艦隊',
@@ -2710,6 +2811,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.15',
+  version: '2026-08-03.16',
   recipes
 })
