@@ -25,6 +25,7 @@ const {
     review: {
       value: Record<string, unknown>
       semanticDigest: string
+      approved: boolean
       requiredCheckCount: number
     }
   }
@@ -32,7 +33,7 @@ const {
     value: Record<string, unknown>,
     candidate: { value: Record<string, unknown>; canonicalDigest: string; routeCount: number },
     root: string
-  ) => { semanticDigest: string; requiredCheckCount: number }
+  ) => { semanticDigest: string; approved: boolean; requiredCheckCount: number }
 }
 
 const Root = process.cwd()
@@ -74,8 +75,9 @@ describe('R7 runtime publication candidate', () => {
       'sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c'
     )
     expect(result.review.requiredCheckCount).toBe(8)
-    expect(result.review.value.status).toBe('owner-decision-required')
-    expect(result.review.value.decision).toBeNull()
+    expect(result.review.value.status).toBe('approved')
+    expect(result.review.value.decision).toBe('approved')
+    expect(result.review.approved).toBe(true)
   })
 
   it('keeps review approval metadata outside the review semantic digest', () => {
@@ -93,6 +95,13 @@ describe('R7 runtime publication candidate', () => {
 
     expect(publicationCandidateReviewSemanticDigest(approved)).toBe(
       publicationCandidateReviewSemanticDigest(review)
+    )
+
+    const result = validatePublicationCandidateFiles(Root)
+    approved.review.approvalDigest =
+      'sha256:0000000000000000000000000000000000000000000000000000000000000000'
+    expect(() => validateReview(approved, result.candidate, Root)).toThrow(
+      'R7 publication candidate approval mismatch'
     )
   })
 

@@ -173,12 +173,13 @@ function validateReview(value, candidate, root) {
     'R7 publication candidate review record'
   )
   const createdAt = timestamp(value.createdAt, 'R7 candidate review createdAt')
+  const approved = value.status === 'approved'
   if (
     value.reviewSchema !== 'QuestGrowthR7RuntimePublicationCandidateReview/1alpha' ||
     value.reviewId !== 'review:quest-growth-r7-runtime-publication-candidate-1' ||
     value.revision !== 1 ||
-    value.status !== 'owner-decision-required' ||
-    value.decision !== null
+    !['owner-decision-required', 'approved'].includes(value.status) ||
+    value.decision !== (approved ? 'approved' : null)
   ) {
     throw new Error('R7 publication candidate review state mismatch')
   }
@@ -253,17 +254,31 @@ function validateReview(value, candidate, root) {
   if (
     value.review.author !== 'codex-r7-publication-candidate-review-packet-author' ||
     value.review.requiredReviewerRole !== 'project-owner' ||
-    value.review.author === value.candidate.candidateAuthor ||
+    value.review.author === value.candidate.candidateAuthor
+  ) {
+    throw new Error('R7 publication candidate independent review mismatch')
+  }
+  const semanticDigest = publicationCandidateReviewSemanticDigest(value)
+  if (approved) {
+    if (
+      value.review.approver !== 'project-owner' ||
+      timestamp(value.review.reviewedAt, 'R7 candidate review reviewedAt') < createdAt ||
+      value.review.approvalDigest !== semanticDigest
+    ) {
+      throw new Error('R7 publication candidate approval mismatch')
+    }
+  } else if (
     value.review.approver !== null ||
     value.review.reviewedAt !== null ||
     value.review.approvalDigest !== null
   ) {
-    throw new Error('R7 publication candidate independent review mismatch')
+    throw new Error('pending R7 publication candidate review must not claim approval')
   }
   return {
     value,
     createdAt,
-    semanticDigest: publicationCandidateReviewSemanticDigest(value),
+    semanticDigest,
+    approved,
     requiredCheckCount: value.checks.length
   }
 }

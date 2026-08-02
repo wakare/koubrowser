@@ -2,7 +2,7 @@
   "reviewSchema": "QuestGrowthR7RuntimePublicationCandidateReview/1alpha",
   "reviewId": "review:quest-growth-r7-runtime-publication-candidate-1",
   "revision": 1,
-  "status": "owner-decision-required",
+  "status": "approved",
   "createdAt": "2026-08-02T10:55:16.725Z",
   "candidate": {
     "path": "knowledge/quest-growth/r7/runtime-publication-candidate.json",
@@ -56,12 +56,12 @@
       "evidence": "3 protected path digests match the approved authoring basis"
     }
   ],
-  "decision": null,
+  "decision": "approved",
   "review": {
     "author": "codex-r7-publication-candidate-review-packet-author",
     "requiredReviewerRole": "project-owner",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T11:21:02.178Z",
+    "approvalDigest": "sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c"
   }
 }
