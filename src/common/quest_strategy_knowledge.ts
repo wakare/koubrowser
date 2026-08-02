@@ -269,11 +269,99 @@ const recipes = [
     validity: {
       reviewBy: ReviewBy
     }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-2-1-southwest-periodic',
+    revision: 1,
+    title: '2-1 南西諸島定期任務まとめ',
+    status: 'approved',
+    questIds: [226, 280, 284, 894],
+    objectives: [
+      { questId: 226, result: 'victory', requiredCount: 5 },
+      { questId: 280, result: 'S', requiredCount: 1 },
+      { questId: 284, result: 'S', requiredCount: 1 },
+      { questId: 894, result: 'S', requiredCount: 1 }
+    ],
+    mapKey: '2-1',
+    routeLabels: ['C-D-H', 'C-E-D-H'],
+    targetNodes: ['H'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.kei_kuubo],
+          minimum: 2,
+          label: '軽空母 2 隻以上'
+        },
+        {
+          shipTypeIds: [ApiShipType.raijyun],
+          minimum: 1,
+          label: '重雷装巡洋艦 1 隻以上'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 3,
+          label: '駆逐艦 3 隻以上'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.Fighter],
+        minimum: 2,
+        required: false,
+        label: '艦上戦闘機 2 個以上（出撃前に制空値を再計算）'
+      }
+    ],
+    formations: [
+      {
+        formationId: ApiFormation.tanjyuu,
+        label: '単縦陣',
+        when: 'C・D・H の水上戦'
+      }
+    ],
+    airState: {
+      target: 'superiority',
+      summary: 'Hの航空優勢境界81に搭載機損耗分の余裕を加え、出撃前に現在値を確認する'
+    },
+    actions: [
+      '2-1を対象とする表示中の任務を同時に受注し、各任務の2-1段階が残っていることを確認する',
+      '軽空母2・重雷装巡洋艦1・駆逐艦3の6隻にし、現在の制空値を確認する',
+      'C-D-HまたはC-E-D-Hを進み、各戦闘後に損傷を確認して大破時は進撃しない',
+      'Hボス戦後に勝敗と各任務の進捗を確認する'
+    ],
+    cost: 'low',
+    risk: 'medium',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-2-1',
+        sourceLabel: '艦これ攻略 Wiki - 2-1',
+        url: 'https://wikiwiki.jp/kancolle/南西諸島海域/2-1',
+        reviewedAt: '2026-08-02T15:03:58.374Z',
+        validUntil: '2027-01-28T00:00:00.000Z',
+        confidence: 'supported',
+        summary: 'C-D-H / C-E-D-H の分岐条件、航空優勢境界、敵編成を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-2-1',
+        sourceLabel: '舰娘百科 - 2-1',
+        url: 'https://zh.kcwiki.cn/wiki/2-1',
+        reviewedAt: '2026-08-02T15:03:58.374Z',
+        validUntil: '2027-01-28T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '軽空母2・雷巡1・駆逐3の編成、分岐条件、制空境界を独立照合'
+      }
+    ],
+    validity: {
+      reviewBy: '2026-10-30T00:00:00.000Z'
+    }
   }
 ]
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-07-31.1',
+  version: '2026-08-03.1',
   recipes
 })

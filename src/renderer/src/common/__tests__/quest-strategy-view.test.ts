@@ -180,10 +180,10 @@ describe('quest strategy renderer adapter', () => {
 
     expect(
       result.filter((candidate) => candidate.group === 'route-ready').map((item) => item.questId)
-    ).toEqual([229, 261, 264, 265])
+    ).toEqual([226, 229, 261, 264, 265])
     expect(
       result.filter((candidate) => candidate.group === 'partial').map((item) => item.questId)
-    ).toEqual([257, 280, 284, 845, 893])
+    ).toEqual([257, 280, 284, 845, 893, 894])
   })
 
   it('keeps expired recipes in diagnostics instead of exposing them as manual partial routes', () => {
@@ -252,6 +252,7 @@ describe('quest strategy renderer adapter', () => {
     expect(snapshot.mapAvailability).toEqual({
       '1-4': 'unknown',
       '1-5': 'unknown',
+      '2-1': 'unknown',
       '4-2': 'unknown'
     })
     expect(snapshot.questCapacity).toEqual({ active: 4, maximum: 5 })

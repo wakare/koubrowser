@@ -25,7 +25,37 @@ interface CoverageInventory {
   }[]
 }
 
-const CompilerVersion = 'quest-strategy-v2-compiler/1'
+interface QuestStrategyAuthoringManifest {
+  sourceSnapshot: {
+    repositoryCommit: string
+    questCatalogDigest: string
+    curatedKnowledgeDigest: string
+  }
+  questFacts: {
+    questId: number
+    status: string
+    objectiveStages: unknown[]
+  }[]
+  mapTemplates: {
+    status: string
+    mapKey: string
+    routeLabels: string[]
+    targetNodes: string[]
+    fleetConstraintRef?: string
+    formations: unknown[]
+    actions: string[]
+    cost: string
+    risk: string
+    review?: { evidenceReviewIds: string[] }
+  }[]
+  evidenceReviews: {
+    reviewId: string
+    status: string
+    sourceUrl: string
+  }[]
+}
+
+const CompilerVersion = 'quest-strategy-v2-compiler/2'
 const OutputFilenames = [
   'runtime-v2-bundle.json',
   'runtime-v2-manifest.json',
@@ -58,6 +88,93 @@ function readJson<T>(filePath: string): T {
   return JSON.parse(fs.readFileSync(filePath, 'utf8')) as T
 }
 
+function canonicalEqual(left: unknown, right: unknown): boolean {
+  return canonicalJson(left) === canonicalJson(right)
+}
+
+function validateRecipeAuthoringBindings(
+  inventory: CoverageInventory,
+  authoring: QuestStrategyAuthoringManifest
+): void {
+  if (
+    authoring.sourceSnapshot.repositoryCommit !== inventory.source.repositoryCommit ||
+    authoring.sourceSnapshot.questCatalogDigest !== inventory.source.questCatalogDigest ||
+    authoring.sourceSnapshot.curatedKnowledgeDigest !== inventory.source.curatedKnowledgeDigest
+  ) {
+    throw new Error('quest strategy authoring source snapshot does not match coverage inventory')
+  }
+
+  const inventoryByQuestId = new Map(inventory.entries.map((entry) => [entry.questId, entry]))
+  const factsByQuestId = new Map(authoring.questFacts.map((fact) => [fact.questId, fact]))
+  const evidenceById = new Map(
+    authoring.evidenceReviews.map((evidence) => [evidence.reviewId, evidence])
+  )
+  const templatesByRecipeId = new Map(
+    authoring.mapTemplates
+      .filter((template) => template.fleetConstraintRef?.startsWith('legacy-recipe:'))
+      .map((template) => [template.fleetConstraintRef!.slice('legacy-recipe:'.length), template])
+  )
+
+  for (const recipe of BundledQuestStrategyKnowledge.recipes) {
+    const template = templatesByRecipeId.get(recipe.id)
+    if (!template || template.status !== 'approved' || !template.review) {
+      throw new Error(`quest strategy recipe has no approved authoring template: ${recipe.id}`)
+    }
+    const templateProjection = {
+      mapKey: template.mapKey,
+      routeLabels: template.routeLabels,
+      targetNodes: template.targetNodes,
+      formations: template.formations,
+      actions: template.actions,
+      cost: template.cost,
+      risk: template.risk
+    }
+    const recipeProjection = {
+      mapKey: recipe.mapKey,
+      routeLabels: recipe.routeLabels,
+      targetNodes: recipe.targetNodes,
+      formations: recipe.formations,
+      actions: recipe.actions,
+      cost: recipe.cost,
+      risk: recipe.risk
+    }
+    if (!canonicalEqual(templateProjection, recipeProjection)) {
+      throw new Error(`quest strategy recipe drifts from approved authoring template: ${recipe.id}`)
+    }
+
+    const approvedEvidenceUrls = template.review.evidenceReviewIds.map((reviewId) => {
+      const evidence = evidenceById.get(reviewId)
+      if (!evidence || evidence.status !== 'approved') {
+        throw new Error(`quest strategy recipe references unapproved evidence: ${recipe.id}`)
+      }
+      return evidence.sourceUrl
+    })
+    if (
+      !canonicalEqual(
+        [...new Set(approvedEvidenceUrls)].sort(),
+        [...new Set(recipe.evidence.map((evidence) => evidence.url))].sort()
+      )
+    ) {
+      throw new Error(`quest strategy recipe evidence drifts from authoring review: ${recipe.id}`)
+    }
+
+    for (const questId of recipe.questIds) {
+      const fact = factsByQuestId.get(questId)
+      const inventoryEntry = inventoryByQuestId.get(questId)
+      if (
+        !fact ||
+        fact.status !== 'approved' ||
+        !inventoryEntry ||
+        !canonicalEqual(fact.objectiveStages, inventoryEntry.objectiveStages)
+      ) {
+        throw new Error(
+          `quest strategy recipe objective lacks an exact approved authoring fact: ${recipe.id}/${questId}`
+        )
+      }
+    }
+  }
+}
+
 export function buildQuestStrategyV2Artifacts(root: string): Record<string, unknown> {
   const inventoryPath = path.join(
     root,
@@ -83,10 +200,12 @@ export function buildQuestStrategyV2Artifacts(root: string): Record<string, unkn
     { cwd: root, stdio: 'pipe' }
   )
   const inventory = readJson<CoverageInventory>(inventoryPath)
+  const authoring = readJson<QuestStrategyAuthoringManifest>(pilotManifestPath)
   const policy = readJson<{ revision: number; runtimeOutputSchema: number }>(policyPath)
   if (policy.runtimeOutputSchema !== 2) {
     throw new Error('coverage policy has not accepted runtime schema v2')
   }
+  validateRecipeAuthoringBindings(inventory, authoring)
 
   const unsupported: {
     recipeId: string

@@ -2,7 +2,8 @@
   "bundledPartialRecipeIds": [
     "normal-1-5-periodic-asw",
     "normal-4-2-western-periodic",
-    "normal-1-4-light-fleet-periodic"
+    "normal-1-4-light-fleet-periodic",
+    "normal-2-1-southwest-periodic"
   ],
   "curatedPrerequisiteConflicts": [
     {

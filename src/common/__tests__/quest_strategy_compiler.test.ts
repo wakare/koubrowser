@@ -3,12 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-const GeneratedDirectory = path.resolve(
-  process.cwd(),
-  'knowledge',
-  'quest-strategy',
-  'generated'
-)
+const GeneratedDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-strategy', 'generated')
 
 function read<T>(filename: string): T {
   return JSON.parse(fs.readFileSync(path.join(GeneratedDirectory, filename), 'utf8')) as T
@@ -31,9 +26,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     )
 
-    expect(output).toContain(
-      '27 facts, 3 routes, 8 stage contributions, 1 rejected objectives'
-    )
+    expect(output).toContain('27 facts, 4 routes, 12 stage contributions, 1 rejected objectives')
   })
 
   it('compiles exact stage contributions without promoting partial multi-stage quests', () => {
@@ -45,19 +38,25 @@ describe('quest strategy runtime v2 compiler', () => {
         contributions: { questId: number; stageIndex: number; mapKey: string }[]
       }[]
     }>('runtime-v2-bundle.json')
-    const western = bundle.routes.find(
-      (route) => route.routeId === 'normal-4-2-western-periodic'
-    )!
-    const quarterly = western.contributions.filter(
-      (contribution) => contribution.questId === 845
-    )
+    const western = bundle.routes.find((route) => route.routeId === 'normal-4-2-western-periodic')!
+    const quarterly = western.contributions.filter((contribution) => contribution.questId === 845)
 
     expect(bundle.schemaVersion).toBe(2)
     expect(bundle.objectiveFacts).toHaveLength(27)
-    expect(bundle.objectiveFacts.find((fact) => fact.questId === 845)?.objectiveStages).toHaveLength(
-      5
-    )
+    expect(
+      bundle.objectiveFacts.find((fact) => fact.questId === 845)?.objectiveStages
+    ).toHaveLength(5)
     expect(quarterly).toMatchObject([{ questId: 845, stageIndex: 1, mapKey: '4-2' }])
+
+    const southwest = bundle.routes.find(
+      (route) => route.routeId === 'normal-2-1-southwest-periodic'
+    )!
+    expect(southwest.contributions).toMatchObject([
+      { questId: 226, stageIndex: 0, mapKey: '2-1' },
+      { questId: 280, stageIndex: 3, mapKey: '2-1' },
+      { questId: 284, stageIndex: 1, mapKey: '2-1' },
+      { questId: 894, stageIndex: 2, mapKey: '2-1' }
+    ])
   })
 
   it('rejects opaque hard constraints and emits withdrawal dependencies', () => {
@@ -79,6 +78,40 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     ])
     expect(withdrawals.withdrawals).toEqual([])
-    expect(withdrawals.dependencies).toHaveLength(3)
+    expect(withdrawals.dependencies).toHaveLength(4)
+  })
+
+  it('binds every runtime route to an approved template and exact objective facts', () => {
+    const authoring = JSON.parse(
+      fs.readFileSync(
+        path.resolve(process.cwd(), 'knowledge', 'quest-strategy', 'pilot-authoring-manifest.json'),
+        'utf8'
+      )
+    ) as {
+      questFacts: { questId: number; status: string }[]
+      mapTemplates: { fleetConstraintRef?: string; status: string }[]
+    }
+    const bundle = read<{
+      routes: { routeId: string; contributions: { questId: number }[] }[]
+    }>('runtime-v2-bundle.json')
+    const approvedQuestIds = new Set(
+      authoring.questFacts.filter((fact) => fact.status === 'approved').map((fact) => fact.questId)
+    )
+    const approvedRecipeIds = new Set(
+      authoring.mapTemplates
+        .filter(
+          (template) =>
+            template.status === 'approved' &&
+            template.fleetConstraintRef?.startsWith('legacy-recipe:')
+        )
+        .map((template) => template.fleetConstraintRef!.slice('legacy-recipe:'.length))
+    )
+
+    expect(bundle.routes.every((route) => approvedRecipeIds.has(route.routeId))).toBe(true)
+    expect(
+      bundle.routes.every((route) =>
+        route.contributions.every((contribution) => approvedQuestIds.has(contribution.questId))
+      )
+    ).toBe(true)
   })
 })

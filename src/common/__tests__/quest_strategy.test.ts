@@ -113,21 +113,28 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('loads three reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-07-31.1')
+  it('loads four reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.1')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
-      'normal-1-4-light-fleet-periodic'
+      'normal-1-4-light-fleet-periodic',
+      'normal-2-1-southwest-periodic'
     ])
     expect(
       BundledQuestStrategyKnowledge.recipes.every(
         (item) =>
           item.status === 'approved' &&
           item.evidence.length >= 2 &&
-          item.evidence.every((evidence) => evidence.url.startsWith('https://wikiwiki.jp/'))
+          item.evidence.every((evidence) => evidence.url.startsWith('https://'))
       )
     ).toBe(true)
+    const southwest = BundledQuestStrategyKnowledge.recipes.find(
+      (item) => item.id === 'normal-2-1-southwest-periodic'
+    )!
+    expect(new Set(southwest.evidence.map((evidence) => new URL(evidence.url).hostname))).toEqual(
+      new Set(['wikiwiki.jp', 'zh.kcwiki.cn'])
+    )
   })
 
   it('keeps production objectives aligned with bundled quest definitions', () => {
@@ -444,6 +451,30 @@ describe('buildQuestStrategyRoutePlan', () => {
       { questId: 845, result: 'S', requiredCount: 1 }
     ])
     expect(plan.coveredQuestIds).toEqual([229, 264, 845])
+  })
+
+  it('builds the reviewed 2-1 co-completion candidate with exact objectives', () => {
+    const localSnapshot = snapshot([226, 280, 284, 894], {
+      mapAvailability: { '2-1': 'available' },
+      shipTypeCounts: {
+        '2': 3,
+        '7': 2,
+        '4': 1
+      },
+      equipmentTypeCounts: {
+        '6': 2
+      }
+    })
+
+    const plan = build(BundledQuestStrategyKnowledge.recipes, localSnapshot)
+
+    expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-2-1-southwest-periodic'])
+    expect(plan.steps[0].objectives).toEqual([
+      { questId: 226, result: 'victory', requiredCount: 5 },
+      { questId: 280, result: 'S', requiredCount: 1 },
+      { questId: 284, result: 'S', requiredCount: 1 },
+      { questId: 894, result: 'S', requiredCount: 1 }
+    ])
   })
 
   it('excludes expired knowledge even when it would otherwise score highest', () => {

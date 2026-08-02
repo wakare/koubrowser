@@ -1,11 +1,11 @@
 {
-  "compilerVersion": "quest-strategy-v2-compiler/1",
+  "compilerVersion": "quest-strategy-v2-compiler/2",
   "output": {
-    "bundleDigest": "sha256:99b3982ec23acb0512aabba2e3db0a3ca90557e8eacc0ff3d93a43e04511e0e3",
+    "bundleDigest": "sha256:cf17d43d8ac442f70c3718b48c6b2b9c290fd34eb920fc08a4d00528ae79558f",
     "objectiveFactCount": 27,
-    "routeCount": 3,
+    "routeCount": 4,
     "schemaVersion": 2,
-    "stageContributionCount": 8
+    "stageContributionCount": 12
   },
   "schemaVersion": 1,
   "source": {
@@ -14,8 +14,8 @@
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
     "inventoryDigest": "sha256:ff1e5e90b621733c996b0a96c13f090c0ba8dfeb754f585bbe071a7909e97afb",
-    "legacyKnowledgeDigest": "sha256:31448a357e763e7e4c44343041fe5bd104c8e53f550a9170e4734abca7ad6ede",
-    "pilotAuthoringManifestDigest": "sha256:4bc751bb62230031608dfe62f8534e59686be6a7d06679e2bfaf7d3a9d333885",
+    "legacyKnowledgeDigest": "sha256:87212c6273312e8f4cd5b937b128ec74cb4794e120151c2f2b937d342d975281",
+    "pilotAuthoringManifestDigest": "sha256:183df24ca6dc7a048fcd754d0eabc5d3623a8e03862f8e349536c91c9350ecde",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "repositoryCommit": "0505bc88f7e31c7c2ad84dc50b2f0e8c2bc34d56"
   },

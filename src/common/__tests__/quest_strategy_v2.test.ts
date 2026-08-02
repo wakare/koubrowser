@@ -27,6 +27,7 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
       mapAvailability: {
         '1-4': 'available',
         '1-5': 'available',
+        '2-1': 'available',
         '4-2': 'available'
       },
       questCapacity: {
@@ -103,6 +104,35 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(quarterly.contributedStageIndexes).toEqual([1])
     expect(quarterly.remainingStageIndexes).toEqual([0, 2, 3, 4])
     expect(plan.steps[0].partialQuestIds).toEqual([845])
+  })
+
+  it('completes the daily 2-X objective while retaining exact 2-1 stage progress', () => {
+    const plan = build([226, 280, 284, 894])
+    const coverage = new Map(plan.questCoverage.map((item) => [item.questId, item]))
+
+    expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-2-1-southwest-periodic'])
+    expect(plan.coveredQuestIds).toEqual([226])
+    expect(plan.partialQuestIds).toEqual([280, 284, 894])
+    expect(coverage.get(226)).toMatchObject({
+      complete: true,
+      contributedStageIndexes: [0],
+      remainingStageIndexes: []
+    })
+    expect(coverage.get(280)).toMatchObject({
+      complete: false,
+      contributedStageIndexes: [3],
+      remainingStageIndexes: [0, 1, 2]
+    })
+    expect(coverage.get(284)).toMatchObject({
+      complete: false,
+      contributedStageIndexes: [1],
+      remainingStageIndexes: [0, 2, 3]
+    })
+    expect(coverage.get(894)).toMatchObject({
+      complete: false,
+      contributedStageIndexes: [2],
+      remainingStageIndexes: [0, 1, 3, 4]
+    })
   })
 
   it('returns a knowledge-insufficient fallback instead of an empty candidate result', () => {

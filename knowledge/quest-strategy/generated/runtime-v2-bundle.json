@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-strategy-v2-compiler/1",
+  "compilerVersion": "quest-strategy-v2-compiler/2",
   "objectiveFacts": [
     {
       "cadence": "daily",
@@ -1232,6 +1232,129 @@
       "validity": {
         "reviewBy": "2026-10-31T00:00:00.000+09:00"
       }
+    },
+    {
+      "actions": [
+        "2-1を対象とする表示中の任務を同時に受注し、各任務の2-1段階が残っていることを確認する",
+        "軽空母2・重雷装巡洋艦1・駆逐艦3の6隻にし、現在の制空値を確認する",
+        "C-D-HまたはC-E-D-Hを進み、各戦闘後に損傷を確認して大破時は進撃しない",
+        "Hボス戦後に勝敗と各任務の進捗を確認する"
+      ],
+      "airState": {
+        "summary": "Hの航空優勢境界81に搭載機損耗分の余裕を加え、出撃前に現在値を確認する",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "2-1",
+          "questId": 226,
+          "requiredCount": 5,
+          "result": "victory",
+          "stageIndex": 0
+        },
+        {
+          "mapKey": "2-1",
+          "questId": 280,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 3
+        },
+        {
+          "mapKey": "2-1",
+          "questId": 284,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 1
+        },
+        {
+          "mapKey": "2-1",
+          "questId": 894,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 2
+        }
+      ],
+      "cost": "low",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            6
+          ],
+          "label": "艦上戦闘機 2 個以上（出撃前に制空値を再計算）",
+          "minimum": 2,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T15:03:58.374Z",
+          "sourceId": "wikiwiki-map-2-1",
+          "sourceLabel": "艦これ攻略 Wiki - 2-1",
+          "summary": "C-D-H / C-E-D-H の分岐条件、航空優勢境界、敵編成を確認",
+          "url": "https://wikiwiki.jp/kancolle/南西諸島海域/2-1",
+          "validUntil": "2027-01-28T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-02T15:03:58.374Z",
+          "sourceId": "kcwiki-map-2-1",
+          "sourceLabel": "舰娘百科 - 2-1",
+          "summary": "軽空母2・雷巡1・駆逐3の編成、分岐条件、制空境界を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/2-1",
+          "validUntil": "2027-01-28T00:00:00.000Z"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "軽空母 2 隻以上",
+            "minimum": 2,
+            "shipTypeIds": [
+              7
+            ]
+          },
+          {
+            "label": "重雷装巡洋艦 1 隻以上",
+            "minimum": 1,
+            "shipTypeIds": [
+              4
+            ]
+          },
+          {
+            "label": "駆逐艦 3 隻以上",
+            "minimum": 3,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "C・D・H の水上戦"
+        }
+      ],
+      "mapKey": "2-1",
+      "revision": 1,
+      "risk": "medium",
+      "routeId": "normal-2-1-southwest-periodic",
+      "routeLabels": [
+        "C-D-H",
+        "C-E-D-H"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "H"
+      ],
+      "title": "2-1 南西諸島定期任務まとめ",
+      "validity": {
+        "reviewBy": "2026-10-30T00:00:00.000Z"
+      }
     }
   ],
   "schemaVersion": 2,
@@ -1241,10 +1364,10 @@
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
     "inventoryDigest": "sha256:ff1e5e90b621733c996b0a96c13f090c0ba8dfeb754f585bbe071a7909e97afb",
-    "legacyKnowledgeDigest": "sha256:31448a357e763e7e4c44343041fe5bd104c8e53f550a9170e4734abca7ad6ede",
-    "pilotAuthoringManifestDigest": "sha256:4bc751bb62230031608dfe62f8534e59686be6a7d06679e2bfaf7d3a9d333885",
+    "legacyKnowledgeDigest": "sha256:87212c6273312e8f4cd5b937b128ec74cb4794e120151c2f2b937d342d975281",
+    "pilotAuthoringManifestDigest": "sha256:183df24ca6dc7a048fcd754d0eabc5d3623a8e03862f8e349536c91c9350ecde",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "repositoryCommit": "0505bc88f7e31c7c2ad84dc50b2f0e8c2bc34d56"
   },
-  "version": "2026-07-31.1.v2"
+  "version": "2026-08-03.1.v2"
 }

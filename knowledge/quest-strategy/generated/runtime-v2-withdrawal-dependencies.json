@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-strategy-v2-compiler/1",
+  "compilerVersion": "quest-strategy-v2-compiler/2",
   "dependencies": [
     {
       "evidenceDependencies": [
@@ -59,6 +59,31 @@
         }
       ],
       "routeId": "normal-1-4-light-fleet-periodic"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-2-1",
+        "kcwiki-map-2-1"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 226,
+          "stageIndex": 0
+        },
+        {
+          "questId": 280,
+          "stageIndex": 3
+        },
+        {
+          "questId": 284,
+          "stageIndex": 1
+        },
+        {
+          "questId": 894,
+          "stageIndex": 2
+        }
+      ],
+      "routeId": "normal-2-1-southwest-periodic"
     }
   ],
   "schemaVersion": 1,

@@ -62,6 +62,32 @@
         }
       ],
       "recipeId": "normal-1-4-light-fleet-periodic"
+    },
+    {
+      "lossless": false,
+      "objectives": [
+        {
+          "lossless": true,
+          "questId": 226,
+          "reason": "COMPLETE_OBJECTIVE"
+        },
+        {
+          "lossless": false,
+          "questId": 280,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        },
+        {
+          "lossless": false,
+          "questId": 284,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        },
+        {
+          "lossless": false,
+          "questId": 894,
+          "reason": "PARTIAL_MULTI_STAGE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-2-1-southwest-periodic"
     }
   ],
   "compiledRecipeMaximum": 512,
