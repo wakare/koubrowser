@@ -228,7 +228,7 @@ describe('quest growth authoring contract', () => {
       'R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_PUBLICATION_NOT_AUTHORIZED'
     )
     expect(report.globalStops).toContain(
-      'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_OWNER_DECISION_REQUIRED'
+      'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -1234,14 +1234,12 @@ describe('quest growth authoring contract', () => {
       publicationAuthorization: string
     }>('generated', 'r7-publication-candidate-review-report.json')
 
-    expect(report.status).toBe(
-      'OWNER_DECISION_REQUIRED_R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING'
-    )
+    expect(report.status).toBe('R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED')
     expect(report.semanticDigest).toBe(
       'sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33'
     )
-    expect(report.authorizationState).toBe('not-authorized')
-    expect(report.authoringAuthorization).toBe('not-authorized')
+    expect(report.authorizationState).toBe('authorized')
+    expect(report.authoringAuthorization).toBe('authorized')
     expect(report.maximumCandidateRoutes).toBe(2)
     expect(report.authorizedPaths).toHaveLength(4)
     expect(report.candidateVersion).toBe('r7.candidate.20260802.1')

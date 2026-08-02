@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-PUBLICATION-CANDIDATE-REVIEW-AUTHORING`
 
-Status: `OWNER_DECISION_REQUIRED_R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING`
+Status: `R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED`
 
 ## 目的
 
@@ -86,3 +86,7 @@ reviewer role は `project-owner` とし、candidate の最終 approval は生�
 3. bundle signing と runtime publication execution
 4. default enablement release decision
 
+project owner は `2026-08-02T10:53:39.949Z` に semantic digest
+`sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33` を明示承認した。
+固定4 path の未署名 candidate と独立 review record authoring だけが authorized であり、署名、production
+payload、runtime publication、default enablement、installer publication は未承認である。

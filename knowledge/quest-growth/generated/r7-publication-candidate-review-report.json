@@ -1,6 +1,6 @@
 {
-  "authoringAuthorization": "not-authorized",
-  "authorizationState": "not-authorized",
+  "authoringAuthorization": "authorized",
+  "authorizationState": "authorized",
   "authorizedPaths": [
     "knowledge/quest-growth/r7/runtime-publication-candidate.json",
     "knowledge/quest-growth/reviews/r7-runtime-publication-candidate-review.json",
@@ -11,10 +11,10 @@
   "compilerVersion": "quest-growth-r7-publication-candidate-review-decision-compiler/1",
   "defaultEnablementAuthorization": "R7_NOT_AUTHORIZED",
   "gateId": "r7-publication-candidate-review-authoring",
-  "generatedAt": "2026-08-02T10:44:21.497Z",
+  "generatedAt": "2026-08-02T10:53:39.949Z",
   "maximumCandidateRoutes": 2,
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
-  "requestDigest": "sha256:c81cc0e345169cd0ed2e43bfa56478178fdab31a4c4eaaf625bd94ab6b3700e9",
+  "requestDigest": "sha256:d88e40b81ca8fe4dbeac04c129f586a4a1762dba69adf72f02a2fd0f264ecd58",
   "requestId": "decision:quest-growth-r7-publication-candidate-review-authoring",
   "requiredCheckCount": 8,
   "requiredRouteCount": 2,
@@ -24,7 +24,7 @@
   "scope": "R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_ONLY",
   "semanticDigest": "sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33",
   "signatureMode": "none-canonical-payload-only",
-  "status": "OWNER_DECISION_REQUIRED_R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING",
+  "status": "R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED",
   "stillProhibited": [
     "bundle-signing",
     "private-key-or-credential-handling",
