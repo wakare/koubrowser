@@ -1,0 +1,78 @@
+{
+  "authoringSchema": "QuestGrowthR8EvidenceSnapshots/1alpha",
+  "snapshotVersion": "1.0.0-alpha.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "8a1b46bb7e8b12cc683aaa3c24dcdeedc6637f53",
+    "checkedAt": "2026-08-02T14:46:29.184Z"
+  },
+  "sources": [
+    {
+      "sourceId": "source:r8-wikiwiki-1-5-eo",
+      "independenceGroupId": "group:wikiwiki-ja",
+      "url": "https://wikiwiki.jp/kancolle/鎮守府海域/1-5",
+      "title": "鎮守府海域/1-5 - 艦隊これくしょん -艦これ- 攻略 Wiki*",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki*",
+      "language": "ja-JP",
+      "accessibility": "independently-readable",
+      "evidenceClass": "mechanic",
+      "checkedAt": "2026-08-02T14:46:29.184Z",
+      "reviewBy": "2026-08-31T00:00:00.000Z",
+      "validUntil": "2026-09-30T00:00:00.000Z",
+      "supportedClaims": ["claim:eo-medal-blueprint-loop"],
+      "facts": [
+        {
+          "factId": "fact:r8-1-5-unlock",
+          "statement": "1-4攻略後に解放される最初のExtra Operationである。"
+        },
+        {
+          "factId": "fact:r8-1-5-gauge-reward",
+          "statement": "ボス艦隊旗艦撃沈でゲージが25%減少し、4回撃沈で海域クリアとなり、勲章1個を得る。"
+        },
+        {
+          "factId": "fact:r8-1-5-route-constraints",
+          "statement": "4隻編成で、戦艦・正規空母・潜水艦を含めず、軽空母1隻以下、軽巡級2隻以下、海防艦3隻以下ならA-D-F-G-Jのボス経路条件を満たす。"
+        },
+        {
+          "factId": "fact:r8-1-5-monthly-deadline",
+          "statement": "ゲージとクリア状態は月次で復活し、勲章取得には月末までの撃破が必要である。"
+        }
+      ],
+      "notes": [
+        "ページ最終更新は2026-07-24と表示されていた。",
+        "司令部レベル、先制対潜、疲労、損傷による実行可能性は毎回手動確認する。"
+      ]
+    },
+    {
+      "sourceId": "source:r8-kcwiki-1-5-eo",
+      "independenceGroupId": "group:kcwiki-zh",
+      "url": "https://m.kcwiki.cn/wiki/1-5",
+      "title": "镇守府海域/1-5 - 舰娘百科",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "accessibility": "independently-readable",
+      "evidenceClass": "mechanic",
+      "checkedAt": "2026-08-02T14:46:29.184Z",
+      "reviewBy": "2026-08-31T00:00:00.000Z",
+      "validUntil": "2026-09-30T00:00:00.000Z",
+      "supportedClaims": ["claim:eo-medal-blueprint-loop"],
+      "facts": [
+        {
+          "factId": "fact:r8-1-5-unlock",
+          "statement": "击破1-4后开放，是最早出现的Extra Operation海图。"
+        },
+        {
+          "factId": "fact:r8-1-5-gauge-reward",
+          "statement": "海域血条需要击沉BOSS旗舰4次，每次减少25%，月内完成后取得勋章。"
+        },
+        {
+          "factId": "fact:r8-1-5-route-constraints",
+          "statement": "4艘以下可控制D点分支，符合舰种限制的4艘编成可固定前往BOSS。"
+        }
+      ],
+      "notes": [
+        "只采用与日文Wiki一致的保守编成条件。",
+        "不承诺到达率、胜率、资源消耗或当前账号可执行性。"
+      ]
+    }
+  ]
+}

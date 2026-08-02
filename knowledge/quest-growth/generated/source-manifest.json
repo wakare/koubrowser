@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/30",
+  "compilerVersion": "quest-growth-authoring-compiler/31",
   "output": {
     "approvedDecisionRubricCount": 8,
     "approvedMilestoneCount": 8,
@@ -85,6 +85,10 @@
     "r7StagingEvidenceImplemented": true,
     "r7StagingEvidenceOwnerDecisionRequired": false,
     "r7StagingEvidenceRequiredCheckCount": 10,
+    "r8EoEvidenceSourceCount": 2,
+    "r8EoReviewedRouteCount": 1,
+    "r8EoRuntimeEligibleCount": 0,
+    "r8EoRuntimePublicationAuthorized": false,
     "reviewedRouteUnitCount": 6,
     "routeLineageCount": 6,
     "routeRuntimeEligibleCount": 0,
@@ -136,6 +140,8 @@
     "r7SignedBundleEvidenceReviewResultRecordingRequestDigest": "sha256:122b82ae89a8eb5c77de682422fbcdeef7690423a6c793ec7b107e95e237384b",
     "r7StagingConfigurationAuthoringRequestDigest": "sha256:b3281195221d8955c8e718903203562dcba15c41daa2e7702b903bc07bc48299",
     "r7StagingEvidenceAuthoringRequestDigest": "sha256:29ff310209968d940c5e0324946b5ad6a224c8315a26ee544257d28108f8101e",
+    "r8EoEvidenceSnapshotDigest": "sha256:482b91da36d3139ca74c4e5c3c4b620124b7fd37b594f866f6826395ba2a065c",
+    "r8EoRouteCatalogDigest": "sha256:8fecd0810ccd1eb6f3874e713dbcabe9515c56a8e3c6656e887f54c2a326fa8a",
     "schemaDigest": "sha256:3ff863c1063459cbf5a9e8780ddf95f0fdcf9a9c2e0ecc8c69d2776475c57682",
     "unitsDigest": "sha256:79dbc942c7a6d57b7ebd8b0671468669db9974fa50803e0b40b43f67898925c4"
   }

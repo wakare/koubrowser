@@ -1,0 +1,94 @@
+{
+  "authoringSchema": "QuestGrowthR8ConcreteRouteCatalog/1alpha",
+  "catalogVersion": "1.0.0-alpha.1",
+  "status": "reviewed",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "8a1b46bb7e8b12cc683aaa3c24dcdeedc6637f53",
+    "checkedAt": "2026-08-02T14:46:29.184Z"
+  },
+  "selectedFamilies": ["normal-map-eo-blueprint-loop"],
+  "publicationAuthorization": "R8_BUNDLED_OPT_IN_ONLY",
+  "runtimeContract": {
+    "defaultVisible": false,
+    "sessionOnly": true,
+    "runtimePublicationAuthorized": false,
+    "runtimeEligibleCount": 0
+  },
+  "routes": [
+    {
+      "routeId": "route:1-5-monthly-eo-medal-loop:draft-1",
+      "lineageRef": {
+        "id": "growth-lineage:normal-map-eo-blueprint-loop",
+        "revision": 1
+      },
+      "routeFamily": "normal-map-eo-blueprint-loop",
+      "revision": 1,
+      "status": "reviewed",
+      "outputClass": "manual-check-route",
+      "title": "1-5 月度EO勲章ループ（手動確認）",
+      "summary": "1-5のボス旗艦を月内に4回撃沈し、勲章1個を得るための初期EO候補です。出撃ごとに対潜能力と損傷を確認します。",
+      "applicability": [
+        "現在の重点としてEO・勲章・設計図循環を選んでいる。",
+        "1-4を攻略済みで、1-5が海域一覧に表示されている。",
+        "月末までの残り時間、資源、疲労、損傷を手動で確認できる。",
+        "4隻で潜水艦戦を続けられる対潜装備または先制対潜能力を確認できる。"
+      ],
+      "segments": [
+        {
+          "segmentId": "segment:1-5-adfgj-monthly-eo",
+          "actionCategory": "sortie",
+          "mapKey": "1-5",
+          "targetNodes": ["A", "D", "F", "G", "J"],
+          "fleetConstraints": [
+            "艦隊を4隻にする。",
+            "戦艦、正規空母、潜水艦を編成しない。",
+            "軽空母は1隻以下、軽巡級は2隻以下、海防艦は3隻以下にする。",
+            "疲労または損傷が進んだ艦は交代し、大破艦がいる場合は出撃しない。"
+          ],
+          "equipmentConstraints": [
+            "潜水艦を攻撃できる艦には、使用可能なソナーまたは爆雷系装備を載せる。",
+            "先制対潜できない場合は昼戦で旗艦を撃沈できると断定せず、1回ずつ結果を確認する。"
+          ],
+          "formations": ["line-abreast"],
+          "airState": null,
+          "branchConditions": [
+            "1-5のゲージが残っており、月末の勲章期限前であることを確認する。",
+            "想定経路はA-D-F-G-J。4隻または艦種条件が崩れた場合は進行を中止して編成を再確認する。",
+            "ゲージはボス旗艦撃沈時だけ25%減少し、月内4回の撃沈が必要である。"
+          ],
+          "sortieInstructions": [
+            "1-5へ出撃し、各潜水艦戦で単横陣を選択する。",
+            "道中で大破した場合は進撃せず撤退する。",
+            "Jのボス戦で旗艦撃沈とゲージ減少を確認して帰投する。",
+            "帰投後に疲労、損傷、補給と残りゲージを確認し、次の出撃可否を手動判断する。",
+            "月内に4回目の旗艦撃沈を終えたら、海域クリア表示と勲章1個の取得を確認する。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:eo-medal-blueprint-loop",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:0a8f030e2dcf1cf37baf2b9bea354c33d57dc571d5ea06ddbe095aac1ea7214b"
+            },
+            {
+              "claimRef": "claim:eo-medal-blueprint-loop",
+              "independenceGroupId": "group:kcwiki-zh",
+              "sourceDigest": "sha256:cd603daa1b6c97328eba9f4721502d569bb03abcd793c50713a84781132e7f96"
+            }
+          ],
+          "fallback": "1-5未解放、月末期限超過、編成条件不一致、対潜能力不明、資源不足または損傷時は出撃せず、海域・艦隊・装備画面を再確認する。"
+        }
+      ],
+      "currentness": {
+        "reviewBy": "2026-08-31T00:00:00.000Z",
+        "validUntil": "2026-09-30T00:00:00.000Z"
+      },
+      "fallback": "分岐、敵編成、ゲージ、報酬または月次期限が証拠快照と異なる場合はこのルートを表示せず、再審査へ戻す。",
+      "review": {
+        "author": "codex-r8-eo-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-02T14:46:29.184Z",
+        "approvalDigest": "sha256:94fce9facb9cd86ac11e9a1a1b3349e9e5bb6303ebdfb986ad9992a3cfc23d0a"
+      }
+    }
+  ]
+}

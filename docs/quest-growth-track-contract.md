@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R7_REAL_ACCOUNT_ACCEPTANCE_REVISION_6_FAIL_CLOSED`
+Status: `R8_EO_BUNDLED_OPT_IN_ROUTE_REVIEWED`
 
 ## モデル境界
 
@@ -220,6 +220,13 @@ R7 の実装前判断は [`quest-growth-r7-decision-packet.md`](quest-growth-r7-
 2026-08-02 に route ごとの固定摘要を独立承認し、2件を `reviewed` へ昇格した。
 実アカウント只読受入 gate までの4 gate は `authorized`、残る2 gate は `not-authorized`、
 runtime eligible は0件である。
+
+R8 は R7 の署名候補や runtime publication を拡張せず、攻略推薦の対象範囲を段階的に増やす。
+初回追加として `normal-map-eo-blueprint-loop` lineage に基づく 1-5 月度 EO 勲章ルートを、
+日本語 WikiWiki と中国語 KcWiki の独立した2情報源で照合し、2026-08-02 に reviewed とした。
+表示は利用者が重点を EO に選び、閉じた攻略ルート section を開いた場合だけである。既定非表示、
+session-only、manual-check、runtime publication 未承認、runtime eligible count 0 を維持する。
+この R8 bundled route は R7 の Ed25519 signed candidate 2件には含めない。
 
 具体的 route の `reviewed` 昇格には route 単位の独立 semantic-digest approval を必要とする。renderer、
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や

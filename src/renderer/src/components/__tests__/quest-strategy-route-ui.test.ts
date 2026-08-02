@@ -40,7 +40,7 @@ describe('quest strategy route UI wiring', () => {
     expect(questGuide).toContain('v-model:focus="growthFocus"')
     expect(growthCheck).toContain('evaluateQuestGrowthFallback(input)')
     expect(growthCheck).toContain('data-route-output="reviewed-opt-in"')
-    expect(growthCheck).toContain('selectQuestGrowthReviewedRoutes')
+    expect(growthCheck).toContain('selectQuestGrowthRecommendedRoutes')
     expect(growthCheck).toContain('class="quest-growth-reviewed-routes"')
     expect(growthCheck).toContain('v-if="routesExpanded"')
     expect(growthCheck).toContain('class="quest-growth-facts"')

@@ -31,7 +31,7 @@ const Inputs: QuestGrowthFallbackInput[] = [
 
 describe('QuestGrowthCheck.vue', () => {
   async function render(
-    focus: 'unset' | 'resources' | 'asw' | 'breadth' = 'unset',
+    focus: 'unset' | 'resources' | 'asw' | 'eo' | 'breadth' = 'unset',
     inputs: QuestGrowthFallbackInput[] = Inputs
   ) {
     const { default: QuestGrowthCheck } = await import('../QuestGrowthCheck.vue')
@@ -156,6 +156,23 @@ describe('QuestGrowthCheck.vue', () => {
     )
   })
 
+  it('shows the reviewed monthly 1-5 EO route for the EO focus', async () => {
+    const wrapper = await render('eo')
+    const details = wrapper.get('.quest-growth-reviewed-routes')
+
+    ;(details.element as HTMLDetailsElement).open = true
+    await details.trigger('toggle')
+
+    expect(wrapper.findAll('.quest-growth-reviewed-route')).toHaveLength(1)
+    expect(wrapper.get('.quest-growth-reviewed-route').text()).toContain(
+      '1-5 月度EO勲章ループ（手動確認）'
+    )
+    expect(wrapper.get('.quest-growth-reviewed-route').text()).toContain('A-D-F-G-J')
+    expect(wrapper.get('.quest-growth-reviewed-route').text()).toContain(
+      '月内に4回目の旗艦撃沈'
+    )
+  })
+
   it('hides an expired route and requests knowledge review', async () => {
     const wrapper = await render('asw')
     await wrapper.setProps({ now: new Date('2026-10-01T00:00:00.000Z') })
@@ -197,7 +214,7 @@ describe('QuestGrowthCheck.vue', () => {
     expect(source).not.toContain('ipcRenderer')
     expect(source).not.toContain('openExternalUrl')
     expect(source).not.toContain('buildQuestStrategyRoutePlan')
-    expect(source).toContain('selectQuestGrowthReviewedRoutes')
+    expect(source).toContain('selectQuestGrowthRecommendedRoutes')
   })
 
   it('uses component width instead of viewport width for narrow route layout', () => {

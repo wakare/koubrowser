@@ -2,9 +2,9 @@
 import { computed, ref } from 'vue'
 import type { AppMessageKey } from '@common/localization'
 import {
-  selectQuestGrowthReviewedRoutes,
+  selectQuestGrowthRecommendedRoutes,
   type QuestGrowthReviewedRouteSegment
-} from '@common/quest_growth_reviewed_routes'
+} from '@common/quest_growth_recommended_routes'
 import {
   evaluateQuestGrowthFallback,
   type QuestGrowthFallbackInput,
@@ -136,7 +136,7 @@ const acquisitionRows = computed(() =>
 const manualRows = computed(() => rows.value.filter((row) => row.outcome.kind === 'manual-check'))
 const routesExpanded = ref(false)
 const reviewedRouteSelection = computed(() =>
-  selectQuestGrowthReviewedRoutes(props.focus, props.now)
+  selectQuestGrowthRecommendedRoutes(props.focus, props.now)
 )
 const FocusObservableIds: Readonly<
   Partial<Record<QuestGrowthFocus, QuestGrowthFallbackInput['observableId']>>

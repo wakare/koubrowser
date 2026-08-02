@@ -1,0 +1,18 @@
+{
+  "catalogDigest": "sha256:8fecd0810ccd1eb6f3874e713dbcabe9515c56a8e3c6656e887f54c2a326fa8a",
+  "compilerVersion": "quest-growth-r8-eo-route-validator/1",
+  "defaultVisible": false,
+  "evidenceSnapshotDigest": "sha256:482b91da36d3139ca74c4e5c3c4b620124b7fd37b594f866f6826395ba2a065c",
+  "evidenceSourceCount": 2,
+  "generatedAt": "2026-08-02T14:46:29.184Z",
+  "independentEvidenceGroupCount": 2,
+  "reviewedRouteCount": 1,
+  "routeFamily": "normal-map-eo-blueprint-loop",
+  "routeId": "route:1-5-monthly-eo-medal-loop:draft-1",
+  "routeSemanticDigest": "sha256:94fce9facb9cd86ac11e9a1a1b3349e9e5bb6303ebdfb986ad9992a3cfc23d0a",
+  "runtimeEligibleCount": 0,
+  "runtimePublicationAuthorized": false,
+  "schemaVersion": 1,
+  "sessionOnly": true,
+  "status": "R8_EO_BUNDLED_OPT_IN_ROUTE_REVIEWED"
+}
