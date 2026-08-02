@@ -168,7 +168,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
+      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -190,7 +190,7 @@ describe('quest growth authoring contract', () => {
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
     expect(report.globalStops).toContain(
-      'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
+      'R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -728,7 +728,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('requires owner approval for the revision 6 real-account retry', () => {
+  it('authorizes the revision 6 real-account retry without widening scope', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -772,16 +772,17 @@ describe('quest growth authoring contract', () => {
       retryRequestFixedHarnessDigest: string
       retryRequestGenericWideWorkspaceRegressionExcluded: boolean
       retryRequestCurrentAndControlledSizeRequired: boolean
+      retryRequestExecutionAuthorized: boolean
     }>('generated', 'r7-real-account-acceptance-report.json')
 
     expect(report.status).toBe(
-      'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY'
+      'REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED'
     )
     expect(report.semanticDigest).toBe(
       'sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6'
     )
     expect(report.authorizationState).toBe('authorized')
-    expect(report.executionAuthorization).toBe('not-authorized')
+    expect(report.executionAuthorization).toBe('authorized')
     expect(report.acceptanceMode).toBe('owner-login-readonly-redacted')
     expect(report.maximumAcceptedRoutes).toBe(2)
     expect(report.requiredCheckCount).toBe(12)
@@ -819,6 +820,7 @@ describe('quest growth authoring contract', () => {
     )
     expect(report.retryRequestGenericWideWorkspaceRegressionExcluded).toBe(true)
     expect(report.retryRequestCurrentAndControlledSizeRequired).toBe(true)
+    expect(report.retryRequestExecutionAuthorized).toBe(true)
     expect(report.priorAttemptReasonCode).toBe('TASK_WORKSPACE_PAGE_NOT_VISIBLE')
     expect(report.harnessAmendmentReasonCode).toBe(
       'TALL_AND_COMPACT_TASK_GUIDE_LAYOUT_SELECTION'

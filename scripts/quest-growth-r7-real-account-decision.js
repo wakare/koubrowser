@@ -11,7 +11,8 @@ const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const FixedRendererSemanticDigest =
   'sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363'
-const ApprovedRealAccountSemanticDigest = undefined
+const ApprovedRealAccountSemanticDigest =
+  'sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6'
 const FocusByFamily = {
   'expedition-resource-periodic-loop': 'resources',
   'anti-submarine-foundation': 'asw'
@@ -676,6 +677,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       request.value.retryRequest.genericWideWorkspaceRegressionExcluded,
     retryRequestCurrentAndControlledSizeRequired:
       request.value.retryRequest.currentAndControlledSizeRequired,
+    retryRequestExecutionAuthorized: request.approved,
     anonymousHiddenLayoutFixtureRequired:
       request.value.harnessAmendment.anonymousHiddenLayoutFixtureRequired,
     anonymousTallLayoutFixtureRequired:

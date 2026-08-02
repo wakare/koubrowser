@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_REVISION_6_RETRY`
+Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_6_AUTHORIZED_NOT_RUN`
 
 ## 目的
 
@@ -173,7 +173,7 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - acceptance request semantic digest:
   `sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6`
 - request raw digest:
-  `sha256:29132f44e5d3ad66129ba0818297ef3e82cadded04ab7ae43ab5286e99d73dbf`
+  `sha256:af125f870e66109b3c80ee52706bf2c6c7a36d5baefa80b95075d5d01f068d6f`
 - revision 5 approved semantic digest:
   `sha256:4914e3ab307c85db7d862700c587ce73c7b93950e6a441999dc860479c577402`
 - revision 4 approved semantic digest:
@@ -218,7 +218,7 @@ screenshot capture、raw log retention、account data export はすべて禁止�
   `sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400`
 - revision 5 anonymous signed custom-layout fixture: `PASS`
 - revision 6 maximum executions: `1`
-- revision 6 execution authorization: `not-authorized`
+- revision 6 execution authorization: `authorized`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
@@ -274,5 +274,6 @@ project owner は revision 5 の固定摘要を承認した。implementation com
 
 revision 6 は revision 5 で固定・検証した harness を変更せず、同じ2 reviewed route に対する
 1回限りの只読・脱敏実アカウント再試行だけを申請する。汎用 `--wide-workspace` regression は実行せず、
-現在サイズと1つの controlled size だけを検査する。実行は新しい semantic digest の project owner
-明示承認まで `not-authorized` とする。
+現在サイズと1つの controlled size だけを検査する。project owner は semantic digest
+`sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6` を明示承認し、
+execution authorization は `authorized` とした。

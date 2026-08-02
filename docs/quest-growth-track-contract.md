@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R7_REAL_ACCOUNT_ACCEPTANCE_REVISION_6_RETRY_OWNER_DECISION_REQUIRED`
+Status: `R7_REAL_ACCOUNT_ACCEPTANCE_REVISION_6_AUTHORIZED_NOT_RUN`
 
 ## モデル境界
 
@@ -194,7 +194,7 @@ compiler version、input digest、output digest を固定する。
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
 本データで上書きしない。R6 lineage は exact commit
 `6b52e143af9fcab1dbb00b74f7e89bcf695e5e38` を別の audit snapshot として保持する。
-`R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED` を downstream stop に固定する。
+`R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN` を downstream stop に固定する。
 authoring catalog の2 reviewed route は承認済み opt-in UI だけに出力し、pure evaluator、adapter、
 runtime bundle へは出力してはならない。
 
@@ -253,7 +253,8 @@ request として project owner が承認した。2 route と unset fallback の
 user-customized layout で timeout したため status は fail closed、execution authorization は `consumed` である。
 revision 5 は project owner の固定摘要承認後、汎用 wide-workspace sweep を専用 route-panel size check へ
 分離し、匿名 signed custom-layout fixture で PASS した。revision 6 は同じ2 reviewed route と固定 harness の
-1回限りの只読再試行だけを申請し、実アカウント execution authorization は `not-authorized` である。
+1回限りの只読再試行として project owner が固定摘要を承認し、実アカウント execution authorization は
+`authorized` である。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
