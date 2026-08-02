@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.11",
+  "manifestVersion": "2026-08-03.12",
   "sourceSnapshot": {
-    "repositoryCommit": "9df29292663e83a3241c9ec1f25fb44c51a84f43",
+    "repositoryCommit": "ecd9b2a7ac9920341ad1d4736a36dfea96e1f70a",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -424,6 +424,46 @@
       }
     },
     {
+      "factId": "quest:854:objective",
+      "questId": 854,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "ecd9b2a7ac9920341ad1d4736a36dfea96e1f70a",
+        "projectionDigest": "sha256:d5275eb194861f1e32f08d0152894353f3c159436d688aa084417a292d267c41"
+      },
+      "classification": "multi-stage",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "2-4", "result": "A", "targetCells": [] }]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "6-1", "result": "A", "targetCells": [] }]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "6-3", "result": "A", "targetCells": [] }]
+        },
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "6-4", "result": "S", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-z-operation-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T10:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
       "factId": "quest:861:objective",
       "questId": 861,
       "revision": 1,
@@ -838,7 +878,7 @@
       "fleetConstraintRef": "legacy-recipe:normal-2-4-okinoshima-periodic",
       "formations": [{ "formationId": 1, "label": "単縦陣", "when": "B・L・Pボス" }],
       "actions": [
-        "任務226・822のうち表示中の対象を受注し、2-4の必要勝利数が残っていることを確認する",
+        "任務226・822・854のうち表示中の対象を受注し、2-4の必要勝利数が残っていることを確認する",
         "航空巡洋艦1・軽巡洋艦1・駆逐艦4の6隻にし、近代化改修とL航空優勢84への余裕を確認する",
         "B-G-H-L-Pの固定ルートを進み、B・L戦後に損傷を確認して大破時は進撃しない",
         "PボスでS勝利を狙い、表示中の任務に必要な回数まで繰り返す"
@@ -905,10 +945,10 @@
         { "formationId": 1, "label": "単縦陣", "when": "E・F・Jボス" }
       ],
       "actions": [
-        "任務862を受注し、6-3のA勝利回数が残っていることを確認する",
+        "任務854・862のうち表示中の対象を受注し、6-3のA勝利回数が残っていることを確認する",
         "水上機母艦2・軽巡洋艦3・駆逐艦1の6隻にし、分岐点係数3の索敵値38以上に余裕を加える",
         "Aの能動分岐でCを選び、A-C-E-F-H-Jを進む。各戦闘後に損傷を確認し、大破時は進撃しない",
-        "Jボスは夜戦も含めてA勝利以上を取り、任務進捗を確認して合計2回まで繰り返す"
+        "Jボスは夜戦も含めてA勝利以上を取り、任務854は1回、任務862は合計2回まで進捗を確認する"
       ],
       "cost": "medium",
       "risk": "high",
@@ -935,10 +975,10 @@
       "fleetConstraintRef": "legacy-recipe:normal-6-1-submarine-monthly",
       "formations": [{ "formationId": 1, "label": "単縦陣", "when": "C・F・H・Kボス" }],
       "actions": [
-        "任務256を受注し、6-1のS勝利回数が残っていることを確認する",
+        "任務256・854のうち表示中の対象を受注し、6-1の必要勝利数が残っていることを確認する",
         "正規空母系1・雷巡1・軽巡1・潜水艦3の6隻にし、制空値126以上と分岐点係数4の索敵値36以上に余裕を加える",
         "C-F-G-H-Kを進む。GからIへ逸れた場合は帰投し、各戦闘後に損傷を確認して大破時は進撃しない",
-        "全戦闘で単縦陣を選び、Kボスは必要なら夜戦してS勝利を取り、進捗を確認して合計3回まで繰り返す"
+        "全戦闘で単縦陣を選び、Kボスは必要なら夜戦する。任務854はA勝利1回、任務256はS勝利合計3回まで進捗を確認する"
       ],
       "cost": "high",
       "risk": "high",
@@ -951,6 +991,40 @@
         "evidenceReviewIds": [
           "map-6-1-wikiwiki-current-review",
           "map-6-1-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:6-4:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "6-4",
+      "routeLabels": ["B-D-C-F-N"],
+      "targetNodes": ["N"],
+      "fleetConstraintRef": "legacy-recipe:normal-6-4-z-operation-quarterly",
+      "formations": [
+        { "formationId": 3, "label": "輪形陣", "when": "D・F の空襲戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "C・Nボス" }
+      ],
+      "actions": [
+        "任務854を受注し、6-4段階が残っていることと基地航空隊の運用可否を確認する",
+        "軽巡旗艦・高速戦艦1・航空巡洋艦1・駆逐艦3の全高速6隻にし、駆逐艦と軽巡へ対地装備を分散する",
+        "基地航空隊は行動半径5以上でNボスへ集中し、航空隊を使えない場合は攻略準備不足として装備と練度を再確認する",
+        "B-D-C-F-Nを進み、D・Fは輪形陣、Cは単縦陣とする。各戦闘後に損傷を確認し、大破時は進撃しない",
+        "Nボスは単縦陣を選び、必要なら夜戦してS勝利を取り、4海域すべての任務進捗を確認する"
+      ],
+      "cost": "high",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-z-operation-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T10:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-6-4-wikiwiki-current-review",
+          "map-6-4-kcwiki-current-review",
           "periodic-sortie-review"
         ]
       }
@@ -1746,6 +1820,26 @@
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-03T03:00:00.000Z",
       "validUntil": "2027-02-02T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-4-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/中部海域/6-4",
+      "sourceLabel": "艦これ攻略 Wiki - 6-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T10:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-4-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/中部海域/6-4",
+      "sourceLabel": "舰娘百科 - 6-4",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T10:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     }
   ],

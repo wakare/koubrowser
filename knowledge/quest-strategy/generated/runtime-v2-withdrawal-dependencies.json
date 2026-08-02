@@ -189,6 +189,10 @@
         {
           "questId": 822,
           "stageIndex": 0
+        },
+        {
+          "questId": 854,
+          "stageIndex": 0
         }
       ],
       "routeId": "normal-2-4-okinoshima-periodic"
@@ -215,6 +219,10 @@
       ],
       "questStageDependencies": [
         {
+          "questId": 854,
+          "stageIndex": 2
+        },
+        {
           "questId": 862,
           "stageIndex": 0
         }
@@ -231,9 +239,27 @@
         {
           "questId": 256,
           "stageIndex": 0
+        },
+        {
+          "questId": 854,
+          "stageIndex": 1
         }
       ],
       "routeId": "normal-6-1-submarine-monthly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-6-4-current",
+        "kcwiki-map-6-4-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 854,
+          "stageIndex": 3
+        }
+      ],
+      "routeId": "normal-6-4-z-operation-quarterly"
     },
     {
       "evidenceDependencies": [

@@ -45,6 +45,7 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '5-2': 'available',
         '6-1': 'available',
         '6-3': 'available',
+        '6-4': 'available',
         '7-1': 'available',
         '7-2': 'available'
       },
@@ -188,6 +189,18 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(plan.partialQuestIds).toEqual([])
     expect(plan.uncoveredQuestIds).toEqual([])
     expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-6-1-submarine-monthly'])
+  })
+
+  it('assembles all four Z operation front-stage maps into one complete quarterly plan', () => {
+    const plan = build([854])
+    const quarterly = plan.questCoverage.find((coverage) => coverage.questId === 854)!
+
+    expect(plan.coveredQuestIds).toEqual([854])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.uncoveredQuestIds).toEqual([])
+    expect(quarterly.contributedStageIndexes).toEqual([0, 1, 2, 3])
+    expect(quarterly.remainingStageIndexes).toEqual([])
+    expect(plan.steps.map((step) => step.mapKey).sort()).toEqual(['2-4', '6-1', '6-3', '6-4'])
   })
 
   it('assembles all three northern patrol stages and shares 3-3 with the weekly', () => {

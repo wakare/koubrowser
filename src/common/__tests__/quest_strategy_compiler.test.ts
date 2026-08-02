@@ -26,7 +26,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     )
 
-    expect(output).toContain('27 facts, 24 routes, 41 stage contributions, 0 rejected objectives')
+    expect(output).toContain('27 facts, 25 routes, 45 stage contributions, 0 rejected objectives')
   })
 
   it('compiles exact stage contributions without promoting partial multi-stage quests', () => {
@@ -83,10 +83,20 @@ describe('quest strategy runtime v2 compiler', () => {
     expect(
       bundle.routes.find((route) => route.routeId === 'normal-6-3-aerial-recon-quarterly')
         ?.contributions
-    ).toMatchObject([{ questId: 862, stageIndex: 0, mapKey: '6-3' }])
+    ).toMatchObject([
+      { questId: 854, stageIndex: 2, mapKey: '6-3' },
+      { questId: 862, stageIndex: 0, mapKey: '6-3' }
+    ])
     expect(
       bundle.routes.find((route) => route.routeId === 'normal-6-1-submarine-monthly')?.contributions
-    ).toMatchObject([{ questId: 256, stageIndex: 0, mapKey: '6-1' }])
+    ).toMatchObject([
+      { questId: 256, stageIndex: 0, mapKey: '6-1' },
+      { questId: 854, stageIndex: 1, mapKey: '6-1' }
+    ])
+    expect(
+      bundle.routes.find((route) => route.routeId === 'normal-6-4-z-operation-quarterly')
+        ?.contributions
+    ).toMatchObject([{ questId: 854, stageIndex: 3, mapKey: '6-4' }])
     expect(
       bundle.routes.find((route) => route.routeId === 'normal-3-1-northern-quarterly')
         ?.contributions
@@ -100,7 +110,8 @@ describe('quest strategy runtime v2 compiler', () => {
         ?.contributions
     ).toMatchObject([
       { questId: 226, stageIndex: 0, mapKey: '2-4' },
-      { questId: 822, stageIndex: 0, mapKey: '2-4' }
+      { questId: 822, stageIndex: 0, mapKey: '2-4' },
+      { questId: 854, stageIndex: 0, mapKey: '2-4' }
     ])
     expect(
       bundle.routes.find((route) => route.routeId === 'normal-4-4-western-quarterly')?.contributions
@@ -126,7 +137,7 @@ describe('quest strategy runtime v2 compiler', () => {
     expect(manifest.output.bundleDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(manifest.unsupported).toEqual([])
     expect(withdrawals.withdrawals).toEqual([])
-    expect(withdrawals.dependencies).toHaveLength(24)
+    expect(withdrawals.dependencies).toHaveLength(25)
   })
 
   it('binds every runtime route to an approved template and exact objective facts', () => {

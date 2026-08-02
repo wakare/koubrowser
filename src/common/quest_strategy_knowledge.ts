@@ -771,10 +771,11 @@ const recipes = [
     revision: 1,
     title: '2-4 沖ノ島定期任務まとめ',
     status: 'approved',
-    questIds: [226, 822],
+    questIds: [226, 822, 854],
     objectives: [
       { questId: 226, result: 'victory', requiredCount: 5 },
-      { questId: 822, result: 'S', requiredCount: 2 }
+      { questId: 822, result: 'S', requiredCount: 2 },
+      { questId: 854, result: 'A', requiredCount: 1 }
     ],
     mapKey: '2-4',
     routeLabels: ['B-G-H-L-P'],
@@ -822,7 +823,7 @@ const recipes = [
       summary: 'Lの航空優勢境界84に搭載機損耗分の余裕を加える'
     },
     actions: [
-      '任務226・822のうち表示中の対象を受注し、2-4の必要勝利数が残っていることを確認する',
+      '任務226・822・854のうち表示中の対象を受注し、2-4の必要勝利数が残っていることを確認する',
       '航空巡洋艦1・軽巡洋艦1・駆逐艦4の6隻にし、近代化改修とL航空優勢84への余裕を確認する',
       'B-G-H-L-Pの固定ルートを進み、B・L戦後に損傷を確認して大破時は進撃しない',
       'PボスでS勝利を狙い、表示中の任務に必要な回数まで繰り返す'
@@ -929,8 +930,11 @@ const recipes = [
     revision: 1,
     title: '6-3 前線航空偵察',
     status: 'approved',
-    questIds: [862],
-    objectives: [{ questId: 862, result: 'A', requiredCount: 2 }],
+    questIds: [854, 862],
+    objectives: [
+      { questId: 854, result: 'A', requiredCount: 1 },
+      { questId: 862, result: 'A', requiredCount: 2 }
+    ],
     mapKey: '6-3',
     routeLabels: ['A-C-E-F-H-J'],
     targetNodes: ['J'],
@@ -975,10 +979,10 @@ const recipes = [
       summary: '敵航空戦力はない。水上爆撃機などが1機以上残れば制空権確保になる'
     },
     actions: [
-      '任務862を受注し、6-3のA勝利回数が残っていることを確認する',
+      '任務854・862のうち表示中の対象を受注し、6-3のA勝利回数が残っていることを確認する',
       '水上機母艦2・軽巡洋艦3・駆逐艦1の6隻にし、分岐点係数3の索敵値38以上に余裕を加える',
       'Aの能動分岐でCを選び、A-C-E-F-H-Jを進む。各戦闘後に損傷を確認し、大破時は進撃しない',
-      'Jボスは夜戦も含めてA勝利以上を取り、任務進捗を確認して合計2回まで繰り返す'
+      'Jボスは夜戦も含めてA勝利以上を取り、任務854は1回、任務862は合計2回まで進捗を確認する'
     ],
     cost: 'medium',
     risk: 'high',
@@ -1013,8 +1017,11 @@ const recipes = [
     revision: 1,
     title: '6-1 潜水艦隊月次作戦',
     status: 'approved',
-    questIds: [256],
-    objectives: [{ questId: 256, result: 'S', requiredCount: 3 }],
+    questIds: [256, 854],
+    objectives: [
+      { questId: 256, result: 'S', requiredCount: 3 },
+      { questId: 854, result: 'A', requiredCount: 1 }
+    ],
     mapKey: '6-1',
     routeLabels: ['C-F-G-H-K（Gから約15%でIへ逸れる）'],
     targetNodes: ['K'],
@@ -1080,10 +1087,10 @@ const recipes = [
       summary: 'Kボスの航空優勢境界126に、道中の搭載機損耗分を加える'
     },
     actions: [
-      '任務256を受注し、6-1のS勝利回数が残っていることを確認する',
+      '任務256・854のうち表示中の対象を受注し、6-1の必要勝利数が残っていることを確認する',
       '正規空母系1・雷巡1・軽巡1・潜水艦3の6隻にし、制空値126以上と分岐点係数4の索敵値36以上に余裕を加える',
       'C-F-G-H-Kを進む。GからIへ逸れた場合は帰投し、各戦闘後に損傷を確認して大破時は進撃しない',
-      '全戦闘で単縦陣を選び、Kボスは必要なら夜戦してS勝利を取り、進捗を確認して合計3回まで繰り返す'
+      '全戦闘で単縦陣を選び、Kボスは必要なら夜戦する。任務854はA勝利1回、任務256はS勝利合計3回まで進捗を確認する'
     ],
     cost: 'high',
     risk: 'high',
@@ -1107,6 +1114,117 @@ const recipes = [
         confidence: 'supported',
         summary:
           '空母1・雷巡1・軽巡1・潜水艦3の通常編成、C-F-G-H-K、索敵36、制空126と高いボスS勝利率を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
+    id: 'normal-6-4-z-operation-quarterly',
+    revision: 1,
+    title: '6-4 Z作戦前段',
+    status: 'approved',
+    questIds: [854],
+    objectives: [{ questId: 854, result: 'S', requiredCount: 1 }],
+    mapKey: '6-4',
+    routeLabels: ['B-D-C-F-N'],
+    targetNodes: ['N'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      flagshipTypeIds: [ApiShipType.keijyun],
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '旗艦の軽巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kousoku_senkan],
+          minimum: 1,
+          maximum: 1,
+          label: '高速戦艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.koujyun],
+          minimum: 1,
+          maximum: 1,
+          label: '航空巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 3,
+          maximum: 3,
+          label: '駆逐艦 3 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [
+          SlotitemType.AntiGroundEquipment,
+          SlotitemType.LandingCraft,
+          SlotitemType.SpecialATank,
+          SlotitemType.LandingForce
+        ],
+        minimum: 4,
+        required: false,
+        label: 'Nボス用の対地装備（WG系・陸戦隊・内火艇など）4個以上'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.SeaplaneFighter],
+        minimum: 2,
+        required: false,
+        label: 'Cの敵弾着阻止と空襲対策用の水上戦闘機2個以上'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.LandAttackAircraft],
+        minimum: 3,
+        required: false,
+        label: '行動半径5でNへ届く基地航空隊の陸攻3個以上'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.rinkei, label: '輪形陣', when: 'D・F の空襲戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'C・Nボス' }
+    ],
+    airState: {
+      target: 'parity',
+      summary: 'Cの敵弾着を止める航空均衡以上を最低線とし、Nは基地航空隊の削り込みで調整する'
+    },
+    actions: [
+      '任務854を受注し、6-4段階が残っていることと基地航空隊の運用可否を確認する',
+      '軽巡旗艦・高速戦艦1・航空巡洋艦1・駆逐艦3の全高速6隻にし、駆逐艦と軽巡へ対地装備を分散する',
+      '基地航空隊は行動半径5以上でNボスへ集中し、航空隊を使えない場合は攻略準備不足として装備と練度を再確認する',
+      'B-D-C-F-Nを進み、D・Fは輪形陣、Cは単縦陣とする。各戦闘後に損傷を確認し、大破時は進撃しない',
+      'Nボスは単縦陣を選び、必要なら夜戦してS勝利を取り、4海域すべての任務進捗を確認する'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-6-4-current',
+        sourceLabel: '艦これ攻略 Wiki - 6-4',
+        url: 'https://wikiwiki.jp/kancolle/中部海域/6-4',
+        reviewedAt: '2026-08-03T10:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '軽巡旗艦・高速戦艦1・駆逐3・巡洋艦枠1のB-D-C-F-N、対地装備、基地航空隊と任務854のS勝利1回を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-6-4-current',
+        sourceLabel: '舰娘百科 - 6-4',
+        url: 'https://zh.kcwiki.cn/wiki/中部海域/6-4',
+        reviewedAt: '2026-08-03T10:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '全高速の左最短B-D-C-F-N、戦艦1・航巡1・軽巡旗艦・駆逐3、制空・対地・基地航空隊準備を独立照合'
       },
       PeriodicSortieEvidence
     ],
@@ -2075,6 +2193,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.11',
+  version: '2026-08-03.12',
   recipes
 })
