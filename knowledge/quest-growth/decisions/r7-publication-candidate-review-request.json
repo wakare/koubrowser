@@ -1,0 +1,113 @@
+{
+  "authoringSchema": "QuestGrowthR7PublicationCandidateReviewRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-publication-candidate-review-authoring",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "d96d5d20f9fa3f3cb37eb6ceceeef5c466003502",
+    "checkedAt": "2026-08-02T10:44:21.497Z"
+  },
+  "approvalBasis": {
+    "runtimeAuthoringSemanticDigest": "sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104",
+    "runtimeAuthoringReportDigest": "sha256:66a572ddf6c4540a52f68ec88c9f6428f90287f10a8ddc07f7b9af8dabb3ff55",
+    "runtimeAuthoringStatus": "R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_ANONYMOUSLY_VERIFIED",
+    "runtimeAuthoringImplementationCommit": "221a1643730ba6da4dee831602ea7c06682f4632",
+    "routeCatalogDigest": "sha256:cc2c83195c01c846ba3da89d2731264081e1374b74a190f046f75f9d59e776a4",
+    "routeSelectorDigest": "sha256:e1fd5803a820a920dada7cbf7c9a0b1d9905644f55a7e8cecef878e5ae1d1ff4",
+    "questKnowledgeUpdateDigest": "sha256:9bab023396e4698119efdc402a2a8b3f7b14469598de861bfa8e437253c5300e",
+    "dataUpdatePublisherDigest": "sha256:f3e6b43b5b7aef3b4a2eb6720a34eed86d620b30ac97d024db3c9ce8b8b3d5ae",
+    "protectedCommunicationDigests": {
+      "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+      "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
+      "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e"
+    }
+  },
+  "requestedAuthorization": {
+    "gateId": "r7-publication-candidate-review-authoring",
+    "authorizationState": "not-authorized",
+    "authoringAuthorization": "not-authorized",
+    "maximumCandidateRoutes": 2,
+    "authorizedPaths": [
+      "knowledge/quest-growth/r7/runtime-publication-candidate.json",
+      "knowledge/quest-growth/reviews/r7-runtime-publication-candidate-review.json",
+      "scripts/quest-growth-r7-publication-candidate.js",
+      "src/common/__tests__/quest_growth_publication_candidate.test.ts"
+    ]
+  },
+  "candidateContract": {
+    "candidateVersion": "r7.candidate.20260802.1",
+    "schemaVersion": 1,
+    "publicationAuthorizationToken": "R7_RUNTIME_SIGNED_CANDIDATE",
+    "signatureMode": "none-canonical-payload-only",
+    "requiredRouteBindings": [
+      {
+        "routeId": "route:expedition-05-resource-loop:draft-1",
+        "routeFamily": "expedition-resource-periodic-loop",
+        "revision": 1,
+        "semanticDigest": "sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a",
+        "status": "reviewed"
+      },
+      {
+        "routeId": "route:1-5-basic-asw-three-battle:draft-1",
+        "routeFamily": "anti-submarine-foundation",
+        "revision": 1,
+        "semanticDigest": "sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d",
+        "status": "reviewed"
+      }
+    ],
+    "routeContentMutationAuthorized": false,
+    "withdrawalAuthoringAuthorized": false
+  },
+  "independentReviewContract": {
+    "reviewAuthorMustDifferFromCandidateAuthor": true,
+    "requiredReviewerRole": "project-owner",
+    "approvalDecision": "separate-fixed-digest-required",
+    "requiredChecks": [
+      "candidate-has-exactly-two-fixed-reviewed-route-bindings",
+      "candidate-schema-version-and-fields-are-strict",
+      "candidate-canonical-digest-is-reproducible",
+      "route-content-and-reviewed-route-digests-are-unchanged",
+      "both-route-currentness-windows-cover-the-review-time",
+      "reviewer-is-independent-from-candidate-author",
+      "no-signature-private-key-or-distribution-endpoint-is-used",
+      "protected-game-communication-digests-remain-fixed"
+    ]
+  },
+  "implementationResult": null,
+  "executionBoundary": {
+    "bundleSigningAuthorized": false,
+    "privateKeyHandlingAuthorized": false,
+    "productionManifestOrPayloadAuthorized": false,
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false,
+    "productionUrlOrPublicKeyConfigurationAuthorized": false,
+    "realDistributionEndpointAuthorized": false,
+    "realAccountExecutionAuthorized": false,
+    "otherRouteFamiliesAuthorized": false,
+    "gameCommunicationChangesAuthorized": false,
+    "installerBuildRequiredAtThisGate": false
+  },
+  "stillProhibited": [
+    "bundle-signing",
+    "private-key-or-credential-handling",
+    "production-manifest-or-payload-generation",
+    "runtime-publication",
+    "default-enablement",
+    "production-url-or-public-key-configuration",
+    "real-distribution-endpoint",
+    "real-account-execution",
+    "route-content-mutation",
+    "withdrawal-authoring",
+    "other-route-family-authoring",
+    "game-communication-mutation",
+    "automatic-game-operation",
+    "installer-publication"
+  ],
+  "review": {
+    "author": "codex-r7-publication-candidate-review-decision-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

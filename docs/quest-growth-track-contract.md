@@ -273,6 +273,9 @@ authorized とした。実際の publication、production URL / public key、def
 固定9 path の実装と匿名 signed fixture は commit `221a1643730ba6da4dee831602ea7c06682f4632` で PASS し、
 authoring authorization は `consumed` となった。runtime publication、正式配布設定、default enablement は
 引き続き独立 gate とし、runtime eligible count は0のままとする。
+次は署名前の canonical candidate payload と独立 review record だけを
+[`quest-growth-r7-publication-candidate-review-decision-packet.md`](quest-growth-r7-publication-candidate-review-decision-packet.md)
+に分離した。署名、production endpoint、runtime publication、default enablement はこの gate に含めない。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

@@ -143,6 +143,18 @@ const {
     dependencies: { root: string; base: string }
   ) => { semanticDigest: string; approved: boolean }
 }
+const {
+  publicationCandidateReviewRequestSemanticDigest,
+  validateR7PublicationCandidateReviewRequest
+} = require('../../../scripts/quest-growth-r7-publication-candidate-review-decision.js') as {
+  publicationCandidateReviewRequestSemanticDigest: (
+    value: Record<string, unknown>
+  ) => string
+  validateR7PublicationCandidateReviewRequest: (
+    value: Record<string, unknown>,
+    dependencies: { root: string; base: string }
+  ) => { semanticDigest: string; approved: boolean }
+}
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -214,6 +226,9 @@ describe('quest growth authoring contract', () => {
     )
     expect(report.globalStops).toContain(
       'R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_PUBLICATION_NOT_AUTHORIZED'
+    )
+    expect(report.globalStops).toContain(
+      'R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_OWNER_DECISION_REQUIRED'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -1200,6 +1215,89 @@ describe('quest growth authoring contract', () => {
 
     expect(runtimePublicationRequestSemanticDigest(approved)).toBe(
       runtimePublicationRequestSemanticDigest(request)
+    )
+  })
+
+  it('generates a bounded unsigned publication candidate review request', () => {
+    const report = read<{
+      status: string
+      semanticDigest: string
+      authorizationState: string
+      authoringAuthorization: string
+      maximumCandidateRoutes: number
+      authorizedPaths: string[]
+      candidateVersion: string
+      signatureMode: string
+      requiredRouteCount: number
+      requiredCheckCount: number
+      runtimeEligibleCount: number
+      publicationAuthorization: string
+    }>('generated', 'r7-publication-candidate-review-report.json')
+
+    expect(report.status).toBe(
+      'OWNER_DECISION_REQUIRED_R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING'
+    )
+    expect(report.semanticDigest).toBe(
+      'sha256:bc9d096f70338ad46de385ca9b1855d291956a8c6984748a7843836616244d33'
+    )
+    expect(report.authorizationState).toBe('not-authorized')
+    expect(report.authoringAuthorization).toBe('not-authorized')
+    expect(report.maximumCandidateRoutes).toBe(2)
+    expect(report.authorizedPaths).toHaveLength(4)
+    expect(report.candidateVersion).toBe('r7.candidate.20260802.1')
+    expect(report.signatureMode).toBe('none-canonical-payload-only')
+    expect(report.requiredRouteCount).toBe(2)
+    expect(report.requiredCheckCount).toBe(8)
+    expect(report.runtimeEligibleCount).toBe(0)
+    expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+  })
+
+  it('rejects publication candidate review scope expansion', () => {
+    const request = read<
+      Record<string, unknown> & {
+        requestedAuthorization: { authorizedPaths: string[] }
+      }
+    >('decisions', 'r7-publication-candidate-review-request.json')
+    const tampered = structuredClone(request)
+    tampered.requestedAuthorization.authorizedPaths.push('scripts/create-data-update-bundle.js')
+
+    expect(publicationCandidateReviewRequestSemanticDigest(tampered)).not.toBe(
+      publicationCandidateReviewRequestSemanticDigest(request)
+    )
+    expect(() =>
+      validateR7PublicationCandidateReviewRequest(tampered, {
+        root: process.cwd(),
+        base: GrowthDirectory
+      })
+    ).toThrow('R7 publication candidate authoring authorization mismatch')
+  })
+
+  it('keeps publication candidate approval metadata outside the fixed digest', () => {
+    const request = read<
+      Record<string, unknown> & {
+        status: string
+        requestedAuthorization: {
+          authorizationState: string
+          authoringAuthorization: string
+        }
+        review: {
+          approver: string | null
+          reviewedAt: string | null
+          approvalDigest: string | null
+        }
+      }
+    >('decisions', 'r7-publication-candidate-review-request.json')
+    const approved = structuredClone(request)
+    approved.status = 'approved'
+    approved.requestedAuthorization.authorizationState = 'authorized'
+    approved.requestedAuthorization.authoringAuthorization = 'authorized'
+    approved.review.approver = 'project-owner'
+    approved.review.reviewedAt = '2026-08-02T11:00:00.000Z'
+    approved.review.approvalDigest =
+      publicationCandidateReviewRequestSemanticDigest(request)
+
+    expect(publicationCandidateReviewRequestSemanticDigest(approved)).toBe(
+      publicationCandidateReviewRequestSemanticDigest(request)
     )
   })
 

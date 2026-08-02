@@ -31,8 +31,12 @@ const {
   R7RuntimePublicationDecisionOutputFilenames,
   buildR7RuntimePublicationDecisionArtifacts
 } = require('./quest-growth-r7-runtime-publication-decision')
+const {
+  R7PublicationCandidateReviewDecisionOutputFilenames,
+  buildR7PublicationCandidateReviewDecisionArtifacts
+} = require('./quest-growth-r7-publication-candidate-review-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/22'
+const CompilerVersion = 'quest-growth-authoring-compiler/23'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -47,7 +51,8 @@ const OutputFilenames = [
   ...R7RendererDecisionOutputFilenames,
   ...R7RealAccountDecisionOutputFilenames,
   ...R7ResponsiveLayoutDecisionOutputFilenames,
-  ...R7RuntimePublicationDecisionOutputFilenames
+  ...R7RuntimePublicationDecisionOutputFilenames,
+  ...R7PublicationCandidateReviewDecisionOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -887,6 +892,8 @@ function buildQuestGrowthArtifacts(root) {
     root,
     base
   })
+  const r7PublicationCandidateReviewDecision =
+    buildR7PublicationCandidateReviewDecisionArtifacts({ root, base })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -942,6 +949,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r7RealAccountDecision.source,
       ...r7ResponsiveLayoutDecision.source,
       ...r7RuntimePublicationDecision.source,
+      ...r7PublicationCandidateReviewDecision.source,
       fixtureDigests
     },
     output: {
@@ -983,7 +991,8 @@ function buildQuestGrowthArtifacts(root) {
       ...r7RendererDecision.output,
       ...r7RealAccountDecision.output,
       ...r7ResponsiveLayoutDecision.output,
-      ...r7RuntimePublicationDecision.output
+      ...r7RuntimePublicationDecision.output,
+      ...r7PublicationCandidateReviewDecision.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -1056,7 +1065,14 @@ function buildQuestGrowthArtifacts(root) {
           ? ['R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED']
           : r7RuntimePublicationDecision.output.r7RuntimePublicationAuthoringImplemented
             ? ['R7_RUNTIME_PUBLICATION_AUTHORING_IMPLEMENTED_PUBLICATION_NOT_AUTHORIZED']
-            : [])
+            : []),
+      ...(r7PublicationCandidateReviewDecision.output
+        .r7PublicationCandidateReviewOwnerDecisionRequired
+        ? ['R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_OWNER_DECISION_REQUIRED']
+        : r7PublicationCandidateReviewDecision.output
+            .r7PublicationCandidateReviewAuthorizedNotImplemented
+          ? ['R7_PUBLICATION_CANDIDATE_REVIEW_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED']
+          : [])
     ]
   }
   return {
@@ -1070,7 +1086,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7RendererDecision.artifacts,
     ...r7RealAccountDecision.artifacts,
     ...r7ResponsiveLayoutDecision.artifacts,
-    ...r7RuntimePublicationDecision.artifacts
+    ...r7RuntimePublicationDecision.artifacts,
+    ...r7PublicationCandidateReviewDecision.artifacts
   }
 }
 
