@@ -1091,7 +1091,9 @@ function buildQuestGrowthArtifacts(root) {
       ...(r7StagingConfigurationDecision.output
         .r7StagingConfigurationOwnerDecisionRequired
         ? ['R7_STAGING_CONFIGURATION_OWNER_FIXED_DIGEST_REQUIRED']
-        : [])
+        : r7StagingConfigurationDecision.output.r7StagingConfigurationApproved
+          ? ['R7_STAGING_CONFIGURATION_APPROVED_REAL_STAGING_NOT_AUTHORIZED']
+          : [])
     ]
   }
   return {

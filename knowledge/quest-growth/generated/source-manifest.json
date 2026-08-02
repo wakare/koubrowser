@@ -58,8 +58,9 @@
     "r7SchemaFixtureCaseCount": 4,
     "r7SchemaFixtureValidationPassed": true,
     "r7SchemaRuntimeEligibleCount": 0,
+    "r7StagingConfigurationApproved": true,
     "r7StagingConfigurationDrafted": true,
-    "r7StagingConfigurationOwnerDecisionRequired": true,
+    "r7StagingConfigurationOwnerDecisionRequired": false,
     "r7StagingConfigurationRequiredCheckCount": 9,
     "r7StagingConfigurationRouteCount": 2,
     "reviewedRouteUnitCount": 6,
@@ -108,7 +109,7 @@
     "r7RouteCatalogDigest": "sha256:cc2c83195c01c846ba3da89d2731264081e1374b74a190f046f75f9d59e776a4",
     "r7RuntimePublicationAuthoringRequestDigest": "sha256:5d304eae83b0b9a8b28aa2dcf7de7944da0515425b2fbf9688033100fe24253b",
     "r7SchemaFixtureDigest": "sha256:2d12869aba8f285a92d517acead74c139d8a571d4afaff6ae5a97cfc295b857c",
-    "r7StagingConfigurationAuthoringRequestDigest": "sha256:9366d8756a44bc9e12d8477de1eb365daf257adc473a8cecc82ef3485b5ea6f9",
+    "r7StagingConfigurationAuthoringRequestDigest": "sha256:b3281195221d8955c8e718903203562dcba15c41daa2e7702b903bc07bc48299",
     "schemaDigest": "sha256:3ff863c1063459cbf5a9e8780ddf95f0fdcf9a9c2e0ecc8c69d2776475c57682",
     "unitsDigest": "sha256:79dbc942c7a6d57b7ebd8b0671468669db9974fa50803e0b40b43f67898925c4"
   }

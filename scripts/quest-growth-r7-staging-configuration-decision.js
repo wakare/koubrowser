@@ -5,7 +5,7 @@ const {
   validateStagingConfigurationFiles
 } = require('./quest-growth-r7-staging-configuration')
 
-const CompilerVersion = 'quest-growth-r7-staging-configuration-decision-compiler/1'
+const CompilerVersion = 'quest-growth-r7-staging-configuration-decision-compiler/2'
 const R7StagingConfigurationDecisionOutputFilenames = [
   'r7-staging-configuration-authoring-report.json'
 ]
@@ -147,11 +147,12 @@ function validateR7StagingConfigurationAuthoringRequest(value, root) {
     value.authoringSchema !== 'QuestGrowthR7StagingConfigurationAuthoringRequest/1alpha' ||
     value.requestId !== 'decision:quest-growth-r7-staging-configuration-authoring' ||
     value.revision !== 1 ||
-    value.status !== 'draft-artifacts-authored' ||
+    !['draft-artifacts-authored', 'approved'].includes(value.status) ||
     value.scope !== 'R7_STAGING_CONFIGURATION_AUTHORING_DRAFT_ONLY'
   ) {
     throw new Error('R7 staging configuration request scope mismatch')
   }
+  const approved = value.status === 'approved'
 
   exactKeys(value.sourceSnapshot, ['auditedBaseCommit', 'checkedAt'], 'R7 staging source')
   if (
@@ -200,7 +201,8 @@ function validateR7StagingConfigurationAuthoringRequest(value, root) {
   if (
     value.requestedAuthorization.gateId !== 'r7-staging-configuration-authoring' ||
     value.requestedAuthorization.draftingAuthorization !== 'consumed' ||
-    value.requestedAuthorization.ownerFixedDigestReview !== 'required' ||
+    value.requestedAuthorization.ownerFixedDigestReview !==
+      (approved ? 'consumed' : 'required') ||
     value.requestedAuthorization.maximumRouteCount !== 2 ||
     !same(value.requestedAuthorization.authorizedDraftPaths, AuthorizedDraftPaths)
   ) {
@@ -358,9 +360,23 @@ function validateR7StagingConfigurationAuthoringRequest(value, root) {
     ],
     'R7 staging review'
   )
+  const semanticDigest = stagingConfigurationRequestSemanticDigest(value)
   if (
     value.review.author !== 'codex-r7-staging-configuration-author' ||
-    value.review.requiredReviewerRole !== 'project-owner' ||
+    value.review.requiredReviewerRole !== 'project-owner'
+  ) {
+    throw new Error('R7 staging configuration reviewer contract mismatch')
+  }
+  if (approved) {
+    if (
+      value.review.decision !== 'approved' ||
+      value.review.approver !== 'project-owner' ||
+      value.review.reviewedAt !== '2026-08-02T11:48:01.276Z' ||
+      value.review.approvalDigest !== semanticDigest
+    ) {
+      throw new Error('approved R7 staging configuration digest mismatch')
+    }
+  } else if (
     value.review.decision !== 'fixed-semantic-digest-required' ||
     value.review.approver !== null ||
     value.review.reviewedAt !== null ||
@@ -372,7 +388,8 @@ function validateR7StagingConfigurationAuthoringRequest(value, root) {
   validateStagingConfigurationFiles(root)
   return {
     value,
-    semanticDigest: stagingConfigurationRequestSemanticDigest(value)
+    semanticDigest,
+    approved
   }
 }
 
@@ -385,8 +402,12 @@ function buildR7StagingConfigurationDecisionArtifacts({ root }) {
   const report = {
     schemaVersion: 1,
     compilerVersion: CompilerVersion,
-    generatedAt: request.value.draftingResult.recordedAt,
-    status: 'R7_STAGING_CONFIGURATION_DRAFTED_OWNER_FIXED_DIGEST_REQUIRED',
+    generatedAt: request.approved
+      ? request.value.review.reviewedAt
+      : request.value.draftingResult.recordedAt,
+    status: request.approved
+      ? 'R7_STAGING_CONFIGURATION_AUTHORING_APPROVED'
+      : 'R7_STAGING_CONFIGURATION_DRAFTED_OWNER_FIXED_DIGEST_REQUIRED',
     scope: request.value.scope,
     requestId: request.value.requestId,
     revision: request.value.revision,
@@ -394,7 +415,9 @@ function buildR7StagingConfigurationDecisionArtifacts({ root }) {
     semanticDigest: request.semanticDigest,
     gateId: request.value.requestedAuthorization.gateId,
     draftingAuthorization: request.value.requestedAuthorization.draftingAuthorization,
-    ownerReviewStatus: 'fixed-semantic-digest-required',
+    ownerReviewStatus: request.approved ? 'approved' : 'fixed-semantic-digest-required',
+    reviewApprovalDigest: request.approved ? request.value.review.approvalDigest : null,
+    reviewedAt: request.approved ? request.value.review.reviewedAt : null,
     implementationCommit: request.value.draftingResult.implementationCommit,
     authorizedDraftPaths: request.value.requestedAuthorization.authorizedDraftPaths,
     requiredCheckCount: request.value.verificationContract.requiredChecks.length,
@@ -420,7 +443,8 @@ function buildR7StagingConfigurationDecisionArtifacts({ root }) {
       r7StagingConfigurationAuthoringRequestDigest: digest(requestRaw)
     },
     output: {
-      r7StagingConfigurationOwnerDecisionRequired: true,
+      r7StagingConfigurationOwnerDecisionRequired: !request.approved,
+      r7StagingConfigurationApproved: request.approved,
       r7StagingConfigurationDrafted: true,
       r7StagingConfigurationRequiredCheckCount: report.requiredCheckCount,
       r7StagingConfigurationRouteCount: report.routeCount

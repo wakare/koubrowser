@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7StagingConfigurationAuthoringRequest/1alpha",
   "requestId": "decision:quest-growth-r7-staging-configuration-authoring",
   "revision": 1,
-  "status": "draft-artifacts-authored",
+  "status": "approved",
   "scope": "R7_STAGING_CONFIGURATION_AUTHORING_DRAFT_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "a85c78f74d286562417ee2ed0c15e202e08d60b1",
@@ -25,7 +25,7 @@
   "requestedAuthorization": {
     "gateId": "r7-staging-configuration-authoring",
     "draftingAuthorization": "consumed",
-    "ownerFixedDigestReview": "required",
+    "ownerFixedDigestReview": "consumed",
     "maximumRouteCount": 2,
     "authorizedDraftPaths": [
       "knowledge/quest-growth/r7/staging-configuration.schema.json",
@@ -117,9 +117,9 @@
   "review": {
     "author": "codex-r7-staging-configuration-author",
     "requiredReviewerRole": "project-owner",
-    "decision": "fixed-semantic-digest-required",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "decision": "approved",
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T11:48:01.276Z",
+    "approvalDigest": "sha256:3873731e2d84a85dde4685da9625fe2e4ed072f41c0de8973fa5c94e7e8cec93"
   }
 }

@@ -45,13 +45,13 @@ describe('R7 staging configuration authoring decision', () => {
     )
   })
 
-  it('reports an owner fixed-digest decision without publication authorization', () => {
+  it('reports the approved authoring contract without publication authorization', () => {
     const result = buildR7StagingConfigurationDecisionArtifacts({ root: Root })
     const report = result.artifacts['r7-staging-configuration-authoring-report.json']
 
     expect(report).toMatchObject({
-      status: 'R7_STAGING_CONFIGURATION_DRAFTED_OWNER_FIXED_DIGEST_REQUIRED',
-      ownerReviewStatus: 'fixed-semantic-digest-required',
+      status: 'R7_STAGING_CONFIGURATION_AUTHORING_APPROVED',
+      ownerReviewStatus: 'approved',
       routeCount: 2,
       requiredCheckCount: 9,
       fullTestCount: 1259,
@@ -76,14 +76,13 @@ describe('R7 staging configuration authoring decision', () => {
     )
   })
 
-  it('rejects owner approval metadata before the fixed digest is approved', () => {
+  it('rejects an approval digest mismatch', () => {
     const value = request()
-    value.review.approver = 'project-owner'
-    value.review.reviewedAt = '2026-08-02T12:00:00.000Z'
-    value.review.approvalDigest = stagingConfigurationRequestSemanticDigest(value)
+    value.review.approvalDigest =
+      'sha256:0000000000000000000000000000000000000000000000000000000000000000'
 
     expect(() => validateR7StagingConfigurationAuthoringRequest(value, Root)).toThrow(
-      'draft R7 staging configuration must not claim owner approval'
+      'approved R7 staging configuration digest mismatch'
     )
   })
 
@@ -93,13 +92,14 @@ describe('R7 staging configuration authoring decision', () => {
     const conflictReport = artifacts['conflict-and-gap-report.json']
 
     expect(sourceManifest.output).toMatchObject({
-      r7StagingConfigurationOwnerDecisionRequired: true,
+      r7StagingConfigurationOwnerDecisionRequired: false,
+      r7StagingConfigurationApproved: true,
       r7StagingConfigurationDrafted: true,
       r7StagingConfigurationRequiredCheckCount: 9,
       r7StagingConfigurationRouteCount: 2
     })
     expect(conflictReport.globalStops).toContain(
-      'R7_STAGING_CONFIGURATION_OWNER_FIXED_DIGEST_REQUIRED'
+      'R7_STAGING_CONFIGURATION_APPROVED_REAL_STAGING_NOT_AUTHORIZED'
     )
   })
 })

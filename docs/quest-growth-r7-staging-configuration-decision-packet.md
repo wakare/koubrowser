@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-STAGING-CONFIGURATION-AUTHORING`
 
-Status: `R7_STAGING_CONFIGURATION_DRAFTED_OWNER_FIXED_DIGEST_REQUIRED`
+Status: `R7_STAGING_CONFIGURATION_AUTHORING_APPROVED`
 
 ## 目的
 
@@ -74,7 +74,7 @@ PASS した。
 - semantic digest:
   `sha256:3873731e2d84a85dde4685da9625fe2e4ed072f41c0de8973fa5c94e7e8cec93`
 - request raw digest:
-  `sha256:9366d8756a44bc9e12d8477de1eb365daf257adc473a8cecc82ef3485b5ea6f9`
+  `sha256:b3281195221d8955c8e718903203562dcba15c41daa2e7702b903bc07bc48299`
 - draft artifact count: `4`
 - required check count: `9`
 - route count: `2`
@@ -102,3 +102,8 @@ PASS した。
 6. runtime publication execution
 7. production URL / public key の正式組み込み
 8. default enablement と installer release
+
+project owner は `2026-08-02T11:48:01.276Z` に semantic digest
+`sha256:3873731e2d84a85dde4685da9625fe2e4ed072f41c0de8973fa5c94e7e8cec93` を明示承認した。
+configuration authoring review は `approved` とするが、鍵、署名、実在 URL、外部 endpoint、runtime
+publication、default enablement、installer build は引き続き未承認である。
