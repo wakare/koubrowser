@@ -1,0 +1,139 @@
+{
+  "authoringSchema": "QuestGrowthR7StagingEvidenceAuthoringRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-staging-evidence-authoring",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_STAGING_EVIDENCE_AUTHORING_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "341b1edfb3c1e9b74c99368f15d3adcd599aac09",
+    "checkedAt": "2026-08-02T12:04:18.616Z"
+  },
+  "approvalBasis": {
+    "stagingConfigurationSemanticDigest": "sha256:3873731e2d84a85dde4685da9625fe2e4ed072f41c0de8973fa5c94e7e8cec93",
+    "stagingConfigurationReportDigest": "sha256:280ba093f7d68dbe71a973b5139121ec258b471559ad7514f6a639d72b7ff67b",
+    "stagingConfigurationStatus": "R7_STAGING_CONFIGURATION_AUTHORING_APPROVED",
+    "candidateVersion": "r7.candidate.20260802.1",
+    "candidateCanonicalDigest": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c",
+    "candidateFileDigest": "sha256:92cd036faf74f262633edca062b63e7a2ce61081a8cf6666fa7ad697f6beae0b",
+    "candidateReviewSemanticDigest": "sha256:4e0d52638b60b90e2aec0bfdc9f9c2eaca500d4c32751245e649a5e43adac94c",
+    "releaseRecordAuthorDigest": "sha256:2825142753770cc37539ecfbc8482bc6dcc6b0cf33e81cd8f69afaec12f5205e",
+    "releaseRecordVerifierDigest": "sha256:82442bb8c89eab3e1ff9792953e5d8627785384a18a7e073bbe0f636299aff59",
+    "dataUpdateDeploymentDigest": "sha256:5bbc72a8354041753cb2ac47588dc29c079f943c3b3af847657e0461aeec0bd4",
+    "protectedCommunicationDigests": {
+      "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+      "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
+      "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e"
+    }
+  },
+  "requestedAuthorization": {
+    "gateId": "r7-staging-evidence-authoring",
+    "authorizationState": "not-authorized",
+    "authoringAuthorization": "not-authorized",
+    "maximumRouteCount": 2,
+    "authorizedPaths": [
+      "knowledge/quest-growth/r7/staging-evidence.schema.json",
+      "knowledge/quest-growth/r7/fixtures/staging-evidence-anonymous.json",
+      "scripts/quest-growth-r7-staging-evidence.js",
+      "src/common/__tests__/quest_growth_staging_evidence.test.ts"
+    ]
+  },
+  "evidenceContract": {
+    "schemaVersion": 1,
+    "fixtureMode": "anonymous-offline-evidence-only",
+    "candidateVersion": "r7.candidate.20260802.1",
+    "candidateCanonicalDigest": "sha256:6f1c952ba5030a46e6cf437d740991e5a5eb99cae337cab6db2d1fcf77636a8c",
+    "stagingConfigurationSemanticDigest": "sha256:3873731e2d84a85dde4685da9625fe2e4ed072f41c0de8973fa5c94e7e8cec93",
+    "requiredRouteCount": 2,
+    "allowedPublicEvidenceFields": [
+      "dataVersion",
+      "publishedAt",
+      "manifestSha256",
+      "questKnowledgeSha256",
+      "publicKeySha256",
+      "fileCount",
+      "payloadBytes",
+      "routeCount",
+      "requiredCheckCount",
+      "redactedAcceptanceStatus"
+    ],
+    "prohibitedEvidenceFields": [
+      "privateKey",
+      "passphrase",
+      "credential",
+      "token",
+      "publicKeyBytes",
+      "manifestUrl",
+      "localPath",
+      "accountData",
+      "personalIdentifier",
+      "rawLog",
+      "screenshot"
+    ],
+    "endpointRepresentation": "reserved-invalid-placeholder-only",
+    "publicKeyRepresentation": "sha256-fingerprint-only-synthetic-in-fixture",
+    "realEvidenceValuesAuthorized": false
+  },
+  "roleSeparationContract": {
+    "requiredRoles": [
+      "external-release-author",
+      "independent-evidence-reviewer",
+      "staging-acceptance-operator"
+    ],
+    "allRolesMustBeDistinct": true,
+    "codexMayAssumeReleaseAuthor": false,
+    "codexMayHandlePrivateKeyOrPassphrase": false,
+    "evidenceReviewerMayAccessPrivateKey": false,
+    "stagingOperatorMayAccessPrivateKey": false,
+    "releaseAuthorMayPublishToStaging": false,
+    "reviewerMustRecomputePublicEvidence": true
+  },
+  "verificationContract": {
+    "offlineOnly": true,
+    "anonymousFixtureRequired": true,
+    "requiredChecks": [
+      "strict-schema-rejects-unknown-fields",
+      "evidence-binds-approved-candidate-and-staging-configuration",
+      "evidence-binds-exactly-two-reviewed-routes",
+      "only-approved-public-evidence-fields-are-accepted",
+      "secret-url-path-account-and-personal-fields-are-rejected",
+      "release-author-reviewer-and-staging-operator-are-distinct",
+      "reviewer-recomputes-evidence-without-private-key-access",
+      "reserved-invalid-placeholder-is-the-only-endpoint-representation",
+      "publication-default-enablement-and-runtime-eligibility-remain-unauthorized",
+      "protected-game-communication-digests-remain-fixed"
+    ]
+  },
+  "implementationResult": null,
+  "executionBoundary": {
+    "keyMaterialHandlingAuthorized": false,
+    "bundleSigningAuthorized": false,
+    "realFingerprintOrPublicKeyAuthorized": false,
+    "realStagingOrProductionUrlAuthorized": false,
+    "externalEndpointConnectionAuthorized": false,
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false,
+    "stagingAcceptanceExecutionAuthorized": false,
+    "otherRouteFamiliesAuthorized": false,
+    "gameCommunicationChangesAuthorized": false,
+    "installerBuildRequiredAtThisGate": false
+  },
+  "stillProhibited": [
+    "key-material-or-passphrase",
+    "bundle-signing",
+    "real-public-key-or-fingerprint",
+    "real-staging-or-production-url",
+    "external-endpoint-connection",
+    "staging-acceptance-execution",
+    "runtime-publication",
+    "default-enablement",
+    "other-route-family",
+    "game-communication-mutation",
+    "installer-build"
+  ],
+  "review": {
+    "author": "codex-r7-staging-evidence-decision-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

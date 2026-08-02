@@ -292,6 +292,11 @@ project owner は staging configuration semantic digest
 `sha256:3873731e2d84a85dde4685da9625fe2e4ed072f41c0de8973fa5c94e7e8cec93` を明示承認し、authoring
 review は `approved` となった。次の独立 gate は鍵 material や実在 endpoint を扱う前の、公開証拠と役割分離を
 固定する staging evidence decision とする。runtime eligible count は引き続き0である。
+staging evidence authoring の decision-only request は、公開 evidence 10 field、禁止 field 11件、独立3 role、
+10 check と固定4 path に限定して
+[`quest-growth-r7-staging-evidence-decision-packet.md`](quest-growth-r7-staging-evidence-decision-packet.md)
+へ分離した。owner fixed-digest approval 前は authoring も未承認であり、鍵、実在 endpoint、signed bundle、
+staging acceptance、runtime publication、default enablement は引き続き禁止する。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
