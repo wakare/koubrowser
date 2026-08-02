@@ -26,7 +26,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     )
 
-    expect(output).toContain('27 facts, 32 routes, 53 stage contributions, 0 rejected objectives')
+    expect(output).toContain('27 facts, 35 routes, 56 stage contributions, 0 rejected objectives')
   })
 
   it('compiles exact stage contributions without promoting partial multi-stage quests', () => {
@@ -149,6 +149,18 @@ describe('quest strategy runtime v2 compiler', () => {
         ?.contributions
     ).toMatchObject([{ questId: 875, stageIndex: 0, mapKey: '5-4' }])
     expect(
+      bundle.routes.find((route) => route.routeId === 'normal-5-1-new-mikawa-quarterly')
+        ?.contributions
+    ).toMatchObject([{ questId: 888, stageIndex: 0, mapKey: '5-1' }])
+    expect(
+      bundle.routes.find((route) => route.routeId === 'normal-5-3-new-mikawa-quarterly')
+        ?.contributions
+    ).toMatchObject([{ questId: 888, stageIndex: 1, mapKey: '5-3' }])
+    expect(
+      bundle.routes.find((route) => route.routeId === 'normal-5-4-new-mikawa-quarterly')
+        ?.contributions
+    ).toMatchObject([{ questId: 888, stageIndex: 2, mapKey: '5-4' }])
+    expect(
       bundle.routes.find((route) => route.routeId === 'normal-4-4-western-quarterly')?.contributions
     ).toMatchObject([
       { questId: 242, stageIndex: 0, mapKey: '4-4' },
@@ -172,7 +184,7 @@ describe('quest strategy runtime v2 compiler', () => {
     expect(manifest.output.bundleDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(manifest.unsupported).toEqual([])
     expect(withdrawals.withdrawals).toEqual([])
-    expect(withdrawals.dependencies).toHaveLength(32)
+    expect(withdrawals.dependencies).toHaveLength(35)
   })
 
   it('binds every runtime route to an approved template and exact objective facts', () => {

@@ -45,6 +45,9 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '4-4': 'available',
         '4-5': 'available',
         '5-2': 'available',
+        '5-1': 'available',
+        '5-3': 'available',
+        '5-4': 'available',
         '5-5': 'available',
         '6-1': 'available',
         '6-2': 'available',
@@ -317,6 +320,38 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(plan.coveredQuestIds).toEqual([875])
     expect(plan.steps.map((step) => step.recipeId)).toEqual([
       'normal-5-4-31st-destroyer-quarterly'
+    ])
+  })
+
+  it('completes the ordered three-map New Mikawa quarterly route', () => {
+    const recipes = BundledQuestStrategyKnowledge.recipes.filter((item) =>
+      item.id.includes('new-mikawa-quarterly')
+    )
+
+    expect(recipes.map((recipe) => recipe.mapKey)).toEqual(['5-1', '5-3', '5-4'])
+    expect(
+      recipes.flatMap((recipe) => auditQuestStrategyRecipeObjective(recipe, 888).contributions)
+    ).toMatchObject([
+      { stageIndex: 0, mapKey: '5-1', machineConstraintComplete: true },
+      { stageIndex: 1, mapKey: '5-3', machineConstraintComplete: true },
+      { stageIndex: 2, mapKey: '5-4', machineConstraintComplete: true }
+    ])
+    expect(
+      auditQuestStrategyRecipeObjective(
+        {
+          ...recipes[0],
+          fleet: { ...recipes[0].fleet, specificShipConstraints: undefined }
+        },
+        888
+      ).coverageStatus
+    ).not.toBe('route-ready')
+
+    const plan = build([888])
+    expect(plan.coveredQuestIds).toEqual([888])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual([
+      'normal-5-1-new-mikawa-quarterly',
+      'normal-5-3-new-mikawa-quarterly',
+      'normal-5-4-new-mikawa-quarterly'
     ])
   })
 

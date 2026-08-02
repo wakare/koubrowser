@@ -2624,6 +2624,398 @@
     },
     {
       "actions": [
+        "任務888を受注し、5-1のS勝利が残っていることを確認する",
+        "指定7隻から重巡級3・軽巡1を選び、自由枠を駆逐2にした6隻編成にする",
+        "B-C-F-Jを進む。制空を取れない高リスク編成のため、必要なら道中・決戦支援を使い、大破時は進撃しない",
+        "JボスでS勝利を取り、任務888の5-1進捗を確認する"
+      ],
+      "contributions": [
+        {
+          "mapKey": "5-1",
+          "questId": 888,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T16:00:00.000Z",
+          "sourceId": "wikiwiki-map-5-1-new-mikawa-current",
+          "sourceLabel": "艦これ攻略 Wiki - 5-1",
+          "summary": "指定7隻から4隻、5-1ボスS、重巡級3・軽巡1・駆逐2のB-C-F-Jと制空喪失リスクを確認",
+          "url": "https://wikiwiki.jp/kancolle/南方海域/5-1",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T16:00:00.000Z",
+          "sourceId": "kcwiki-map-5-1-new-mikawa-current",
+          "sourceLabel": "舰娘百科 - 5-1",
+          "summary": "指定艦4、重巡3・軽巡1・駆逐2、B-C-F-J、支援を含む高リスク攻略を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/5-1",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "重巡級 3 隻",
+            "maximum": 3,
+            "minimum": 3,
+            "shipTypeIds": [
+              5,
+              6
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              69,
+              61,
+              123,
+              60,
+              59,
+              51,
+              115
+            ],
+            "label": "鳥海・青葉・衣笠・加古・古鷹・天龍・夕張から 4 隻",
+            "minimum": 4
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "C・F・Jボス"
+        }
+      ],
+      "mapKey": "5-1",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-5-1-new-mikawa-quarterly",
+      "routeLabels": [
+        "B-C-F-J"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "J"
+      ],
+      "title": "5-1 新編三川艦隊クォータリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務888を受注し、5-3のS勝利が残っていることを確認する",
+        "指定7隻から4隻以上を含め、重巡級5・軽巡1の6隻編成にする。航巡を自由枠に入れて制空を補助する",
+        "夜戦装備と水上戦闘機2個以上を準備し、D-G-I-O-K-E-Qを進む。大破時は進撃せず、必要なら道中支援を使う",
+        "QボスでS勝利を取り、任務888の5-3進捗を確認する"
+      ],
+      "airState": {
+        "summary": "航巡の水上戦闘機でQボスの航空劣勢回避を優先し、上位装備が揃う場合だけ優勢を検討する",
+        "target": "denial"
+      },
+      "contributions": [
+        {
+          "mapKey": "5-3",
+          "questId": 888,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 1
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            45
+          ],
+          "label": "Qボス航空劣勢回避を狙う水上戦闘機 2 個以上",
+          "minimum": 2,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            29
+          ],
+          "label": "I・Kの夜戦を補助する探照灯",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T16:00:00.000Z",
+          "sourceId": "wikiwiki-map-5-3-new-mikawa-current",
+          "sourceLabel": "艦これ攻略 Wiki - 5-3",
+          "summary": "指定7隻から4隻、重巡級5・軽巡1、D-G-I-O-K-E-Q、夜戦支援と航巡水戦を確認",
+          "url": "https://wikiwiki.jp/kancolle/南方海域/5-3",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T16:00:00.000Z",
+          "sourceId": "kcwiki-map-5-3-new-mikawa-current",
+          "sourceLabel": "舰娘百科 - 5-3",
+          "summary": "三川流D-G-I-O-K-E-Q、重巡級5・軽巡1、夜戦とボス制空準備を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/5-3",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "重巡級 5 隻",
+            "maximum": 5,
+            "minimum": 5,
+            "shipTypeIds": [
+              5,
+              6
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              69,
+              61,
+              123,
+              60,
+              59,
+              51,
+              115
+            ],
+            "label": "鳥海・青葉・衣笠・加古・古鷹・天龍・夕張から 4 隻",
+            "minimum": 4
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 6,
+          "label": "警戒陣",
+          "when": "I・Kの夜戦（使用可能時）"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "Qボス"
+        }
+      ],
+      "mapKey": "5-3",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-5-3-new-mikawa-quarterly",
+      "routeLabels": [
+        "D-G-I-O-K-E-Q"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "Q"
+      ],
+      "title": "5-3 新編三川艦隊クォータリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
+        "任務888を受注し、5-4のS勝利が残っていることを確認する",
+        "指定7隻から重巡級3・軽巡1を選び、自由枠を駆逐2にした6隻編成にする",
+        "分岐点係数2の索敵値45以上、Dうずしお用の電探3個、夜戦装備を準備する",
+        "A-D-E-H-I-J-M-Pを進み、H・Jの夜戦後を含めて損傷を確認し、大破時は進撃しない",
+        "PボスでS勝利を取り、任務888の5-4進捗を確認する"
+      ],
+      "contributions": [
+        {
+          "mapKey": "5-4",
+          "questId": 888,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 2
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            10,
+            12,
+            13
+          ],
+          "label": "分岐点係数2の索敵値45以上へ余裕を加える偵察機・電探",
+          "minimum": 4,
+          "required": true
+        },
+        {
+          "equipmentTypeIds": [
+            12,
+            13
+          ],
+          "label": "Dのうずしお被害を軽減する電探 3 個",
+          "minimum": 3,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T16:00:00.000Z",
+          "sourceId": "wikiwiki-map-5-4-new-mikawa-current",
+          "sourceLabel": "艦これ攻略 Wiki - 5-4",
+          "summary": "指定4隻と駆逐2の中央うずしお経由、索敵45、電探・夜戦・制空喪失リスクを確認",
+          "url": "https://wikiwiki.jp/kancolle/南方海域/5-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T16:00:00.000Z",
+          "sourceId": "kcwiki-map-5-4-new-mikawa-current",
+          "sourceLabel": "舰娘百科 - 5-4",
+          "summary": "指定4隻・駆逐2、A-D-E-H-I-J-M-P、索敵45、電探3と夜戦装備を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/5-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "重巡級 3 隻",
+            "maximum": 3,
+            "minimum": 3,
+            "shipTypeIds": [
+              5,
+              6
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              69,
+              61,
+              123,
+              60,
+              59,
+              51,
+              115
+            ],
+            "label": "鳥海・青葉・衣笠・加古・古鷹・天龍・夕張から 4 隻",
+            "minimum": 4
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 6,
+          "label": "警戒陣",
+          "when": "Hの夜戦（使用可能時）"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "E・J・Pボス"
+        }
+      ],
+      "mapKey": "5-4",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-5-4-new-mikawa-quarterly",
+      "routeLabels": [
+        "A-D-E-H-I-J-M-P"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "P"
+      ],
+      "title": "5-4 新編三川艦隊クォータリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務861を受注し、1-6到達回数が残っていることを確認する",
         "補給艦2・駆逐艦4の6隻にする。艦種が補給艦の状態であることを確認し、搭載可能なら水上戦闘機や対空カットインを用意する",
         "A-E-Gを進み、GからKへ逸れた場合は撤退して再出撃する。Fへ進んだ場合も各戦闘後に損傷を確認し、大破時は進撃しない",
@@ -4990,11 +5382,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:c32854200f86db2d6caf5f5a6264aaaabc8e28049b7ac82e76673ffcb157e79b",
-    "legacyKnowledgeDigest": "sha256:42b9aa22db9a3a4838a4a491052cc37f6c91e4b40a3f0e00bf239fe94a6eebf4",
-    "pilotAuthoringManifestDigest": "sha256:7dbd0d0b8c5b95454f2380b5303b5f06f5b024fbbd372a1f05665c6972a9dafa",
+    "inventoryDigest": "sha256:97a8da86f9c94959ebfa0b812b99f74ddc89d39b2f6410f3960dee183d9ee52c",
+    "legacyKnowledgeDigest": "sha256:b4b2e91f37a778b94f133eb0c7358968b4443b4c5389915545d501700a08deaf",
+    "pilotAuthoringManifestDigest": "sha256:7eafbf61205239bb1d4222bc135f44e71691c38bb7cc1bb8d762ef800f611fc4",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "37577a671e5c311dbde6596bcc2ee3a10040b243"
+    "repositoryCommit": "6ed437785e8503a16b40a6a8260f5863218d8de3"
   },
-  "version": "2026-08-03.17.v2"
+  "version": "2026-08-03.18.v2"
 }

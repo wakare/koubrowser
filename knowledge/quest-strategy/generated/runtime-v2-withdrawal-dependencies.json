@@ -255,6 +255,48 @@
     },
     {
       "evidenceDependencies": [
+        "wikiwiki-map-5-1-new-mikawa-current",
+        "kcwiki-map-5-1-new-mikawa-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 888,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-5-1-new-mikawa-quarterly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-5-3-new-mikawa-current",
+        "kcwiki-map-5-3-new-mikawa-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 888,
+          "stageIndex": 1
+        }
+      ],
+      "routeId": "normal-5-3-new-mikawa-quarterly"
+    },
+    {
+      "evidenceDependencies": [
+        "wikiwiki-map-5-4-new-mikawa-current",
+        "kcwiki-map-5-4-new-mikawa-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 888,
+          "stageIndex": 2
+        }
+      ],
+      "routeId": "normal-5-4-new-mikawa-quarterly"
+    },
+    {
+      "evidenceDependencies": [
         "wikiwiki-map-1-6-current",
         "kcwiki-map-1-6-current",
         "wikiwiki-periodic-sortie"

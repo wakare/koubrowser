@@ -53,6 +53,7 @@ describe('QuestStrategyRoute.vue', () => {
           '2-3',
           '2-5',
           '5-1',
+          '5-3',
           '5-4',
           '4-1',
           '4-2',
@@ -165,6 +166,19 @@ describe('QuestStrategyRoute.vue', () => {
     expect(wrapper.get('.quest-strategy-step').text()).toContain('長波改二系')
     expect(wrapper.get('.quest-strategy-step').text()).toContain('高波改・沖波改・朝霜改系')
     expect(wrapper.get('.quest-strategy-step').text()).toContain('A-D-E-H-I-J-M-P')
+  })
+
+  it('renders all three ordered New Mikawa stages with the named-ship requirement', async () => {
+    const wrapper = await render([recommendation(888, 'active')])
+
+    expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(3)
+    const routeText = wrapper.findAll('.quest-strategy-step').map((step) => step.text())
+    expect(routeText.some((text) => text.includes('B-C-F-J'))).toBe(true)
+    expect(routeText.some((text) => text.includes('D-G-I-O-K-E-Q'))).toBe(true)
+    expect(routeText.some((text) => text.includes('A-D-E-H-I-J-M-P'))).toBe(true)
+    expect(routeText.every((text) => text.includes('鳥海・青葉・衣笠・加古・古鷹・天龍・夕張'))).toBe(
+      true
+    )
   })
 
   it('persists an explicit reviewed-route choice only after manual interaction', async () => {
