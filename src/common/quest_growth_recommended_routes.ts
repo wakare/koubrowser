@@ -1,5 +1,6 @@
 import r8EoRouteCatalogJson from '../../knowledge/quest-growth/r8/route-catalog.json'
 import r8SurfaceRouteCatalogJson from '../../knowledge/quest-growth/r8/surface-route-catalog.json'
+import r8UnlockRouteCatalogJson from '../../knowledge/quest-growth/r8/unlock-route-catalog.json'
 import {
   selectQuestGrowthReviewedRoutes,
   type QuestGrowthReviewedRoute,
@@ -18,6 +19,8 @@ interface QuestGrowthR8RouteCatalog {
   routes: QuestGrowthReviewedRoute[]
 }
 
+export type QuestGrowthRecommendedRouteFocus = QuestGrowthRouteFocus | 'unlock'
+
 const EoRouteId = 'route:1-5-monthly-eo-medal-loop:draft-1'
 const EoRouteFamily = 'normal-map-eo-blueprint-loop'
 const EoRouteDigest =
@@ -26,11 +29,17 @@ const SurfaceRouteId = 'route:2-1-surface-air-baseline:draft-1'
 const SurfaceRouteFamily = 'surface-air-los-foundation'
 const SurfaceRouteDigest =
   'sha256:6de12b626dacdf252746d21593268167105614242f3158a046a1a126db8e3f86'
+const UnlockRouteId = 'route:fleet-2-4-unlock-chain:draft-1'
+const UnlockRouteFamily = 'system-fleet-unlock'
+const UnlockRouteDigest =
+  'sha256:38e06557efdb7b7fafb911b078001faea1d73effd50cbeff755b53e2d1605cc2'
 
 export const QuestGrowthR8EoRouteCatalog =
   r8EoRouteCatalogJson as unknown as QuestGrowthR8RouteCatalog
 export const QuestGrowthR8SurfaceRouteCatalog =
   r8SurfaceRouteCatalogJson as unknown as QuestGrowthR8RouteCatalog
+export const QuestGrowthR8UnlockRouteCatalog =
+  r8UnlockRouteCatalogJson as unknown as QuestGrowthR8RouteCatalog
 
 function validTimestamp(value: string | null): value is string {
   return typeof value === 'string' && value.length > 0 && Number.isFinite(Date.parse(value))
@@ -123,13 +132,58 @@ function surfaceRouteIsDisplayable(route: QuestGrowthReviewedRoute, now: number)
   )
 }
 
+const UnlockSegmentBindings = [
+  ['segment:a1-a4-second-fleet', 'A1-A2-A3-A4'],
+  ['segment:a5-a14-third-fleet', 'A5-A7-A14'],
+  ['segment:a15-a16-fourth-fleet', 'A15-A16']
+] as const
+
+function unlockRouteIsDisplayable(route: QuestGrowthReviewedRoute, now: number): boolean {
+  if (
+    route.routeId !== UnlockRouteId ||
+    route.routeFamily !== UnlockRouteFamily ||
+    route.revision !== 1 ||
+    route.status !== 'reviewed' ||
+    route.outputClass !== 'manual-check-route' ||
+    route.review.author !== 'codex-r8-unlock-route-author' ||
+    route.review.approver !== 'project-owner' ||
+    route.review.approvalDigest !== UnlockRouteDigest ||
+    !validTimestamp(route.review.reviewedAt) ||
+    !validTimestamp(route.currentness.reviewBy) ||
+    !validTimestamp(route.currentness.validUntil) ||
+    Date.parse(route.review.reviewedAt) >= Date.parse(route.currentness.reviewBy) ||
+    now >= Date.parse(route.currentness.reviewBy) ||
+    now >= Date.parse(route.currentness.validUntil) ||
+    route.segments.length !== UnlockSegmentBindings.length
+  ) {
+    return false
+  }
+
+  return route.segments.every((segment, index) => {
+    const binding = UnlockSegmentBindings[index]
+    return (
+      segment.segmentId === binding[0] &&
+      segment.actionCategory === 'quest-chain' &&
+      segment.mapKey === null &&
+      segment.targetNodes.join('-') === binding[1] &&
+      segment.formations.length === 0 &&
+      segment.fleetConstraints.length >= 4 &&
+      segment.equipmentConstraints.length >= 1 &&
+      segment.branchConditions.length >= 3 &&
+      segment.sortieInstructions.length >= 5 &&
+      segment.fallback.trim().length > 0
+    )
+  })
+}
+
 export function selectQuestGrowthRecommendedRoutes(
-  focus: QuestGrowthRouteFocus,
+  focus: QuestGrowthRecommendedRouteFocus,
   now: Date | number,
   eoCatalog: QuestGrowthR8RouteCatalog = QuestGrowthR8EoRouteCatalog,
-  surfaceCatalog: QuestGrowthR8RouteCatalog = QuestGrowthR8SurfaceRouteCatalog
+  surfaceCatalog: QuestGrowthR8RouteCatalog = QuestGrowthR8SurfaceRouteCatalog,
+  unlockCatalog: QuestGrowthR8RouteCatalog = QuestGrowthR8UnlockRouteCatalog
 ): QuestGrowthRouteSelection {
-  if (focus !== 'eo' && focus !== 'surface') {
+  if (focus !== 'eo' && focus !== 'surface' && focus !== 'unlock') {
     return selectQuestGrowthReviewedRoutes(focus, now)
   }
 
@@ -138,14 +192,17 @@ export function selectQuestGrowthRecommendedRoutes(
     return { state: 'knowledge-review-required', routes: [] }
   }
 
-  const catalog = focus === 'eo' ? eoCatalog : surfaceCatalog
+  const catalog =
+    focus === 'eo' ? eoCatalog : focus === 'surface' ? surfaceCatalog : unlockCatalog
   if (!catalogKeepsBundledBoundary(catalog)) {
     return { state: 'knowledge-review-required', routes: [] }
   }
   const displayable =
     focus === 'eo'
       ? eoRouteIsDisplayable(catalog.routes[0], timestamp)
-      : surfaceRouteIsDisplayable(catalog.routes[0], timestamp)
+      : focus === 'surface'
+        ? surfaceRouteIsDisplayable(catalog.routes[0], timestamp)
+        : unlockRouteIsDisplayable(catalog.routes[0], timestamp)
   if (!displayable) {
     return { state: 'knowledge-review-required', routes: [] }
   }

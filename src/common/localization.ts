@@ -945,6 +945,8 @@ export const JapaneseMessages = Object.freeze({
   'quest.growth.fact.airEquipmentCount': '航空装備カテゴリ',
   'quest.growth.fact.losEquipmentCount': '索敵装備カテゴリ',
   'quest.growth.fact.unlockedEoCount': '確認できた EO',
+  'quest.growth.fact.unlockedFleetCount': '開放済み艦隊',
+  'quest.growth.fact.visibleFleetUnlockQuestCount': '表示中の開放任務',
   'quest.growth.fact.fleetSafety': '艦隊安全観測',
   'quest.growth.fact.localData': 'ローカル情報',
   'quest.growth.fact.eventOverlay': 'イベント情報',

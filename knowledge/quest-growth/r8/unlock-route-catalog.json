@@ -1,0 +1,177 @@
+{
+  "authoringSchema": "QuestGrowthR8ConcreteRouteCatalog/1alpha",
+  "catalogVersion": "1.0.0-alpha.1",
+  "status": "reviewed",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "afaf2d9f7ac4dd9b03780df5dea70df40b4bc18d",
+    "checkedAt": "2026-08-02T15:18:37.546Z"
+  },
+  "selectedFamilies": ["system-fleet-unlock"],
+  "publicationAuthorization": "R8_BUNDLED_OPT_IN_ONLY",
+  "runtimeContract": {
+    "defaultVisible": false,
+    "sessionOnly": true,
+    "runtimePublicationAuthorized": false,
+    "runtimeEligibleCount": 0
+  },
+  "routes": [
+    {
+      "routeId": "route:fleet-2-4-unlock-chain:draft-1",
+      "lineageRef": {
+        "id": "growth-lineage:system-fleet-unlock",
+        "revision": 1
+      },
+      "routeFamily": "system-fleet-unlock",
+      "revision": 1,
+      "status": "reviewed",
+      "outputClass": "manual-check-route",
+      "title": "第2～第4艦隊 開放チェーン（手動確認）",
+      "summary": "遠征と並行運用の土台になる第2～第4艦隊を、常設編成任務の順序に沿って確認します。未表示任務や不足艦は推測せず、画面で一段ずつ確認します。",
+      "applicability": [
+        "現在の重点として艦隊・遠征のシステム開放を選んでいる。",
+        "第2～第4艦隊のいずれかが未開放である。",
+        "任務画面の関連タブを開き、表示中の任務と達成状態を手動確認できる。",
+        "必要艦が不足する場合、建造やドロップの優先度をこのルートだけで決めない。"
+      ],
+      "segments": [
+        {
+          "segmentId": "segment:a1-a4-second-fleet",
+          "actionCategory": "quest-chain",
+          "mapKey": null,
+          "targetNodes": ["A1", "A2", "A3", "A4"],
+          "fleetConstraints": [
+            "A1は2隻以上の艦隊を編成する。",
+            "A2は駆逐艦4隻以上を同じ艦隊に編成する。",
+            "A3は軽巡洋艦を旗艦にし、駆逐艦2隻以上を加える。",
+            "A4は艦隊を正確に6隻編成する。"
+          ],
+          "equipmentConstraints": [
+            "装備条件はない。装備変更や廃棄をこの解放手順の条件にしない。"
+          ],
+          "formations": [],
+          "airState": null,
+          "branchConditions": [
+            "A1完了後にA2、A2完了後にA3、A3完了後にA4が表示される順序を確認する。",
+            "途中の任務が表示されない場合は任務タブを更新し、直前任務の達成受領を確認する。",
+            "第2艦隊が既に表示される場合、この区間を完了済みとして次へ進む。"
+          ],
+          "sortieInstructions": [
+            "任務画面で現在表示されているA1～A4の最初の未完了任務を確認する。",
+            "その任務を受託し、指定された艦数・艦種・旗艦条件だけを満たす。",
+            "任務の達成表示を確認し、報酬を受領する。",
+            "任務一覧を更新し、次の任務が表示されたことを確認して同じ手順を繰り返す。",
+            "A4受領後に第2艦隊が編成画面へ追加されたことを確認する。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:expedition-resource-loop",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:f3b8db6fdaa6c222d2bbcaf5f7c0e25ad6d7829472d959e878583787866268ef"
+            },
+            {
+              "claimRef": "claim:expedition-resource-loop",
+              "independenceGroupId": "group:kcwiki-zh",
+              "sourceDigest": "sha256:d3fab35111ef509ec38aa6110a6824c11c853a183fac25079507ae7a68a6177f"
+            }
+          ],
+          "fallback": "A1～A4の表示順、編成条件または第2艦隊の開放結果が証拠と異なる場合は進行を止め、任務画面の現在表示だけを確認する。"
+        },
+        {
+          "segmentId": "segment:a5-a14-third-fleet",
+          "actionCategory": "quest-chain",
+          "mapKey": null,
+          "targetNodes": ["A5", "A7", "A14"],
+          "fleetConstraints": [
+            "A5は軽巡洋艦2隻以上を同じ艦隊に編成する。",
+            "A7は重巡洋艦2隻以上を同じ艦隊に編成する。",
+            "A14は川内・神通・那珂の3隻を同じ艦隊に編成する。",
+            "必要艦のロックと保有状態を確認し、不足艦を所持済みと推定しない。"
+          ],
+          "equipmentConstraints": [
+            "装備条件はない。必要艦の保有確認と任務条件を分けて扱う。"
+          ],
+          "formations": [],
+          "airState": null,
+          "branchConditions": [
+            "A5完了後にA7、A7完了後にA14が表示される順序を確認する。",
+            "A14が見えない場合はA7の受領状態と任務タブの更新を確認する。",
+            "第3艦隊が既に表示される場合、この区間を完了済みとして次へ進む。"
+          ],
+          "sortieInstructions": [
+            "A5、A7、A14のうち、現在表示されている最初の未完了任務を確認する。",
+            "任務を受託し、対象艦を同一艦隊に編成する。",
+            "達成表示を確認して報酬を受領し、任務一覧を更新する。",
+            "A14では川内・神通・那珂の名前を編成画面で一隻ずつ照合する。",
+            "A14受領後に第3艦隊が編成画面へ追加されたことを確認する。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:expedition-resource-loop",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:f3b8db6fdaa6c222d2bbcaf5f7c0e25ad6d7829472d959e878583787866268ef"
+            },
+            {
+              "claimRef": "claim:expedition-resource-loop",
+              "independenceGroupId": "group:kcwiki-zh",
+              "sourceDigest": "sha256:d3fab35111ef509ec38aa6110a6824c11c853a183fac25079507ae7a68a6177f"
+            }
+          ],
+          "fallback": "川内型3隻が揃わない、任務が表示されない、または開放結果が異なる場合は停止し、入手手段をこのルートから自動提案しない。"
+        },
+        {
+          "segmentId": "segment:a15-a16-fourth-fleet",
+          "actionCategory": "quest-chain",
+          "mapKey": null,
+          "targetNodes": ["A15", "A16"],
+          "fleetConstraints": [
+            "A15は妙高・那智・足柄・羽黒の4隻を同じ艦隊に編成する。",
+            "A16は金剛・比叡・榛名・霧島の4隻を同じ艦隊に編成する。",
+            "改装後の同名艦を使う場合も、編成画面の艦名と艦型を手動確認する。",
+            "不足艦がある場合は現在の保有艦を優先して整理し、大型建造を必須手段にしない。"
+          ],
+          "equipmentConstraints": [
+            "装備条件はない。希少装備の移動・廃棄をこの解放手順に含めない。"
+          ],
+          "formations": [],
+          "airState": null,
+          "branchConditions": [
+            "A14完了後にA15、A15完了後にA16が表示される順序を確認する。",
+            "A15またはA16が見えない場合は直前任務の受領と任務タブ更新を確認する。",
+            "第4艦隊が既に表示される場合はルートを終了する。"
+          ],
+          "sortieInstructions": [
+            "A15を受託し、妙高型4隻を同一艦隊に編成して達成を受領する。",
+            "任務一覧を更新し、A16が表示されたことを確認する。",
+            "A16を受託し、金剛型4隻を同一艦隊に編成する。",
+            "達成表示と報酬受領を確認する。",
+            "第4艦隊が編成画面へ追加され、遠征に使える艦隊数が増えたことを確認する。"
+          ],
+          "concreteEvidenceRefs": [
+            {
+              "claimRef": "claim:expedition-resource-loop",
+              "independenceGroupId": "group:wikiwiki-ja",
+              "sourceDigest": "sha256:f3b8db6fdaa6c222d2bbcaf5f7c0e25ad6d7829472d959e878583787866268ef"
+            },
+            {
+              "claimRef": "claim:expedition-resource-loop",
+              "independenceGroupId": "group:kcwiki-zh",
+              "sourceDigest": "sha256:d3fab35111ef509ec38aa6110a6824c11c853a183fac25079507ae7a68a6177f"
+            }
+          ],
+          "fallback": "妙高型または金剛型4隻が揃わない、任務が表示されない、または第4艦隊が開放されない場合は停止し、保有艦と任務表示を再確認する。"
+        }
+      ],
+      "currentness": {
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "fallback": "任務名、前提順、編成条件または艦隊開放報酬が証拠快照と異なる場合はこのルートを表示せず、再審査へ戻す。",
+      "review": {
+        "author": "codex-r8-unlock-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-02T15:18:37.546Z",
+        "approvalDigest": "sha256:38e06557efdb7b7fafb911b078001faea1d73effd50cbeff755b53e2d1605cc2"
+      }
+    }
+  ]
+}

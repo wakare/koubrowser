@@ -160,6 +160,8 @@ describe('quest growth local snapshot adapter', () => {
     expect(input(snapshot.inputs, 'quest.visible-chain')).toMatchObject({
       freshness: 'fresh',
       visibleUnlockQuestCount: 1,
+      unlockedFleetCount: 1,
+      visibleFleetUnlockQuestCount: 0,
       viewCoverage: 'live-all-tabs',
       graphCoverage: 'reviewed-partial'
     })

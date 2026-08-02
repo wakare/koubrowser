@@ -11,6 +11,8 @@
     "quest.visible-chain": {
       "freshness": "unknown",
       "visibleUnlockQuestCount": 0,
+      "unlockedFleetCount": 0,
+      "visibleFleetUnlockQuestCount": 0,
       "viewCoverage": "unknown",
       "graphCoverage": "unresolved"
     },

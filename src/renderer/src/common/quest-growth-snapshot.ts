@@ -31,6 +31,7 @@ export interface QuestGrowthLocalContext {
 export type QuestGrowthResourcePosture = 'unset' | 'conserve' | 'balanced' | 'spend'
 export type QuestGrowthFocus =
   | 'unset'
+  | 'unlock'
   | 'resources'
   | 'asw'
   | 'surface'
@@ -164,6 +165,14 @@ function visibleCuratedQuestCount(questList: ApiQuestList | null): number {
   return questList.api_list.filter((quest) => curatedIds.has(quest.api_no)).length
 }
 
+const FleetUnlockQuestIds = new Set([101, 102, 103, 104, 105, 106, 109, 110, 118])
+
+function visibleFleetUnlockQuestCount(questList: ApiQuestList | null): number {
+  return questList
+    ? questList.api_list.filter((quest) => FleetUnlockQuestIds.has(quest.api_no)).length
+    : 0
+}
+
 function fleetState(svdata: SvData): {
   damage: 'clear' | 'blocked' | 'unknown'
   supply: 'clear' | 'blocked' | 'unknown'
@@ -247,8 +256,10 @@ function evaluatorInputs(
     },
     {
       observableId: 'quest.visible-chain',
-      freshness: questList ? 'fresh' : 'unknown',
+      freshness: questList && svdata.deckPorts.length > 0 ? 'fresh' : 'unknown',
       visibleUnlockQuestCount: visibleCuratedQuestCount(questList),
+      unlockedFleetCount: svdata.deckPorts.length,
+      visibleFleetUnlockQuestCount: visibleFleetUnlockQuestCount(questList),
       viewCoverage: questList ? 'live-all-tabs' : 'unknown',
       graphCoverage: 'reviewed-partial'
     },

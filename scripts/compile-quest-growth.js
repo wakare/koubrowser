@@ -63,8 +63,12 @@ const {
   R8SurfaceRouteOutputFilenames,
   buildR8SurfaceRouteArtifacts
 } = require('./quest-growth-r8-surface-route')
+const {
+  R8UnlockRouteOutputFilenames,
+  buildR8UnlockRouteArtifacts
+} = require('./quest-growth-r8-unlock-route')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/32'
+const CompilerVersion = 'quest-growth-authoring-compiler/33'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -87,7 +91,8 @@ const OutputFilenames = [
   ...R7SignedBundleEvidenceReviewExecutionDecisionOutputFilenames,
   ...R7SignedBundleEvidenceReviewResultRecordingDecisionOutputFilenames,
   ...R8EoRouteOutputFilenames,
-  ...R8SurfaceRouteOutputFilenames
+  ...R8SurfaceRouteOutputFilenames,
+  ...R8UnlockRouteOutputFilenames
 ]
 
 function canonicalize(value) {
@@ -941,6 +946,7 @@ function buildQuestGrowthArtifacts(root) {
     buildR7SignedBundleEvidenceReviewResultRecordingDecisionArtifacts({ root })
   const r8EoRoute = buildR8EoRouteArtifacts({ root })
   const r8SurfaceRoute = buildR8SurfaceRouteArtifacts({ root })
+  const r8UnlockRoute = buildR8UnlockRouteArtifacts({ root })
 
   const claims = [...evidence.claims.values()].map((claim) => ({
     claimId: claim.claimId,
@@ -1004,6 +1010,7 @@ function buildQuestGrowthArtifacts(root) {
       ...r7SignedBundleEvidenceReviewResultRecordingDecision.source,
       ...r8EoRoute.source,
       ...r8SurfaceRoute.source,
+      ...r8UnlockRoute.source,
       fixtureDigests
     },
     output: {
@@ -1053,7 +1060,8 @@ function buildQuestGrowthArtifacts(root) {
       ...r7SignedBundleEvidenceReviewExecutionDecision.output,
       ...r7SignedBundleEvidenceReviewResultRecordingDecision.output,
       ...r8EoRoute.output,
-      ...r8SurfaceRoute.output
+      ...r8SurfaceRoute.output,
+      ...r8UnlockRoute.output
     },
     runtimePromotion: {
       status: 'blocked',
@@ -1189,7 +1197,8 @@ function buildQuestGrowthArtifacts(root) {
     ...r7SignedBundleEvidenceReviewExecutionDecision.artifacts,
     ...r7SignedBundleEvidenceReviewResultRecordingDecision.artifacts,
     ...r8EoRoute.artifacts,
-    ...r8SurfaceRoute.artifacts
+    ...r8SurfaceRoute.artifacts,
+    ...r8UnlockRoute.artifacts
   }
 }
 

@@ -1,10 +1,10 @@
 # 新人向け成長トラック authoring 契約
 
-最終更新日: 2026-08-02
+最終更新日: 2026-08-03
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R8_SURFACE_BUNDLED_OPT_IN_ROUTE_REVIEWED`
+Status: `R8_UNLOCK_BUNDLED_OPT_IN_ROUTE_REVIEWED`
 
 ## モデル境界
 
@@ -126,7 +126,8 @@ band 化せず測定値だけを保持する。R6 authoring は runtime へ接�
 formula、route knowledge を選択から生成せず、`reviewedRouteKnowledge` は引き続き常に `false` とする。
 
 選択中の `focus` に対して、資源の実測値、対潜・航空・索敵装備カテゴリ数、確認できた EO 数、
-艦隊安全観測、event overlay 状態を「ローカルで確認済みの事実」として表示してよい。個艦・装備
+開放済み艦隊数、表示中の固定解放任務数、艦隊安全観測、event overlay 状態を
+「ローカルで確認済みの事実」として表示してよい。個艦・装備
 instance ID は表示せず、これらの値を readiness、affordability、具体的 route へ変換してはならない。
 「艦隊能力の幅」では保有艦数、艦種カテゴリ数、観測できた最小～最大練度、装備カテゴリ数、資源
 観測の有無を表示する。練度 band の境界、イベント適性、カテゴリ不足、優先順位は推論しない。
@@ -228,9 +229,13 @@ R8 は R7 の署名候補や runtime publication を拡張せず、攻略推薦�
 2情報源で照合し、2026-08-03 に reviewed とした。2-1 は軽空母2、雷巡1、駆逐3による
 `C-D-H` / `C-E-D-H` と航空優勢境界81を手動確認対象とし、索敵カテゴリの保有事実を
 2-1到達条件や他海域の索敵達成判定へ流用しない。
+さらに `system-fleet-unlock` lineage に基づき、A1～A4で第2艦隊、A5・A7・A14で第3艦隊、
+A15・A16で第4艦隊を開放する常設編成任務チェーンを日中2情報源で照合し、2026-08-03 に
+reviewed とした。端末では開放済み艦隊数と表示中の固定チェーン任務数だけを匿名集約し、
+未表示任務の完了、必要艦の入手経路、建造・ドロップ優先度を推定しない。
 表示は利用者が対応する重点を選び、閉じた攻略ルート section を開いた場合だけである。既定非表示、
 session-only、manual-check、runtime publication 未承認、runtime eligible count 0 を維持する。
-R8 bundled route 2件はいずれも R7 の Ed25519 signed candidate 2件には含めない。
+R8 bundled route 3件はいずれも R7 の Ed25519 signed candidate 2件には含めない。
 
 具体的 route の `reviewed` 昇格には route 単位の独立 semantic-digest approval を必要とする。renderer、
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や

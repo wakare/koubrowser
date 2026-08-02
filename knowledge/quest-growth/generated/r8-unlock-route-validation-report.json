@@ -1,0 +1,18 @@
+{
+  "catalogDigest": "sha256:eabcd1ceb13fa42322f5343bdc35b8cf38733029d9122ac773c80f66a835d2eb",
+  "compilerVersion": "quest-growth-r8-unlock-route-validator/1",
+  "defaultVisible": false,
+  "evidenceSnapshotDigest": "sha256:d21f41efa820d721ebd918ca59360ebe8e601992d46c8c756269c2942ac79689",
+  "evidenceSourceCount": 2,
+  "generatedAt": "2026-08-02T15:18:37.546Z",
+  "independentEvidenceGroupCount": 2,
+  "reviewedRouteCount": 1,
+  "routeFamily": "system-fleet-unlock",
+  "routeId": "route:fleet-2-4-unlock-chain:draft-1",
+  "routeSemanticDigest": "sha256:38e06557efdb7b7fafb911b078001faea1d73effd50cbeff755b53e2d1605cc2",
+  "runtimeEligibleCount": 0,
+  "runtimePublicationAuthorized": false,
+  "schemaVersion": 1,
+  "sessionOnly": true,
+  "status": "R8_UNLOCK_BUNDLED_OPT_IN_ROUTE_REVIEWED"
+}

@@ -77,7 +77,7 @@
       "readableIndependentSourceIds": []
     }
   ],
-  "compilerVersion": "quest-growth-authoring-compiler/32",
+  "compilerVersion": "quest-growth-authoring-compiler/33",
   "decisionRubricAudits": [
     {
       "acceptanceTestCount": 2,

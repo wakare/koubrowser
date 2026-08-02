@@ -141,6 +141,7 @@ const reviewedRouteSelection = computed(() =>
 const FocusObservableIds: Readonly<
   Partial<Record<QuestGrowthFocus, QuestGrowthFallbackInput['observableId']>>
 > = {
+  unlock: 'quest.visible-chain',
   resources: 'resources.bands',
   asw: 'ships.asw-capable-summary',
   surface: 'capability.surface-air-los-gaps',
@@ -177,6 +178,20 @@ const focusedFacts = computed<GrowthFact[]>(() => {
   if (!input) return []
 
   switch (input.observableId) {
+    case 'quest.visible-chain':
+      if (input.freshness !== 'fresh') return [availabilityFact(input.freshness)]
+      return [
+        numberFact(
+          'unlockedFleetCount',
+          'quest.growth.fact.unlockedFleetCount',
+          input.unlockedFleetCount
+        ),
+        numberFact(
+          'visibleFleetUnlockQuestCount',
+          'quest.growth.fact.visibleFleetUnlockQuestCount',
+          input.visibleFleetUnlockQuestCount
+        )
+      ]
     case 'resources.bands':
       if (!input.totals) return [availabilityFact(input.freshness)]
       return [
@@ -356,6 +371,7 @@ function segmentTarget(segment: QuestGrowthReviewedRouteSegment): string {
         <span>{{ translateApp('quest.growth.context.focus') }}</span>
         <select :value="focus" @change="updateFocus">
           <option value="unset">{{ translateApp('quest.growth.context.unset') }}</option>
+          <option value="unlock">{{ translateApp('quest.growth.observable.questChain') }}</option>
           <option value="resources">{{ translateApp('quest.growth.observable.resources') }}</option>
           <option value="asw">{{ translateApp('quest.growth.observable.asw') }}</option>
           <option value="surface">

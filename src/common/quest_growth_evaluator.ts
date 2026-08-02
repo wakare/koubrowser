@@ -29,6 +29,8 @@ export type QuestGrowthFallbackInput =
   | (BaseInput & {
       observableId: 'quest.visible-chain'
       visibleUnlockQuestCount: number
+      unlockedFleetCount: number
+      visibleFleetUnlockQuestCount: number
       viewCoverage: 'live-all-tabs' | 'live-partial-tabs' | 'cached-session' | 'unknown'
       graphCoverage: 'reviewed-complete' | 'reviewed-partial' | 'unresolved'
     })
@@ -239,6 +241,8 @@ function validateInput(input: QuestGrowthFallbackInput): void {
       return
     case 'quest.visible-chain':
       assertCount(input.visibleUnlockQuestCount, 'visibleUnlockQuestCount')
+      assertCount(input.unlockedFleetCount, 'unlockedFleetCount')
+      assertCount(input.visibleFleetUnlockQuestCount, 'visibleFleetUnlockQuestCount')
       assertEnum(
         input.viewCoverage,
         ['live-all-tabs', 'live-partial-tabs', 'cached-session', 'unknown'],
@@ -363,6 +367,8 @@ export function evaluateQuestGrowthFallback(
 
     case 'quest.visible-chain':
       assertCount(input.visibleUnlockQuestCount, 'visibleUnlockQuestCount')
+      assertCount(input.unlockedFleetCount, 'unlockedFleetCount')
+      assertCount(input.visibleFleetUnlockQuestCount, 'visibleFleetUnlockQuestCount')
       assertEnum(
         input.viewCoverage,
         ['live-all-tabs', 'live-partial-tabs', 'cached-session', 'unknown'],

@@ -5,6 +5,8 @@
     "quest.visible-chain": {
       "freshness": "fresh",
       "visibleUnlockQuestCount": 1,
+      "unlockedFleetCount": 2,
+      "visibleFleetUnlockQuestCount": 1,
       "viewCoverage": "live-partial-tabs",
       "graphCoverage": "reviewed-partial"
     },

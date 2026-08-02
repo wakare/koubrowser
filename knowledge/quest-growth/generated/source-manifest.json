@@ -1,5 +1,5 @@
 {
-  "compilerVersion": "quest-growth-authoring-compiler/32",
+  "compilerVersion": "quest-growth-authoring-compiler/33",
   "output": {
     "approvedDecisionRubricCount": 8,
     "approvedMilestoneCount": 8,
@@ -93,6 +93,10 @@
     "r8SurfaceReviewedRouteCount": 1,
     "r8SurfaceRuntimeEligibleCount": 0,
     "r8SurfaceRuntimePublicationAuthorized": false,
+    "r8UnlockEvidenceSourceCount": 2,
+    "r8UnlockReviewedRouteCount": 1,
+    "r8UnlockRuntimeEligibleCount": 0,
+    "r8UnlockRuntimePublicationAuthorized": false,
     "reviewedRouteUnitCount": 6,
     "routeLineageCount": 6,
     "routeRuntimeEligibleCount": 0,
@@ -114,11 +118,11 @@
     "evidenceLineageDigest": "sha256:dc988fcb5754d282c09ddb46def09407c36023035361e0fcb6ebaad4d86790d6",
     "fixtureDigests": {
       "asw-missing.json": "sha256:c98d591b6b7d554281c48bb6fc76424348611e28c71d7fb0260b586bc7e64862",
-      "early-maps-only.json": "sha256:5b98e72fc2446e29bfc9b76e65ebb58d8901afd6f8ff987dfc138a0a4e33e31a",
+      "early-maps-only.json": "sha256:ed344256ecdf10a7d8c52ecc4a8d1d540072824cb62f7a293ffa882b0ab41657",
       "event-active-not-ready.json": "sha256:f124405f93fd8417f37eee929069f22ee83e22e8f6a5b37db03a3d1a6a5df30b",
       "map-rich-equipment-poor.json": "sha256:0b7d673fbdfb90846efb34ebdc651f1ae603adce546d80e28c6425807f90102f",
       "resource-conservation-posture.json": "sha256:eec83fa0e5f318a7fb8e3dee33035ff81ef8e9d89f79fc216c2da88756f00bf5",
-      "unknown-state.json": "sha256:c5d4fa83660a79c05c70ade35826781920375532bb62d383f2b937071246f917"
+      "unknown-state.json": "sha256:f5aaef1cd4c2a9179c76e2d1380f1ae8cd181eead506d79c6d054abecad64318"
     },
     "fixturesDigest": "sha256:c61a046d82c6f0261f70651b22000f975d85c644346d26a0f90a13bc9e73c8a9",
     "lineagesDigest": "sha256:0ac6db8c61f0df02e506ee92139a41eff122cd54c2cdb677785f18be032d2a4f",
@@ -148,6 +152,8 @@
     "r8EoRouteCatalogDigest": "sha256:8fecd0810ccd1eb6f3874e713dbcabe9515c56a8e3c6656e887f54c2a326fa8a",
     "r8SurfaceEvidenceSnapshotDigest": "sha256:d35fbe4774679252dc2e2425d1ffb0dcda19cede56ecdd9b32fab4c629b471f6",
     "r8SurfaceRouteCatalogDigest": "sha256:5ed82389017cfe18afd526c0bc66b3d7dd06d1b3db47cc48b82b6c91ac97367f",
+    "r8UnlockEvidenceSnapshotDigest": "sha256:d21f41efa820d721ebd918ca59360ebe8e601992d46c8c756269c2942ac79689",
+    "r8UnlockRouteCatalogDigest": "sha256:eabcd1ceb13fa42322f5343bdc35b8cf38733029d9122ac773c80f66a835d2eb",
     "schemaDigest": "sha256:3ff863c1063459cbf5a9e8780ddf95f0fdcf9a9c2e0ecc8c69d2776475c57682",
     "unitsDigest": "sha256:79dbc942c7a6d57b7ebd8b0671468669db9974fa50803e0b40b43f67898925c4"
   }

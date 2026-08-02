@@ -39,6 +39,8 @@ const FreshInputs: QuestGrowthFallbackInput[] = [
     observableId: 'quest.visible-chain',
     freshness: 'fresh',
     visibleUnlockQuestCount: 2,
+    unlockedFleetCount: 3,
+    visibleFleetUnlockQuestCount: 1,
     viewCoverage: 'live-all-tabs',
     graphCoverage: 'reviewed-complete'
   },
@@ -139,6 +141,8 @@ describe('quest growth pure fallback evaluator', () => {
         observableId: 'quest.visible-chain',
         freshness: 'fresh',
         visibleUnlockQuestCount: 0,
+        unlockedFleetCount: 2,
+        visibleFleetUnlockQuestCount: 0,
         viewCoverage,
         graphCoverage: 'reviewed-complete'
       })

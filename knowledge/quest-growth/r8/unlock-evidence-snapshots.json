@@ -1,0 +1,82 @@
+{
+  "authoringSchema": "QuestGrowthR8EvidenceSnapshots/1alpha",
+  "snapshotVersion": "1.0.0-alpha.1",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "afaf2d9f7ac4dd9b03780df5dea70df40b4bc18d",
+    "checkedAt": "2026-08-02T15:18:37.546Z"
+  },
+  "sources": [
+    {
+      "sourceId": "source:wikiwiki-ja:fleet-unlock-chain:2026-08-03",
+      "independenceGroupId": "group:wikiwiki-ja",
+      "url": "https://wikiwiki.jp/kancolle/%E4%BB%BB%E5%8B%99",
+      "title": "全任務一覧 / A.編成",
+      "site": "艦隊これくしょん -艦これ- 攻略 Wiki*",
+      "language": "ja-JP",
+      "accessibility": "independently-readable",
+      "evidenceClass": "quest-chain",
+      "checkedAt": "2026-08-02T15:18:37.546Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-01-28T00:00:00.000Z",
+      "supportedClaims": ["claim:expedition-resource-loop"],
+      "facts": [
+        {
+          "factId": "fact:wikiwiki:a1-a4-second-fleet",
+          "statement": "A1→A2→A3→A4の順で編成任務が開き、A4は6隻編成で第2艦隊を開放する。"
+        },
+        {
+          "factId": "fact:wikiwiki:a5-a7-a14-third-fleet",
+          "statement": "A5→A7→A14へ進み、A14で川内・神通・那珂を同一艦隊に編成すると第3艦隊を開放する。"
+        },
+        {
+          "factId": "fact:wikiwiki:a15-a16-fourth-fleet",
+          "statement": "A14後のA15で妙高・那智・足柄・羽黒を編成し、続くA16で金剛・比叡・榛名・霧島を編成すると第4艦隊を開放する。"
+        },
+        {
+          "factId": "fact:wikiwiki:formation-conditions",
+          "statement": "A3は軽巡旗艦と駆逐2隻以上、A7は重巡2隻以上、A4は正確に6隻の編成を要求する。"
+        }
+      ],
+      "notes": [
+        "常設編成任務の表だけを根拠とし、未表示任務を端末観測から完了済みとは推定しない。",
+        "艦娘の入手順や建造・ドロップ優先度はこの証拠から導出しない。"
+      ]
+    },
+    {
+      "sourceId": "source:kcwiki-zh:fleet-unlock-chain:2026-08-03",
+      "independenceGroupId": "group:kcwiki-zh",
+      "url": "https://zh.kcwiki.cn/wiki/%E4%BB%BB%E5%8A%A1%E5%88%86%E7%B1%BB",
+      "title": "任务 / 常规任务列表 / 编成",
+      "site": "舰娘百科",
+      "language": "zh-CN",
+      "accessibility": "independently-readable",
+      "evidenceClass": "quest-chain",
+      "checkedAt": "2026-08-02T15:18:37.546Z",
+      "reviewBy": "2026-10-30T00:00:00.000Z",
+      "validUntil": "2027-01-28T00:00:00.000Z",
+      "supportedClaims": ["claim:expedition-resource-loop"],
+      "facts": [
+        {
+          "factId": "fact:kcwiki:a1-a4-second-fleet",
+          "statement": "中文任务表同样列出A1→A2→A3→A4，A4要求6舰编成并开启第2舰队，同时说明第2舰队开启后可用远征。"
+        },
+        {
+          "factId": "fact:kcwiki:a5-a7-a14-third-fleet",
+          "statement": "中文任务表列出A5→A7→A14，A14要求川内、神通、那珂同舰队编成并开启第3舰队。"
+        },
+        {
+          "factId": "fact:kcwiki:a15-a16-fourth-fleet",
+          "statement": "中文任务表列出A14→A15→A16，A15要求妙高型4舰，A16要求金刚型4舰并开启第4舰队。"
+        },
+        {
+          "factId": "fact:kcwiki:formation-conditions",
+          "statement": "中文任务表确认A3为轻巡旗舰加驱逐舰，A7为重巡2舰，A4为全部6舰的主力舰队。"
+        }
+      ],
+      "notes": [
+        "只采用与日文Wiki一致的常设舰队解锁链和编成条件。",
+        "若游戏内显示与快照不同，则停止具体顺序输出并返回重新审查。"
+      ]
+    }
+  ]
+}
