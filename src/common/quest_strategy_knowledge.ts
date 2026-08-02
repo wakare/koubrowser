@@ -1165,6 +1165,108 @@ const recipes = [
   },
   {
     schemaVersion: 1,
+    id: 'normal-5-4-31st-destroyer-quarterly',
+    revision: 1,
+    title: '5-4 精鋭三一駆クォータリー',
+    status: 'approved',
+    questIds: [875],
+    objectives: [{ questId: 875, result: 'S', requiredCount: 2 }],
+    mapKey: '5-4',
+    routeLabels: ['A-D-E-H-I-J-M-P'],
+    targetNodes: ['P'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        { shipTypeIds: [ApiShipType.teisoku_senkan], minimum: 1, maximum: 1, label: '戦艦 1 隻' },
+        { shipTypeIds: [ApiShipType.koukuu_senkan], minimum: 1, maximum: 1, label: '航空戦艦 1 隻' },
+        { shipTypeIds: [ApiShipType.raijyun], minimum: 1, maximum: 1, label: '重雷装巡洋艦 1 隻' },
+        { shipTypeIds: [ApiShipType.koujyun], minimum: 1, maximum: 1, label: '航空巡洋艦 1 隻' },
+        { shipTypeIds: [ApiShipType.kutikukan], minimum: 2, maximum: 2, label: '駆逐艦 2 隻' }
+      ],
+      specificShipConstraints: [
+        {
+          baseShipIds: [543],
+          minimum: 1,
+          label: '長波改二系 1 隻'
+        },
+        {
+          baseShipIds: [345, 359, 344],
+          minimum: 1,
+          label: '高波改・沖波改・朝霜改系から 1 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.SeaplaneFighter],
+        minimum: 4,
+        required: false,
+        label: 'Pボス航空優勢140を狙う水上戦闘機 4～5 個'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.RecSeaplane, SlotitemType.SmallRadar, SlotitemType.LargeRadar],
+        minimum: 4,
+        required: true,
+        label: '分岐点係数2の索敵値45以上へ余裕を加える偵察機・電探'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.SmallRadar, SlotitemType.LargeRadar],
+        minimum: 3,
+        required: false,
+        label: 'Dのうずしお被害を軽減する電探 3 個'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.Searchlight],
+        minimum: 1,
+        required: false,
+        label: 'H・Jの夜戦を補助する探照灯'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'E・J・Pボス' },
+      { formationId: ApiFormation.keikai, label: '警戒陣', when: 'Hの夜戦（使用可能時）' }
+    ],
+    airState: {
+      target: 'superiority',
+      summary: 'Pボス航空優勢140に搭載機損耗分の余裕を加える。難しい場合は拮抗63以上を下限に再調整する'
+    },
+    actions: [
+      '任務875を受注し、長波改二系と指定随伴1隻、5-4のS勝利回数が残っていることを確認する',
+      '長波改二系1・高波改/沖波改/朝霜改系から1・戦艦1・航空戦艦1・雷巡1・航巡1の6隻にする',
+      '分岐点係数2の索敵値45以上へ余裕を加え、Dうずしお用の電探3個、夜戦装備、可能ならP航空優勢140を準備する',
+      'A-D-E-H-I-J-M-Pを進み、H・Jの夜戦後を含めて損傷を確認し、大破時は進撃しない。必要なら道中支援を使う',
+      'PボスでS勝利を取り、任務875の進捗を確認して合計2回まで繰り返す'
+    ],
+    cost: 'high',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-5-4-31st-destroyer-current',
+        sourceLabel: '艦これ攻略 Wiki - 5-4',
+        url: 'https://wikiwiki.jp/kancolle/南方海域/5-4',
+        reviewedAt: '2026-08-03T15:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '長波改二系と指定3隻から1隻、ボスS勝利2回、駆逐2の中央うずしお経由、索敵45、夜戦と制空リスクを確認'
+      },
+      {
+        sourceId: 'kcwiki-map-5-4-31st-destroyer-current',
+        sourceLabel: '舰娘百科 - 5-4',
+        url: 'https://zh.kcwiki.cn/wiki/5-4',
+        reviewedAt: '2026-08-03T15:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          'A-D-E-H-I-J-M-P、戦艦1・航戦1・雷巡1・航巡1・指定駆逐2、索敵45、電探3とP航空優勢140を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: { reviewBy: '2026-11-03T00:00:00.000Z' }
+  },
+  {
+    schemaVersion: 1,
     id: 'normal-1-6-transport-quarterly',
     revision: 1,
     title: '1-6 強行輸送艦隊',
@@ -2811,6 +2913,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.16',
+  version: '2026-08-03.17',
   recipes
 })

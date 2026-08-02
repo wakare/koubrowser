@@ -286,6 +286,40 @@ describe('quest strategy runtime v2 stage coverage', () => {
     ])
   })
 
+  it('requires both reviewed named-ship groups for the 31st Destroyer route', () => {
+    const recipe = BundledQuestStrategyKnowledge.recipes.find(
+      (item) => item.id === 'normal-5-4-31st-destroyer-quarterly'
+    )!
+
+    expect(recipe.fleet.specificShipConstraints).toMatchObject([
+      { baseShipIds: [543], minimum: 1 },
+      { baseShipIds: [345, 359, 344], minimum: 1 }
+    ])
+    expect(auditQuestStrategyRecipeObjective(recipe, 875)).toMatchObject({
+      complete: true,
+      coverageStatus: 'route-ready',
+      contributions: [{ stageIndex: 0, mapKey: '5-4', machineConstraintComplete: true }]
+    })
+    expect(
+      auditQuestStrategyRecipeObjective(
+        {
+          ...recipe,
+          fleet: {
+            ...recipe.fleet,
+            specificShipConstraints: recipe.fleet.specificShipConstraints?.slice(0, 1)
+          }
+        },
+        875
+      ).coverageStatus
+    ).toBe('route-unreviewed')
+
+    const plan = build([875])
+    expect(plan.coveredQuestIds).toEqual([875])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual([
+      'normal-5-4-31st-destroyer-quarterly'
+    ])
+  })
+
   it('uses the reviewed 1-6 transport route to complete the quarterly arrival task', () => {
     const plan = build([861])
 

@@ -53,6 +53,7 @@ describe('QuestStrategyRoute.vue', () => {
           '2-3',
           '2-5',
           '5-1',
+          '5-4',
           '4-1',
           '4-2',
           '4-3',
@@ -155,6 +156,15 @@ describe('QuestStrategyRoute.vue', () => {
     expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(1)
     expect(wrapper.get('.quest-strategy-step').text()).toContain('大和型・長門型・伊勢型・扶桑型')
     expect(wrapper.get('.quest-strategy-step').text()).toContain('B-E-G-J / A-D-E-G-J')
+  })
+
+  it('shows both named-ship groups and night-battle route for quest 875', async () => {
+    const wrapper = await render([recommendation(875, 'active')])
+
+    expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(1)
+    expect(wrapper.get('.quest-strategy-step').text()).toContain('長波改二系')
+    expect(wrapper.get('.quest-strategy-step').text()).toContain('高波改・沖波改・朝霜改系')
+    expect(wrapper.get('.quest-strategy-step').text()).toContain('A-D-E-H-I-J-M-P')
   })
 
   it('persists an explicit reviewed-route choice only after manual interaction', async () => {

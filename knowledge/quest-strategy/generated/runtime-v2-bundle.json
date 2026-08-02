@@ -2444,6 +2444,186 @@
     },
     {
       "actions": [
+        "任務875を受注し、長波改二系と指定随伴1隻、5-4のS勝利回数が残っていることを確認する",
+        "長波改二系1・高波改/沖波改/朝霜改系から1・戦艦1・航空戦艦1・雷巡1・航巡1の6隻にする",
+        "分岐点係数2の索敵値45以上へ余裕を加え、Dうずしお用の電探3個、夜戦装備、可能ならP航空優勢140を準備する",
+        "A-D-E-H-I-J-M-Pを進み、H・Jの夜戦後を含めて損傷を確認し、大破時は進撃しない。必要なら道中支援を使う",
+        "PボスでS勝利を取り、任務875の進捗を確認して合計2回まで繰り返す"
+      ],
+      "airState": {
+        "summary": "Pボス航空優勢140に搭載機損耗分の余裕を加える。難しい場合は拮抗63以上を下限に再調整する",
+        "target": "superiority"
+      },
+      "contributions": [
+        {
+          "mapKey": "5-4",
+          "questId": 875,
+          "requiredCount": 2,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "high",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            45
+          ],
+          "label": "Pボス航空優勢140を狙う水上戦闘機 4～5 個",
+          "minimum": 4,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            10,
+            12,
+            13
+          ],
+          "label": "分岐点係数2の索敵値45以上へ余裕を加える偵察機・電探",
+          "minimum": 4,
+          "required": true
+        },
+        {
+          "equipmentTypeIds": [
+            12,
+            13
+          ],
+          "label": "Dのうずしお被害を軽減する電探 3 個",
+          "minimum": 3,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            29
+          ],
+          "label": "H・Jの夜戦を補助する探照灯",
+          "minimum": 1,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T15:00:00.000Z",
+          "sourceId": "wikiwiki-map-5-4-31st-destroyer-current",
+          "sourceLabel": "艦これ攻略 Wiki - 5-4",
+          "summary": "長波改二系と指定3隻から1隻、ボスS勝利2回、駆逐2の中央うずしお経由、索敵45、夜戦と制空リスクを確認",
+          "url": "https://wikiwiki.jp/kancolle/南方海域/5-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T15:00:00.000Z",
+          "sourceId": "kcwiki-map-5-4-31st-destroyer-current",
+          "sourceLabel": "舰娘百科 - 5-4",
+          "summary": "A-D-E-H-I-J-M-P、戦艦1・航戦1・雷巡1・航巡1・指定駆逐2、索敵45、電探3とP航空優勢140を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/5-4",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "戦艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              9
+            ]
+          },
+          {
+            "label": "航空戦艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              10
+            ]
+          },
+          {
+            "label": "重雷装巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              4
+            ]
+          },
+          {
+            "label": "航空巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              6
+            ]
+          },
+          {
+            "label": "駆逐艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              543
+            ],
+            "label": "長波改二系 1 隻",
+            "minimum": 1
+          },
+          {
+            "baseShipIds": [
+              345,
+              359,
+              344
+            ],
+            "label": "高波改・沖波改・朝霜改系から 1 隻",
+            "minimum": 1
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "E・J・Pボス"
+        },
+        {
+          "formationId": 6,
+          "label": "警戒陣",
+          "when": "Hの夜戦（使用可能時）"
+        }
+      ],
+      "mapKey": "5-4",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-5-4-31st-destroyer-quarterly",
+      "routeLabels": [
+        "A-D-E-H-I-J-M-P"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "P"
+      ],
+      "title": "5-4 精鋭三一駆クォータリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務861を受注し、1-6到達回数が残っていることを確認する",
         "補給艦2・駆逐艦4の6隻にする。艦種が補給艦の状態であることを確認し、搭載可能なら水上戦闘機や対空カットインを用意する",
         "A-E-Gを進み、GからKへ逸れた場合は撤退して再出撃する。Fへ進んだ場合も各戦闘後に損傷を確認し、大破時は進撃しない",
@@ -4810,11 +4990,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:4f7bbbb1aef771ef1680d05d88a59e6c42e3f3fba8614cbbd457c8e2b0af1fd6",
-    "legacyKnowledgeDigest": "sha256:31aa60d70dad00f381dd2a76b1627c529c16827a08360bb68f91db9d83661228",
-    "pilotAuthoringManifestDigest": "sha256:4e2296d9ddc402a568d10631fad8b1296d828e17ea54493de6372cf19e2488f3",
+    "inventoryDigest": "sha256:c32854200f86db2d6caf5f5a6264aaaabc8e28049b7ac82e76673ffcb157e79b",
+    "legacyKnowledgeDigest": "sha256:42b9aa22db9a3a4838a4a491052cc37f6c91e4b40a3f0e00bf239fe94a6eebf4",
+    "pilotAuthoringManifestDigest": "sha256:7dbd0d0b8c5b95454f2380b5303b5f06f5b024fbbd372a1f05665c6972a9dafa",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "8dae8e39ac6168860f8f01f7478c8afd945f18d6"
+    "repositoryCommit": "37577a671e5c311dbde6596bcc2ee3a10040b243"
   },
-  "version": "2026-08-03.16.v2"
+  "version": "2026-08-03.17.v2"
 }

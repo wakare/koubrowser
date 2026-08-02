@@ -26,7 +26,7 @@ describe('quest strategy runtime v2 compiler', () => {
       }
     )
 
-    expect(output).toContain('27 facts, 31 routes, 52 stage contributions, 0 rejected objectives')
+    expect(output).toContain('27 facts, 32 routes, 53 stage contributions, 0 rejected objectives')
   })
 
   it('compiles exact stage contributions without promoting partial multi-stage quests', () => {
@@ -145,6 +145,10 @@ describe('quest strategy runtime v2 compiler', () => {
         ?.contributions
     ).toMatchObject([{ questId: 259, stageIndex: 0, mapKey: '5-1' }])
     expect(
+      bundle.routes.find((route) => route.routeId === 'normal-5-4-31st-destroyer-quarterly')
+        ?.contributions
+    ).toMatchObject([{ questId: 875, stageIndex: 0, mapKey: '5-4' }])
+    expect(
       bundle.routes.find((route) => route.routeId === 'normal-4-4-western-quarterly')?.contributions
     ).toMatchObject([
       { questId: 242, stageIndex: 0, mapKey: '4-4' },
@@ -168,7 +172,7 @@ describe('quest strategy runtime v2 compiler', () => {
     expect(manifest.output.bundleDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(manifest.unsupported).toEqual([])
     expect(withdrawals.withdrawals).toEqual([])
-    expect(withdrawals.dependencies).toHaveLength(31)
+    expect(withdrawals.dependencies).toHaveLength(32)
   })
 
   it('binds every runtime route to an approved template and exact objective facts', () => {

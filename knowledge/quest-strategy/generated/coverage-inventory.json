@@ -8045,7 +8045,7 @@
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "8dae8e39ac6168860f8f01f7478c8afd945f18d6"
+    "repositoryCommit": "37577a671e5c311dbde6596bcc2ee3a10040b243"
   },
   "summary": {
     "cadenceCatalogComplete": true,

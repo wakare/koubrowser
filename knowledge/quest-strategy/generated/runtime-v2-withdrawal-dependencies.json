@@ -241,6 +241,20 @@
     },
     {
       "evidenceDependencies": [
+        "wikiwiki-map-5-4-31st-destroyer-current",
+        "kcwiki-map-5-4-31st-destroyer-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 875,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-5-4-31st-destroyer-quarterly"
+    },
+    {
+      "evidenceDependencies": [
         "wikiwiki-map-1-6-current",
         "kcwiki-map-1-6-current",
         "wikiwiki-periodic-sortie"
