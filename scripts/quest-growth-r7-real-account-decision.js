@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const R7RealAccountDecisionCompilerVersion =
-  'quest-growth-r7-real-account-decision-compiler/8'
+  'quest-growth-r7-real-account-decision-compiler/9'
 const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -130,6 +130,17 @@ const ExpectedExecutionResult = {
   pageFilterPanelWindowStateRestored: true,
   applicationProcessClosed: true
 }
+const ExpectedRetryAuthorization = {
+  revision: 4,
+  supersedesRevision: 3,
+  reasonCode: 'ACCOUNT_DATA_NOT_READY_WITHIN_MANUAL_WINDOW',
+  maximumExecutions: 1,
+  manualLoginTimeoutMs: 300000,
+  sameReviewedRoutesOnly: true,
+  harnessChangesAuthorized: false,
+  productionCodeChangesAuthorized: false,
+  routeContentChangesAuthorized: false
+}
 const ExpectedProhibited = [
   'credential-handling-by-agent',
   'agent-click-game-start',
@@ -245,6 +256,7 @@ function validateR7RealAccountAcceptanceRequest(
       'abortConditions',
       'priorAttempt',
       'harnessAmendment',
+      'retryAuthorization',
       'executionResult',
       'executionBoundary',
       'stillProhibited',
@@ -255,7 +267,7 @@ function validateR7RealAccountAcceptanceRequest(
   if (
     value.authoringSchema !== 'QuestGrowthR7RealAccountAcceptanceRequest/1alpha' ||
     value.requestId !== 'decision:quest-growth-r7-real-account-readonly-acceptance' ||
-    value.revision !== 3 ||
+    value.revision !== 4 ||
     !['draft', 'approved'].includes(value.status) ||
     value.scope !== 'R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY'
   ) {
@@ -438,6 +450,14 @@ function validateR7RealAccountAcceptanceRequest(
     throw new Error('R7 acceptance harness amendment mismatch')
   }
   exactKeys(
+    value.retryAuthorization,
+    Object.keys(ExpectedRetryAuthorization),
+    'R7 acceptance retry authorization'
+  )
+  if (!same(value.retryAuthorization, ExpectedRetryAuthorization)) {
+    throw new Error('R7 acceptance retry authorization mismatch')
+  }
+  exactKeys(
     value.executionResult,
     Object.keys(ExpectedExecutionResult),
     'R7 acceptance execution result'
@@ -508,7 +528,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
       : request.value.sourceSnapshot.checkedAt,
     status: request.approved
       ? 'REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED'
-      : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT',
+      : 'OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY',
     scope: request.value.scope,
     requestId: request.value.requestId,
     revision: request.value.revision,
@@ -541,6 +561,9 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     priorAttemptReasonCode: request.value.priorAttempt.reasonCode,
     harnessAmendmentReasonCode: request.value.harnessAmendment.reasonCode,
     harnessAmendmentChangeCount: request.value.harnessAmendment.changes.length,
+    retryAuthorizationReasonCode: request.value.retryAuthorization.reasonCode,
+    maximumRetryExecutions: request.value.retryAuthorization.maximumExecutions,
+    harnessChangesAuthorized: request.value.retryAuthorization.harnessChangesAuthorized,
     anonymousHiddenLayoutFixtureRequired:
       request.value.harnessAmendment.anonymousHiddenLayoutFixtureRequired,
     anonymousTallLayoutFixtureRequired:
@@ -556,7 +579,7 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     output: {
       r7RealAccountAcceptanceRouteCount: report.routeBindings.length,
       r7RealAccountAcceptanceRequiredCheckCount: report.requiredCheckCount,
-      r7RealAccountAcceptanceAmendmentOwnerDecisionRequired: !request.approved,
+      r7RealAccountAcceptanceOwnerDecisionRequired: !request.approved,
       r7RealAccountAcceptanceFailClosed: request.approved,
       r7RealAccountAcceptanceAuthorizedRouteCount: 0
     }

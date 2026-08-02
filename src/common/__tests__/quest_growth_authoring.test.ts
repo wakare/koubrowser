@@ -168,7 +168,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED'
+      reason: 'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -189,7 +189,9 @@ describe('quest growth authoring contract', () => {
     ).toBe(false)
     expect(report.globalStops).toContain('NO_ROUTE_KNOWLEDGE_RUNTIME_BUNDLE_IN_CONTEXT_UI_STAGE')
     expect(report.globalStops).toContain('OBSERVABILITY_GAPS_REMAIN')
-    expect(report.globalStops).toContain('R7_REAL_ACCOUNT_ACCEPTANCE_FAIL_CLOSED')
+    expect(report.globalStops).toContain(
+      'R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED'
+    )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
   })
@@ -726,7 +728,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('records the revision 3 login timeout as fail closed', () => {
+  it('requires owner approval for the bounded revision 4 retry', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -736,6 +738,7 @@ describe('quest growth authoring contract', () => {
       maximumAcceptedRoutes: number
       requiredCheckCount: number
       actualAcceptanceStatus: string
+      accountDataReady: boolean
       screenshotCaptureAllowed: boolean
       rawLogRetentionAllowed: boolean
       accountDataExportAllowed: boolean
@@ -752,12 +755,17 @@ describe('quest growth authoring contract', () => {
       checkedRouteCount: number
       pageFilterPanelWindowStateRestored: boolean
       applicationProcessClosed: boolean
+      retryAuthorizationReasonCode: string
+      maximumRetryExecutions: number
+      harnessChangesAuthorized: boolean
     }>('generated', 'r7-real-account-acceptance-report.json')
 
-    expect(report.status).toBe('REAL_ACCOUNT_READONLY_ACCEPTANCE_FAIL_CLOSED')
-    expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(report.status).toBe('OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_RETRY')
+    expect(report.semanticDigest).toBe(
+      'sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c'
+    )
     expect(report.authorizationState).toBe('authorized')
-    expect(report.executionAuthorization).toBe('consumed')
+    expect(report.executionAuthorization).toBe('not-authorized')
     expect(report.acceptanceMode).toBe('owner-login-readonly-redacted')
     expect(report.maximumAcceptedRoutes).toBe(2)
     expect(report.requiredCheckCount).toBe(12)
@@ -768,6 +776,11 @@ describe('quest growth authoring contract', () => {
     expect(report.checkedRouteCount).toBe(0)
     expect(report.pageFilterPanelWindowStateRestored).toBe(true)
     expect(report.applicationProcessClosed).toBe(true)
+    expect(report.retryAuthorizationReasonCode).toBe(
+      'ACCOUNT_DATA_NOT_READY_WITHIN_MANUAL_WINDOW'
+    )
+    expect(report.maximumRetryExecutions).toBe(1)
+    expect(report.harnessChangesAuthorized).toBe(false)
     expect(report.priorAttemptReasonCode).toBe('TASK_WORKSPACE_PAGE_NOT_VISIBLE')
     expect(report.harnessAmendmentReasonCode).toBe(
       'TALL_AND_COMPACT_TASK_GUIDE_LAYOUT_SELECTION'

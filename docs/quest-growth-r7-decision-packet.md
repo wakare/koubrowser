@@ -67,6 +67,7 @@ revision 3 は tall layout の `primary-overview` と compact layout の `second
 `sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945` であり、project owner が
 1回の只読・脱敏再実行を承認した。実行は DMM login page で account data を待機したまま timeout し、
 route 検査前に fail closed した。承認は消費済みで、runtime publication と default enablement は未承認のままである。
+revision 4 は同じ harness と同じ2 route を使う1回限りの再試行 request であり、owner decision required である。
 
 ## 提案する output class
 

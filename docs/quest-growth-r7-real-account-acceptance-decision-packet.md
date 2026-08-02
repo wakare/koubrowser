@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_REVISION_3_FAIL_CLOSED`
+Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_REVISION_4_RETRY`
 
 ## 目的
 
@@ -17,7 +17,8 @@ revision 1 harness が開けず、route 検査前に fail closed した。revisi
 `authorized` とした。再試行は account data ready 後、tall layout で task page を解決できず、
 route 検査前に再び fail closed した。この1回分の実行承認は消費済みである。
 revision 3 は tall / compact layout の表示先を判定する harness 修訂だけを固定し、実アカウントの
-追加実行は再承認待ちとする。
+追加実行を承認したが、owner manual login window 内に account data が ready にならず fail closed した。
+revision 4 は同じ harness と同じ2 route の1回限りの再試行だけを再承認対象とする。
 
 machine-readable request は
 [`r7-real-account-acceptance-request.json`](../knowledge/quest-growth/decisions/r7-real-account-acceptance-request.json)、
@@ -166,9 +167,11 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 ## 固定摘要
 
 - acceptance request semantic digest:
-  `sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945`
+  `sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c`
 - request raw digest:
-  `sha256:f4092af1c061ab3c198236a32f78c5de70a69b1cae14ec0fb515ab3aec6ec462`
+  `sha256:84aebfa98d9b91e5784c16500e0c256517edf0ccebf218cdd3757666bfbc1281`
+- revision 3 approved semantic digest:
+  `sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945`
 - approved revision 2 request raw digest:
   `sha256:409132e26bd5b131da0049d715408438a13bd59c028eca6dea2dea48d899f446`
 - executed revision 2 request raw digest:
@@ -191,19 +194,21 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 - revision 3 reason: `MANUAL_LOGIN_TIMEOUT_BEFORE_ACCOUNT_DATA`
 - revision 3 account data ready: `false`
 - revision 3 checked route count: `0`
+- revision 4 execution authorization: `not-authorized`
+- revision 4 maximum executions: `1`
+- revision 4 harness changes authorized: `false`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
 
 推奨承認文面:
 
-> 批准修订固定摘要 `sha256:68793574113a951707da8937207e601fdac759bdd6ff9e52fa27dab9090a0945`
-> 对应的 `r7-real-account-readonly-acceptance` revision 3 harness amendment。仅允许 harness 根据
-> 实际布局在 tall 模式检查 primary-overview/questguide，在 compact 模式检查或临时恢复
-> secondary-tasks/questguide，并将 timeout diagnostic 限制为脱敏名称与尺寸；仅授权对原固定的
-> 两条 reviewed route 再执行一次原范围的只读、脱敏验收。其余边界不变：Codex 不得
-> 处理凭据、点击 GAME START、执行游戏操作、修改游戏通信、保存截图/raw log/account snapshot、
-> 修改路线或 production code；不授权 runtime publication、默认启用或其他 route family。
+> 批准固定摘要 `sha256:8fec2825a32362949041fd2c13c3aadca9bd900988f4f829b8eff4af6d92820c`
+> 对应的 `r7-real-account-readonly-acceptance` revision 4 retry authorization。仅允许沿用 revision 3
+> 已固定并通过匿名 fixture 的 layout-aware harness，对原固定的两条 reviewed route 再执行一次原范围的
+> 只读、脱敏验收；project owner 必须手动处理登录并只点击一次 GAME START。Codex 不得处理凭据、点击
+> GAME START、执行游戏操作、修改游戏通信、保存截图/raw log/account snapshot、修改 harness、路线或
+> production code；不授权 runtime publication、默认启用或其他 route family。
 
 ## 承認結果と現在の結論
 
@@ -212,3 +217,10 @@ revision 3 は匿名 fixture まで完了し、project owner は固定摘要を�
 DMM login page で account data を待機したが、5分以内に login / GAME START が完了せず、route 検査前に
 fail closed した。`executionAuthorization` は `consumed` であり、新しい固定摘要の承認なしに再実行しない。
 runtime publication、default enablement、他 family は未承認のままである。
+
+## revision 4 retry request
+
+revision 4 は harness、production code、route content を変更しない。revision 3 と同じ layout-aware harness、
+同じ2件の reviewed route、同じ5分の owner manual login window を使用する1回限りの再試行だけを申請する。
+現在の `executionAuthorization` は `not-authorized` であり、本 packet の固定摘要を project owner が
+明示承認するまで実アカウント session を開始しない。
