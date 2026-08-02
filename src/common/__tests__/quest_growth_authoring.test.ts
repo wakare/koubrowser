@@ -961,6 +961,26 @@ describe('quest growth authoring contract', () => {
     ).toThrow('R7 responsive layout authorization mismatch')
   })
 
+  it('binds the responsive layout approval to audited source digests', () => {
+    const request = read<
+      Record<string, unknown> & {
+        failureBasis: { growthComponentDigest: string; smokeHarnessDigest: string }
+      }
+    >('decisions', 'r7-responsive-layout-fix-request.json')
+    const tampered = structuredClone(request)
+    tampered.failureBasis.growthComponentDigest = tampered.failureBasis.smokeHarnessDigest
+
+    expect(responsiveLayoutRequestSemanticDigest(tampered)).not.toBe(
+      responsiveLayoutRequestSemanticDigest(request)
+    )
+    expect(() =>
+      validateR7ResponsiveLayoutFixRequest(tampered, {
+        root: process.cwd(),
+        base: GrowthDirectory
+      })
+    ).toThrow('R7 responsive layout failure basis mismatch')
+  })
+
   it('binds approval to semantic content while excluding approval metadata', () => {
     const policy = read<Record<string, unknown>>('authoring', 'route-eligibility-policy.json')
     const baselineDigest = semanticApprovalDigest(policy)

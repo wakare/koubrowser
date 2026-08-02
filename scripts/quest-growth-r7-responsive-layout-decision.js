@@ -9,6 +9,12 @@ const R7ResponsiveLayoutDecisionOutputFilenames = [
 ]
 const ApprovedResponsiveLayoutSemanticDigest =
   'sha256:3b7c6d8b5806cb5c0e850d3a197d9f276d49a90a55cdf75a3a3d03ee031f1e43'
+const FixedGrowthComponentDigest =
+  'sha256:c50c847d7b392759d94f65a8dd8bbaea8a047b1d12b5f4a5f6f308cded1e9947'
+const FixedQuestGuideDigest =
+  'sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4'
+const FixedSmokeHarnessDigest =
+  'sha256:f2c35818aa8cb41d43fee52a5bd6582cdec2344d5ebf4b8f31aee3ae48775400'
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
@@ -147,15 +153,9 @@ function validateR7ResponsiveLayoutFixRequest(value, { root, base }) {
     acceptanceSemanticDigest: realAccountReport.semanticDigest,
     acceptanceReportDigest: digest(realAccountReportRaw),
     acceptanceResultCommit: value.sourceSnapshot.auditedBaseCommit,
-    growthComponentDigest: digest(
-      fs.readFileSync(
-        path.join(root, 'src', 'renderer', 'src', 'components', 'QuestGrowthCheck.vue')
-      )
-    ),
-    questGuideDigest: digest(
-      fs.readFileSync(path.join(root, 'src', 'renderer', 'src', 'components', 'QuestGuide.vue'))
-    ),
-    smokeHarnessDigest: digest(fs.readFileSync(path.join(root, 'scripts', 'electron-smoke.js'))),
+    growthComponentDigest: FixedGrowthComponentDigest,
+    questGuideDigest: FixedQuestGuideDigest,
+    smokeHarnessDigest: FixedSmokeHarnessDigest,
     reasonCode: realAccountReport.acceptanceReasonCode,
     layoutDiagnostic: realAccountReport.layoutDiagnostic,
     protectedCommunicationDigests: Object.fromEntries(
