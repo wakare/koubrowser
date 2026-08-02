@@ -213,7 +213,7 @@ describe('quest growth authoring contract', () => {
       'R7_REAL_ACCOUNT_ACCEPTANCE_PASSED_PUBLICATION_NOT_AUTHORIZED'
     )
     expect(report.globalStops).toContain(
-      'R7_RUNTIME_PUBLICATION_AUTHORING_OWNER_DECISION_REQUIRED'
+      'R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED'
     )
     expect(report.globalStops).not.toContain('INDEPENDENT_APPROVER_REQUIRED')
     expect(report.globalStops).not.toContain('LOCAL_OBSERVABILITY_AUDIT_REQUIRED')
@@ -1100,14 +1100,12 @@ describe('quest growth authoring contract', () => {
       productionDeploymentConfigurationAuthorization: string
     }>('generated', 'r7-runtime-publication-authoring-report.json')
 
-    expect(report.status).toBe(
-      'OWNER_DECISION_REQUIRED_R7_RUNTIME_PUBLICATION_AUTHORING'
-    )
+    expect(report.status).toBe('R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED')
     expect(report.semanticDigest).toBe(
       'sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104'
     )
-    expect(report.authorizationState).toBe('not-authorized')
-    expect(report.implementationAuthorization).toBe('not-authorized')
+    expect(report.authorizationState).toBe('authorized')
+    expect(report.implementationAuthorization).toBe('authorized')
     expect(report.maximumPublishedRoutes).toBe(2)
     expect(report.authorizedPaths).toHaveLength(9)
     expect(report.changeCount).toBe(6)

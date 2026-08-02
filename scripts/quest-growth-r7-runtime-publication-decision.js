@@ -392,6 +392,8 @@ function buildR7RuntimePublicationDecisionArtifacts({ root, base }) {
     source: { r7RuntimePublicationAuthoringRequestDigest: digest(requestRaw) },
     output: {
       r7RuntimePublicationAuthoringOwnerDecisionRequired: !request.approved,
+      r7RuntimePublicationAuthoringAuthorizedNotImplemented:
+        request.approved && request.value.implementationResult === null,
       r7RuntimePublicationAuthoringAuthorizedPathCount: request.approved
         ? report.authorizedPaths.length
         : 0,

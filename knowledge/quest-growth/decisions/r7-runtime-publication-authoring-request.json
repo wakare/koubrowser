@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7RuntimePublicationAuthoringRequest/1alpha",
   "requestId": "decision:quest-growth-r7-runtime-publication-authoring",
   "revision": 1,
-  "status": "draft",
+  "status": "approved",
   "scope": "R7_RUNTIME_PUBLICATION_AUTHORING_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "ae08aca3974d3ccdf19ed4690855caa815e87b45",
@@ -30,8 +30,8 @@
   },
   "requestedAuthorization": {
     "gateId": "r7-runtime-publication-authoring",
-    "authorizationState": "not-authorized",
-    "implementationAuthorization": "not-authorized",
+    "authorizationState": "authorized",
+    "implementationAuthorization": "authorized",
     "maximumPublishedRoutes": 2,
     "authorizedPaths": [
       "src/common/quest_growth_reviewed_routes.ts",
@@ -109,8 +109,8 @@
   ],
   "review": {
     "author": "codex-r7-runtime-publication-authoring-decision-author",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T10:05:55.362Z",
+    "approvalDigest": "sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104"
   }
 }

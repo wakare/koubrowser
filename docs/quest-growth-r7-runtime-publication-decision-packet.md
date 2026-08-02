@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-RUNTIME-PUBLICATION-AUTHORING`
 
-Status: `OWNER_DECISION_REQUIRED_R7_RUNTIME_PUBLICATION_AUTHORING`
+Status: `R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED`
 
 ## 目的
 
@@ -97,3 +97,7 @@ authoring 与匿名 fixture PASS 只产生 publication candidate evidence。以�
 2. production manifest URL、public key、fingerprint 与 HTTPS staging acceptance
 3. runtime publication 执行
 4. default enablement release decision
+
+project owner は `2026-08-02T10:05:55.362Z` に semantic digest
+`sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104` を明示承認した。
+固定9 path の authoring と匿名 signed fixture だけが authorized であり、implementation result は未記録である。

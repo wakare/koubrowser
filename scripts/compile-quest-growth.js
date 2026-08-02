@@ -1051,7 +1051,10 @@ function buildQuestGrowthArtifacts(root) {
       ...(r7RuntimePublicationDecision.output
         .r7RuntimePublicationAuthoringOwnerDecisionRequired
         ? ['R7_RUNTIME_PUBLICATION_AUTHORING_OWNER_DECISION_REQUIRED']
-        : [])
+        : r7RuntimePublicationDecision.output
+            .r7RuntimePublicationAuthoringAuthorizedNotImplemented
+          ? ['R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED_NOT_IMPLEMENTED']
+          : [])
     ]
   }
   return {

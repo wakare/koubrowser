@@ -1,6 +1,6 @@
 {
   "anonymousSignedFixtureRequired": true,
-  "authorizationState": "not-authorized",
+  "authorizationState": "authorized",
   "authorizedPaths": [
     "src/common/quest_growth_reviewed_routes.ts",
     "src/common/quest_knowledge_update.ts",
@@ -16,13 +16,13 @@
   "compilerVersion": "quest-growth-r7-runtime-publication-decision-compiler/1",
   "defaultEnablementAuthorization": "R7_NOT_AUTHORIZED",
   "gateId": "r7-runtime-publication-authoring",
-  "generatedAt": "2026-08-02T09:48:33.527Z",
-  "implementationAuthorization": "not-authorized",
+  "generatedAt": "2026-08-02T10:05:55.362Z",
+  "implementationAuthorization": "authorized",
   "maximumPublishedRoutes": 2,
   "productionDeploymentConfigurationAuthorization": "R7_NOT_AUTHORIZED",
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
   "realAccountAcceptanceStatus": "REAL_ACCOUNT_READONLY_ACCEPTANCE_PASSED",
-  "requestDigest": "sha256:6f18a9ba21dab278b296d6d0d84cfb2e097e36d95da486ea7829ad4490d30208",
+  "requestDigest": "sha256:72b5f91dd4e32aff23e244ad3d7705808a0f86e4295a06a3a39beb4a72069ca5",
   "requestId": "decision:quest-growth-r7-runtime-publication-authoring",
   "requiredCheckCount": 8,
   "revision": 1,
@@ -31,7 +31,7 @@
   "schemaVersion": 1,
   "scope": "R7_RUNTIME_PUBLICATION_AUTHORING_ONLY",
   "semanticDigest": "sha256:580d7002173588b74d1e6327adf4235a20eeb12477d43689a9599adb86b42104",
-  "status": "OWNER_DECISION_REQUIRED_R7_RUNTIME_PUBLICATION_AUTHORING",
+  "status": "R7_RUNTIME_PUBLICATION_AUTHORING_AUTHORIZED",
   "stillProhibited": [
     "runtime-publication",
     "default-enablement",

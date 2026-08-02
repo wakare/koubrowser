@@ -268,8 +268,8 @@ current / controlled size の横 overflow、UI state 復元をすべて確認し
 次の独立 gate は runtime publication である。既存 Ed25519 data-update 経路へ2 reviewed route を接続する
 schema / validator、session-only bridge、rollback fallback と匿名 signed fixture だけを
 [`quest-growth-r7-runtime-publication-decision-packet.md`](quest-growth-r7-runtime-publication-decision-packet.md)
-に固定した。現在は owner decision required であり、実際の publication、production URL / public key、
-default enablement は許可しない。
+に固定した。project owner は固定摘要を承認し、9 path の authoring と匿名 signed fixture だけを
+authorized とした。実際の publication、production URL / public key、default enablement は許可しない。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
