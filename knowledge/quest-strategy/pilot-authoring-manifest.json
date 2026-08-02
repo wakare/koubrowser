@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.9",
+  "manifestVersion": "2026-08-03.10",
   "sourceSnapshot": {
-    "repositoryCommit": "977ceb1f1e8b53b298b88d9cb771859de3cb8499",
+    "repositoryCommit": "7f7dbfe03c84374079f0c0fcb6bc8b4817a57939",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -424,6 +424,34 @@
       }
     },
     {
+      "factId": "quest:862:objective",
+      "questId": 862,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "7f7dbfe03c84374079f0c0fcb6bc8b4817a57939",
+        "projectionDigest": "sha256:4da583ce8720b2f6e38b5cce7b53b02fca6a613251195c516fe9de7d75e4a8a6"
+      },
+      "classification": "lossless-v1",
+      "objectiveStages": [
+        {
+          "requiredCount": 2,
+          "targets": [{ "mapKey": "6-3", "result": "A", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-aerial-recon-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T08:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
       "factId": "quest:873:objective",
       "questId": 873,
       "revision": 1,
@@ -832,6 +860,39 @@
         "evidenceReviewIds": [
           "map-1-6-wikiwiki-current-review",
           "map-1-6-kcwiki-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
+      "templateId": "normal-map:6-3:r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "6-3",
+      "routeLabels": ["A-C-E-F-H-J"],
+      "targetNodes": ["J"],
+      "fleetConstraintRef": "legacy-recipe:normal-6-3-aerial-recon-quarterly",
+      "formations": [
+        { "formationId": 5, "label": "単横陣", "when": "C の対潜戦" },
+        { "formationId": 1, "label": "単縦陣", "when": "E・F・Jボス" }
+      ],
+      "actions": [
+        "任務862を受注し、6-3のA勝利回数が残っていることを確認する",
+        "水上機母艦2・軽巡洋艦3・駆逐艦1の6隻にし、分岐点係数3の索敵値38以上に余裕を加える",
+        "Aの能動分岐でCを選び、A-C-E-F-H-Jを進む。各戦闘後に損傷を確認し、大破時は進撃しない",
+        "Jボスは夜戦も含めてA勝利以上を取り、任務進捗を確認して合計2回まで繰り返す"
+      ],
+      "cost": "medium",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-aerial-recon-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T08:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-6-3-wikiwiki-current-review",
+          "map-6-3-kcwiki-current-review",
           "periodic-sortie-review"
         ]
       }
@@ -1386,6 +1447,26 @@
       "sourceLabel": "舰娘百科 - 1-6",
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-03T07:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-3-wikiwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/中部海域/6-3",
+      "sourceLabel": "艦これ攻略 Wiki - 6-3",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T08:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-6-3-kcwiki-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/中部海域/6-3",
+      "sourceLabel": "舰娘百科 - 6-3",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T08:00:00.000Z",
       "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },

@@ -2113,6 +2113,125 @@
     },
     {
       "actions": [
+        "任務862を受注し、6-3のA勝利回数が残っていることを確認する",
+        "水上機母艦2・軽巡洋艦3・駆逐艦1の6隻にし、分岐点係数3の索敵値38以上に余裕を加える",
+        "Aの能動分岐でCを選び、A-C-E-F-H-Jを進む。各戦闘後に損傷を確認し、大破時は進撃しない",
+        "Jボスは夜戦も含めてA勝利以上を取り、任務進捗を確認して合計2回まで繰り返す"
+      ],
+      "airState": {
+        "summary": "敵航空戦力はない。水上爆撃機などが1機以上残れば制空権確保になる",
+        "target": "supremacy"
+      },
+      "contributions": [
+        {
+          "mapKey": "6-3",
+          "questId": 862,
+          "requiredCount": 2,
+          "result": "A",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "medium",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            10,
+            11
+          ],
+          "label": "索敵・航空偵察用の水偵・水爆 2 個以上",
+          "minimum": 2,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T08:00:00.000Z",
+          "sourceId": "wikiwiki-map-6-3-current",
+          "sourceLabel": "艦これ攻略 Wiki - 6-3",
+          "summary": "水母2・軽巡3・駆逐1のF固定、A-C-E-F-H-J、索敵38以上と任務862のA勝利2回を確認",
+          "url": "https://wikiwiki.jp/kancolle/中部海域/6-3",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T08:00:00.000Z",
+          "sourceId": "kcwiki-map-6-3-current",
+          "sourceLabel": "舰娘百科 - 6-3",
+          "summary": "水母2・軽巡3・駆逐1の高火力4戦候補、海域制限、索敵準備と任務条件を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/中部海域/6-3",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "水上機母艦 2 隻",
+            "maximum": 2,
+            "minimum": 2,
+            "shipTypeIds": [
+              16
+            ]
+          },
+          {
+            "label": "軽巡洋艦 3 隻",
+            "maximum": 3,
+            "minimum": 3,
+            "shipTypeIds": [
+              3
+            ]
+          },
+          {
+            "label": "駆逐艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              2
+            ]
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 5,
+          "label": "単横陣",
+          "when": "C の対潜戦"
+        },
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "E・F・Jボス"
+        }
+      ],
+      "mapKey": "6-3",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-6-3-aerial-recon-quarterly",
+      "routeLabels": [
+        "A-C-E-F-H-J"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "J"
+      ],
+      "title": "6-3 前線航空偵察",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務873を受注し、3-1段階が残っていることを確認する",
         "正規空母系1・軽空母1・軽巡洋艦1・重巡級1・駆逐艦2の6隻にする",
         "C-F-Gを進み、F戦後に損傷を確認して大破時は進撃しない",
@@ -3496,11 +3615,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:48f456fc4632f32727a5265fd43655f9f72124c5768c48c314fb29a148c3eff9",
-    "legacyKnowledgeDigest": "sha256:efd6993189479ecc2a92e7758066164563fb45e6142f211879ee5f6c25aa8715",
-    "pilotAuthoringManifestDigest": "sha256:2e2e6bcc57b5779718562251d25fa4c1e176f2a233277e50c7b5f9e17f9c5e2a",
+    "inventoryDigest": "sha256:f2e8e844e50250d4e88248e0fb8b5d56bf4a3c9e606b39017498408c9f9d5877",
+    "legacyKnowledgeDigest": "sha256:e16e8d9f71128e25b5196d6d69fd4d057363ef1662994e114b9cc28c53a01898",
+    "pilotAuthoringManifestDigest": "sha256:e8e5b08a182116497d8be304fc9d5bd302cc2b83e701ef14cb5bf91b8588627b",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "977ceb1f1e8b53b298b88d9cb771859de3cb8499"
+    "repositoryCommit": "7f7dbfe03c84374079f0c0fcb6bc8b4817a57939"
   },
-  "version": "2026-08-03.9.v2"
+  "version": "2026-08-03.10.v2"
 }

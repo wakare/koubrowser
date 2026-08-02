@@ -43,6 +43,7 @@ function build(selectedQuestIds: number[], conflictedQuestIds: number[] = []) {
         '4-4': 'available',
         '4-5': 'available',
         '5-2': 'available',
+        '6-3': 'available',
         '7-1': 'available',
         '7-2': 'available'
       },
@@ -168,6 +169,15 @@ describe('quest strategy runtime v2 stage coverage', () => {
     expect(plan.partialQuestIds).toEqual([])
     expect(plan.uncoveredQuestIds).toEqual([])
     expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-1-6-transport-quarterly'])
+  })
+
+  it('uses the reviewed 6-3 route to complete the quarterly aerial reconnaissance task', () => {
+    const plan = build([862])
+
+    expect(plan.coveredQuestIds).toEqual([862])
+    expect(plan.partialQuestIds).toEqual([])
+    expect(plan.uncoveredQuestIds).toEqual([])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual(['normal-6-3-aerial-recon-quarterly'])
   })
 
   it('assembles all three northern patrol stages and shares 3-3 with the weekly', () => {

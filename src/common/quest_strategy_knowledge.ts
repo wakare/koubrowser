@@ -925,6 +925,90 @@ const recipes = [
   },
   {
     schemaVersion: 1,
+    id: 'normal-6-3-aerial-recon-quarterly',
+    revision: 1,
+    title: '6-3 前線航空偵察',
+    status: 'approved',
+    questIds: [862],
+    objectives: [{ questId: 862, result: 'A', requiredCount: 2 }],
+    mapKey: '6-3',
+    routeLabels: ['A-C-E-F-H-J'],
+    targetNodes: ['J'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.suibo],
+          minimum: 2,
+          maximum: 2,
+          label: '水上機母艦 2 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 3,
+          maximum: 3,
+          label: '軽巡洋艦 3 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.kutikukan],
+          minimum: 1,
+          maximum: 1,
+          label: '駆逐艦 1 隻'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.RecSeaplane, SlotitemType.SeaplaneBomber],
+        minimum: 2,
+        required: false,
+        label: '索敵・航空偵察用の水偵・水爆 2 個以上'
+      }
+    ],
+    formations: [
+      { formationId: ApiFormation.tanou, label: '単横陣', when: 'C の対潜戦' },
+      { formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'E・F・Jボス' }
+    ],
+    airState: {
+      target: 'supremacy',
+      summary: '敵航空戦力はない。水上爆撃機などが1機以上残れば制空権確保になる'
+    },
+    actions: [
+      '任務862を受注し、6-3のA勝利回数が残っていることを確認する',
+      '水上機母艦2・軽巡洋艦3・駆逐艦1の6隻にし、分岐点係数3の索敵値38以上に余裕を加える',
+      'Aの能動分岐でCを選び、A-C-E-F-H-Jを進む。各戦闘後に損傷を確認し、大破時は進撃しない',
+      'Jボスは夜戦も含めてA勝利以上を取り、任務進捗を確認して合計2回まで繰り返す'
+    ],
+    cost: 'medium',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-6-3-current',
+        sourceLabel: '艦これ攻略 Wiki - 6-3',
+        url: 'https://wikiwiki.jp/kancolle/中部海域/6-3',
+        reviewedAt: '2026-08-03T08:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '水母2・軽巡3・駆逐1のF固定、A-C-E-F-H-J、索敵38以上と任務862のA勝利2回を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-6-3-current',
+        sourceLabel: '舰娘百科 - 6-3',
+        url: 'https://zh.kcwiki.cn/wiki/中部海域/6-3',
+        reviewedAt: '2026-08-03T08:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary: '水母2・軽巡3・駆逐1の高火力4戦候補、海域制限、索敵準備と任務条件を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
     id: 'normal-3-1-northern-quarterly',
     revision: 1,
     title: '3-1 北方海域警備',
@@ -1884,6 +1968,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.9',
+  version: '2026-08-03.10',
   recipes
 })
