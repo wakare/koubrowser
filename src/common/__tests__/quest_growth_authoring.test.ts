@@ -140,7 +140,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED'
+      reason: 'R7_REVIEWED_ROUTES_RENDERER_NOT_AUTHORIZED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -359,13 +359,15 @@ describe('quest growth authoring contract', () => {
     ).toThrow('only the R7 schema and pilot content authoring gates are authorized')
   })
 
-  it('validates two draft pilot routes and keeps publication blocked', () => {
+  it('validates two reviewed pilot routes and keeps publication blocked', () => {
     const report = read<
       Record<string, unknown> & {
         status: string
         selectedPilotFamilies: string[]
         catalogRouteCount: number
         concreteRouteArtifactCount: number
+        draftConcreteRouteArtifactCount: number
+        reviewedConcreteRouteArtifactCount: number
         fixtureCaseCount: number
         fixtureValidationPassed: boolean
         publicationAuthorization: string
@@ -388,6 +390,8 @@ describe('quest growth authoring contract', () => {
     expect(catalog.routes).toHaveLength(2)
     expect(report.catalogRouteCount).toBe(2)
     expect(report.concreteRouteArtifactCount).toBe(2)
+    expect(report.draftConcreteRouteArtifactCount).toBe(0)
+    expect(report.reviewedConcreteRouteArtifactCount).toBe(2)
     expect(report.evidenceSnapshotDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(report.evidenceSourceCount).toBe(4)
     expect(report.fixtureCaseCount).toBe(4)
@@ -397,7 +401,7 @@ describe('quest growth authoring contract', () => {
     expect(validateFixturePacket(fixtures)).toHaveLength(4)
   })
 
-  it('rejects reviewed status inside the draft-only R7 content gate', () => {
+  it('rejects reviewed R7 status without its exact route approval digest', () => {
     const request = read<Record<string, unknown>>('decisions', 'r7-authorization-request.json')
     const report = read<Record<string, unknown>>('generated', 'r7-authorization-report.json')
     const catalog = read<Record<string, unknown> & { routes: unknown[] }>(
@@ -416,10 +420,11 @@ describe('quest growth authoring contract', () => {
       new Set(routeEvidenceLineage.independenceGroups.map((group) => group.independenceGroupId))
     )
     const tampered = structuredClone(catalog)
-    ;(tampered.routes[0] as { status: string }).status = 'reviewed'
+    ;(tampered.routes[0] as { review: { approvalDigest: string | null } }).review.approvalDigest =
+      null
 
     expect(() => validateCatalog(tampered, request, report, contentRequest, evidence)).toThrow(
-      'R7 route must remain draft'
+      'R7 route approval digest mismatch'
     )
   })
 
@@ -461,8 +466,8 @@ describe('quest growth authoring contract', () => {
     expect(report.maximumRouteArtifactsPerFamily).toBe(1)
     expect(report.maximumAuthoringStatus).toBe('draft')
     expect(report.currentCatalogRouteCount).toBe(2)
-    expect(report.draftConcreteRouteArtifactCount).toBe(2)
-    expect(report.reviewedConcreteRouteArtifactCount).toBe(0)
+    expect(report.draftConcreteRouteArtifactCount).toBe(0)
+    expect(report.reviewedConcreteRouteArtifactCount).toBe(2)
     expect(report.runtimeEligibleCount).toBe(0)
     expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
     expect(report.stillProhibited).toContain('renderer-integration')
@@ -495,7 +500,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('generates an unapproved digest-bound review decision for both R7 pilot drafts', () => {
+  it('generates an approved digest-bound review decision for both R7 pilot routes', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -513,11 +518,11 @@ describe('quest growth authoring contract', () => {
       }[]
     }>('generated', 'r7-pilot-route-review-report.json')
 
-    expect(report.status).toBe('OWNER_DECISION_REQUIRED_ROUTE_REVIEW')
+    expect(report.status).toBe('PILOT_ROUTE_AUTHORING_REVIEW_APPROVED')
     expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
-    expect(report.authorizationState).toBe('not-authorized')
-    expect(report.currentDraftRouteCount).toBe(2)
-    expect(report.reviewedRouteCount).toBe(0)
+    expect(report.authorizationState).toBe('authorized')
+    expect(report.currentDraftRouteCount).toBe(0)
+    expect(report.reviewedRouteCount).toBe(2)
     expect(report.runtimeEligibleCount).toBe(0)
     expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
     expect(report.routeReviews).toHaveLength(2)
@@ -527,7 +532,7 @@ describe('quest growth authoring contract', () => {
           /^sha256:[0-9a-f]{64}$/.test(route.routeSemanticDigest) &&
           route.evidenceBindingCount === 2 &&
           route.independenceGroupCount === 2 &&
-          route.reviewDecision === 'OWNER_DECISION_REQUIRED'
+          route.reviewDecision === 'REVIEWED'
       )
     ).toBe(true)
   })
@@ -574,14 +579,14 @@ describe('quest growth authoring contract', () => {
         }
       }
     >('decisions', 'r7-pilot-route-review-request.json')
-    const approved = structuredClone(request)
-    approved.status = 'approved'
-    approved.requestedReview.authorizationState = 'authorized'
-    approved.review.approver = 'project-owner'
-    approved.review.reviewedAt = '2026-08-02T02:00:00.000Z'
-    approved.review.approvalDigest = routeReviewRequestSemanticDigest(request)
+    const pending = structuredClone(request)
+    pending.status = 'draft'
+    pending.requestedReview.authorizationState = 'owner-decision-required'
+    pending.review.approver = null
+    pending.review.reviewedAt = null
+    pending.review.approvalDigest = null
 
-    expect(routeReviewRequestSemanticDigest(approved)).toBe(
+    expect(routeReviewRequestSemanticDigest(pending)).toBe(
       routeReviewRequestSemanticDigest(request)
     )
   })

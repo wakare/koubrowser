@@ -22,7 +22,7 @@
       },
       "routeFamily": "expedition-resource-periodic-loop",
       "revision": 1,
-      "status": "draft",
+      "status": "reviewed",
       "outputClass": "manual-check-route",
       "title": "遠征05「海上護衛任務」資源ループ（手動確認）",
       "summary": "燃料と弾薬を同時に補う初期遠征候補。開始前に解放、編成、補給を毎回確認する草案です。",
@@ -77,9 +77,9 @@
       "fallback": "条件、報酬または所要時間が証拠快照と異なる場合はこの草案を利用せず、再審査へ戻す。",
       "review": {
         "author": "codex-r7-pilot-author",
-        "approver": null,
-        "reviewedAt": null,
-        "approvalDigest": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-02T01:36:15.348Z",
+        "approvalDigest": "sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a"
       }
     },
     {
@@ -90,7 +90,7 @@
       },
       "routeFamily": "anti-submarine-foundation",
       "revision": 1,
-      "status": "draft",
+      "status": "reviewed",
       "outputClass": "manual-check-route",
       "title": "1-5 3戦撤退・基礎対潜練習（手動確認）",
       "summary": "軽巡・駆逐・海防艦を1-5の潜水艦戦で育成し、3戦目直後に撤退する条件付き草案です。",
@@ -148,9 +148,9 @@
       "fallback": "1-5の分岐、敵編成または司令部条件が証拠快照と異なる場合はこの草案を利用せず、再審査へ戻す。",
       "review": {
         "author": "codex-r7-pilot-author",
-        "approver": null,
-        "reviewedAt": null,
-        "approvalDigest": null
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-02T01:36:15.348Z",
+        "approvalDigest": "sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d"
       }
     }
   ]

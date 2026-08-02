@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const R7ContentDecisionCompilerVersion = 'quest-growth-r7-content-decision-compiler/2'
+const R7ContentDecisionCompilerVersion = 'quest-growth-r7-content-decision-compiler/3'
 const R7ContentDecisionOutputFilenames = ['r7-pilot-content-authorization-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -341,8 +341,8 @@ function buildR7ContentDecisionArtifacts({
     requiredReviewRuleCount: request.value.authoringRequirements.requiredReviewRules.length,
     stillProhibited: request.value.stillProhibited,
     currentCatalogRouteCount: r7SchemaReport.catalogRouteCount,
-    draftConcreteRouteArtifactCount: r7SchemaReport.concreteRouteArtifactCount,
-    reviewedConcreteRouteArtifactCount: 0,
+    draftConcreteRouteArtifactCount: r7SchemaReport.draftConcreteRouteArtifactCount,
+    reviewedConcreteRouteArtifactCount: r7SchemaReport.reviewedConcreteRouteArtifactCount,
     runtimeEligibleCount: 0,
     publicationAuthorization: 'R7_NOT_AUTHORIZED'
   }

@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R7_PILOT_CONTENT_AUTHORIZED_TWO_DRAFTS_AUTHORED`
+Status: `R7_PILOT_ROUTES_REVIEWED_RENDERER_NOT_AUTHORIZED`
 
 ## モデル境界
 
@@ -194,7 +194,7 @@ compiler version、input digest、output digest を固定する。
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
 本データで上書きしない。R6 lineage は exact commit
 `6b52e143af9fcab1dbb00b74f7e89bcf695e5e38` を別の audit snapshot として保持する。
-`R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED` を downstream stop に固定し、authoring catalog の2 draft を
+`R7_REVIEWED_ROUTES_RENDERER_NOT_AUTHORIZED` を downstream stop に固定し、authoring catalog の2 reviewed route を
 pure evaluator、adapter、UI、runtime bundle のいずれへも出力してはならない。
 
 ## 予定する完了順序
@@ -215,17 +215,18 @@ pure evaluator、adapter、UI、runtime bundle のいずれへも出力しては
 
 R7 の実装前判断は [`quest-growth-r7-decision-packet.md`](quest-growth-r7-decision-packet.md) に分離した。
 現在は `r7-schema-output-class` と `r7-pilot-content-authoring` をそれぞれ semantic digest に固定して
-承認し、遠征05の資源ループと1-5の3戦撤退対潜練習を各1件 `draft` として authoring した。
-残る4 gate は `not-authorized`、reviewed route と runtime eligible は0件である。
+承認し、遠征05の資源ループと1-5の3戦撤退対潜練習を各1件 authoring した。project owner は
+2026-08-02 に route ごとの固定摘要を独立承認し、2件を `reviewed` へ昇格した。
+残る4 gate は `not-authorized`、runtime eligible は0件である。
 
 具体的 route の `reviewed` 昇格には route 単位の独立 semantic-digest approval を必要とする。renderer、
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や
 R6 の pure evaluation artifact はそれらの承認を代替しない。
 
-2件の draft を対象とする route review decision packet を生成済みである。packet と route ごとの
+2件を対象とする route review decision packet は project owner の承認済みである。packet と route ごとの
 semantic digest は
 [`quest-growth-r7-route-review-decision-packet.md`](quest-growth-r7-route-review-decision-packet.md)
-に固定し、owner 承認までは reviewed route count を0件に保つ。
+に固定し、reviewed route count は2件、runtime eligible count は0件に保つ。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-0_CONCRETE_ROUTE_DECISION_PACKET`
 
-Status: `SCHEMA_AND_PILOT_DRAFT_AUTHORING_APPROVED`
+Status: `PILOT_ROUTES_REVIEWED_RENDERER_NOT_AUTHORIZED`
 
 ## 目的
 
@@ -91,18 +91,17 @@ project owner は初期 pilot として次の2件を選択した。
 - [`schema-cases.json`](../knowledge/quest-growth/fixtures/r7-schema/schema-cases.json)（匿名 synthetic）
 - [`r7-schema-validation-report.json`](../knowledge/quest-growth/generated/r7-schema-validation-report.json)
 
-validator は2 gate の digest、選択した2 pilot、family別件数、draft status、R6 lineage、独立証拠、
-匿名 fixture を検証する。3件目、選択外 family、`reviewed` status、同一 editorial group の二重計上は
-compile error にする。
+validator は2 gate の digest、選択した2 pilot、family別件数、R6 lineage、独立証拠、匿名 fixture を
+検証する。route review 承認後は固定 route digest、独立 approver、reviewedAt、approvalDigest も検証する。
+3件目、選択外 family、未承認の `reviewed` status、同一 editorial group の二重計上は compile error にする。
 
-## 次に必要な owner 判断
+## route review の承認結果と次の判断
 
-次の独立判断は route 単位の authoring review である。2 route の内容、lineage、evidence、currentness を
-固定した decision-only packet は
+2 route の内容、lineage、evidence、currentness を固定した decision-only packet は
 [`quest-growth-r7-route-review-decision-packet.md`](quest-growth-r7-route-review-decision-packet.md)
-に分離した。現 draft を `reviewed` へ昇格するには、route author と異なる approver が packet と
-route ごとの semantic digest を審査する必要がある。renderer、実アカウント受入、runtime publication、
-default enablement も引き続き未承認である。
+に分離し、project owner が 2026-08-02 に固定摘要どおり承認した。2件は `reviewed` へ昇格したが、
+renderer、実アカウント受入、runtime publication、default enablement は引き続き未承認である。
+次の独立判断は reviewed route を renderer に表示する範囲と fail-closed 条件である。
 
 件数、対象、証拠、review 境界を固定した decision-only packet は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)

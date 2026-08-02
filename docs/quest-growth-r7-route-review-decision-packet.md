@@ -4,14 +4,14 @@
 
 Task ID: `QGROWTH-R7-2_PILOT_ROUTE_REVIEW_PACKET`
 
-Status: `OWNER_DECISION_REQUIRED_ROUTE_REVIEW_NOT_AUTHORIZED`
+Status: `PILOT_ROUTE_AUTHORING_REVIEW_APPROVED`
 
 ## 目的
 
 authoring 済みの2件の pilot draft を、内容、R6 lineage、具体的 evidence、currentness に固定し、
 `reviewed` へ昇格できるかを project owner が独立判断するための decision-only packet とする。
-本 packet の作成だけでは route status を変更せず、renderer、実アカウント受入、runtime publication、
-default enablement のいずれも許可しない。
+project owner は 2026-08-02 に固定摘要どおり2件の authoring review を承認した。
+この承認は renderer、実アカウント受入、runtime publication、default enablement のいずれも許可しない。
 
 machine-readable request は
 [`r7-pilot-route-review-request.json`](../knowledge/quest-growth/decisions/r7-pilot-route-review-request.json)、
@@ -43,14 +43,16 @@ compiler report は
 
 - packet semantic digest:
   `sha256:7a3ef3fc63abbad4db8ed8d3368e9f6279a40f279363600c5e97c1d00d7631c3`
-- request raw digest:
+- pre-approval request raw digest:
   `sha256:78800c192174f80edb634841deefc7c64724c798084225ee6d106d67ad530752`
+- recorded approval request digest:
+  `sha256:fcf0710d84e65579de441443ea171751c4623e3dd18f410e5903291d166cf308`
 - review target count: `2`
-- current reviewed route count: `0`
+- current reviewed route count: `2`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 
-承認する場合の推奨文面:
+承認記録:
 
 > 批准固定摘要 `sha256:7a3ef3fc63abbad4db8ed8d3368e9f6279a40f279363600c5e97c1d00d7631c3`
 > 对应的两条 R7 pilot route authoring review，并分别绑定路线摘要
@@ -65,5 +67,5 @@ compiler report は
 - route、packet author 与 approver 不能是同一 identity。
 - lineage revision/digest 或 evidence source/group/digest 改变时，本 packet 失效。
 - reviewBy 到期或 currentness window 无效时，不得升为 `reviewed`。
-- 未获 owner 明确批准前，catalog 中两条 route 保持 `draft`，review fields 保持 null。
-- 即使 route review 获批，renderer 与 runtime publication 仍需后续独立 gate。
+- catalog 中の2 route は固定摘要と一致する場合だけ `reviewed` を維持できる。
+- route review 承認後も、renderer と runtime publication は後続の独立 gate を必要とする。

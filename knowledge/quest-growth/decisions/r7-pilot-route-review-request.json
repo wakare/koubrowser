@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7PilotRouteReviewRequest/1alpha",
   "requestId": "decision:quest-growth-r7-pilot-route-review",
   "revision": 1,
-  "status": "draft",
+  "status": "approved",
   "scope": "R7_ROUTE_AUTHORING_REVIEW_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "8fb0296a5cda7d4df35727211b657043d18c9ade",
@@ -16,7 +16,7 @@
     "schemaValidationReportDigest": "sha256:120238e9fb3c788e9668a4331b2a01b5ada54747f5ab404a60d10fbb30f8f587"
   },
   "requestedReview": {
-    "authorizationState": "owner-decision-required",
+    "authorizationState": "authorized",
     "maximumReviewedRoutes": 2,
     "requiredCurrentStatus": "draft",
     "requestedTargetStatus": "reviewed",
@@ -107,8 +107,8 @@
   ],
   "review": {
     "author": "codex-r7-route-review-decision-author",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T01:36:15.348Z",
+    "approvalDigest": "sha256:7a3ef3fc63abbad4db8ed8d3368e9f6279a40f279363600c5e97c1d00d7631c3"
   }
 }

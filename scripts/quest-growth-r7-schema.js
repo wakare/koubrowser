@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const R7SchemaCompilerVersion = 'quest-growth-r7-schema-validator/2'
+const R7SchemaCompilerVersion = 'quest-growth-r7-schema-validator/3'
 const R7SchemaOutputFilenames = ['r7-schema-validation-report.json']
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
 const FixtureIdentifierPattern = /^fixture:[A-Za-z0-9._:/-]+$/
@@ -28,6 +28,16 @@ function canonicalJson(value) {
 
 function digest(value) {
   return `sha256:${createHash('sha256').update(value).digest('hex')}`
+}
+
+function routeSemanticDigest(route) {
+  return digest(
+    canonicalJson(
+      Object.fromEntries(
+        Object.entries(route).filter(([key]) => key !== 'status' && key !== 'review')
+      )
+    )
+  )
 }
 
 function exactKeys(value, required, description) {
@@ -259,7 +269,9 @@ function validateConcreteRoute(route, binding, evidence, contentRequest) {
   ) {
     throw new Error(`R7 route lineage approval binding mismatch ${route.routeId}`)
   }
-  if (route.status !== 'draft') throw new Error(`R7 route must remain draft ${route.routeId}`)
+  if (!['draft', 'reviewed'].includes(route.status)) {
+    throw new Error(`invalid R7 route review status ${route.routeId}`)
+  }
   if (!contentRequest.authoringRequirements.allowedOutputClasses.includes(route.outputClass)) {
     throw new Error(`R7 route output class is not authorized ${route.routeId}`)
   }
@@ -358,13 +370,29 @@ function validateConcreteRoute(route, binding, evidence, contentRequest) {
   requiredText(route.fallback, 'R7 route fallback')
   exactKeys(route.review, ['author', 'approver', 'reviewedAt', 'approvalDigest'], 'R7 route review')
   identifier(route.review.author, 'R7 route author')
-  if (
-    route.review.author === contentRequest.review.approver ||
-    route.review.approver !== null ||
-    route.review.reviewedAt !== null ||
-    route.review.approvalDigest !== null
-  ) {
-    throw new Error(`R7 draft route must remain independently unreviewed ${route.routeId}`)
+  if (route.review.author === contentRequest.review.approver) {
+    throw new Error(`R7 route author must remain independent ${route.routeId}`)
+  }
+  if (route.status === 'draft') {
+    if (
+      route.review.approver !== null ||
+      route.review.reviewedAt !== null ||
+      route.review.approvalDigest !== null
+    ) {
+      throw new Error(`R7 draft route must remain independently unreviewed ${route.routeId}`)
+    }
+  } else {
+    const approver = identifier(route.review.approver, 'R7 route approver')
+    const reviewedAt = timestamp(route.review.reviewedAt, 'R7 route reviewedAt')
+    if (approver === route.review.author) {
+      throw new Error(`R7 reviewed route must use an independent approver ${route.routeId}`)
+    }
+    if (Date.parse(reviewedAt) >= Date.parse(reviewBy)) {
+      throw new Error(`R7 route was reviewed outside its currentness window ${route.routeId}`)
+    }
+    if (route.review.approvalDigest !== routeSemanticDigest(route)) {
+      throw new Error(`R7 route approval digest mismatch ${route.routeId}`)
+    }
   }
   return route.routeId
 }
@@ -606,6 +634,8 @@ function buildR7SchemaArtifacts({ base, r7DecisionReport }) {
     evidence
   )
   const fixtureResults = validateFixturePacket(JSON.parse(fixtureRaw), true)
+  const draftRouteCount = catalog.routes.filter((route) => route.status === 'draft').length
+  const reviewedRouteCount = catalog.routes.filter((route) => route.status === 'reviewed').length
   const report = {
     schemaVersion: 1,
     compilerVersion: R7SchemaCompilerVersion,
@@ -622,6 +652,8 @@ function buildR7SchemaArtifacts({ base, r7DecisionReport }) {
     evidenceSourceCount: evidence.packet.sources.length,
     catalogRouteCount: catalog.routes.length,
     concreteRouteArtifactCount: catalog.routes.length,
+    draftConcreteRouteArtifactCount: draftRouteCount,
+    reviewedConcreteRouteArtifactCount: reviewedRouteCount,
     fixtureCaseCount: fixtureResults.length,
     fixtureValidationPassed: true,
     fixtureResults,
@@ -641,6 +673,8 @@ function buildR7SchemaArtifacts({ base, r7DecisionReport }) {
       r7SchemaFixtureValidationPassed: true,
       r7ConcreteEvidenceSourceCount: evidence.packet.sources.length,
       r7CatalogRouteCount: catalog.routes.length,
+      r7DraftConcreteRouteArtifactCount: draftRouteCount,
+      r7ReviewedConcreteRouteArtifactCount: reviewedRouteCount,
       r7SchemaRuntimeEligibleCount: 0
     }
   }
@@ -652,5 +686,6 @@ module.exports = {
   validateCatalog,
   validateEvidenceSnapshots,
   validateFixturePacket,
+  routeSemanticDigest,
   validateSchemaContract
 }

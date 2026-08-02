@@ -1,15 +1,15 @@
 {
-  "authorizationState": "not-authorized",
-  "compilerVersion": "quest-growth-r7-route-review-decision-compiler/1",
-  "currentDraftRouteCount": 2,
-  "generatedAt": "2026-08-02T01:15:23.754Z",
+  "authorizationState": "authorized",
+  "compilerVersion": "quest-growth-r7-route-review-decision-compiler/2",
+  "currentDraftRouteCount": 0,
+  "generatedAt": "2026-08-02T01:36:15.348Z",
   "maximumReviewedRoutes": 2,
   "publicationAuthorization": "R7_NOT_AUTHORIZED",
-  "requestDigest": "sha256:78800c192174f80edb634841deefc7c64724c798084225ee6d106d67ad530752",
+  "requestDigest": "sha256:fcf0710d84e65579de441443ea171751c4623e3dd18f410e5903291d166cf308",
   "requestedTargetStatus": "reviewed",
   "requestId": "decision:quest-growth-r7-pilot-route-review",
   "requiredApprover": "project-owner",
-  "reviewedRouteCount": 0,
+  "reviewedRouteCount": 2,
   "revision": 1,
   "routeReviews": [
     {
@@ -24,7 +24,7 @@
         "revision": 1,
         "semanticDigest": "sha256:5b94ab240c29f314f5a8abb83b7afa6a8ef1eacfca0d6e1311aff9ea673c5eaa"
       },
-      "reviewDecision": "OWNER_DECISION_REQUIRED",
+      "reviewDecision": "REVIEWED",
       "routeAuthor": "codex-r7-pilot-author",
       "routeFamily": "expedition-resource-periodic-loop",
       "routeId": "route:expedition-05-resource-loop:draft-1",
@@ -44,7 +44,7 @@
         "revision": 1,
         "semanticDigest": "sha256:563da2a96f2f4b4dbe2324939e8f5f9f3182a7bfd2b738503510342971878951"
       },
-      "reviewDecision": "OWNER_DECISION_REQUIRED",
+      "reviewDecision": "REVIEWED",
       "routeAuthor": "codex-r7-pilot-author",
       "routeFamily": "anti-submarine-foundation",
       "routeId": "route:1-5-basic-asw-three-battle:draft-1",
@@ -57,7 +57,7 @@
   "schemaVersion": 1,
   "scope": "R7_ROUTE_AUTHORING_REVIEW_ONLY",
   "semanticDigest": "sha256:7a3ef3fc63abbad4db8ed8d3368e9f6279a40f279363600c5e97c1d00d7631c3",
-  "status": "OWNER_DECISION_REQUIRED_ROUTE_REVIEW",
+  "status": "PILOT_ROUTE_AUTHORING_REVIEW_APPROVED",
   "stillProhibited": [
     "route-content-mutation-after-approval",
     "self-approval",

@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const R7RouteReviewDecisionCompilerVersion = 'quest-growth-r7-route-review-decision-compiler/1'
+const R7RouteReviewDecisionCompilerVersion = 'quest-growth-r7-route-review-decision-compiler/2'
 const R7RouteReviewDecisionOutputFilenames = ['r7-pilot-route-review-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -12,6 +12,19 @@ const SelectedRouteIds = [
   'route:expedition-05-resource-loop:draft-1',
   'route:1-5-basic-asw-three-battle:draft-1'
 ]
+const ApprovedRouteReviewSemanticDigest =
+  'sha256:7a3ef3fc63abbad4db8ed8d3368e9f6279a40f279363600c5e97c1d00d7631c3'
+const ApprovedReviewBasis = {
+  contentAuthorizationSemanticDigest:
+    'sha256:d2c474af9b09a959cb9e9a1532ba954e1f11da8669feb2fc5049421715a972fc',
+  contentAuthorizationRequestDigest:
+    'sha256:e952cc1d4e7ab563e69bd9bd91838d889788f1029780dcb23530cbcc1ac16961',
+  routeCatalogDigest: 'sha256:97a7fea3cda3598361d16940405bfc458db32fe79707e962e44cddb7327d3269',
+  evidenceSnapshotDigest:
+    'sha256:877cc52a7dcaaf661cb3a90d5b2579657de84e12612ee5bc5ecdb62fa761bc53',
+  schemaValidationReportDigest:
+    'sha256:120238e9fb3c788e9668a4331b2a01b5ada54747f5ab404a60d10fbb30f8f587'
+}
 
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize)
@@ -138,9 +151,10 @@ function validateR7RouteReviewRequest(
   }
   identifier(value.requestId, 'R7 route review request id')
   if (value.revision !== 1) throw new Error('invalid R7 route review request revision')
-  if (value.status !== 'draft' || value.scope !== 'R7_ROUTE_AUTHORING_REVIEW_ONLY') {
-    throw new Error('R7 route review request must remain draft and review-only')
+  if (!['draft', 'approved'].includes(value.status) || value.scope !== 'R7_ROUTE_AUTHORING_REVIEW_ONLY') {
+    throw new Error('R7 route review request must remain review-only')
   }
+  const approved = value.status === 'approved'
   exactKeys(value.sourceSnapshot, ['auditedBaseCommit', 'checkedAt'], 'R7 review source snapshot')
   if (!CommitPattern.test(value.sourceSnapshot.auditedBaseCommit)) {
     throw new Error('invalid R7 review audited base commit')
@@ -176,7 +190,10 @@ function validateR7RouteReviewRequest(
   for (const [key, item] of Object.entries(value.approvalBasis)) {
     if (!DigestPattern.test(item)) throw new Error(`invalid R7 route review basis ${key}`)
   }
-  if (!same(value.approvalBasis, expectedBasis)) {
+  if (
+    (!approved && !same(value.approvalBasis, expectedBasis)) ||
+    (approved && !same(value.approvalBasis, ApprovedReviewBasis))
+  ) {
     throw new Error('R7 route review approval basis mismatch')
   }
   if (
@@ -201,7 +218,8 @@ function validateR7RouteReviewRequest(
     'R7 requested route review'
   )
   if (
-    value.requestedReview.authorizationState !== 'owner-decision-required' ||
+    value.requestedReview.authorizationState !==
+      (approved ? 'authorized' : 'owner-decision-required') ||
     value.requestedReview.maximumReviewedRoutes !== 2 ||
     value.requestedReview.requiredCurrentStatus !== 'draft' ||
     value.requestedReview.requestedTargetStatus !== 'reviewed' ||
@@ -220,12 +238,9 @@ function validateR7RouteReviewRequest(
   for (const [index, route] of catalog.routes.entries()) {
     if (
       route.routeId !== SelectedRouteIds[index] ||
-      route.status !== 'draft' ||
-      route.review.approver !== null ||
-      route.review.reviewedAt !== null ||
-      route.review.approvalDigest !== null
+      route.status !== (approved ? 'reviewed' : 'draft')
     ) {
-      throw new Error(`R7 route is not an unreviewed pilot draft ${route.routeId}`)
+      throw new Error(`R7 route review status mismatch ${route.routeId}`)
     }
     const expectedReview = expectedRouteReview(route, r7ContentAuthorizationReport)
     const review = value.routeReviews[index]
@@ -261,6 +276,25 @@ function validateR7RouteReviewRequest(
       Date.parse(review.currentness.reviewBy) >= Date.parse(review.currentness.validUntil)
     ) {
       throw new Error(`R7 route review currentness window is invalid ${route.routeId}`)
+    }
+    if (approved) {
+      const routeApprover = identifier(route.review.approver, 'R7 route approver')
+      const routeReviewedAt = timestamp(route.review.reviewedAt, 'R7 route reviewedAt')
+      if (
+        routeApprover !== value.reviewRequirements.requiredApprover ||
+        routeApprover === route.review.author ||
+        route.review.approvalDigest !== review.routeSemanticDigest ||
+        Date.parse(routeReviewedAt) < Date.parse(checkedAt) ||
+        Date.parse(routeReviewedAt) >= Date.parse(review.currentness.reviewBy)
+      ) {
+        throw new Error(`R7 reviewed route approval mismatch ${route.routeId}`)
+      }
+    } else if (
+      route.review.approver !== null ||
+      route.review.reviewedAt !== null ||
+      route.review.approvalDigest !== null
+    ) {
+      throw new Error(`R7 draft route must remain unreviewed ${route.routeId}`)
     }
   }
 
@@ -309,7 +343,20 @@ function validateR7RouteReviewRequest(
 
   exactKeys(value.review, ['author', 'approver', 'reviewedAt', 'approvalDigest'], 'R7 review')
   identifier(value.review.author, 'R7 review packet author')
-  if (
+  const semanticDigest = routeReviewRequestSemanticDigest(value)
+  if (approved) {
+    const approver = identifier(value.review.approver, 'R7 review approver')
+    const reviewedAt = timestamp(value.review.reviewedAt, 'R7 review reviewedAt')
+    if (
+      approver !== value.reviewRequirements.requiredApprover ||
+      approver === value.review.author ||
+      Date.parse(reviewedAt) < Date.parse(checkedAt) ||
+      value.review.approvalDigest !== semanticDigest ||
+      semanticDigest !== ApprovedRouteReviewSemanticDigest
+    ) {
+      throw new Error('approved R7 route review semantic digest mismatch')
+    }
+  } else if (
     value.review.approver !== null ||
     value.review.reviewedAt !== null ||
     value.review.approvalDigest !== null
@@ -318,7 +365,8 @@ function validateR7RouteReviewRequest(
   }
   return {
     value,
-    semanticDigest: routeReviewRequestSemanticDigest(value)
+    semanticDigest,
+    approved
   }
 }
 
@@ -337,14 +385,18 @@ function buildR7RouteReviewDecisionArtifacts({
   const report = {
     schemaVersion: 1,
     compilerVersion: R7RouteReviewDecisionCompilerVersion,
-    generatedAt: request.value.sourceSnapshot.checkedAt,
-    status: 'OWNER_DECISION_REQUIRED_ROUTE_REVIEW',
+    generatedAt: request.approved
+      ? request.value.review.reviewedAt
+      : request.value.sourceSnapshot.checkedAt,
+    status: request.approved
+      ? 'PILOT_ROUTE_AUTHORING_REVIEW_APPROVED'
+      : 'OWNER_DECISION_REQUIRED_ROUTE_REVIEW',
     scope: request.value.scope,
     requestId: request.value.requestId,
     revision: request.value.revision,
     requestDigest: digest(requestRaw),
     semanticDigest: request.semanticDigest,
-    authorizationState: 'not-authorized',
+    authorizationState: request.approved ? 'authorized' : 'not-authorized',
     maximumReviewedRoutes: request.value.requestedReview.maximumReviewedRoutes,
     requestedTargetStatus: request.value.requestedReview.requestedTargetStatus,
     routeReviews: request.value.routeReviews.map((route) => ({
@@ -360,12 +412,12 @@ function buildR7RouteReviewDecisionArtifacts({
         route.evidenceBindings.map((reference) => reference.independenceGroupId)
       ).size,
       currentness: route.currentness,
-      reviewDecision: 'OWNER_DECISION_REQUIRED'
+      reviewDecision: request.approved ? 'REVIEWED' : 'OWNER_DECISION_REQUIRED'
     })),
     requiredApprover: request.value.reviewRequirements.requiredApprover,
     stillProhibited: request.value.stillProhibited,
-    currentDraftRouteCount: request.value.routeReviews.length,
-    reviewedRouteCount: 0,
+    currentDraftRouteCount: request.approved ? 0 : request.value.routeReviews.length,
+    reviewedRouteCount: request.approved ? request.value.routeReviews.length : 0,
     runtimeEligibleCount: 0,
     publicationAuthorization: 'R7_NOT_AUTHORIZED'
   }
@@ -374,9 +426,9 @@ function buildR7RouteReviewDecisionArtifacts({
     source: { r7PilotRouteReviewRequestDigest: digest(requestRaw) },
     output: {
       r7PilotRouteReviewDecisionCount: report.routeReviews.length,
-      r7PilotRouteReviewAuthorizedCount: 0,
-      r7PilotRouteReviewPendingCount: report.routeReviews.length,
-      r7ReviewedConcreteRouteCount: 0
+      r7PilotRouteReviewAuthorizedCount: request.approved ? report.routeReviews.length : 0,
+      r7PilotRouteReviewPendingCount: request.approved ? 0 : report.routeReviews.length,
+      r7ReviewedConcreteRouteCount: request.approved ? report.routeReviews.length : 0
     }
   }
 }
