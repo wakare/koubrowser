@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7RealAccountAcceptanceRequest/1alpha",
   "requestId": "decision:quest-growth-r7-real-account-readonly-acceptance",
   "revision": 7,
-  "status": "draft",
+  "status": "approved",
   "scope": "R7_REAL_ACCOUNT_READONLY_ACCEPTANCE_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "88a89521d22e17401ff4c4db7889597376b5f552",
@@ -27,7 +27,7 @@
   "requestedAuthorization": {
     "gateId": "r7-real-account-readonly-acceptance",
     "authorizationState": "authorized",
-    "executionAuthorization": "not-authorized",
+    "executionAuthorization": "authorized",
     "maximumAcceptedRoutes": 2,
     "acceptanceMode": "owner-login-readonly-redacted"
   },
@@ -323,8 +323,8 @@
   ],
   "review": {
     "author": "codex-r7-real-account-decision-author",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T08:17:29.673Z",
+    "approvalDigest": "sha256:497bc51162e26ac696db7219bc876ff56dd0bbfd932e5dddec89a5460a405930"
   }
 }

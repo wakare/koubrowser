@@ -299,8 +299,9 @@ revision 7 は新しい component digest
 `sha256:60ea3622f93e058a00ad6d062eb3fcef5dbb1e5f1decd90e6a0e975023b9f60d` と harness digest
 `sha256:5de07f3430079efba6c710d4848463086643582821635eda73c2fc73be1e527c` を固定し、原2 reviewed route の
 只読・脱敏受入を最大1回だけ再試行する request である。production / harness / route の追加変更、
-runtime publication、default enablement、他 family は含まない。現在は owner decision required であり、
-execution authorization は `not-authorized` である。
+runtime publication、default enablement、他 family は含まない。project owner は revision 7 の固定摘要を
+明示承認し、execution authorization は `authorized` である。実行結果を記録するまでは
+`REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED` として扱う。
 
 revision 7 固定摘要:
 

@@ -12,7 +12,7 @@ const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const FixedRendererSemanticDigest =
   'sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363'
 const ApprovedRealAccountSemanticDigest =
-  'sha256:bfcc5f3e72fe4969d322a3dab09ec3c7783ab37374e98d483be187691572daa6'
+  'sha256:497bc51162e26ac696db7219bc876ff56dd0bbfd932e5dddec89a5460a405930'
 const FixedGrowthComponentDigest =
   'sha256:60ea3622f93e058a00ad6d062eb3fcef5dbb1e5f1decd90e6a0e975023b9f60d'
 const FixedQuestGuideDigest =

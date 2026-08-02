@@ -29,9 +29,9 @@
     "r7PilotRouteReviewAuthorizedCount": 2,
     "r7PilotRouteReviewDecisionCount": 2,
     "r7PilotRouteReviewPendingCount": 0,
-    "r7RealAccountAcceptanceAuthorizedRouteCount": 0,
+    "r7RealAccountAcceptanceAuthorizedRouteCount": 2,
     "r7RealAccountAcceptanceFailClosed": false,
-    "r7RealAccountAcceptanceOwnerDecisionRequired": true,
+    "r7RealAccountAcceptanceOwnerDecisionRequired": false,
     "r7RealAccountAcceptanceRequiredCheckCount": 12,
     "r7RealAccountAcceptanceRouteCount": 2,
     "r7RecommendedPilotFamilyCount": 2,
@@ -55,7 +55,7 @@
     "unavailableObservableCount": 2
   },
   "runtimePromotion": {
-    "reason": "R7_REAL_ACCOUNT_ACCEPTANCE_RETRY_OWNER_DECISION_REQUIRED",
+    "reason": "R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN",
     "status": "blocked"
   },
   "schemaVersion": 1,
@@ -85,7 +85,7 @@
     "r7EvidenceSnapshotDigest": "sha256:877cc52a7dcaaf661cb3a90d5b2579657de84e12612ee5bc5ecdb62fa761bc53",
     "r7PilotContentAuthorizationRequestDigest": "sha256:e952cc1d4e7ab563e69bd9bd91838d889788f1029780dcb23530cbcc1ac16961",
     "r7PilotRouteReviewRequestDigest": "sha256:fcf0710d84e65579de441443ea171751c4623e3dd18f410e5903291d166cf308",
-    "r7RealAccountAcceptanceRequestDigest": "sha256:b20d9651432f383588ec697946b0af26597ec4490c7afd4a173c683bc71a22d7",
+    "r7RealAccountAcceptanceRequestDigest": "sha256:ef96862b9c96dc9d2ee8931a1e58800be9afa634bd033bb497c58cb56d00916f",
     "r7RendererIntegrationRequestDigest": "sha256:d6365849f42e2fdb42178b3aceccdffafe0232a981c214a3e71f11cd1b3227e2",
     "r7ResponsiveLayoutFixRequestDigest": "sha256:2d494d7f842cbe31b0f7b08a3acea424d82241d198ff27a894a35ac80d88c55e",
     "r7RouteCatalogDigest": "sha256:cc2c83195c01c846ba3da89d2731264081e1374b74a190f046f75f9d59e776a4",
