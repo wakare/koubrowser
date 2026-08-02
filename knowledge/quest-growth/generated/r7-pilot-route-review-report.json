@@ -1,0 +1,73 @@
+{
+  "authorizationState": "not-authorized",
+  "compilerVersion": "quest-growth-r7-route-review-decision-compiler/1",
+  "currentDraftRouteCount": 2,
+  "generatedAt": "2026-08-02T01:15:23.754Z",
+  "maximumReviewedRoutes": 2,
+  "publicationAuthorization": "R7_NOT_AUTHORIZED",
+  "requestDigest": "sha256:78800c192174f80edb634841deefc7c64724c798084225ee6d106d67ad530752",
+  "requestedTargetStatus": "reviewed",
+  "requestId": "decision:quest-growth-r7-pilot-route-review",
+  "requiredApprover": "project-owner",
+  "reviewedRouteCount": 0,
+  "revision": 1,
+  "routeReviews": [
+    {
+      "currentness": {
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      },
+      "evidenceBindingCount": 2,
+      "independenceGroupCount": 2,
+      "lineage": {
+        "id": "growth-lineage:expedition-resource-periodic-loop",
+        "revision": 1,
+        "semanticDigest": "sha256:5b94ab240c29f314f5a8abb83b7afa6a8ef1eacfca0d6e1311aff9ea673c5eaa"
+      },
+      "reviewDecision": "OWNER_DECISION_REQUIRED",
+      "routeAuthor": "codex-r7-pilot-author",
+      "routeFamily": "expedition-resource-periodic-loop",
+      "routeId": "route:expedition-05-resource-loop:draft-1",
+      "routeRevision": 1,
+      "routeSemanticDigest": "sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a",
+      "title": "遠征05「海上護衛任務」資源ループ（手動確認）"
+    },
+    {
+      "currentness": {
+        "reviewBy": "2026-09-30T00:00:00.000Z",
+        "validUntil": "2026-12-31T00:00:00.000Z"
+      },
+      "evidenceBindingCount": 2,
+      "independenceGroupCount": 2,
+      "lineage": {
+        "id": "growth-lineage:anti-submarine-foundation",
+        "revision": 1,
+        "semanticDigest": "sha256:563da2a96f2f4b4dbe2324939e8f5f9f3182a7bfd2b738503510342971878951"
+      },
+      "reviewDecision": "OWNER_DECISION_REQUIRED",
+      "routeAuthor": "codex-r7-pilot-author",
+      "routeFamily": "anti-submarine-foundation",
+      "routeId": "route:1-5-basic-asw-three-battle:draft-1",
+      "routeRevision": 1,
+      "routeSemanticDigest": "sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d",
+      "title": "1-5 3戦撤退・基礎対潜練習（手動確認）"
+    }
+  ],
+  "runtimeEligibleCount": 0,
+  "schemaVersion": 1,
+  "scope": "R7_ROUTE_AUTHORING_REVIEW_ONLY",
+  "semanticDigest": "sha256:7a3ef3fc63abbad4db8ed8d3368e9f6279a40f279363600c5e97c1d00d7631c3",
+  "status": "OWNER_DECISION_REQUIRED_ROUTE_REVIEW",
+  "stillProhibited": [
+    "route-content-mutation-after-approval",
+    "self-approval",
+    "renderer-integration",
+    "real-account-acceptance",
+    "runtime-publication",
+    "default-enablement",
+    "automatic-game-operation",
+    "game-communication-mutation",
+    "runtime-web-scraping",
+    "account-data-export"
+  ]
+}

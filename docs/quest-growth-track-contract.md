@@ -222,6 +222,11 @@ R7 の実装前判断は [`quest-growth-r7-decision-packet.md`](quest-growth-r7-
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や
 R6 の pure evaluation artifact はそれらの承認を代替しない。
 
+2件の draft を対象とする route review decision packet を生成済みである。packet と route ごとの
+semantic digest は
+[`quest-growth-r7-route-review-decision-packet.md`](quest-growth-r7-route-review-decision-packet.md)
+に固定し、owner 承認までは reviewed route count を0件に保つ。
+
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)

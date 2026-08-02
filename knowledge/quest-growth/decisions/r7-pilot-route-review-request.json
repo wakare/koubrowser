@@ -1,0 +1,114 @@
+{
+  "authoringSchema": "QuestGrowthR7PilotRouteReviewRequest/1alpha",
+  "requestId": "decision:quest-growth-r7-pilot-route-review",
+  "revision": 1,
+  "status": "draft",
+  "scope": "R7_ROUTE_AUTHORING_REVIEW_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "8fb0296a5cda7d4df35727211b657043d18c9ade",
+    "checkedAt": "2026-08-02T01:15:23.754Z"
+  },
+  "approvalBasis": {
+    "contentAuthorizationSemanticDigest": "sha256:d2c474af9b09a959cb9e9a1532ba954e1f11da8669feb2fc5049421715a972fc",
+    "contentAuthorizationRequestDigest": "sha256:e952cc1d4e7ab563e69bd9bd91838d889788f1029780dcb23530cbcc1ac16961",
+    "routeCatalogDigest": "sha256:97a7fea3cda3598361d16940405bfc458db32fe79707e962e44cddb7327d3269",
+    "evidenceSnapshotDigest": "sha256:877cc52a7dcaaf661cb3a90d5b2579657de84e12612ee5bc5ecdb62fa761bc53",
+    "schemaValidationReportDigest": "sha256:120238e9fb3c788e9668a4331b2a01b5ada54747f5ab404a60d10fbb30f8f587"
+  },
+  "requestedReview": {
+    "authorizationState": "owner-decision-required",
+    "maximumReviewedRoutes": 2,
+    "requiredCurrentStatus": "draft",
+    "requestedTargetStatus": "reviewed",
+    "selectedRouteIds": [
+      "route:expedition-05-resource-loop:draft-1",
+      "route:1-5-basic-asw-three-battle:draft-1"
+    ]
+  },
+  "routeReviews": [
+    {
+      "routeId": "route:expedition-05-resource-loop:draft-1",
+      "routeFamily": "expedition-resource-periodic-loop",
+      "routeRevision": 1,
+      "title": "遠征05「海上護衛任務」資源ループ（手動確認）",
+      "routeAuthor": "codex-r7-pilot-author",
+      "routeSemanticDigest": "sha256:05e4cdbbcbdbf7a781ba73bbe1bb3498cc7c0bab6985fef4b1cae6173acda55a",
+      "lineage": {
+        "id": "growth-lineage:expedition-resource-periodic-loop",
+        "revision": 1,
+        "semanticDigest": "sha256:5b94ab240c29f314f5a8abb83b7afa6a8ef1eacfca0d6e1311aff9ea673c5eaa"
+      },
+      "evidenceBindings": [
+        {
+          "claimRef": "claim:expedition-resource-loop",
+          "independenceGroupId": "group:wikiwiki-ja",
+          "sourceDigest": "sha256:8b6c18d36ad668e77797316416adee2dac4a5bef135665cdee9c432d4ee7720a"
+        },
+        {
+          "claimRef": "claim:expedition-resource-loop",
+          "independenceGroupId": "group:kcwiki-zh",
+          "sourceDigest": "sha256:f5fef0c728f91601bbcae077b8d0bf4481bd70d641cff1bc01ba1214a2e414a3"
+        }
+      ],
+      "currentness": {
+        "reviewBy": "2026-10-30T00:00:00.000Z",
+        "validUntil": "2027-01-28T00:00:00.000Z"
+      }
+    },
+    {
+      "routeId": "route:1-5-basic-asw-three-battle:draft-1",
+      "routeFamily": "anti-submarine-foundation",
+      "routeRevision": 1,
+      "title": "1-5 3戦撤退・基礎対潜練習（手動確認）",
+      "routeAuthor": "codex-r7-pilot-author",
+      "routeSemanticDigest": "sha256:9b675d5c8a33b3ec974c678a3f258200324222f1e7bec1c2b2ba5e4c3512e78d",
+      "lineage": {
+        "id": "growth-lineage:anti-submarine-foundation",
+        "revision": 1,
+        "semanticDigest": "sha256:563da2a96f2f4b4dbe2324939e8f5f9f3182a7bfd2b738503510342971878951"
+      },
+      "evidenceBindings": [
+        {
+          "claimRef": "claim:conditional-leveling-maps",
+          "independenceGroupId": "group:wikiwiki-ja",
+          "sourceDigest": "sha256:8cfbec47c26f6808e06aa79fe488924b0fb1e45a1238c9b8a7ace55a922155df"
+        },
+        {
+          "claimRef": "claim:conditional-leveling-maps",
+          "independenceGroupId": "group:zekamashi",
+          "sourceDigest": "sha256:000e7e32bc81b6fd115d98eddb3d7087853ed70096eac286fe0438359240ec35"
+        }
+      ],
+      "currentness": {
+        "reviewBy": "2026-09-30T00:00:00.000Z",
+        "validUntil": "2026-12-31T00:00:00.000Z"
+      }
+    }
+  ],
+  "reviewRequirements": {
+    "requiredApprover": "project-owner",
+    "routeAuthorApproverMustDiffer": true,
+    "packetAuthorApproverMustDiffer": true,
+    "exactRouteDigestMatchRequired": true,
+    "currentnessMustBeValid": true,
+    "approvalDoesNotAuthorizeRendererOrPublication": true
+  },
+  "stillProhibited": [
+    "route-content-mutation-after-approval",
+    "self-approval",
+    "renderer-integration",
+    "real-account-acceptance",
+    "runtime-publication",
+    "default-enablement",
+    "automatic-game-operation",
+    "game-communication-mutation",
+    "runtime-web-scraping",
+    "account-data-export"
+  ],
+  "review": {
+    "author": "codex-r7-route-review-decision-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

@@ -97,9 +97,12 @@ compile error にする。
 
 ## 次に必要な owner 判断
 
-次の独立 gate は route 単位の authoring review である。現 draft を `reviewed` へ昇格するには、
-route author と異なる approver が別 semantic digest を審査する必要がある。renderer、実アカウント受入、
-runtime publication、default enablement も引き続き未承認である。
+次の独立判断は route 単位の authoring review である。2 route の内容、lineage、evidence、currentness を
+固定した decision-only packet は
+[`quest-growth-r7-route-review-decision-packet.md`](quest-growth-r7-route-review-decision-packet.md)
+に分離した。現 draft を `reviewed` へ昇格するには、route author と異なる approver が packet と
+route ごとの semantic digest を審査する必要がある。renderer、実アカウント受入、runtime publication、
+default enablement も引き続き未承認である。
 
 件数、対象、証拠、review 境界を固定した decision-only packet は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)

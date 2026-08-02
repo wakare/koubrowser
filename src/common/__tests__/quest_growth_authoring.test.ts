@@ -79,6 +79,22 @@ const { contentAuthorizationSemanticDigest, validateR7ContentAuthorizationReques
       }
     ) => { semanticDigest: string }
   }
+const {
+  routeReviewRequestSemanticDigest,
+  routeReviewSemanticDigest,
+  validateR7RouteReviewRequest
+} = require('../../../scripts/quest-growth-r7-route-review-decision.js') as {
+  routeReviewRequestSemanticDigest: (value: Record<string, unknown>) => string
+  routeReviewSemanticDigest: (value: Record<string, unknown>) => string
+  validateR7RouteReviewRequest: (
+    value: Record<string, unknown>,
+    dependencies: {
+      base: string
+      r7ContentAuthorizationReport: Record<string, unknown>
+      r7SchemaReport: Record<string, unknown>
+    }
+  ) => { semanticDigest: string }
+}
 
 const GrowthDirectory = path.resolve(process.cwd(), 'knowledge', 'quest-growth')
 
@@ -476,6 +492,97 @@ describe('quest growth authoring contract', () => {
     )
     expect(() => validateR7ContentAuthorizationRequest(tampered, dependencies)).toThrow(
       'R7 requested content authorization boundary mismatch'
+    )
+  })
+
+  it('generates an unapproved digest-bound review decision for both R7 pilot drafts', () => {
+    const report = read<{
+      status: string
+      semanticDigest: string
+      authorizationState: string
+      currentDraftRouteCount: number
+      reviewedRouteCount: number
+      runtimeEligibleCount: number
+      publicationAuthorization: string
+      routeReviews: {
+        routeId: string
+        routeSemanticDigest: string
+        evidenceBindingCount: number
+        independenceGroupCount: number
+        reviewDecision: string
+      }[]
+    }>('generated', 'r7-pilot-route-review-report.json')
+
+    expect(report.status).toBe('OWNER_DECISION_REQUIRED_ROUTE_REVIEW')
+    expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
+    expect(report.authorizationState).toBe('not-authorized')
+    expect(report.currentDraftRouteCount).toBe(2)
+    expect(report.reviewedRouteCount).toBe(0)
+    expect(report.runtimeEligibleCount).toBe(0)
+    expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
+    expect(report.routeReviews).toHaveLength(2)
+    expect(
+      report.routeReviews.every(
+        (route) =>
+          /^sha256:[0-9a-f]{64}$/.test(route.routeSemanticDigest) &&
+          route.evidenceBindingCount === 2 &&
+          route.independenceGroupCount === 2 &&
+          route.reviewDecision === 'OWNER_DECISION_REQUIRED'
+      )
+    ).toBe(true)
+  })
+
+  it('fails closed when reviewed route content no longer matches the fixed digest', () => {
+    const request = read<
+      Record<string, unknown> & {
+        routeReviews: { routeSemanticDigest: string }[]
+      }
+    >('decisions', 'r7-pilot-route-review-request.json')
+    const catalog = read<{ routes: Record<string, unknown>[] }>('r7', 'route-catalog.json')
+    const tamperedRoute = structuredClone(catalog.routes[0])
+    tamperedRoute.summary = 'tampered route content'
+    expect(routeReviewSemanticDigest(tamperedRoute)).not.toBe(
+      request.routeReviews[0].routeSemanticDigest
+    )
+
+    const tamperedRequest = structuredClone(request)
+    tamperedRequest.routeReviews[0].routeSemanticDigest = routeReviewSemanticDigest(tamperedRoute)
+    expect(() =>
+      validateR7RouteReviewRequest(tamperedRequest, {
+        base: GrowthDirectory,
+        r7ContentAuthorizationReport: read<Record<string, unknown>>(
+          'generated',
+          'r7-pilot-content-authorization-report.json'
+        ),
+        r7SchemaReport: read<Record<string, unknown>>(
+          'generated',
+          'r7-schema-validation-report.json'
+        )
+      })
+    ).toThrow('R7 route review semantic binding mismatch')
+  })
+
+  it('keeps the R7 route review summary stable across approval metadata only', () => {
+    const request = read<
+      Record<string, unknown> & {
+        status: string
+        requestedReview: { authorizationState: string }
+        review: {
+          approver: string | null
+          reviewedAt: string | null
+          approvalDigest: string | null
+        }
+      }
+    >('decisions', 'r7-pilot-route-review-request.json')
+    const approved = structuredClone(request)
+    approved.status = 'approved'
+    approved.requestedReview.authorizationState = 'authorized'
+    approved.review.approver = 'project-owner'
+    approved.review.reviewedAt = '2026-08-02T02:00:00.000Z'
+    approved.review.approvalDigest = routeReviewRequestSemanticDigest(request)
+
+    expect(routeReviewRequestSemanticDigest(approved)).toBe(
+      routeReviewRequestSemanticDigest(request)
     )
   })
 
