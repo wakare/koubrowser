@@ -4,12 +4,13 @@
 
 Task ID: `QGROWTH-R7-3_RENDERER_OPT_IN_DECISION_PACKET`
 
-Status: `OWNER_DECISION_REQUIRED_RENDERER_INTEGRATION_NOT_AUTHORIZED`
+Status: `RENDERER_OPT_IN_INTEGRATION_AUTHORIZED_IMPLEMENTED`
 
 ## 目的
 
 承認済みの2 route を「成長攻略チェック」に表示する実装範囲を、UI 実装前に固定する。
-本 packet の生成だけでは renderer integration を許可せず、画面、runtime bundle、既定値を変更しない。
+project owner は 2026-08-02 に固定摘要どおり renderer integration を承認した。
+実装後も runtime bundle publication と既定値は変更しない。
 
 machine-readable request は
 [`r7-renderer-integration-request.json`](../knowledge/quest-growth/decisions/r7-renderer-integration-request.json)、
@@ -76,17 +77,30 @@ focus 未選択、3件目、未審査 route は表示対象にしない。
   `sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363`
 - request raw digest:
   `sha256:4401e1a28de114cef4cd583e26d105e30bb1b600d1c59d8775545588822383b7`
+- recorded approval request digest:
+  `sha256:d6365849f42e2fdb42178b3aceccdffafe0232a981c214a3e71f11cd1b3227e2`
 - renderer gate semantic digest:
   `sha256:c2f7ce617eaaf00bb8aded393734af42bbe75a8d3a9480ea31f4b31a7f1f6be3`
 - reviewed route count: `2`
-- renderer eligible route count: `0`
+- renderer eligible route count: `2`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 
-承認する場合の推奨文面:
+承認記録:
 
 > 批准固定摘要 `sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363`
 > 对应的 `r7-renderer-opt-in-integration`。仅授权在“成长攻略检查”内实现上述两条 reviewed route
 > 的默认关闭、会话内不持久化、按 `resources` / `asw` focus 过滤的人工确认展示，并仅使用匿名
 > synthetic fixtures 验证。不得修改路线内容，不授权 main/preload/网络/数据库/存储依赖、实账号验收、
 > runtime publication、默认启用或其他 route family。
+
+## 実装結果
+
+- [`quest_growth_reviewed_routes.ts`](../src/common/quest_growth_reviewed_routes.ts) が route count、focus、
+  status、approval digest、reviewedAt、reviewBy、validUntil、output class を fail closed で検証する。
+- [`QuestGrowthCheck.vue`](../src/renderer/src/components/QuestGrowthCheck.vue) は route section を初期状態で
+  閉じ、展開されるまで route DOM を生成しない。
+- `resources` と `asw` 以外の focus では具体的 route を表示しない。
+- route section の状態は component 内だけに保持し、localStorage / sessionStorage へ保存しない。
+- main、preload、DB、network、game communication の依存は追加していない。
+- 実アカウント受入、runtime publication、default enablement は引き続き未承認である。

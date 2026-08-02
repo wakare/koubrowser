@@ -11,7 +11,7 @@
       "semanticDigest": "sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3"
     },
     {
-      "authorizationState": "not-authorized",
+      "authorizationState": "authorized",
       "gateId": "r7-renderer-opt-in-integration",
       "semanticDigest": "sha256:c2f7ce617eaaf00bb8aded393734af42bbe75a8d3a9480ea31f4b31a7f1f6be3"
     },
@@ -31,10 +31,10 @@
       "semanticDigest": "sha256:b982afd1d510f5eaed2e17900f703dcc2e3cb2619259d7ffdc32676d766081b8"
     }
   ],
-  "compilerVersion": "quest-growth-r7-decision-compiler/2",
+  "compilerVersion": "quest-growth-r7-decision-compiler/3",
   "concreteRouteArtifactCount": 2,
   "generatedAt": "2026-08-01T17:34:57.044Z",
-  "implementationAuthorization": "R7_DRAFT_CONTENT_AUTHORING_AUTHORIZED",
+  "implementationAuthorization": "R7_RENDERER_OPT_IN_INTEGRATION_AUTHORIZED",
   "pilotProposal": {
     "maximumInitialFamilies": 2,
     "recommendedFamilies": [
@@ -52,12 +52,12 @@
     "packetStatus": "R6_AUTHORING_APPROVED",
     "publicationAuthorization": "R7_NOT_AUTHORIZED"
   },
-  "requestDigest": "sha256:4ed44099a4a4f3e090748c1f1d98f66a338f96293660ebc8d4d6f887bb85c10a",
+  "requestDigest": "sha256:860a995c237d32ab578bbc926961d2df6aeef45028851af22eeeb6e5a2435cfa",
   "requestId": "decision:quest-growth-r7-0",
   "revision": 1,
   "runtimeEligibleCount": 0,
   "schemaVersion": 1,
   "scope": "R7_DECISION_ONLY",
   "semanticDigest": "sha256:29a541841298790180ab782eafc5555668d915b8fbf81405f8bb61d572b70ae9",
-  "status": "PILOT_CONTENT_AUTHORING_AUTHORIZED"
+  "status": "RENDERER_OPT_IN_INTEGRATION_AUTHORIZED"
 }

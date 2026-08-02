@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { AppMessageKey } from '@common/localization'
+import {
+  selectQuestGrowthReviewedRoutes,
+  type QuestGrowthReviewedRouteSegment
+} from '@common/quest_growth_reviewed_routes'
 import {
   evaluateQuestGrowthFallback,
   type QuestGrowthFallbackInput,
@@ -16,6 +20,7 @@ const props = defineProps<{
   inputs: readonly QuestGrowthFallbackInput[]
   resourcePosture: QuestGrowthResourcePosture
   focus: QuestGrowthFocus
+  now: Date
 }>()
 const emit = defineEmits<{
   'update:resourcePosture': [value: QuestGrowthResourcePosture]
@@ -129,6 +134,10 @@ const acquisitionRows = computed(() =>
   rows.value.filter((row) => row.outcome.kind === 'data-acquisition')
 )
 const manualRows = computed(() => rows.value.filter((row) => row.outcome.kind === 'manual-check'))
+const routesExpanded = ref(false)
+const reviewedRouteSelection = computed(() =>
+  selectQuestGrowthReviewedRoutes(props.focus, props.now)
+)
 const FocusObservableIds: Readonly<
   Partial<Record<QuestGrowthFocus, QuestGrowthFallbackInput['observableId']>>
 > = {
@@ -295,10 +304,19 @@ function updateResourcePosture(event: Event): void {
 function updateFocus(event: Event): void {
   emit('update:focus', (event.target as HTMLSelectElement).value as QuestGrowthFocus)
 }
+
+function updateRoutesExpanded(event: Event): void {
+  routesExpanded.value = (event.currentTarget as HTMLDetailsElement).open
+}
+
+function segmentTarget(segment: QuestGrowthReviewedRouteSegment): string {
+  if (segment.mapKey) return segment.mapKey
+  return segment.targetNodes.join(' / ')
+}
 </script>
 
 <template>
-  <section class="quest-growth-check" data-route-output="prohibited">
+  <section class="quest-growth-check" data-route-output="reviewed-opt-in">
     <header class="quest-growth-header">
       <div>
         <strong>{{ translateApp('quest.growth.title') }}</strong>
@@ -322,7 +340,7 @@ function updateFocus(event: Event): void {
       </div>
     </header>
 
-    <p class="quest-growth-route-notice">{{ translateApp('quest.growth.routePending') }}</p>
+    <p class="quest-growth-route-notice">{{ translateApp('quest.growth.routeAvailable') }}</p>
 
     <div class="quest-growth-context">
       <label>
@@ -371,6 +389,85 @@ function updateFocus(event: Event): void {
         <li v-for="action in priorityActions" :key="action">{{ actionText(action) }}</li>
       </ol>
     </section>
+
+    <details class="quest-growth-reviewed-routes" @toggle="updateRoutesExpanded">
+      <summary>{{ translateApp('quest.growth.routes.summary') }}</summary>
+      <div v-if="routesExpanded" class="quest-growth-reviewed-route-content">
+        <p v-if="reviewedRouteSelection.state === 'select-focus'" class="quest-growth-route-empty">
+          {{ translateApp('quest.growth.routes.selectFocus') }}
+        </p>
+        <p v-else-if="reviewedRouteSelection.state === 'no-route'" class="quest-growth-route-empty">
+          {{ translateApp('quest.growth.routes.noMatch') }}
+        </p>
+        <p
+          v-else-if="reviewedRouteSelection.state === 'knowledge-review-required'"
+          class="quest-growth-route-empty is-warning"
+        >
+          {{ translateApp('quest.growth.routes.reviewRequired') }}
+        </p>
+        <article
+          v-for="route in reviewedRouteSelection.routes"
+          v-else
+          :key="route.routeId"
+          class="quest-growth-reviewed-route"
+        >
+          <header>
+            <div>
+              <strong>{{ route.title }}</strong>
+              <p>{{ route.summary }}</p>
+            </div>
+            <div class="quest-growth-route-badges">
+              <span>{{ translateApp('quest.growth.routes.reviewed') }}</span>
+              <span>{{ translateApp('quest.growth.routes.manual') }}</span>
+              <span>{{ translateApp('quest.growth.routes.focusCandidate') }}</span>
+            </div>
+          </header>
+
+          <section>
+            <h4>{{ translateApp('quest.growth.routes.applicability') }}</h4>
+            <ul>
+              <li v-for="item in route.applicability" :key="item">{{ item }}</li>
+            </ul>
+          </section>
+
+          <section v-for="segment in route.segments" :key="segment.segmentId">
+            <h4>
+              {{ translateApp('quest.growth.routes.segment', { params: { target: segmentTarget(segment) } }) }}
+            </h4>
+            <div class="quest-growth-route-columns">
+              <div>
+                <h5>{{ translateApp('quest.growth.routes.fleet') }}</h5>
+                <ul>
+                  <li v-for="item in segment.fleetConstraints" :key="item">{{ item }}</li>
+                  <li v-for="item in segment.equipmentConstraints" :key="item">{{ item }}</li>
+                </ul>
+              </div>
+              <div>
+                <h5>{{ translateApp('quest.growth.routes.branches') }}</h5>
+                <ul>
+                  <li v-for="item in segment.branchConditions" :key="item">{{ item }}</li>
+                </ul>
+              </div>
+            </div>
+            <h5>{{ translateApp('quest.growth.routes.instructions') }}</h5>
+            <ol>
+              <li v-for="item in segment.sortieInstructions" :key="item">{{ item }}</li>
+            </ol>
+            <p class="quest-growth-route-fallback">
+              <strong>{{ translateApp('quest.growth.routes.fallback') }}</strong>
+              {{ segment.fallback }}
+            </p>
+          </section>
+
+          <footer>
+            <span>
+              {{ translateApp('quest.growth.routes.reviewBy', { params: { date: route.currentness.reviewBy.slice(0, 10) } }) }}
+            </span>
+            <span>{{ route.fallback }}</span>
+          </footer>
+        </article>
+      </div>
+    </details>
 
     <details class="quest-growth-details">
       <summary>
@@ -589,6 +686,117 @@ function updateFocus(event: Event): void {
   }
 }
 
+.quest-growth-reviewed-routes {
+  min-width: 0;
+  border: 1px solid rgba(#75e8ff, 0.24);
+  background: rgba(#000, 0.14);
+
+  > summary {
+    padding: 8px;
+    color: #dff8ff;
+    font-size: 11px;
+    cursor: pointer;
+  }
+}
+
+.quest-growth-reviewed-route-content {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 8px 8px;
+}
+
+.quest-growth-route-empty {
+  margin: 0;
+  padding: 8px;
+  color: rgba(#fff, 0.64);
+  background: rgba(#fff, 0.04);
+
+  &.is-warning {
+    color: #ffd98a;
+    background: rgba(#ffd166, 0.08);
+  }
+}
+
+.quest-growth-reviewed-route {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px;
+  border-left: 3px solid #75e8ff;
+  background: rgba(#75e8ff, 0.045);
+  overflow-wrap: anywhere;
+
+  > header {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+
+    p {
+      margin: 3px 0 0;
+      color: rgba(#fff, 0.62);
+      font-size: 10px;
+    }
+  }
+
+  h4,
+  h5 {
+    margin: 0 0 4px;
+    color: rgba(#fff, 0.88);
+    font-size: 10px;
+  }
+
+  ul,
+  ol {
+    display: grid;
+    gap: 3px;
+    margin: 0;
+    padding-left: 18px;
+    color: rgba(#fff, 0.7);
+    font-size: 10px;
+  }
+
+  > footer {
+    display: grid;
+    gap: 3px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(#fff, 0.12);
+    color: rgba(#fff, 0.52);
+    font-size: 9px;
+  }
+}
+
+.quest-growth-route-badges {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-content: flex-start;
+
+  span {
+    padding: 2px 5px;
+    border: 1px solid rgba(#9fffc7, 0.38);
+    color: #9fffc7;
+    font-size: 9px;
+    white-space: nowrap;
+  }
+}
+
+.quest-growth-route-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.quest-growth-route-fallback {
+  margin: 8px 0 0;
+  padding: 6px 7px;
+  color: #ffd98a;
+  background: rgba(#ffd166, 0.07);
+  font-size: 9px;
+}
+
 .quest-growth-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -646,6 +854,12 @@ function updateFocus(event: Event): void {
   }
 
   .quest-growth-header {
+    flex-direction: column;
+  }
+
+  .quest-growth-reviewed-route > header,
+  .quest-growth-route-columns {
+    grid-template-columns: minmax(0, 1fr);
     flex-direction: column;
   }
 }

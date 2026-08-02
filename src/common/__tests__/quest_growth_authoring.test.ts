@@ -153,7 +153,7 @@ describe('quest growth authoring contract', () => {
     })
     expect(manifest.runtimePromotion).toEqual({
       status: 'blocked',
-      reason: 'R7_REVIEWED_ROUTES_RENDERER_NOT_AUTHORIZED'
+      reason: 'R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED'
     })
     expect(report.runtimePromotionStatus).toBe('blocked')
     expect(report.milestoneGaps).toHaveLength(8)
@@ -293,7 +293,7 @@ describe('quest growth authoring contract', () => {
     })
   })
 
-  it('authorizes R7 schema and bounded pilot draft content only', () => {
+  it('authorizes the first three R7 gates while keeping publication blocked', () => {
     const report = read<{
       status: string
       scope: string
@@ -315,7 +315,7 @@ describe('quest growth authoring contract', () => {
       runtimeEligibleCount: number
     }>('generated', 'r7-authorization-report.json')
 
-    expect(report.status).toBe('PILOT_CONTENT_AUTHORING_AUTHORIZED')
+    expect(report.status).toBe('RENDERER_OPT_IN_INTEGRATION_AUTHORIZED')
     expect(report.scope).toBe('R7_DECISION_ONLY')
     expect(report.requestDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
     expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
@@ -330,9 +330,14 @@ describe('quest growth authoring contract', () => {
       authorizationState: 'authorized',
       semanticDigest: 'sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3'
     })
+    expect(report.authorizationGates[2]).toEqual({
+      gateId: 'r7-renderer-opt-in-integration',
+      authorizationState: 'authorized',
+      semanticDigest: 'sha256:c2f7ce617eaaf00bb8aded393734af42bbe75a8d3a9480ea31f4b31a7f1f6be3'
+    })
     expect(
       report.authorizationGates
-        .slice(2)
+        .slice(3)
         .every(
           (gate) =>
             gate.authorizationState === 'not-authorized' &&
@@ -345,7 +350,9 @@ describe('quest growth authoring contract', () => {
       recommendedFamilies: ['expedition-resource-periodic-loop', 'anti-submarine-foundation'],
       selectedInitialFamilies: ['expedition-resource-periodic-loop', 'anti-submarine-foundation']
     })
-    expect(report.implementationAuthorization).toBe('R7_DRAFT_CONTENT_AUTHORING_AUTHORIZED')
+    expect(report.implementationAuthorization).toBe(
+      'R7_RENDERER_OPT_IN_INTEGRATION_AUTHORIZED'
+    )
     expect(report.concreteRouteArtifactCount).toBe(2)
     expect(report.runtimeEligibleCount).toBe(0)
   })
@@ -362,14 +369,14 @@ describe('quest growth authoring contract', () => {
       'route-eligibility-report.json'
     )
     const tampered = structuredClone(request)
-    tampered.authorizationGates[2].authorizationState = 'authorized'
+    tampered.authorizationGates[3].authorizationState = 'authorized'
 
     expect(authorizationRequestSemanticDigest(tampered)).toBe(
       authorizationRequestSemanticDigest(request)
     )
     expect(() =>
       validateR7AuthorizationRequest(tampered, approvalPacket, eligibilityReport)
-    ).toThrow('only the R7 schema and pilot content authoring gates are authorized')
+    ).toThrow('only the first three R7 gates are authorized')
   })
 
   it('validates two reviewed pilot routes and keeps publication blocked', () => {
@@ -604,7 +611,7 @@ describe('quest growth authoring contract', () => {
     )
   })
 
-  it('generates a bounded unapproved renderer integration decision for two reviewed routes', () => {
+  it('generates a bounded approved renderer integration decision for two reviewed routes', () => {
     const report = read<{
       status: string
       semanticDigest: string
@@ -620,14 +627,14 @@ describe('quest growth authoring contract', () => {
       optIn: { defaultVisible: boolean; selectionPersistence: string; focusRequired: boolean }
     }>('generated', 'r7-renderer-integration-report.json')
 
-    expect(report.status).toBe('OWNER_DECISION_REQUIRED_RENDERER_INTEGRATION')
+    expect(report.status).toBe('RENDERER_OPT_IN_INTEGRATION_AUTHORIZED')
     expect(report.semanticDigest).toMatch(/^sha256:[0-9a-f]{64}$/)
-    expect(report.authorizationState).toBe('not-authorized')
-    expect(report.implementationAuthorization).toBe('not-authorized')
+    expect(report.authorizationState).toBe('authorized')
+    expect(report.implementationAuthorization).toBe('authorized')
     expect(report.integrationMode).toBe('session-only-explicit-expand')
     expect(report.maximumDisplayedRoutes).toBe(2)
     expect(report.reviewedRouteCount).toBe(2)
-    expect(report.rendererEligibleRouteCount).toBe(0)
+    expect(report.rendererEligibleRouteCount).toBe(2)
     expect(report.runtimeEligibleCount).toBe(0)
     expect(report.publicationAuthorization).toBe('R7_NOT_AUTHORIZED')
     expect(report.optIn).toMatchObject({
@@ -686,15 +693,15 @@ describe('quest growth authoring contract', () => {
         }
       }
     >('decisions', 'r7-renderer-integration-request.json')
-    const approved = structuredClone(request)
-    approved.status = 'approved'
-    approved.requestedAuthorization.authorizationState = 'authorized'
-    approved.requestedAuthorization.implementationAuthorization = 'authorized'
-    approved.review.approver = 'project-owner'
-    approved.review.reviewedAt = '2026-08-02T02:00:00.000Z'
-    approved.review.approvalDigest = rendererRequestSemanticDigest(request)
+    const pending = structuredClone(request)
+    pending.status = 'draft'
+    pending.requestedAuthorization.authorizationState = 'owner-decision-required'
+    pending.requestedAuthorization.implementationAuthorization = 'not-authorized'
+    pending.review.approver = null
+    pending.review.reviewedAt = null
+    pending.review.approvalDigest = null
 
-    expect(rendererRequestSemanticDigest(approved)).toBe(
+    expect(rendererRequestSemanticDigest(pending)).toBe(
       rendererRequestSemanticDigest(request)
     )
   })

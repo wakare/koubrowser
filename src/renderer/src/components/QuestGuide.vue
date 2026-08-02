@@ -1001,6 +1001,7 @@ function equipmentKindText(
         v-model:resource-posture="growthResourcePosture"
         v-model:focus="growthFocus"
         :inputs="growthSnapshot.inputs"
+        :now="now"
       />
       <QuestStrategyRoute
         v-if="showStrategyRoute"

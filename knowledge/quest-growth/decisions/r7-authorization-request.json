@@ -36,7 +36,7 @@
     },
     {
       "gateId": "r7-renderer-opt-in-integration",
-      "authorizationState": "not-authorized",
+      "authorizationState": "authorized",
       "summary": "允许 renderer 在用户明确展开后显示已审查的具体路线。",
       "requiredEvidence": [
         "feature remains opt-in and existing quest guide remains fallback",
@@ -87,6 +87,12 @@
       "approver": "project-owner",
       "reviewedAt": "2026-08-01T18:34:55.864Z",
       "approvalDigest": "sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3"
+    },
+    {
+      "gateId": "r7-renderer-opt-in-integration",
+      "approver": "project-owner",
+      "reviewedAt": "2026-08-02T02:07:16.639Z",
+      "approvalDigest": "sha256:c2f7ce617eaaf00bb8aded393734af42bbe75a8d3a9480ea31f4b31a7f1f6be3"
     }
   ],
   "proposedOutputContract": {

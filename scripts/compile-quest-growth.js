@@ -20,7 +20,7 @@ const {
   buildR7RendererDecisionArtifacts
 } = require('./quest-growth-r7-renderer-decision')
 
-const CompilerVersion = 'quest-growth-authoring-compiler/17'
+const CompilerVersion = 'quest-growth-authoring-compiler/18'
 const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const CommitPattern = /^[0-9a-f]{40}$/
 const IdentifierPattern = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/
@@ -953,7 +953,9 @@ function buildQuestGrowthArtifacts(root) {
     runtimePromotion: {
       status: 'blocked',
       reason:
-        r7RouteReviewDecision.output.r7ReviewedConcreteRouteCount > 0
+        r7RendererDecision.output.r7RendererAuthorizedRouteCount > 0
+          ? 'R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED'
+          : r7RouteReviewDecision.output.r7ReviewedConcreteRouteCount > 0
           ? 'R7_REVIEWED_ROUTES_RENDERER_NOT_AUTHORIZED'
           : 'R7_DRAFT_CONTENT_ONLY_RENDERER_NOT_AUTHORIZED'
     }

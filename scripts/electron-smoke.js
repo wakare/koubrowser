@@ -6146,11 +6146,18 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
           const audit = route.querySelector('.quest-strategy-summary')
           const growth = document.querySelector('.quest-growth-check')
           const growthDetails = growth?.querySelector('.quest-growth-details')
+          const growthRoutes = growth?.querySelector('.quest-growth-reviewed-routes')
           const growthContextSelects = growth?.querySelectorAll('.quest-growth-context select') ?? []
           const growthFocus = growthContextSelects[1]
-          if (growthFocus && growthFocus.value !== 'breadth') {
-            growthFocus.value = 'breadth'
+          if (growthFocus && growthFocus.value !== 'resources') {
+            growthFocus.value = 'resources'
             growthFocus.dispatchEvent(new Event('change', { bubbles: true }))
+            return null
+          }
+          if (growthRoutes && !growthRoutes.open) {
+            growthRoutes.dataset.smokeInitiallyCollapsed = 'true'
+            growthRoutes.open = true
+            growthRoutes.dispatchEvent(new Event('toggle'))
             return null
           }
           const growthHtml = growth?.outerHTML ?? ''
@@ -6181,6 +6188,15 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
                         growth.querySelector('.quest-growth-facts')?.dataset.focus ?? null,
                       factCount: growth.querySelectorAll('.quest-growth-facts dd').length,
                       detailsCollapsed: growthDetails ? !growthDetails.open : null,
+                      routesInitiallyCollapsed:
+                        growthRoutes?.dataset.smokeInitiallyCollapsed === 'true',
+                      reviewedRouteCount: growth.querySelectorAll(
+                        '.quest-growth-reviewed-route'
+                      ).length,
+                      reviewedRouteManualLabel:
+                        growth.querySelector('.quest-growth-route-badges')?.textContent.includes(
+                          '手動確認必須'
+                        ) ?? false,
                       forbiddenIdentifiers: forbidden
                         .filter((pattern) => pattern.test(growthHtml))
                         .map((pattern) => String(pattern)),
@@ -6202,12 +6218,15 @@ async function inspectTaskGuide(session, timeoutMs, expectedQuestKnowledge = und
       strategyResult.selectionCollapsed !== true ||
       (strategyResult.auditCollapsed !== null && strategyResult.auditCollapsed !== true) ||
       strategyResult.scrollWidth > strategyResult.clientWidth + 1 ||
-      strategyResult.growth?.routeOutput !== 'prohibited' ||
+      strategyResult.growth?.routeOutput !== 'reviewed-opt-in' ||
       strategyResult.growth?.priorityCount < 1 ||
       strategyResult.growth?.contextSelectCount !== 2 ||
-      strategyResult.growth?.factFocus !== 'breadth' ||
-      strategyResult.growth?.factCount !== 5 ||
+      strategyResult.growth?.factFocus !== 'resources' ||
+      strategyResult.growth?.factCount !== 1 ||
       strategyResult.growth?.detailsCollapsed !== true ||
+      strategyResult.growth?.routesInitiallyCollapsed !== true ||
+      strategyResult.growth?.reviewedRouteCount !== 1 ||
+      strategyResult.growth?.reviewedRouteManualLabel !== true ||
       strategyResult.growth?.forbiddenIdentifiers.length > 0 ||
       strategyResult.growth?.scrollWidth > strategyResult.growth?.clientWidth + 1
     ) {

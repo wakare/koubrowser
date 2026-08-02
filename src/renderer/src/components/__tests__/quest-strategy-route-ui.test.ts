@@ -28,20 +28,25 @@ describe('quest strategy route UI wiring', () => {
     )
   })
 
-  it('connects the readonly growth snapshot to a non-route fallback UI', () => {
+  it('connects the readonly growth snapshot to an opt-in reviewed-route UI', () => {
     expect(questGuide).toContain('import QuestGrowthCheck from')
     expect(questGuide).toContain('buildQuestGrowthLocalSnapshot(')
     expect(questGuide).toContain('svdata,')
     expect(questGuide).toContain('questGrowthContextFromSelection({')
     expect(questGuide).toContain('<QuestGrowthCheck')
     expect(questGuide).toContain(':inputs="growthSnapshot.inputs"')
+    expect(questGuide).toContain(':now="now"')
     expect(questGuide).toContain('v-model:resource-posture="growthResourcePosture"')
     expect(questGuide).toContain('v-model:focus="growthFocus"')
     expect(growthCheck).toContain('evaluateQuestGrowthFallback(input)')
-    expect(growthCheck).toContain('data-route-output="prohibited"')
+    expect(growthCheck).toContain('data-route-output="reviewed-opt-in"')
+    expect(growthCheck).toContain('selectQuestGrowthReviewedRoutes')
+    expect(growthCheck).toContain('class="quest-growth-reviewed-routes"')
+    expect(growthCheck).toContain('v-if="routesExpanded"')
     expect(growthCheck).toContain('class="quest-growth-facts"')
     expect(growthCheck).toContain('focusedFacts')
     expect(growthCheck).not.toContain('buildQuestStrategyRoutePlan')
+    expect(growthCheck).not.toMatch(/localStorage|sessionStorage|fetch\(|XMLHttpRequest|ipcRenderer/)
   })
 
   it('uses localization for app-owned UI and opens only reviewed evidence externally', () => {

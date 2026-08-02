@@ -36,14 +36,19 @@ describe('QuestGrowthCheck.vue', () => {
   ) {
     const { default: QuestGrowthCheck } = await import('../QuestGrowthCheck.vue')
     return mount(QuestGrowthCheck, {
-      props: { inputs, resourcePosture: 'unset', focus }
+      props: {
+        inputs,
+        resourcePosture: 'unset',
+        focus,
+        now: new Date('2026-08-02T02:07:16.639Z')
+      }
     })
   }
 
-  it('shows non-empty priorities and a compact summary without concrete routes', async () => {
+  it('shows non-empty priorities and keeps reviewed routes closed by default', async () => {
     const wrapper = await render()
 
-    expect(wrapper.get('.quest-growth-route-notice').text()).toBe('quest.growth.routePending')
+    expect(wrapper.get('.quest-growth-route-notice').text()).toBe('quest.growth.routeAvailable')
     expect(wrapper.get('.quest-growth-counts').text()).toContain(
       'quest.growth.summary.missing:{"count":1}'
     )
@@ -52,8 +57,10 @@ describe('QuestGrowthCheck.vue', () => {
     )
     expect(wrapper.findAll('.quest-growth-priority li').length).toBeGreaterThan(0)
     expect(wrapper.get('.quest-growth-details').attributes('open')).toBeUndefined()
+    expect(wrapper.get('.quest-growth-reviewed-routes').attributes('open')).toBeUndefined()
+    expect(wrapper.find('.quest-growth-reviewed-route').exists()).toBe(false)
     expect(wrapper.findAll('.quest-growth-row')).toHaveLength(2)
-    expect(wrapper.attributes('data-route-output')).toBe('prohibited')
+    expect(wrapper.attributes('data-route-output')).toBe('reviewed-opt-in')
     expect(wrapper.html()).not.toContain('routeId')
     expect(wrapper.html()).not.toContain('routeSteps')
     expect(wrapper.html()).not.toContain('mapKey')
@@ -127,7 +134,40 @@ describe('QuestGrowthCheck.vue', () => {
       'quest.growth.fact.state.available'
     ])
     expect(wrapper.get('.quest-growth-facts').text()).not.toContain('event-ready')
-    expect(wrapper.attributes('data-route-output')).toBe('prohibited')
+    expect(wrapper.attributes('data-route-output')).toBe('reviewed-opt-in')
+  })
+
+  it('shows only the reviewed resource route after explicit expansion', async () => {
+    const wrapper = await render('resources')
+    const details = wrapper.get('.quest-growth-reviewed-routes')
+
+    ;(details.element as HTMLDetailsElement).open = true
+    await details.trigger('toggle')
+
+    expect(wrapper.findAll('.quest-growth-reviewed-route')).toHaveLength(1)
+    expect(wrapper.get('.quest-growth-reviewed-route').text()).toContain(
+      '遠征05「海上護衛任務」資源ループ（手動確認）'
+    )
+    expect(wrapper.get('.quest-growth-reviewed-route').text()).not.toContain(
+      '1-5 3戦撤退・基礎対潜練習'
+    )
+    expect(wrapper.get('.quest-growth-route-badges').text()).toContain(
+      'quest.growth.routes.manual'
+    )
+  })
+
+  it('hides an expired route and requests knowledge review', async () => {
+    const wrapper = await render('asw')
+    await wrapper.setProps({ now: new Date('2026-10-01T00:00:00.000Z') })
+    const details = wrapper.get('.quest-growth-reviewed-routes')
+
+    ;(details.element as HTMLDetailsElement).open = true
+    await details.trigger('toggle')
+
+    expect(wrapper.find('.quest-growth-reviewed-route').exists()).toBe(false)
+    expect(wrapper.get('.quest-growth-route-empty').text()).toBe(
+      'quest.growth.routes.reviewRequired'
+    )
   })
 
   it('emits session-only resource posture and growth focus selections', async () => {
@@ -157,5 +197,6 @@ describe('QuestGrowthCheck.vue', () => {
     expect(source).not.toContain('ipcRenderer')
     expect(source).not.toContain('openExternalUrl')
     expect(source).not.toContain('buildQuestStrategyRoutePlan')
+    expect(source).toContain('selectQuestGrowthReviewedRoutes')
   })
 })

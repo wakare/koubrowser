@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R7_PILOT_ROUTES_REVIEWED_RENDERER_NOT_AUTHORIZED`
+Status: `R7_RENDERER_OPT_IN_IMPLEMENTED_REAL_ACCOUNT_NOT_AUTHORIZED`
 
 ## モデル境界
 
@@ -194,8 +194,9 @@ compiler version、input digest、output digest を固定する。
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
 本データで上書きしない。R6 lineage は exact commit
 `6b52e143af9fcab1dbb00b74f7e89bcf695e5e38` を別の audit snapshot として保持する。
-`R7_REVIEWED_ROUTES_RENDERER_NOT_AUTHORIZED` を downstream stop に固定し、authoring catalog の2 reviewed route を
-pure evaluator、adapter、UI、runtime bundle のいずれへも出力してはならない。
+`R7_RENDERER_INTEGRATION_AUTHORIZED_REAL_ACCOUNT_NOT_AUTHORIZED` を downstream stop に固定する。
+authoring catalog の2 reviewed route は承認済み opt-in UI だけに出力し、pure evaluator、adapter、
+runtime bundle へは出力してはならない。
 
 ## 予定する完了順序
 
@@ -217,7 +218,7 @@ R7 の実装前判断は [`quest-growth-r7-decision-packet.md`](quest-growth-r7-
 現在は `r7-schema-output-class` と `r7-pilot-content-authoring` をそれぞれ semantic digest に固定して
 承認し、遠征05の資源ループと1-5の3戦撤退対潜練習を各1件 authoring した。project owner は
 2026-08-02 に route ごとの固定摘要を独立承認し、2件を `reviewed` へ昇格した。
-残る4 gate は `not-authorized`、runtime eligible は0件である。
+renderer opt-in gate までの3 gate は `authorized`、残る3 gate は `not-authorized`、runtime eligible は0件である。
 
 具体的 route の `reviewed` 昇格には route 単位の独立 semantic-digest approval を必要とする。renderer、
 実アカウント受入、runtime publication、default enablement は後続の独立 gate とし、schema gate や
@@ -228,11 +229,12 @@ semantic digest は
 [`quest-growth-r7-route-review-decision-packet.md`](quest-growth-r7-route-review-decision-packet.md)
 に固定し、reviewed route count は2件、runtime eligible count は0件に保つ。
 
-次の `r7-renderer-opt-in-integration` は未承認である。既存 `QuestGrowthCheck.vue` 内の初期状態で
+`r7-renderer-opt-in-integration` は project owner の承認済みである。既存 `QuestGrowthCheck.vue` 内の初期状態で
 閉じた section、session-only、focus 別2 route、manual-check 表示、synthetic fixture だけに限定した
 decision packet を
 [`quest-growth-r7-renderer-decision-packet.md`](quest-growth-r7-renderer-decision-packet.md)
-に固定した。owner 承認までは renderer eligible route count を0件に保つ。
+に固定して実装した。renderer eligible route count は2件だが、実アカウント受入と runtime eligible count は
+引き続き0件に保つ。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

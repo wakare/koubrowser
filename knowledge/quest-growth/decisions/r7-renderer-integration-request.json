@@ -2,7 +2,7 @@
   "authoringSchema": "QuestGrowthR7RendererIntegrationRequest/1alpha",
   "requestId": "decision:quest-growth-r7-renderer-opt-in-integration",
   "revision": 1,
-  "status": "draft",
+  "status": "approved",
   "scope": "R7_RENDERER_OPT_IN_INTEGRATION_ONLY",
   "sourceSnapshot": {
     "auditedBaseCommit": "356c51cf24c9e8e986ab1af8b62de4603016576c",
@@ -21,10 +21,10 @@
   },
   "requestedAuthorization": {
     "gateId": "r7-renderer-opt-in-integration",
-    "authorizationState": "owner-decision-required",
+    "authorizationState": "authorized",
     "maximumDisplayedRoutes": 2,
     "integrationMode": "session-only-explicit-expand",
-    "implementationAuthorization": "not-authorized"
+    "implementationAuthorization": "authorized"
   },
   "routeBindings": [
     {
@@ -136,8 +136,8 @@
   ],
   "review": {
     "author": "codex-r7-renderer-decision-author",
-    "approver": null,
-    "reviewedAt": null,
-    "approvalDigest": null
+    "approver": "project-owner",
+    "reviewedAt": "2026-08-02T02:07:16.639Z",
+    "approvalDigest": "sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363"
   }
 }

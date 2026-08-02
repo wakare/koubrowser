@@ -899,6 +899,24 @@ export const JapaneseMessages = Object.freeze({
   'quest.growth.description': '現在の端末内データから、次に確認する項目を整理します。',
   'quest.growth.routePending':
     '具体的な海域・編成ルートは情報源と適用条件を審査中です。現在は確認項目だけを表示します。',
+  'quest.growth.routeAvailable':
+    '審査済みルートは現在の重点を選び、下の項目を開いた場合だけ表示します。実行条件は手動確認が必要です。',
+  'quest.growth.routes.summary': '審査済み攻略ルートを確認する',
+  'quest.growth.routes.selectFocus':
+    '「現在の重点」で資源状況または対潜能力を選ぶと、対応するルートを確認できます。',
+  'quest.growth.routes.noMatch': '選択した重点に対応する審査済みルートはありません。',
+  'quest.growth.routes.reviewRequired':
+    '攻略知識の摘要または期限を確認できないため、具体的なルートを表示していません。',
+  'quest.growth.routes.reviewed': '審査済み',
+  'quest.growth.routes.manual': '手動確認必須',
+  'quest.growth.routes.focusCandidate': '選択重点の候補',
+  'quest.growth.routes.applicability': '開始前の適用条件',
+  'quest.growth.routes.segment': '対象 {target}',
+  'quest.growth.routes.fleet': '艦隊・装備条件',
+  'quest.growth.routes.branches': '分岐・停止条件',
+  'quest.growth.routes.instructions': '手順',
+  'quest.growth.routes.fallback': '中止・代替：',
+  'quest.growth.routes.reviewBy': '知識の再確認期限 {date}',
   'quest.growth.summary.missing': '情報不足 {count}',
   'quest.growth.summary.manual': '要確認 {count}',
   'quest.growth.priority': '先に確認すること',

@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-0_CONCRETE_ROUTE_DECISION_PACKET`
 
-Status: `PILOT_ROUTES_REVIEWED_RENDERER_NOT_AUTHORIZED`
+Status: `RENDERER_OPT_IN_INTEGRATION_AUTHORIZED_IMPLEMENTED`
 
 ## 目的
 
@@ -45,7 +45,9 @@ R6 basis は次に固定する。
 `sha256:bbc64d5f81725d2a15c2b986047dde40518c3a5d76745fb6cc81d6c221b455ed`
 に固定して 2026-08-01T17:57:38.441Z に承認した。続いて `r7-pilot-content-authoring` を
 `sha256:2b0276b3f43adb54d4cce3fb831150872cc39d211fb9d87410957f08d1e434f3`
-に固定して 2026-08-01T18:34:55.864Z に承認した。残り4件は `not-authorized` のままであり、
+に固定して 2026-08-01T18:34:55.864Z に承認した。`r7-renderer-opt-in-integration` は
+`sha256:c2f7ce617eaaf00bb8aded393734af42bbe75a8d3a9480ea31f4b31a7f1f6be3`
+に固定して 2026-08-02T02:07:16.639Z に承認した。残り3件は `not-authorized` のままであり、
 前段の承認は後段の承認へ自動変換しない。
 
 ## 提案する output class
@@ -86,7 +88,7 @@ project owner は初期 pilot として次の2件を選択した。
 ## 承認済みの schema / draft authoring 成果物
 
 - [`r7-authoring-schema-1alpha.json`](../knowledge/quest-growth/r7-authoring-schema-1alpha.json)
-- [`route-catalog.json`](../knowledge/quest-growth/r7/route-catalog.json)（draft 2件）
+- [`route-catalog.json`](../knowledge/quest-growth/r7/route-catalog.json)（reviewed 2件）
 - [`evidence-snapshots.json`](../knowledge/quest-growth/r7/evidence-snapshots.json)
 - [`schema-cases.json`](../knowledge/quest-growth/fixtures/r7-schema/schema-cases.json)（匿名 synthetic）
 - [`r7-schema-validation-report.json`](../knowledge/quest-growth/generated/r7-schema-validation-report.json)
@@ -101,10 +103,10 @@ validator は2 gate の digest、選択した2 pilot、family別件数、R6 line
 [`quest-growth-r7-route-review-decision-packet.md`](quest-growth-r7-route-review-decision-packet.md)
 に分離し、project owner が 2026-08-02 に固定摘要どおり承認した。2件は `reviewed` へ昇格したが、
 renderer、実アカウント受入、runtime publication、default enablement は引き続き未承認である。
-次の独立判断は reviewed route を renderer に表示する範囲と fail-closed 条件である。
+reviewed route を renderer に表示する範囲と fail-closed 条件は project owner の承認済みである。
 固定摘要と推奨承認文面は
 [`quest-growth-r7-renderer-decision-packet.md`](quest-growth-r7-renderer-decision-packet.md)
-に分離した。owner 承認までは renderer eligible route count を0件に保つ。
+に分離した。renderer eligible route count は2件、runtime eligible count は0件に保つ。
 
 件数、対象、証拠、review 境界を固定した decision-only packet は
 [`quest-growth-r7-pilot-content-decision-packet.md`](quest-growth-r7-pilot-content-decision-packet.md)

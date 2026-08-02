@@ -2,7 +2,7 @@ const { createHash } = require('node:crypto')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const R7DecisionCompilerVersion = 'quest-growth-r7-decision-compiler/2'
+const R7DecisionCompilerVersion = 'quest-growth-r7-decision-compiler/3'
 const R7DecisionOutputFilenames = ['r7-authorization-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -232,11 +232,12 @@ function validateR7AuthorizationRequest(value, routeApprovalPacket, routeEligibi
     .filter((gate) => gate.authorizationState === 'authorized')
     .map((gate) => gate.gateId)
   if (
-    authorizedGateIds.length !== 2 ||
+    authorizedGateIds.length !== 3 ||
     authorizedGateIds[0] !== 'r7-schema-output-class' ||
-    authorizedGateIds[1] !== 'r7-pilot-content-authoring'
+    authorizedGateIds[1] !== 'r7-pilot-content-authoring' ||
+    authorizedGateIds[2] !== 'r7-renderer-opt-in-integration'
   ) {
-    throw new Error('only the R7 schema and pilot content authoring gates are authorized')
+    throw new Error('only the first three R7 gates are authorized')
   }
   for (const gate of gates.values()) {
     const hasRecord = authorizationRecords.has(gate.gateId)
@@ -437,7 +438,7 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
     requestId: request.value.requestId,
     revision: request.value.revision,
     generatedAt: request.value.sourceSnapshot.checkedAt,
-    status: 'PILOT_CONTENT_AUTHORING_AUTHORIZED',
+    status: 'RENDERER_OPT_IN_INTEGRATION_AUTHORIZED',
     scope: request.value.scope,
     requestDigest: digest(requestRaw),
     semanticDigest: request.semanticDigest,
@@ -453,7 +454,7 @@ function buildR7DecisionArtifacts({ base, routeApprovalPacket, routeEligibilityR
       recommendedFamilies: request.recommendedFamilies,
       selectedInitialFamilies: request.selectedInitialFamilies
     },
-    implementationAuthorization: 'R7_DRAFT_CONTENT_AUTHORING_AUTHORIZED',
+    implementationAuthorization: 'R7_RENDERER_OPT_IN_INTEGRATION_AUTHORIZED',
     concreteRouteArtifactCount,
     runtimeEligibleCount
   }
