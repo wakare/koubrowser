@@ -955,6 +955,115 @@ const recipes = [
   },
   {
     schemaVersion: 1,
+    id: 'normal-2-5-fifth-squadron-monthly',
+    revision: 1,
+    title: '2-5 第五戦隊マンスリー',
+    status: 'approved',
+    questIds: [249],
+    objectives: [{ questId: 249, result: 'S', requiredCount: 1 }],
+    mapKey: '2-5',
+    routeLabels: ['B-F-J-O'],
+    targetNodes: ['O'],
+    fleet: {
+      minimumShips: 6,
+      maximumShips: 6,
+      shipTypeConstraints: [
+        {
+          shipTypeIds: [ApiShipType.koukuu_senkan],
+          minimum: 1,
+          maximum: 1,
+          label: '航空戦艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.koujyun],
+          minimum: 1,
+          maximum: 1,
+          label: '航空巡洋艦 1 隻'
+        },
+        {
+          shipTypeIds: [ApiShipType.keijyun],
+          minimum: 1,
+          maximum: 1,
+          label: '軽巡洋艦 1 隻'
+        }
+      ],
+      specificShipConstraints: [
+        {
+          baseShipIds: [62, 63, 65],
+          minimum: 3,
+          maximum: 3,
+          label: '妙高・那智・羽黒（改装段階は問わない）'
+        }
+      ]
+    },
+    equipmentTypeConstraints: [
+      {
+        equipmentTypeIds: [SlotitemType.STContainer],
+        minimum: 2,
+        required: true,
+        label: '別々の 2 隻に載せるドラム缶 2 個'
+      },
+      {
+        equipmentTypeIds: [
+          SlotitemType.RecSeaplane,
+          SlotitemType.SeaplaneBomber,
+          SlotitemType.SmallRadar,
+          SlotitemType.LargeRadar
+        ],
+        minimum: 4,
+        required: false,
+        label: '分岐点係数1の索敵値49以上へ余裕を加える偵察機・電探'
+      },
+      {
+        equipmentTypeIds: [SlotitemType.SeaplaneFighter, SlotitemType.SeaplaneBomber],
+        minimum: 2,
+        required: false,
+        label: 'Oボス制空権確保84を狙う水上戦闘機・水上爆撃機'
+      }
+    ],
+    formations: [{ formationId: ApiFormation.tanjyuu, label: '単縦陣', when: 'B・F・J・Oボス' }],
+    airState: {
+      target: 'supremacy',
+      summary: 'Oボスの制空権確保境界84に搭載機損耗分の余裕を加える'
+    },
+    actions: [
+      '任務249を受注し、妙高・那智・羽黒の3隻と2-5のS勝利が残っていることを確認する',
+      '妙高・那智・羽黒・航空戦艦1・航空巡洋艦1・軽巡洋艦1の6隻にし、低速艦を含める',
+      '別々の2隻へドラム缶を1個ずつ載せ、分岐点係数1の索敵値49以上と制空値84への余裕を確認する',
+      'B-F-J-Oを進み、全戦闘で単縦陣を選ぶ。各戦闘後に損傷を確認し、大破時は進撃しない',
+      'OボスでS勝利を取り、任務249の達成表示を確認する'
+    ],
+    cost: 'medium',
+    risk: 'high',
+    evidence: [
+      {
+        sourceId: 'wikiwiki-map-2-5-fifth-squadron-current',
+        sourceLabel: '艦これ攻略 Wiki - 2-5',
+        url: 'https://wikiwiki.jp/kancolle/南西諸島海域/2-5',
+        reviewedAt: '2026-08-03T13:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '妙高・那智・羽黒と自由枠3、ボスS勝利、低速艦・ドラム缶搭載艦2隻を使う上ルート候補を確認'
+      },
+      {
+        sourceId: 'kcwiki-map-2-5-fifth-squadron-current',
+        sourceLabel: '舰娘百科 - 2-5',
+        url: 'https://zh.kcwiki.cn/wiki/2-5',
+        reviewedAt: '2026-08-03T13:00:00.000Z',
+        validUntil: '2027-02-03T00:00:00.000Z',
+        confidence: 'supported',
+        summary:
+          '妙高・那智・羽黒・航戦1・航巡1・軽巡1、B-F-J-O、低速艦、2隻のドラム缶、索敵49と制空84を独立照合'
+      },
+      PeriodicSortieEvidence
+    ],
+    validity: {
+      reviewBy: '2026-11-03T00:00:00.000Z'
+    }
+  },
+  {
+    schemaVersion: 1,
     id: 'normal-1-6-transport-quarterly',
     revision: 1,
     title: '1-6 強行輸送艦隊',
@@ -2601,6 +2710,6 @@ const recipes = [
 
 export const BundledQuestStrategyKnowledge = validateQuestStrategyKnowledgeBundle({
   schemaVersion: 1,
-  version: '2026-08-03.14',
+  version: '2026-08-03.15',
   recipes
 })

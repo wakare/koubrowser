@@ -51,6 +51,7 @@ describe('QuestStrategyRoute.vue', () => {
           '2-1',
           '2-2',
           '2-3',
+          '2-5',
           '4-1',
           '4-2',
           '4-3',
@@ -137,6 +138,14 @@ describe('QuestStrategyRoute.vue', () => {
     expect(routeText.some((text) => text.includes('G'))).toBe(true)
     expect(routeText.some((text) => text.includes('M'))).toBe(true)
     expect(wrapper.get('.quest-strategy-summary').text()).not.toContain('quest.strategy.uncovered')
+  })
+
+  it('shows named ships explicitly for the reviewed Fifth Squadron route', async () => {
+    const wrapper = await render([recommendation(249, 'active')])
+
+    expect(wrapper.findAll('.quest-strategy-step')).toHaveLength(1)
+    expect(wrapper.get('.quest-strategy-step').text()).toContain('妙高・那智・羽黒')
+    expect(wrapper.get('.quest-strategy-step').text()).toContain('B-F-J-O')
   })
 
   it('persists an explicit reviewed-route choice only after manual interaction', async () => {

@@ -211,6 +211,49 @@ describe('quest strategy runtime v2 stage coverage', () => {
     ])
   })
 
+  it('requires the exact named-ship set for the monthly Fifth Squadron route', () => {
+    const recipe = BundledQuestStrategyKnowledge.recipes.find(
+      (item) => item.id === 'normal-2-5-fifth-squadron-monthly'
+    )!
+
+    expect(auditQuestStrategyRecipeObjective(recipe, 249)).toMatchObject({
+      complete: true,
+      coverageStatus: 'route-ready',
+      contributions: [{ stageIndex: 0, mapKey: '2-5', machineConstraintComplete: true }]
+    })
+    expect(
+      auditQuestStrategyRecipeObjective(
+        { ...recipe, fleet: { ...recipe.fleet, specificShipConstraints: undefined } },
+        249
+      ).coverageStatus
+    ).toBe('route-unreviewed')
+    expect(
+      auditQuestStrategyRecipeObjective(
+        {
+          ...recipe,
+          fleet: {
+            ...recipe.fleet,
+            specificShipConstraints: [
+              {
+                baseShipIds: [62, 63],
+                minimum: 2,
+                maximum: 2,
+                label: '不完全な第五戦隊'
+              }
+            ]
+          }
+        },
+        249
+      ).coverageStatus
+    ).toBe('route-unreviewed')
+
+    const plan = build([249])
+    expect(plan.coveredQuestIds).toEqual([249])
+    expect(plan.steps.map((step) => step.recipeId)).toEqual([
+      'normal-2-5-fifth-squadron-monthly'
+    ])
+  })
+
   it('uses the reviewed 1-6 transport route to complete the quarterly arrival task', () => {
     const plan = build([861])
 

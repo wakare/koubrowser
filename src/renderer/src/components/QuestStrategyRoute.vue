@@ -634,6 +634,9 @@ function openEvidence(url: string): void {
                 <template v-if="step.fleet.shipTypeConstraints.length > 0">
                   ・{{ step.fleet.shipTypeConstraints.map((item) => item.label).join(' / ') }}
                 </template>
+                <template v-if="step.fleet.specificShipConstraints?.length">
+                  ・{{ step.fleet.specificShipConstraints.map((item) => item.label).join(' / ') }}
+                </template>
               </dd>
             </div>
             <div v-if="step.equipmentTypeConstraints.length > 0">

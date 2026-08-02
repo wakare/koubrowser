@@ -96,7 +96,7 @@ function objectiveProjection(questId: number): QuestStrategyObjectiveProjection 
   }
 }
 
-function sameTypeIds(left: readonly number[], right: readonly number[]): boolean {
+function sameIds(left: readonly number[], right: readonly number[]): boolean {
   const sortedLeft = [...left].sort((a, b) => a - b)
   const sortedRight = [...right].sort((a, b) => a - b)
   return (
@@ -125,7 +125,27 @@ function recipeSatisfiesFleetRule(recipe: QuestStrategyRecipe, rule: QuestFleetR
         return false
       }
       const constraint = recipe.fleet.shipTypeConstraints.find((item) =>
-        sameTypeIds(item.shipTypeIds, rule.types)
+        sameIds(item.shipTypeIds, rule.types)
+      )
+      return (
+        constraint !== undefined &&
+        (rule.min === undefined || constraint.minimum >= rule.min) &&
+        (rule.exact === undefined ||
+          (constraint.minimum === rule.exact && constraint.maximum === rule.exact)) &&
+        (rule.maximum === undefined ||
+          (constraint.maximum !== undefined && constraint.maximum <= rule.maximum))
+      )
+    }
+    case 'specific-ship-count': {
+      if (
+        rule.minimumLevel !== undefined ||
+        rule.exactMasterIds !== undefined ||
+        rule.excludePositions !== undefined
+      ) {
+        return false
+      }
+      const constraint = recipe.fleet.specificShipConstraints?.find((item) =>
+        sameIds(item.baseShipIds, rule.baseShipIds)
       )
       return (
         constraint !== undefined &&

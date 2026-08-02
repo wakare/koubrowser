@@ -1,8 +1,8 @@
 {
   "authoringSchema": "QuestStrategyAuthoring/2alpha",
-  "manifestVersion": "2026-08-03.14",
+  "manifestVersion": "2026-08-03.15",
   "sourceSnapshot": {
-    "repositoryCommit": "4d80255f71897303ddde87fe1f2168ef67cf31cc",
+    "repositoryCommit": "eb9b57cef5a0d78f8616731761ed1b8eb0dd849f",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949"
   },
@@ -159,6 +159,34 @@
         "author": "codex-r8-weekly-chain-fact-author",
         "approver": "project-owner",
         "reviewedAt": "2026-08-03T04:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": ["periodic-sortie-review"]
+      }
+    },
+    {
+      "factId": "quest:249:objective",
+      "questId": 249,
+      "revision": 1,
+      "status": "approved",
+      "origin": "canonical-projection",
+      "lineage": {
+        "module": "src/common/kcquest",
+        "accessor": "getQuestStuff",
+        "sourceCommit": "eb9b57cef5a0d78f8616731761ed1b8eb0dd849f",
+        "projectionDigest": "sha256:f10ff490dfb227df70e7a3647e52bef4061d0b77b141eef92e572c0fc58f2534"
+      },
+      "classification": "opaque-constraint",
+      "objectiveStages": [
+        {
+          "requiredCount": 1,
+          "targets": [{ "mapKey": "2-5", "result": "S", "targetCells": [] }]
+        }
+      ],
+      "review": {
+        "author": "codex-r8-fifth-squadron-fact-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T13:00:00.000Z",
         "reviewBy": "2026-11-03T00:00:00.000Z",
         "validUntil": "2027-02-03T00:00:00.000Z",
         "evidenceReviewIds": ["periodic-sortie-review"]
@@ -995,6 +1023,37 @@
       }
     },
     {
+      "templateId": "normal-map:2-5:fifth-squadron-r8-reviewed",
+      "revision": 1,
+      "status": "approved",
+      "mapKey": "2-5",
+      "routeLabels": ["B-F-J-O"],
+      "targetNodes": ["O"],
+      "fleetConstraintRef": "legacy-recipe:normal-2-5-fifth-squadron-monthly",
+      "formations": [{ "formationId": 1, "label": "単縦陣", "when": "B・F・J・Oボス" }],
+      "actions": [
+        "任務249を受注し、妙高・那智・羽黒の3隻と2-5のS勝利が残っていることを確認する",
+        "妙高・那智・羽黒・航空戦艦1・航空巡洋艦1・軽巡洋艦1の6隻にし、低速艦を含める",
+        "別々の2隻へドラム缶を1個ずつ載せ、分岐点係数1の索敵値49以上と制空値84への余裕を確認する",
+        "B-F-J-Oを進み、全戦闘で単縦陣を選ぶ。各戦闘後に損傷を確認し、大破時は進撃しない",
+        "OボスでS勝利を取り、任務249の達成表示を確認する"
+      ],
+      "cost": "medium",
+      "risk": "high",
+      "review": {
+        "author": "codex-r8-fifth-squadron-route-author",
+        "approver": "project-owner",
+        "reviewedAt": "2026-08-03T13:00:00.000Z",
+        "reviewBy": "2026-11-03T00:00:00.000Z",
+        "validUntil": "2027-02-03T00:00:00.000Z",
+        "evidenceReviewIds": [
+          "map-2-5-wikiwiki-fifth-squadron-current-review",
+          "map-2-5-kcwiki-fifth-squadron-current-review",
+          "periodic-sortie-review"
+        ]
+      }
+    },
+    {
       "templateId": "normal-map:1-6:r8-reviewed",
       "revision": 1,
       "status": "approved",
@@ -1778,6 +1837,26 @@
       "sourceLabel": "舰娘百科 - 2-5",
       "reviewer": "project-owner",
       "reviewedAt": "2026-08-03T12:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-2-5-wikiwiki-fifth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://wikiwiki.jp/kancolle/南西諸島海域/2-5",
+      "sourceLabel": "艦これ攻略 Wiki - 2-5",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T13:00:00.000Z",
+      "validUntil": "2027-02-03T00:00:00.000Z",
+      "confidence": "supported"
+    },
+    {
+      "reviewId": "map-2-5-kcwiki-fifth-squadron-current-review",
+      "status": "approved",
+      "sourceUrl": "https://zh.kcwiki.cn/wiki/2-5",
+      "sourceLabel": "舰娘百科 - 2-5",
+      "reviewer": "project-owner",
+      "reviewedAt": "2026-08-03T13:00:00.000Z",
       "validUntil": "2027-02-03T00:00:00.000Z",
       "confidence": "supported"
     },

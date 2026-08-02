@@ -2152,6 +2152,152 @@
     },
     {
       "actions": [
+        "任務249を受注し、妙高・那智・羽黒の3隻と2-5のS勝利が残っていることを確認する",
+        "妙高・那智・羽黒・航空戦艦1・航空巡洋艦1・軽巡洋艦1の6隻にし、低速艦を含める",
+        "別々の2隻へドラム缶を1個ずつ載せ、分岐点係数1の索敵値49以上と制空値84への余裕を確認する",
+        "B-F-J-Oを進み、全戦闘で単縦陣を選ぶ。各戦闘後に損傷を確認し、大破時は進撃しない",
+        "OボスでS勝利を取り、任務249の達成表示を確認する"
+      ],
+      "airState": {
+        "summary": "Oボスの制空権確保境界84に搭載機損耗分の余裕を加える",
+        "target": "supremacy"
+      },
+      "contributions": [
+        {
+          "mapKey": "2-5",
+          "questId": 249,
+          "requiredCount": 1,
+          "result": "S",
+          "stageIndex": 0
+        }
+      ],
+      "cost": "medium",
+      "equipmentTypeConstraints": [
+        {
+          "equipmentTypeIds": [
+            30
+          ],
+          "label": "別々の 2 隻に載せるドラム缶 2 個",
+          "minimum": 2,
+          "required": true
+        },
+        {
+          "equipmentTypeIds": [
+            10,
+            11,
+            12,
+            13
+          ],
+          "label": "分岐点係数1の索敵値49以上へ余裕を加える偵察機・電探",
+          "minimum": 4,
+          "required": false
+        },
+        {
+          "equipmentTypeIds": [
+            45,
+            11
+          ],
+          "label": "Oボス制空権確保84を狙う水上戦闘機・水上爆撃機",
+          "minimum": 2,
+          "required": false
+        }
+      ],
+      "evidence": [
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T13:00:00.000Z",
+          "sourceId": "wikiwiki-map-2-5-fifth-squadron-current",
+          "sourceLabel": "艦これ攻略 Wiki - 2-5",
+          "summary": "妙高・那智・羽黒と自由枠3、ボスS勝利、低速艦・ドラム缶搭載艦2隻を使う上ルート候補を確認",
+          "url": "https://wikiwiki.jp/kancolle/南西諸島海域/2-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-08-03T13:00:00.000Z",
+          "sourceId": "kcwiki-map-2-5-fifth-squadron-current",
+          "sourceLabel": "舰娘百科 - 2-5",
+          "summary": "妙高・那智・羽黒・航戦1・航巡1・軽巡1、B-F-J-O、低速艦、2隻のドラム缶、索敵49と制空84を独立照合",
+          "url": "https://zh.kcwiki.cn/wiki/2-5",
+          "validUntil": "2027-02-03T00:00:00.000Z"
+        },
+        {
+          "confidence": "supported",
+          "reviewedAt": "2026-07-31T00:00:00.000+09:00",
+          "sourceId": "wikiwiki-periodic-sortie",
+          "sourceLabel": "艦これ攻略 Wiki - 定期出撃任務",
+          "summary": "定期任務の対象海域、勝利条件、編成条件を確認",
+          "url": "https://wikiwiki.jp/kancolle/任務/出撃定期",
+          "validUntil": "2027-07-31T00:00:00.000+09:00"
+        }
+      ],
+      "fleet": {
+        "maximumShips": 6,
+        "minimumShips": 6,
+        "shipTypeConstraints": [
+          {
+            "label": "航空戦艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              10
+            ]
+          },
+          {
+            "label": "航空巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              6
+            ]
+          },
+          {
+            "label": "軽巡洋艦 1 隻",
+            "maximum": 1,
+            "minimum": 1,
+            "shipTypeIds": [
+              3
+            ]
+          }
+        ],
+        "specificShipConstraints": [
+          {
+            "baseShipIds": [
+              62,
+              63,
+              65
+            ],
+            "label": "妙高・那智・羽黒（改装段階は問わない）",
+            "maximum": 3,
+            "minimum": 3
+          }
+        ]
+      },
+      "formations": [
+        {
+          "formationId": 1,
+          "label": "単縦陣",
+          "when": "B・F・J・Oボス"
+        }
+      ],
+      "mapKey": "2-5",
+      "revision": 1,
+      "risk": "high",
+      "routeId": "normal-2-5-fifth-squadron-monthly",
+      "routeLabels": [
+        "B-F-J-O"
+      ],
+      "status": "approved",
+      "targetNodes": [
+        "O"
+      ],
+      "title": "2-5 第五戦隊マンスリー",
+      "validity": {
+        "reviewBy": "2026-11-03T00:00:00.000Z"
+      }
+    },
+    {
+      "actions": [
         "任務861を受注し、1-6到達回数が残っていることを確認する",
         "補給艦2・駆逐艦4の6隻にする。艦種が補給艦の状態であることを確認し、搭載可能なら水上戦闘機や対空カットインを用意する",
         "A-E-Gを進み、GからKへ逸れた場合は撤退して再出撃する。Fへ進んだ場合も各戦闘後に損傷を確認し、大破時は進撃しない",
@@ -4518,11 +4664,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:929b77d5e20268145f8ff57ba9987521ca155c697ce5fc2e3a690a4633917308",
-    "legacyKnowledgeDigest": "sha256:c2c8203b47c01ffd3083e5e0738a48471469c4a6ff8f7eaea9d9053553cfcae2",
-    "pilotAuthoringManifestDigest": "sha256:d03053a657833c64fbe37a171ef0abfc2d183c659c486c8eaa734aef5b96c14e",
+    "inventoryDigest": "sha256:dad7cbe1019b4cd73f6e069ac9fd9b7265d9b5b4b5feb52c50a8a16df03d8f87",
+    "legacyKnowledgeDigest": "sha256:87dd759c80325b06c5b56ce61e3c2e78507b3fbe95ccbb8e7817763d0387a243",
+    "pilotAuthoringManifestDigest": "sha256:d207391b6149602a7918a7a9b92bfcdd0b4e54ecd13ba7907120a70ebd2498b0",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "4d80255f71897303ddde87fe1f2168ef67cf31cc"
+    "repositoryCommit": "eb9b57cef5a0d78f8616731761ed1b8eb0dd849f"
   },
-  "version": "2026-08-03.14.v2"
+  "version": "2026-08-03.15.v2"
 }

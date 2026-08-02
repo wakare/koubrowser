@@ -213,6 +213,20 @@
     },
     {
       "evidenceDependencies": [
+        "wikiwiki-map-2-5-fifth-squadron-current",
+        "kcwiki-map-2-5-fifth-squadron-current",
+        "wikiwiki-periodic-sortie"
+      ],
+      "questStageDependencies": [
+        {
+          "questId": 249,
+          "stageIndex": 0
+        }
+      ],
+      "routeId": "normal-2-5-fifth-squadron-monthly"
+    },
+    {
+      "evidenceDependencies": [
         "wikiwiki-map-1-6-current",
         "kcwiki-map-1-6-current",
         "wikiwiki-periodic-sortie"

@@ -113,8 +113,8 @@ function build(
 }
 
 describe('quest strategy validation', () => {
-  it('loads twenty-nine reviewed normal-map recipes with auditable sources', () => {
-    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.14')
+  it('loads thirty reviewed normal-map recipes with auditable sources', () => {
+    expect(BundledQuestStrategyKnowledge.version).toBe('2026-08-03.15')
     expect(BundledQuestStrategyKnowledge.recipes.map((item) => item.id)).toEqual([
       'normal-1-5-periodic-asw',
       'normal-4-2-western-periodic',
@@ -127,6 +127,7 @@ describe('quest strategy validation', () => {
       'normal-2-3-carrier-southwest-periodic',
       'normal-2-4-okinoshima-periodic',
       'normal-2-5-surface-counterattack-monthly',
+      'normal-2-5-fifth-squadron-monthly',
       'normal-1-6-transport-quarterly',
       'normal-6-3-aerial-recon-quarterly',
       'normal-6-1-submarine-monthly',
@@ -161,6 +162,7 @@ describe('quest strategy validation', () => {
         item.id.includes('2-1') ||
         item.id.includes('2-4') ||
         item.id.includes('surface-counterattack-monthly') ||
+        item.id.includes('fifth-squadron-monthly') ||
         item.id.includes('transport-quarterly') ||
         item.id.includes('aerial-recon-quarterly') ||
         item.id.includes('submarine-monthly') ||
@@ -249,6 +251,14 @@ describe('quest strategy validation', () => {
         shipTypeConstraints: [
           { shipTypeIds: [3], minimum: 1, maximum: 2, label: '軽巡洋艦 1〜2 隻' },
           { shipTypeIds: [2], minimum: 4, label: '駆逐艦 4 隻以上' }
+        ],
+        specificShipConstraints: [
+          {
+            baseShipIds: [62, 63, 65],
+            minimum: 3,
+            maximum: 3,
+            label: '妙高・那智・羽黒'
+          }
         ]
       }
     })
@@ -262,6 +272,14 @@ describe('quest strategy validation', () => {
       minimum: 1,
       maximum: 2
     })
+    expect(normalizedFleet.specificShipConstraints).toEqual([
+      {
+        baseShipIds: [62, 63, 65],
+        minimum: 3,
+        maximum: 3,
+        label: '妙高・那智・羽黒'
+      }
+    ])
     expect(() =>
       normalizeQuestStrategyRecipes([
         {
@@ -273,6 +291,42 @@ describe('quest strategy validation', () => {
         }
       ])
     ).toThrow('integer greater than or equal to 2 expected')
+    expect(() =>
+      normalizeQuestStrategyRecipes([
+        {
+          ...boundedFleet,
+          fleet: {
+            ...boundedFleet.fleet,
+            specificShipConstraints: [
+              {
+                baseShipIds: [62, 62],
+                minimum: 2,
+                maximum: 2,
+                label: '重複した指定艦'
+              }
+            ]
+          }
+        }
+      ])
+    ).toThrow('duplicate values are not allowed')
+    expect(() =>
+      normalizeQuestStrategyRecipes([
+        {
+          ...boundedFleet,
+          fleet: {
+            ...boundedFleet.fleet,
+            specificShipConstraints: [
+              {
+                baseShipIds: [62, 63],
+                minimum: 3,
+                maximum: 3,
+                label: '存在しない3隻目'
+              }
+            ]
+          }
+        }
+      ])
+    ).toThrow('ship bounds must not exceed baseShipIds')
   })
 
   it('requires bounded validity for event-only knowledge', () => {
@@ -515,6 +569,32 @@ describe('buildQuestStrategyRoutePlan', () => {
       'pass'
     )
     expect(plan.steps[0].warnings).toContain('推奨装備を確認してください：ソナー系 4 個以上')
+  })
+
+  it('keeps named-ship readiness manual even when aggregate ship types are available', () => {
+    const namedShips = recipe('named-ships', [101], {
+      fleet: {
+        minimumShips: 3,
+        maximumShips: 6,
+        shipTypeConstraints: [{ shipTypeIds: [5], minimum: 3, label: '重巡洋艦 3 隻' }],
+        specificShipConstraints: [
+          {
+            baseShipIds: [62, 63, 65],
+            minimum: 3,
+            maximum: 3,
+            label: '妙高・那智・羽黒'
+          }
+        ]
+      }
+    })
+
+    const plan = build([namedShips], snapshot([101], { shipTypeCounts: { '5': 3 } }))
+
+    expect(plan.steps[0].checks.find((check) => check.code === 'fleet-ready')).toMatchObject({
+      state: 'unknown',
+      message: '指定艦条件は編成画面で手動確認してください'
+    })
+    expect(plan.steps[0].fleet.specificShipConstraints?.[0].baseShipIds).toEqual([62, 63, 65])
   })
 
   it('builds a production 4-2 route with per-quest objectives', () => {

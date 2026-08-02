@@ -186,8 +186,8 @@ describe('quest strategy renderer adapter', () => {
     expect(
       result.filter((candidate) => candidate.group === 'route-ready').map((item) => item.questId)
     ).toEqual([
-      226, 229, 241, 242, 243, 256, 257, 261, 264, 265, 266, 280, 284, 822, 845, 854, 861, 862,
-      872, 873, 893, 894
+      226, 229, 241, 242, 243, 249, 256, 257, 261, 264, 265, 266, 280, 284, 822, 845, 854, 861,
+      862, 872, 873, 893, 894
     ])
     expect(
       result.filter((candidate) => candidate.group === 'partial').map((item) => item.questId)

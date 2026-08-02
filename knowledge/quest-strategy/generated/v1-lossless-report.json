@@ -206,6 +206,17 @@
       "objectives": [
         {
           "lossless": true,
+          "questId": 249,
+          "reason": "COMPLETE_OBJECTIVE"
+        }
+      ],
+      "recipeId": "normal-2-5-fifth-squadron-monthly"
+    },
+    {
+      "lossless": true,
+      "objectives": [
+        {
+          "lossless": true,
           "questId": 861,
           "reason": "COMPLETE_OBJECTIVE"
         }
@@ -461,7 +472,7 @@
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "4d80255f71897303ddde87fe1f2168ef67cf31cc"
+    "repositoryCommit": "eb9b57cef5a0d78f8616731761ed1b8eb0dd849f"
   },
   "unsupportedQuestIds": [
     {

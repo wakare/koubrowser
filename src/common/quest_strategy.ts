@@ -35,6 +35,13 @@ export interface StrategyShipTypeConstraint {
   label: string
 }
 
+export interface StrategySpecificShipConstraint {
+  baseShipIds: number[]
+  minimum: number
+  maximum?: number
+  label: string
+}
+
 export interface StrategyEquipmentTypeConstraint {
   equipmentTypeIds: number[]
   minimum: number
@@ -78,6 +85,7 @@ export interface QuestStrategyRecipe {
     flagshipTypeIds?: number[]
     allowedShipTypeIds?: number[]
     shipTypeConstraints: StrategyShipTypeConstraint[]
+    specificShipConstraints?: StrategySpecificShipConstraint[]
   }
   equipmentTypeConstraints: StrategyEquipmentTypeConstraint[]
   formations: StrategyFormation[]
@@ -397,6 +405,26 @@ function readShipTypeConstraint(value: unknown, path: string): StrategyShipTypeC
   }
 }
 
+function readSpecificShipConstraint(value: unknown, path: string): StrategySpecificShipConstraint {
+  const record = recordAt(value, path)
+  assertKeys(record, ['baseShipIds', 'minimum', 'maximum', 'label'], path)
+  const baseShipIds = uniqueIntegersAt(record.baseShipIds, `${path}.baseShipIds`)
+  const minimum = integerAt(record.minimum, `${path}.minimum`, 1)
+  const maximum =
+    record.maximum === undefined
+      ? undefined
+      : integerAt(record.maximum, `${path}.maximum`, minimum)
+  if (minimum > baseShipIds.length || (maximum !== undefined && maximum > baseShipIds.length)) {
+    throw new QuestStrategyValidationError(path, 'ship bounds must not exceed baseShipIds')
+  }
+  return {
+    baseShipIds,
+    minimum,
+    ...(maximum === undefined ? {} : { maximum }),
+    label: stringAt(record.label, `${path}.label`)
+  }
+}
+
 function readEquipmentTypeConstraint(
   value: unknown,
   path: string
@@ -488,7 +516,8 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
       'maximumShips',
       'flagshipTypeIds',
       'allowedShipTypeIds',
-      'shipTypeConstraints'
+      'shipTypeConstraints',
+      'specificShipConstraints'
     ],
     `${path}.fleet`
   )
@@ -564,7 +593,17 @@ function readRecipe(value: unknown, path: string): QuestStrategyRecipe {
         fleetRecord.shipTypeConstraints,
         `${path}.fleet.shipTypeConstraints`,
         readShipTypeConstraint
-      )
+      ),
+      ...(fleetRecord.specificShipConstraints === undefined
+        ? {}
+        : {
+            specificShipConstraints: arrayAt(
+              fleetRecord.specificShipConstraints,
+              `${path}.fleet.specificShipConstraints`,
+              readSpecificShipConstraint,
+              1
+            )
+          })
     },
     equipmentTypeConstraints: arrayAt(
       record.equipmentTypeConstraints,
@@ -948,6 +987,10 @@ function evaluateRecipe(
       fleetMessage = '許可された艦種だけでは必要隻数を編成できません'
     }
   }
+  if (fleetState === 'pass' && recipe.fleet.specificShipConstraints?.length) {
+    fleetState = 'unknown'
+    fleetMessage = '指定艦条件は編成画面で手動確認してください'
+  }
   checks.push(hardCheck('fleet-ready', fleetState, fleetMessage))
 
   const requiredEquipment = recipe.equipmentTypeConstraints.filter(
@@ -1076,7 +1119,15 @@ function evaluateRecipe(
       shipTypeConstraints: recipe.fleet.shipTypeConstraints.map((constraint) => ({
         ...constraint,
         shipTypeIds: [...constraint.shipTypeIds]
-      }))
+      })),
+      ...(recipe.fleet.specificShipConstraints === undefined
+        ? {}
+        : {
+            specificShipConstraints: recipe.fleet.specificShipConstraints.map((constraint) => ({
+              ...constraint,
+              baseShipIds: [...constraint.baseShipIds]
+            }))
+          })
     },
     equipmentTypeConstraints: recipe.equipmentTypeConstraints.map((constraint) => ({
       ...constraint,
