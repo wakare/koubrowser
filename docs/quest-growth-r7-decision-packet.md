@@ -57,8 +57,9 @@ R6 basis は次に固定する。
 承認した。最初の実行は非表示 task page に対応できず route 検査前に fail closed した。
 この結果と検査漏れだけを補う revision 2 は
 `sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e` に再固定したが、実行は
-owner decision required である。最初の4 gate は `authorized`、残る2 gate は `not-authorized` のままであり、
-ハーネス修訂も明示承認なしに再実行しない。
+project owner が明示承認した。revision 2 は `retry-authorized-not-run` である。最初の4 gate は
+`authorized`、残る2 gate は `not-authorized` のままであり、修訂承認も runtime publication や
+default enablement に自動変換しない。
 
 ## 提案する output class
 

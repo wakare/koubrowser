@@ -3,7 +3,7 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const R7RealAccountDecisionCompilerVersion =
-  'quest-growth-r7-real-account-decision-compiler/3'
+  'quest-growth-r7-real-account-decision-compiler/4'
 const R7RealAccountDecisionOutputFilenames = ['r7-real-account-acceptance-report.json']
 const CommitPattern = /^[0-9a-f]{40}$/
 const DigestPattern = /^sha256:[0-9a-f]{64}$/
@@ -12,7 +12,7 @@ const TimestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 const FixedRendererSemanticDigest =
   'sha256:840a73bb1f72683756774b2a5e4403d0f91dc23410a67f4c5ed5dc417bb98363'
 const ApprovedRealAccountSemanticDigest =
-  'sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe'
+  'sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e'
 const FocusByFamily = {
   'expedition-resource-periodic-loop': 'resources',
   'anti-submarine-foundation': 'asw'
@@ -495,7 +495,9 @@ function buildR7RealAccountDecisionArtifacts({ root, base, r7AuthorizationReport
     rawLogRetentionAllowed: false,
     accountDataExportAllowed: false,
     protectedCommunicationDigests: request.value.approvalBasis.protectedCommunicationDigests,
-    actualAcceptanceStatus: request.value.priorAttempt.result,
+    actualAcceptanceStatus: request.approved
+      ? 'retry-authorized-not-run'
+      : request.value.priorAttempt.result,
     priorAttemptReasonCode: request.value.priorAttempt.reasonCode,
     harnessAmendmentReasonCode: request.value.harnessAmendment.reasonCode,
     harnessAmendmentChangeCount: request.value.harnessAmendment.changes.length,

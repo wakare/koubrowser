@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R6_Route_Lineage_Authoring`
 
-Status: `R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED`
+Status: `R7_REAL_ACCOUNT_ACCEPTANCE_AMENDMENT_AUTHORIZED_NOT_RUN`
 
 ## モデル境界
 
@@ -194,7 +194,7 @@ compiler version、input digest、output digest を固定する。
 既存 quest strategy generated artifacts が `0505bc...` を source commit として保持する問題は、
 本データで上書きしない。R6 lineage は exact commit
 `6b52e143af9fcab1dbb00b74f7e89bcf695e5e38` を別の audit snapshot として保持する。
-`R7_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT_OWNER_DECISION_REQUIRED` を downstream stop に固定する。
+`R7_REAL_ACCOUNT_ACCEPTANCE_AUTHORIZED_NOT_RUN` を downstream stop に固定する。
 authoring catalog の2 reviewed route は承認済み opt-in UI だけに出力し、pure evaluator、adapter、
 runtime bundle へは出力してはならない。
 
@@ -241,8 +241,9 @@ decision packet を
 [`quest-growth-r7-real-account-acceptance-decision-packet.md`](quest-growth-r7-real-account-acceptance-decision-packet.md)
 に固定した。project owner は revision 1 の受入実行を承認したが、非表示 task page により
 route 検査前に fail closed した。revision 2 harness amendment は匿名 hidden-layout fixture で PASS 済みだが、
-現在の status は `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT`、actual acceptance は
-`blocked-before-route-inspection` である。
+project owner は revision 2 の固定摘要を明示承認した。現在の status は
+`REAL_ACCOUNT_READONLY_ACCEPTANCE_AUTHORIZED`、prior attempt は `blocked-before-route-inspection`、revision 2 は
+`retry-authorized-not-run` である。
 
 pilot content の decision-only request は、選択した2 family に各1件、合計最大2件、status は
 `draft` までに固定した。固定摘要と推奨承認文面は

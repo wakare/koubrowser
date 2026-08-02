@@ -4,7 +4,7 @@
 
 Task ID: `QGROWTH-R7-4_REAL_ACCOUNT_READONLY_ACCEPTANCE_PACKET`
 
-Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT`
+Status: `REAL_ACCOUNT_READONLY_ACCEPTANCE_AMENDMENT_AUTHORIZED_NOT_RUN`
 
 ## 目的
 
@@ -13,7 +13,8 @@ Status: `OWNER_DECISION_REQUIRED_REAL_ACCOUNT_ACCEPTANCE_HARNESS_AMENDMENT`
 受入実行を承認した。最初の実行は account data ready 後、ユーザーが非表示にした任務 page を
 revision 1 harness が開けず、route 検査前に fail closed した。revision 2 はこの layout 互換性と
 固定12 check の検査漏れだけを補う。gate の承認は維持するが、revision 2 の実行は再承認まで
-`not-authorized` とする。
+`not-authorized` とした。project owner は固定摘要を明示承認し、revision 2 の実行は
+`authorized`、再試行はまだ `not-run` である。
 
 machine-readable request は
 [`r7-real-account-acceptance-request.json`](../knowledge/quest-growth/decisions/r7-real-account-acceptance-request.json)、
@@ -132,6 +133,8 @@ screenshot capture、raw log retention、account data export はすべて禁止�
   `sha256:44e83fc978c1f951c20a8669083c91ca60c73d62bd6ec17a0901e63bb9edc57e`
 - request raw digest:
   `sha256:c93a7c03e6afe77f272852dcaf32ad342e61f2cb7c2b7e8f9f8f125c631f0380`
+- approved revision 2 request raw digest:
+  `sha256:409132e26bd5b131da0049d715408438a13bd59c028eca6dea2dea48d899f446`
 - revision 1 approved semantic digest:
   `sha256:4518ded2c385593aa8fa046798b03f1c85f9ae2d18b51fed2fff467aa67cc5fe`
 - revision 2 smoke harness digest:
@@ -140,7 +143,8 @@ screenshot capture、raw log retention、account data export はすべて禁止�
   `sha256:9217b655328ce8a1c4e0558c744b7eb6fb35f1226331d1b3960ad3055c66ffdb`
 - route count: `2`
 - required checks: `12`
-- actual acceptance status: `blocked-before-route-inspection`
+- prior acceptance status: `blocked-before-route-inspection`
+- revision 2 acceptance status: `retry-authorized-not-run`
 - runtime eligible count: `0`
 - publication authorization: `R7_NOT_AUTHORIZED`
 - default enablement authorization: `R7_NOT_AUTHORIZED`
@@ -157,6 +161,6 @@ screenshot capture、raw log retention、account data export はすべて禁止�
 
 ## 承認結果と現在の結論
 
-revision 1 の gate 承認は記録済みだが、revision 2 の `executionAuthorization` は
-`not-authorized` である。修訂固定摘要への project owner の明示承認なしに実アカウント
-session を再開しない。runtime publication、default enablement、他 family は未承認のままである。
+project owner は revision 2 修訂固定摘要を明示承認した。`executionAuthorization` は
+`authorized`、actual status は `retry-authorized-not-run` である。preflight 完了後に固定 harness を
+1回だけ再実行できる。runtime publication、default enablement、他 family は未承認のままである。
