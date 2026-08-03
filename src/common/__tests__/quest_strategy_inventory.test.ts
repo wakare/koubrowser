@@ -81,6 +81,27 @@ describe('quest strategy coverage inventory', () => {
     expect(summary.unsupportedV1MultiStageBasisPoints).toBe(3703)
   })
 
+  it('records the adopted stage-aware runtime without erasing the v1 trigger evidence', () => {
+    const report = JSON.parse(
+      fs.readFileSync(
+        path.resolve(
+          process.cwd(),
+          'knowledge',
+          'quest-strategy',
+          'generated',
+          'v1-lossless-report.json'
+        ),
+        'utf8'
+      )
+    ) as { runtimeV2Decision: string; runtimeV2Reasons: string[] }
+
+    expect(report.runtimeV2Decision).toBe('RUNTIME_V2_ADOPTED')
+    expect(report.runtimeV2Reasons).toEqual([
+      'LOSSLESS_COVERAGE_BELOW_THRESHOLD',
+      'UNSUPPORTED_MULTI_STAGE_ABOVE_THRESHOLD'
+    ])
+  })
+
   it('keeps cadence entries unique and free of task titles', () => {
     const raw = fs.readFileSync(
       path.resolve(process.cwd(), 'knowledge', 'quest-strategy', 'cadence-catalog.json'),

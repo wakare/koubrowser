@@ -42,13 +42,21 @@
    - [`quest-strategy-route-acceptance.md`](quest-strategy-route-acceptance.md) に従い、
      実アカウント表示確認は `PENDING OWNER`、Issue #29 の正式配布運用は `FROZEN`、
      既定有効化は別 PR の判断まで `BLOCKED` とする。
+   - canonical recurring normal-sortie inventory は 27/27（100%）、39 route unit、
+     60 stage contribution、rejected objective 0 まで拡張済み。100% は inventory data coverage であり、
+     実利用者の達成可能性や成功率を意味しない。
    - 既存任務指引を常に fallback として維持し、勝率・消費量予測、装備 optimizer、
      イベント即時追従、自動操作、ゲーム通信変更は引き続き非目標とする。
    - 成長攻略チェックは、既存の遠征05資源循環・1-5対潜練習に加え、独立した2情報源で
      審査した 1-5 月度EO勲章ルート、2-1 航空・水上基礎ルート、第2～第4艦隊の常設編成任務
      解放チェーン、演習→改造→通常近代化の育成ループを bundled opt-in として追加した。
      R7 の署名候補2件、既定無効、session-only、runtime eligible count 0 は変更しない。
+   - R7 の固定2 route は実アカウント只読表示で PASS し、外部提供された signed bundle / public key の
+     offline review 結果も10個の脱敏 fieldだけで記録済み。これは quest strategy 39 route の
+     `smoke:live`、runtime publication、default enablement を代替しない。
 2. **P1: #29 の本番運用決定**
+   - 現在値と残る判断は [`release-gate-handoff-2026-08-03.md`](release-gate-handoff-2026-08-03.md) に
+     一覧化する。production 値や実行権限はこの文書の作成だけでは付与されない。
    - 正式 HTTPS 配布 URL、公開鍵・指紋の値、秘密鍵保管とローテーションを決める。
    - [`data-update-key-operations.md`](data-update-key-operations.md) の役割分離、主鍵と
      passphrase の別保管、独立した 2 backup、復旧試験周期、incident 連絡先を実在する

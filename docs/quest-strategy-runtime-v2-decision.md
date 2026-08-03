@@ -1,10 +1,10 @@
 # 任務攻略 runtime v2 決定記録
 
-最終更新日: 2026-07-31
+最終更新日: 2026-08-03
 
 Task ID: `QSTRAT-RV2-001_Stage_Aware_Runtime`
 
-Status: `ACCEPTED_FOR_IMPLEMENTATION`
+Status: `IMPLEMENTED_AND_VERIFIED`
 
 ## 決定理由
 
@@ -24,6 +24,10 @@ covered として扱っていた。v1 recipe の追加だけでは、この誤�
 
 - `knowledge/quest-strategy/generated/v1-lossless-report.json`
 - `knowledge/quest-strategy/generated/conflict-and-gap-report.json`
+
+2026-08-03 時点で stage-aware runtime v2 は実装済みであり、27 fact、39 route、60 exact stage
+contribution、rejected objective 0 を決定的に生成する。`v1-lossless-report.json` は当時の移行理由を
+残す監査資料であり、decision state は `RUNTIME_V2_ADOPTED` とする。
 
 ## 採用するモデル
 

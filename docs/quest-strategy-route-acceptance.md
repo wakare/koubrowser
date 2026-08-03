@@ -1,6 +1,6 @@
 # 任務攻略推薦ルート受け入れ
 
-最終更新日: 2026-07-31
+最終更新日: 2026-08-03
 
 ## 現在の判断
 
@@ -42,6 +42,13 @@ Ed25519 鍵で攻略 recipe を含む bundle を署名し、production Electron 
 2026-07-31 の production smoke は `smoke.strategy.1` と
 `signed-smoke-route` を読み込み、privacy 検出 0、`clientWidth = scrollWidth = 268`
 で通過した。
+
+2026-08-03 の最終 authoring baseline は canonical recurring normal-sortie 27 fact に対して
+39 route unit、60 stage contribution、rejected objective 0 である。27件すべてを完全な
+stage-aware plan として構成でき、inventory data coverage は 100% となった。これは実利用者の
+表示任務に対する命中率や成功率ではない。`QuestStrategyFeatureDefaultEnabled = false`、明示 opt-in、
+既存指引 fallback、通信非変更の境界は維持する。実アカウントでの本ページ固有の最終表示確認は
+引き続き未実施であり、下記 gate を自動的に解除しない。
 
 ## ゲーム通信の只読監査
 
@@ -99,6 +106,7 @@ npm run smoke:live
 | 純粋関数・決定性・欠損降格   | PASS          | 全 unit fixture 継続通過                                            |
 | 1～5 任務・最大 512 recipe   | PASS          | 1 件の単独ルートと 2～5 件の bounded co-completion fixture 継続通過 |
 | 署名 schema・fallback        | PASS          | publisher/runtime/smoke 継続通過                                    |
+| canonical 27 fact の route coverage | PASS    | 39 route / 60 stage contribution / rejected 0 を継続検証             |
 | production 合成 E2E・privacy | PASS          | `smoke:data-update` 継続通過                                        |
 | ゲーム通信非変更             | PASS          | 攻略基点以降の保護 3 ファイル差分 0、只読テスト通過                 |
 | 実アカウント表示確認         | PENDING OWNER | 上記 `smoke:live` と目視 5 項目 PASS                                |

@@ -239,11 +239,11 @@ objective の数値セルIDを完全一致させる。これによりG向けの�
 部分集合である軽巡1〜2・駆逐4〜5とし、駆逐4によるJ-Lボス固定を保つ。いずれかの hard
 constraint が欠けた recipe は引き続き `route-unreviewed` へ fail closed する。
 
-そのため本変更では、件数を増やすために未審査 Wiki 情報を取り込まず、まず route-ready
-だけを自動選択する UI と authority を固定する。次のデータ pilot は、代表 snapshot で
-zero-ready の原因を記録し、author と approver を分離できる場合に限り、小さな審査単位で
-追加する。inventory 上の 100% をもって既定有効化や全利用者での実用カバレッジ達成とは
-判断しない。
+そのため本変更では、件数を増やすために未審査 Wiki 情報を取り込まず、route-ready だけを
+自動選択する UI と authority を固定する。canonical inventory は27/27となったため、追加 pilot を
+件数目的では行わない。今後は任務定義や海域条件が変わった場合に、author と approver を分離した
+小さな審査単位で保守する。代表 snapshot の zero-ready 原因と実アカウント表示確認はリリース門禁に
+残し、inventory 上の 100% をもって既定有効化や全利用者での実用カバレッジ達成とは判断しない。
 
 ## 推奨アーキテクチャ
 

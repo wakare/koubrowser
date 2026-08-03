@@ -337,6 +337,10 @@ runtime eligible count は0のままとする。
 [`quest-growth-r7-signed-bundle-evidence-review-result-recording-decision-packet.md`](quest-growth-r7-signed-bundle-evidence-review-result-recording-decision-packet.md)
 で固定する。result recording packet は結果値そのものを事前保存せず、承認後に許可する10 field、4 path、
 最大1 record と execution rerun / input reread 禁止だけを固定する。
+project owner は固定摘要と compiler amendment を明示承認し、既存の1回の review 結果を再実行・再読込せず
+10個の脱敏 fieldだけで記録した。status は `R7_SIGNED_BUNDLE_EVIDENCE_REVIEW_RESULT_RECORDED`、
+record count は1、runtime eligible count は0である。次は実在 HTTPS staging URL、正式 trust config、
+release record、隔離 staging acceptance、runtime publication、default enablement をそれぞれ独立 gate とする。
 署名前の `QuestKnowledgeUpdate` 入力は、既存258 reviewed claim と固定2 route を合成する
 `data:quest-growth:r7:materialize` で生成し、checked-in candidate の SHA-256 を固定した。この段階では鍵生成、
 bundle signing、実 signed bundle review、staging acceptance または publication を行わない。

@@ -36,6 +36,10 @@ interface CadenceCatalogFile {
 interface CoveragePolicy {
   policyId: string
   revision: number
+  runtimeOutputSchema: number
+  compilation: {
+    mode: string
+  }
   gates: {
     compiledRecipeMaximum: number
   }
@@ -212,6 +216,8 @@ export function buildQuestStrategyInventoryArtifacts(
       : [])
   ]
   const bundledRecipeAudit = auditBundledRecipes(entries)
+  const runtimeV2Adopted =
+    policy.runtimeOutputSchema === 2 && policy.compilation.mode === 'deterministic-stage-aware-v2'
 
   return {
     'coverage-inventory.json': {
@@ -232,9 +238,11 @@ export function buildQuestStrategyInventoryArtifacts(
       compiledRecipeMaximum: policy.gates.compiledRecipeMaximum,
       runtimeV2Decision: runtimeV2Reasons.includes('CADENCE_CATALOG_INCOMPLETE')
         ? 'INVENTORY_INCOMPLETE'
-        : runtimeV2Reasons.length === 0
-          ? 'CONTINUE_V1_PILOT'
-          : 'OPEN_RUNTIME_V2_DECISION',
+        : runtimeV2Adopted
+          ? 'RUNTIME_V2_ADOPTED'
+          : runtimeV2Reasons.length === 0
+            ? 'CONTINUE_V1_PILOT'
+            : 'OPEN_RUNTIME_V2_DECISION',
       runtimeV2Reasons,
       bundledRecipeAudit,
       losslessQuestIds: primaryEntries

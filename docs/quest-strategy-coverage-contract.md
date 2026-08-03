@@ -1,15 +1,17 @@
 # 任務攻略カバレッジ契約
 
-最終更新日: 2026-07-31
+最終更新日: 2026-08-03
 
 Task ID: `QSTRAT-COV-001_Coverage_Contract_and_Manifest_Freeze`
 
-Status: `CONTRACT_FROZEN_WITH_RUNTIME_V2_DECISION`
+Status: `CONTRACT_FROZEN_RUNTIME_V2_ADOPTED`
 
 2026-07-31 の inventory で runtime v2 の独立判断条件を満たした。denominator、
 freshness、review、privacy、fallback の契約は維持し、runtime 出力と compilation mode は
 policy revision 2 で stage-aware v2 へ移行する。判断記録は
 [`quest-strategy-runtime-v2-decision.md`](quest-strategy-runtime-v2-decision.md) を参照。
+inventory report の `runtimeV2Reasons` は判断を開始した当時の閾値証拠として保持し、
+`runtimeV2Decision` は現在の policy と一致する `RUNTIME_V2_ADOPTED` とする。
 
 ## 目的
 

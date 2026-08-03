@@ -6006,11 +6006,11 @@
     "coveragePolicyId": "QSTRAT_RECURRING_NORMAL_SORTIE_V1",
     "coveragePolicyRevision": 2,
     "curatedKnowledgeDigest": "sha256:fa161e193aacd8465016bf4a3989ad1935b1218e3ef0c4c9084c4391f71c8949",
-    "inventoryDigest": "sha256:7f4b9e9eeeb0078534e6b6e80c7b645464c61f58fc84c17677c0fde7089f0701",
+    "inventoryDigest": "sha256:524cc83699ad6cb702bedabec07bcf26d79a5c71a21574a893aa7ae8102992c6",
     "legacyKnowledgeDigest": "sha256:6510ade0c308258fd1dc9ec5ce9ecdeaddfd4dc1bb2bc3511521805fa118080e",
-    "pilotAuthoringManifestDigest": "sha256:eae643bfe04cf1006c2d2e8fdffee00fbbf5935e00d34b0434ee3c4bfcccf2ae",
+    "pilotAuthoringManifestDigest": "sha256:514252742b627144840b2fc97a45ab33bbaa1cf836688065409384d9c635e789",
     "questCatalogDigest": "sha256:267be70a980df7e8cc88a0042037618d18f05a026e5e1a9893bb88d7a6b2fce9",
-    "repositoryCommit": "ee009174b17801a55086ac734234bcee964afebe"
+    "repositoryCommit": "f809ffe659091def7e4e009bb77cb4bb6d846b53"
   },
   "version": "2026-08-03.19.v2"
 }
