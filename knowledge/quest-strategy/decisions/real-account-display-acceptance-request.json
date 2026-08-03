@@ -1,0 +1,124 @@
+{
+  "schema": "QuestStrategyRealAccountDisplayAcceptanceRequest/1",
+  "requestId": "decision:quest-strategy-real-account-display-acceptance",
+  "revision": 1,
+  "status": "owner-decision-required",
+  "scope": "QUEST_STRATEGY_REAL_ACCOUNT_DISPLAY_ACCEPTANCE_ONLY",
+  "implementationBasis": {
+    "auditedImplementationCommit": "f809ffe659091def7e4e009bb77cb4bb6d846b53",
+    "packageJsonSha256": "sha256:ad045e8dd31c97d00ae1c09e77b5ee408d97254ebcc0f7f25935890b07ee8074",
+    "smokeHarnessSha256": "sha256:d02f92bd9883cf693ae5ac238929c05e188e68da0038248bef22d7406047dfe4",
+    "questGuideSha256": "sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4",
+    "questStrategyRouteSha256": "sha256:1e0679b31a1614bc75abec5b93a487f4f7824d9fc530892464d3fe13244afe5c",
+    "questStrategyViewSha256": "sha256:1891d1c1c1fcdb705df03f6b3e3708ffc19d1c7e92de98ea7927da17ca27090c",
+    "bundledKnowledgeSha256": "sha256:b499b6034b65ea3e305c940e2719d5f13bd61c79ed1335a042ced2866ed25eae",
+    "protectedCommunicationSha256": {
+      "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+      "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
+      "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e"
+    }
+  },
+  "requestedAuthorization": {
+    "gateId": "quest-strategy-real-account-display-acceptance",
+    "executionAuthorization": "not-authorized",
+    "maximumExecutions": 1,
+    "command": "npm run smoke:accept:quest-strategy",
+    "mode": "owner-login-readonly-redacted-no-screenshot"
+  },
+  "ownerOnlyActions": [
+    "close-normal-koubrowser-and-confirm-local-backup",
+    "enter-credentials-and-complete-login",
+    "click-game-start-once",
+    "confirm-five-visible-acceptance-statements"
+  ],
+  "agentReadOnlyActions": [
+    "run-fixed-digest-preflight",
+    "launch-the-dedicated-acceptance-command",
+    "wait-for-owner-login-and-game-start",
+    "inspect-task-guide-route-dom-and-layout",
+    "emit-redacted-pass-fail-summary",
+    "restore-page-filter-panel-route-and-window-state"
+  ],
+  "preflightRequirements": [
+    "all-implementation-basis-digests-match",
+    "typecheck-and-full-tests-pass",
+    "quest-strategy-inventory-pilot-and-compiler-verification-pass",
+    "quest-growth-verification-passes",
+    "anonymous-signed-data-update-smoke-passes",
+    "normal-koubrowser-is-closed-and-owner-confirms-backup"
+  ],
+  "requiredChecks": [
+    "strategy-route-is-closed-before-explicit-expand",
+    "complete-route-shows-next-map-and-co-completion-first",
+    "selection-score-alternatives-and-diagnostics-remain-collapsed-initially",
+    "missing-information-is-unknown-or-confirmation-not-success-optimal-or-required",
+    "existing-current-and-all-quest-guide-views-remain-available",
+    "strategy-dom-contains-no-account-identifier-or-raw-payload",
+    "route-panel-has-no-horizontal-overflow-at-current-and-controlled-size",
+    "route-visibility-filter-page-panel-and-window-state-are-restored",
+    "no-game-action-after-owner-game-start-occurs",
+    "protected-game-communication-files-remain-byte-identical"
+  ],
+  "evidenceContract": {
+    "allowedOutput": [
+      "implementation-and-file-digests",
+      "knowledge-version",
+      "route-counts-and-neutral-state",
+      "boolean-check-results",
+      "client-and-scroll-dimensions",
+      "redacted-error-codes",
+      "acceptance-started-at-and-completed-at"
+    ],
+    "forbiddenOutput": [
+      "credentials",
+      "cookies",
+      "api-token",
+      "member-id",
+      "admiral-name",
+      "server-id",
+      "ship-instance-id",
+      "equipment-instance-id",
+      "raw-api-payload",
+      "unredacted-dom",
+      "screenshot",
+      "raw-log",
+      "account-snapshot"
+    ],
+    "screenshotCaptureAllowed": false,
+    "rawLogRetentionAllowed": false,
+    "accountDataExportAllowed": false
+  },
+  "restoreContract": {
+    "restoreQuestFilter": true,
+    "restoreWorkspacePage": true,
+    "restorePanelVisibility": true,
+    "restoreWindowBounds": true,
+    "restoreStrategyVisibility": true,
+    "gameStateMutationToRestoreAllowed": false
+  },
+  "abortConditions": [
+    "agent-is-asked-to-handle-credentials-or-click-game-start",
+    "implementation-basis-digest-mismatch",
+    "acceptance-requires-game-operation-after-owner-game-start",
+    "unredacted-account-data-would-be-written-or-exported",
+    "screenshot-or-raw-log-would-be-retained",
+    "page-filter-panel-route-or-window-state-cannot-be-restored",
+    "owner-cannot-observe-or-confirm-the-five-visible-statements"
+  ],
+  "executionBoundary": {
+    "productionCodeChangesAuthorized": false,
+    "harnessChangesAuthorized": false,
+    "routeContentChangesAuthorized": false,
+    "gameCommunicationChangesAuthorized": false,
+    "automaticGameOperationAuthorized": false,
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false,
+    "installerPublicationAuthorized": false
+  },
+  "review": {
+    "author": "codex-quest-strategy-acceptance-packet-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

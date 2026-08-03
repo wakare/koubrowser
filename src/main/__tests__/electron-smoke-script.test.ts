@@ -971,6 +971,33 @@ describe('Electron smoke script', () => {
     ).toThrow('ROUTE_PANEL_CONTROLLED_SIZE_UNAVAILABLE')
   })
 
+  it('keeps the quest-strategy live acceptance command read-only and screenshot-free', () => {
+    const packageJson = JSON.parse(
+      readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8')
+    ) as { scripts: Record<string, string> }
+    const command = packageJson.scripts['smoke:accept:quest-strategy']
+
+    expect(command).toBe(
+      'node scripts/electron-smoke.js --manual-game-start --workspace-pages --task-guide ' +
+        '--wide-workspace --summary --timeout 300000 --total-timeout 900000'
+    )
+    expect(command).not.toContain('--allow-game-start')
+    expect(command).not.toContain('--screenshot-dir')
+    expect(command).not.toContain('--layout-fixture')
+    expect(smoke.parseArgs(command.split(' ').slice(2))).toMatchObject({
+      allowGameStart: false,
+      manualGameStart: true,
+      layoutFixture: false,
+      summary: true,
+      workspacePages: true,
+      taskGuide: true,
+      wideWorkspace: true,
+      screenshotDir: undefined,
+      timeoutMs: 300000,
+      totalTimeoutMs: 900000
+    })
+  })
+
   it('checks panel and route overflow for the anonymous 221px fixture', () => {
     expect(smoke.NarrowRoutePanelFixtureWidth).toBe(221)
     expect(readFileSync(path.resolve(process.cwd(), 'scripts', 'electron-smoke.js'), 'utf8')).toContain(

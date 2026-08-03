@@ -56,6 +56,7 @@
     "smoke:accept:issue-23": "node scripts/electron-smoke.js --layout-fixture --workspace-pages --wide-workspace --summary --require-display-profile issue-23 --screenshot-dir output/acceptance-issue-23",
     "smoke:accept:issue-30": "node scripts/electron-smoke.js --manual-game-start --workspace-pages --summary --require-live-profile issue-30 --timeout 300000 --total-timeout 900000 --screenshot-dir output/acceptance-issue-30",
     "smoke:accept:issue-34": "node scripts/electron-smoke.js --layout-fixture --workspace-pages --wide-workspace --summary --require-display-profile issue-34 --screenshot-dir output/acceptance-issue-34",
+    "smoke:accept:quest-strategy": "node scripts/electron-smoke.js --manual-game-start --workspace-pages --task-guide --wide-workspace --summary --timeout 300000 --total-timeout 900000",
     "smoke:live": "node scripts/electron-smoke.js --manual-game-start --workspace-pages --task-guide --wide-workspace --summary --timeout 300000 --total-timeout 900000 --screenshot-dir output/layout-smoke-live",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",

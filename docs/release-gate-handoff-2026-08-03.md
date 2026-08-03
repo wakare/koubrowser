@@ -70,10 +70,17 @@ production synthetic `smoke:data-update` は PASS した。data-update smoke は
 ### A. 任務攻略推薦の実アカウント最終表示
 
 1. owner がログインと `GAME START` を手動で行う。
-2. `npm run smoke:live` の読み取り専用検査と目視5項目を実行する。
+2. screenshot を保存しない専用 `npm run smoke:accept:quest-strategy` の読み取り専用検査と
+   目視5項目を実行する。
 3. page、panel、filter、window state を復元し、ゲーム操作と通信変更がないことを確認する。
 
 この gate は R7 成長攻略2 routeの既存PASSとは別である。
+
+実行範囲と禁止事項は
+[`quest-strategy-real-account-acceptance-decision-packet.md`](quest-strategy-real-account-acceptance-decision-packet.md)
+に固定した。machine-readable request SHA-256 は
+`sha256:ed263b04cedce9d4bf3464cd741fd872a3f69ac7f178307fe16651f057a36c87` であり、
+現在の execution authorization は `not-authorized` である。
 
 ### B. #29 の実在 production input
 

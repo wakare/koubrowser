@@ -78,8 +78,13 @@ DOM/log/summary 出力が一つでもあれば FAIL とし、機能を有効化�
 
 ```powershell
 npm run build:bundle
-npm run smoke:live
+npm run smoke:accept:quest-strategy
 ```
+
+`smoke:accept:quest-strategy` は本 gate 専用の入口であり、owner の手動 `GAME START`、task guide、
+route-panel の current / controlled size 検査、脱敏 summary だけを固定する。自動 `GAME START`、
+synthetic account、screenshot directory は指定しない。汎用の `smoke:live` は他の手動確認にも使うため、
+本 gate の承認対象には含めない。
 
 表示された隔離 smoke window で利用者がログインし、GAME START を一度押す。
 スクリプトは既存の観測経路で game data が準備された後、任務指引と攻略ルートを開き、
@@ -109,6 +114,6 @@ npm run smoke:live
 | canonical 27 fact の route coverage | PASS    | 39 route / 60 stage contribution / rejected 0 を継続検証             |
 | production 合成 E2E・privacy | PASS          | `smoke:data-update` 継続通過                                        |
 | ゲーム通信非変更             | PASS          | 攻略基点以降の保護 3 ファイル差分 0、只読テスト通過                 |
-| 実アカウント表示確認         | PENDING OWNER | 上記 `smoke:live` と目視 5 項目 PASS                                |
+| 実アカウント表示確認         | PENDING OWNER | 上記 `smoke:accept:quest-strategy` と目視 5 項目 PASS                |
 | Issue #29 正式配布運用       | FROZEN        | URL、公開鍵、担当、staging 審査を Owner 承認                        |
 | 機能の既定有効化             | BLOCKED       | 前二項と独立リリース判断                                            |

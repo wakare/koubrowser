@@ -53,7 +53,7 @@
      R7 の署名候補2件、既定無効、session-only、runtime eligible count 0 は変更しない。
    - R7 の固定2 route は実アカウント只読表示で PASS し、外部提供された signed bundle / public key の
      offline review 結果も10個の脱敏 fieldだけで記録済み。これは quest strategy 39 route の
-     `smoke:live`、runtime publication、default enablement を代替しない。
+     `smoke:accept:quest-strategy`、runtime publication、default enablement を代替しない。
 2. **P1: #29 の本番運用決定**
    - 現在値と残る判断は [`release-gate-handoff-2026-08-03.md`](release-gate-handoff-2026-08-03.md) に
      一覧化する。production 値や実行権限はこの文書の作成だけでは付与されない。
