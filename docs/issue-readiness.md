@@ -512,6 +512,18 @@ npm run smoke:account-restore
 npm run smoke:live
 ```
 
+任務攻略推薦だけを screenshot なしで只読受入する場合:
+
+```bash
+npm run smoke:accept:quest-strategy
+```
+
+#29 の正式 URL、公開鍵、独立 fingerprint を network access なしで事前照合する場合:
+
+```bash
+npm run data:trust:verify -- --manifest-url <HTTPS_URL> --public-key-file <PUBLIC_KEY_FILE> --public-key-sha256 <SHA256>
+```
+
 #30 の遠征チェックを実アカウントで受け入れる場合:
 
 ```bash

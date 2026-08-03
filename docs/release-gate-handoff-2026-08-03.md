@@ -67,6 +67,17 @@ production synthetic `smoke:data-update` は PASS した。data-update smoke は
 
 ## 最後にまとめて判断する項目
 
+### 現在の approval snapshot
+
+| gate | request revision / SHA-256 | current state | owner input |
+| --- | --- | --- | --- |
+| 任務攻略推薦 実アカウント表示 | revision 2 / `sha256:0cc487a762987688d5cf85241c32eaae17c390e84fc662258af3f0128c6cfb67` | execution `not-authorized` | owner manual login、GAME START 1回、目視5項目 |
+| #29 production trust configuration authoring | revision 2 / `sha256:abe9755751637d080af15c0683441449dcc15ddb62c452e090f4a2002c9b1827` | implementation `not-authorized` | 公開URL、公鍵、独立fingerprint、3 role、key運用記録 |
+
+これ以前に提示した revision 1 digest は superseded とし、承認に使用しない。後続の release record、
+HTTPS staging acceptance、runtime publication、default enablement は、上記 production input と前段結果が
+存在しないため、現時点で実行可能な固定摘要を作らない。
+
 ### A. 任務攻略推薦の実アカウント最終表示
 
 1. owner がログインと `GAME START` を手動で行う。
