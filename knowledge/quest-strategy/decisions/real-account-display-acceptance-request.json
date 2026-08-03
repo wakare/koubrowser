@@ -1,12 +1,12 @@
 {
   "schema": "QuestStrategyRealAccountDisplayAcceptanceRequest/1",
   "requestId": "decision:quest-strategy-real-account-display-acceptance",
-  "revision": 1,
+  "revision": 2,
   "status": "owner-decision-required",
   "scope": "QUEST_STRATEGY_REAL_ACCOUNT_DISPLAY_ACCEPTANCE_ONLY",
   "implementationBasis": {
     "auditedImplementationCommit": "f809ffe659091def7e4e009bb77cb4bb6d846b53",
-    "packageJsonSha256": "sha256:ad045e8dd31c97d00ae1c09e77b5ee408d97254ebcc0f7f25935890b07ee8074",
+    "packageJsonSha256": "sha256:7aa769ace665b4b6923cdc331313c8ce4a2b0ca5568e9828b856abc472ebaaf9",
     "smokeHarnessSha256": "sha256:d02f92bd9883cf693ae5ac238929c05e188e68da0038248bef22d7406047dfe4",
     "questGuideSha256": "sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4",
     "questStrategyRouteSha256": "sha256:1e0679b31a1614bc75abec5b93a487f4f7824d9fc530892464d3fe13244afe5c",
@@ -24,6 +24,12 @@
     "maximumExecutions": 1,
     "command": "npm run smoke:accept:quest-strategy",
     "mode": "owner-login-readonly-redacted-no-screenshot"
+  },
+  "revisionNote": {
+    "supersedesRevision": 1,
+    "reason": "package-script-table-added-offline-production-trust-input-verifier",
+    "acceptanceCommandUnchanged": true,
+    "acceptanceScopeUnchanged": true
   },
   "ownerOnlyActions": [
     "close-normal-koubrowser-and-confirm-local-backup",

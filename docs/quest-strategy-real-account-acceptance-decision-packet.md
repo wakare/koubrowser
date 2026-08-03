@@ -46,7 +46,7 @@ machine-readable request は
 
 固定摘要を確認した後、次の形で1回の実行だけを承認する。
 
-> 批准固定摘要对应的 `quest-strategy-real-account-display-acceptance` revision 1。仅授权运行一次
+> 批准固定摘要对应的 `quest-strategy-real-account-display-acceptance` revision 2。仅授权运行一次
 > `npm run smoke:accept:quest-strategy`，由 project owner 手动处理登录并只点击一次 GAME START；
 > Codex 仅可执行固定 digest preflight、只读检查 task guide/route DOM/布局、输出脱敏 PASS/FAIL 并恢复
 > 页面、筛选、面板、路线显示及窗口状态。不得处理凭据、点击 GAME START、执行游戏操作、修改游戏通信，
@@ -56,7 +56,9 @@ machine-readable request は
 固定摘要:
 
 - request SHA-256:
-  `sha256:ed263b04cedce9d4bf3464cd741fd872a3f69ac7f178307fe16651f057a36c87`
+  `sha256:0cc487a762987688d5cf85241c32eaae17c390e84fc662258af3f0128c6cfb67`
+- revision 2 only refreshes the `package.json` digest after adding the unrelated offline
+  production trust input verifier; the acceptance command and scope are unchanged
 - execution authorization: `not-authorized`
 - maximum executions: `1`
 - screenshot / raw log / account snapshot: prohibited

@@ -19,6 +19,7 @@ function fileDigest(relativePath: string): string {
 describe('data-update production trust configuration authoring decision', () => {
   it('keeps production disabled and binds authoring to public trust inputs and four paths', () => {
     const request = readJson<{
+      revision: number
       status: string
       sourceSnapshot: Record<string, string>
       currentFailClosedState: Record<string, unknown>
@@ -39,6 +40,7 @@ describe('data-update production trust configuration authoring decision', () => 
       publicKeySha256: undefined
     })
     expect(request.status).toBe('owner-decision-required')
+    expect(request.revision).toBe(2)
     expect(request.sourceSnapshot).toMatchObject({
       deploymentSourceSha256: fileDigest('src/main/data-update-deployment.ts'),
       deploymentTestSha256: fileDigest('src/main/__tests__/data-update-deployment.test.ts'),
@@ -46,6 +48,9 @@ describe('data-update production trust configuration authoring decision', () => 
       dataUpdateDocSha256: fileDigest('docs/data-update.md'),
       reviewedQuestCandidateSha256: fileDigest(
         'docs/data-update-candidates/quest-knowledge-reviewed-v1.json'
+      ),
+      offlineTrustInputVerifierSha256: fileDigest(
+        'scripts/verify-data-update-production-trust-inputs.js'
       )
     })
     expect(request.requestedAuthorization).toEqual({

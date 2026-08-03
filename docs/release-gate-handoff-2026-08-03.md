@@ -79,7 +79,7 @@ production synthetic `smoke:data-update` は PASS した。data-update smoke は
 実行範囲と禁止事項は
 [`quest-strategy-real-account-acceptance-decision-packet.md`](quest-strategy-real-account-acceptance-decision-packet.md)
 に固定した。machine-readable request SHA-256 は
-`sha256:ed263b04cedce9d4bf3464cd741fd872a3f69ac7f178307fe16651f057a36c87` であり、
+`sha256:0cc487a762987688d5cf85241c32eaae17c390e84fc662258af3f0128c6cfb67` であり、
 現在の execution authorization は `not-authorized` である。
 
 ### B. #29 の実在 production input
@@ -95,9 +95,11 @@ private key、passphrase、credential はリポジトリ、チャット、ログ
 最初の authoring gate は
 [`data-update-production-trust-configuration-decision-packet.md`](data-update-production-trust-configuration-decision-packet.md)
 に固定した。machine-readable request SHA-256 は
-`sha256:2f8186c6396bc5232b8a0ead20a5a58f2316f8f01480fbaf278f1ddfbaa69212` であり、
+`sha256:abe9755751637d080af15c0683441449dcc15ddb62c452e090f4a2002c9b1827` であり、
 現在の implementation authorization は `not-authorized` である。公開入力5件が揃っても、
 外部接続、署名、staging acceptance、publication、default enablement は別 gate とする。
+URL、公鍵、fingerprint の三つは、production code を変更する前に
+`npm run data:trust:verify` でネットワーク接続なしに照合できる。
 
 ### C. 実行 gate の順序
 

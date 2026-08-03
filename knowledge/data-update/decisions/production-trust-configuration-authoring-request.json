@@ -1,7 +1,7 @@
 {
   "schema": "DataUpdateProductionTrustConfigurationAuthoringRequest/1",
   "requestId": "decision:data-update-production-trust-configuration-authoring",
-  "revision": 1,
+  "revision": 2,
   "status": "owner-decision-required",
   "scope": "PRODUCTION_TRUST_CONFIGURATION_AUTHORING_ONLY",
   "sourceSnapshot": {
@@ -10,7 +10,8 @@
     "deploymentTestSha256": "sha256:6a6bc0c58d7a094d0fca8807f632079a38026fcfb05642e0fe056e7be8c02038",
     "keyOperationsDocSha256": "sha256:f2f07dc1bccb809eda0e391c9f5e2bc08764358fefd86afa1dc61a340e048f70",
     "dataUpdateDocSha256": "sha256:d524a96da9c5879c9f1e6af90f2539c67bf139a007872bda3c8352b030fbe475",
-    "reviewedQuestCandidateSha256": "sha256:a916ab1be73f27deb3411587916faf96d7510b513ae4f16d60e721032d0ffb04"
+    "reviewedQuestCandidateSha256": "sha256:a916ab1be73f27deb3411587916faf96d7510b513ae4f16d60e721032d0ffb04",
+    "offlineTrustInputVerifierSha256": "sha256:48312b16040d5985c8582d927d9332d6f3c794f71bccfad674916b3b761ade44"
   },
   "currentFailClosedState": {
     "manifestUrl": null,
@@ -32,6 +33,12 @@
       "docs/data-update-key-operations.md"
     ]
   },
+  "revisionNote": {
+    "supersedesRevision": 1,
+    "reason": "add-offline-no-network-public-trust-input-verifier",
+    "production-authoring-scopeUnchanged": true,
+    "production-input-valuesPresent": false
+  },
   "requiredPublicInputs": [
     "credential-free-https-manifest-url-without-fragment",
     "ed25519-der-spki-base64-public-key",
@@ -41,6 +48,7 @@
   ],
   "requiredChecks": [
     "all-source-snapshot-digests-match",
+    "offline-trust-input-verifier-passes-with-no-network-access",
     "manifest-url-public-key-and-fingerprint-are-provided-together",
     "manifest-url-is-https-and-has-no-credentials-or-fragment",
     "public-key-is-ed25519-der-spki-base64",

@@ -17,6 +17,7 @@ function fileDigest(relativePath: string): string {
 describe('quest strategy real-account display acceptance packet', () => {
   it('binds the owner decision to the current screenshot-free read-only command and sources', () => {
     const request = readJson<{
+      revision: number
       status: string
       implementationBasis: {
         packageJsonSha256: string
@@ -44,6 +45,7 @@ describe('quest strategy real-account display acceptance packet', () => {
     const packageJson = readJson<{ scripts: Record<string, string> }>('package.json')
 
     expect(request.status).toBe('owner-decision-required')
+    expect(request.revision).toBe(2)
     expect(request.requestedAuthorization).toEqual({
       gateId: 'quest-strategy-real-account-display-acceptance',
       executionAuthorization: 'not-authorized',
