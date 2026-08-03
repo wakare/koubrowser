@@ -1,0 +1,96 @@
+{
+  "schema": "DataUpdateProductionTrustConfigurationAuthoringRequest/1",
+  "requestId": "decision:data-update-production-trust-configuration-authoring",
+  "revision": 1,
+  "status": "owner-decision-required",
+  "scope": "PRODUCTION_TRUST_CONFIGURATION_AUTHORING_ONLY",
+  "sourceSnapshot": {
+    "auditedBaseCommit": "caae4add1ce9937b57f039ff0187897e5803604e",
+    "deploymentSourceSha256": "sha256:5bbc72a8354041753cb2ac47588dc29c079f943c3b3af847657e0461aeec0bd4",
+    "deploymentTestSha256": "sha256:6a6bc0c58d7a094d0fca8807f632079a38026fcfb05642e0fe056e7be8c02038",
+    "keyOperationsDocSha256": "sha256:f2f07dc1bccb809eda0e391c9f5e2bc08764358fefd86afa1dc61a340e048f70",
+    "dataUpdateDocSha256": "sha256:d524a96da9c5879c9f1e6af90f2539c67bf139a007872bda3c8352b030fbe475",
+    "reviewedQuestCandidateSha256": "sha256:a916ab1be73f27deb3411587916faf96d7510b513ae4f16d60e721032d0ffb04"
+  },
+  "currentFailClosedState": {
+    "manifestUrl": null,
+    "publicKey": null,
+    "publicKeySha256": null,
+    "productionEnvironmentOverrideRejected": true,
+    "runtimeEligibleCount": 0,
+    "runtimePublicationAuthorization": "not-authorized",
+    "defaultEnablementAuthorization": "not-authorized"
+  },
+  "requestedAuthorization": {
+    "gateId": "data-update-production-trust-configuration-authoring",
+    "implementationAuthorization": "not-authorized",
+    "maximumImplementationCommits": 1,
+    "authorizedPaths": [
+      "src/main/data-update-deployment.ts",
+      "src/main/__tests__/data-update-deployment.test.ts",
+      "docs/data-update.md",
+      "docs/data-update-key-operations.md"
+    ]
+  },
+  "requiredPublicInputs": [
+    "credential-free-https-manifest-url-without-fragment",
+    "ed25519-der-spki-base64-public-key",
+    "independently-verified-sha256-public-key-fingerprint",
+    "named-release-author-independent-reviewer-and-staging-operator",
+    "documented-key-custody-backup-rotation-recovery-and-incident-owners"
+  ],
+  "requiredChecks": [
+    "all-source-snapshot-digests-match",
+    "manifest-url-public-key-and-fingerprint-are-provided-together",
+    "manifest-url-is-https-and-has-no-credentials-or-fragment",
+    "public-key-is-ed25519-der-spki-base64",
+    "public-key-bytes-match-the-independently-verified-sha256-fingerprint",
+    "production-environment-overrides-remain-rejected",
+    "missing-partial-invalid-or-mismatched-configuration-fails-before-network-access",
+    "tests-cover-valid-partial-invalid-and-fingerprint-mismatch-cases",
+    "no-private-key-passphrase-credential-or-authenticated-url-is-read-or-written",
+    "runtime-publication-default-enablement-and-runtime-eligibility-remain-unchanged"
+  ],
+  "inputHandling": {
+    "repositoryAllowed": [
+      "credential-free-https-manifest-url",
+      "ed25519-public-key",
+      "public-key-sha256-fingerprint",
+      "non-secret-role-and-operations-documentation"
+    ],
+    "repositoryAndChatProhibited": [
+      "private-key",
+      "passphrase",
+      "credential",
+      "token",
+      "authenticated-url",
+      "account-data"
+    ]
+  },
+  "abortConditions": [
+    "source-snapshot-digest-mismatch",
+    "any-required-public-input-is-missing-or-not-independently-verifiable",
+    "private-key-passphrase-credential-token-or-account-data-would-be-handled",
+    "implementation-would-connect-to-an-external-endpoint",
+    "implementation-would-sign-publish-or-activate-a-bundle",
+    "implementation-would-authorize-runtime-publication-default-enablement-or-nonzero-runtime-eligibility",
+    "implementation-would-modify-outside-the-four-authorized-paths"
+  ],
+  "executionBoundary": {
+    "externalEndpointConnectionAuthorized": false,
+    "bundleSigningAuthorized": false,
+    "privateKeyHandlingAuthorized": false,
+    "releaseRecordExecutionAuthorized": false,
+    "stagingAcceptanceAuthorized": false,
+    "runtimePublicationAuthorized": false,
+    "defaultEnablementAuthorized": false,
+    "installerBuildOrPublicationAuthorized": false,
+    "gameCommunicationChangesAuthorized": false
+  },
+  "review": {
+    "author": "codex-data-update-trust-packet-author",
+    "approver": null,
+    "reviewedAt": null,
+    "approvalDigest": null
+  }
+}

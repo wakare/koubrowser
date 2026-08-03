@@ -92,6 +92,13 @@ production synthetic `smoke:data-update` は PASS した。data-update smoke は
 
 private key、passphrase、credential はリポジトリ、チャット、ログ、decision record に保存しない。
 
+最初の authoring gate は
+[`data-update-production-trust-configuration-decision-packet.md`](data-update-production-trust-configuration-decision-packet.md)
+に固定した。machine-readable request SHA-256 は
+`sha256:2f8186c6396bc5232b8a0ead20a5a58f2316f8f01480fbaf278f1ddfbaa69212` であり、
+現在の implementation authorization は `not-authorized` である。公開入力5件が揃っても、
+外部接続、署名、staging acceptance、publication、default enablement は別 gate とする。
+
 ### C. 実行 gate の順序
 
 1. production trust configuration authoring
