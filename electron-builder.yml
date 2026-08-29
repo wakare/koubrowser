@@ -2,6 +2,7 @@ appId: com.koubrowser.app
 productName: 甲ブラウザ
 directories:
   buildResources: build
+  output: dist
 files:
   - '!**/.vscode/*'
   - '!src/*'

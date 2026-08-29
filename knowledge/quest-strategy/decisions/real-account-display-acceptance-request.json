@@ -1,12 +1,12 @@
 {
   "schema": "QuestStrategyRealAccountDisplayAcceptanceRequest/1",
   "requestId": "decision:quest-strategy-real-account-display-acceptance",
-  "revision": 2,
+  "revision": 3,
   "status": "owner-decision-required",
   "scope": "QUEST_STRATEGY_REAL_ACCOUNT_DISPLAY_ACCEPTANCE_ONLY",
   "implementationBasis": {
     "auditedImplementationCommit": "f809ffe659091def7e4e009bb77cb4bb6d846b53",
-    "packageJsonSha256": "sha256:7aa769ace665b4b6923cdc331313c8ce4a2b0ca5568e9828b856abc472ebaaf9",
+    "packageJsonSha256": "sha256:f0427a7f97b460ae1e3da84df0b36468265a16405ab7add3e58cfb5db888c9b5",
     "smokeHarnessSha256": "sha256:d02f92bd9883cf693ae5ac238929c05e188e68da0038248bef22d7406047dfe4",
     "questGuideSha256": "sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4",
     "questStrategyRouteSha256": "sha256:1e0679b31a1614bc75abec5b93a487f4f7824d9fc530892464d3fe13244afe5c",
@@ -26,8 +26,8 @@
     "mode": "owner-login-readonly-redacted-no-screenshot"
   },
   "revisionNote": {
-    "supersedesRevision": 1,
-    "reason": "package-script-table-added-offline-production-trust-input-verifier",
+    "supersedesRevision": 2,
+    "reason": "package-script-table-added-canonical-build-output-cleanup",
     "acceptanceCommandUnchanged": true,
     "acceptanceScopeUnchanged": true
   },

@@ -100,6 +100,9 @@ npm run verify
 # 通常ビルド
 npm run build
 
+# ビルド生成物（dist / out）の削除
+npm run clean:build
+
 # 型チェック済みの変更を再バンドル
 npm run build:bundle
 
@@ -316,7 +319,9 @@ backup、ローテーション、漏えい対応は
 [`docs/account-data-acceptance.md`](docs/account-data-acceptance.md)
 の退避、脱敏、中止条件を確認してください。
 
-生成物は `electron-builder.yml` の設定に従って作成されます。Windows では `KouBrowser-${version}-win-setup.exe` 形式のインストーラーが作成されます。
+生成物は `electron-builder.yml` の設定に従い、リポジトリ内の `dist/` に作成されます。Windows では `KouBrowser-${version}-win-setup.exe` 形式のインストーラーが作成されます。各パッケージコマンドは、古い `dist/` と `out/` を削除してからビルドします。実行中の `dist/` 版アプリがある場合は安全のため失敗するので、アプリを終了して再実行してください。
+
+一時ビルドのために `--config.directories.output` でリポジトリ外のディレクトリを指定したり、世代別の出力ディレクトリを増やしたりしないでください。保存が必要なリリース成果物だけを、検証後に管理対象のアーカイブへコピーしてください。
 
 ## ディレクトリ構成
 
