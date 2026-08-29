@@ -58,6 +58,8 @@ export interface DeckInfo {
   seiku: number
   yusou: number
   isLock: boolean
+  isEscapedAa: boolean
+  isEscapedYusou: boolean
 }
 
 export interface EnemyInfo {
@@ -233,6 +235,18 @@ class RUtilImpl {
    *
    * @param ship
    */
+  public hpIconClasses(ship: ApiShip): object {
+    const isHpFull = ship.api_maxhp === ship.api_nowhp;
+    return {
+      'heart-a2': isHpFull,
+      'heart-d': !isHpFull
+    }
+  }
+
+  /**
+   *
+   * @param ship
+   */
   public hpClassesTT(ship: ApiShip): object {
     const state = KcsUtil.shipHpState(ship)
     return {
@@ -371,7 +385,7 @@ class RUtilImpl {
     return ''
   }
 
-  public deckInfos(): DeckInfo[] {
+  public deckInfos(isCalcYusou: boolean): DeckInfo[] {
     const inMissionStates: MissionState[] = [
       MissionState.in,
       MissionState.completed,
@@ -382,8 +396,10 @@ class RUtilImpl {
       deck: deckport,
       inMission: inMissionStates.includes(deckport.api_mission[0]),
       seiku: svdata.deckSeiku(deckport),
-      yusou: svdata.deckYusou(deckport),
-      isLock: false
+      yusou: isCalcYusou ? svdata.deckYusou(deckport) : 0,
+      isLock: false,
+      isEscapedAa: svdata.isDeckEscapedAa(deckport.api_id),
+      isEscapedYusou: isCalcYusou ? svdata.isDeckEscapedYusou(deckport.api_id) : false
     }))
     if (ret.length < 4) {
       const ids = [
@@ -399,7 +415,9 @@ class RUtilImpl {
           inMission: false,
           seiku: 0,
           yusou: 0,
-          isLock: true
+          isLock: true,
+          isEscapedAa: false,
+          isEscapedYusou: false
         })
       }
     }
@@ -740,14 +758,14 @@ export const modSpotXYData: { [key: string]: { [key: string]: SpotMod | undefine
       C1: { x: 8, y: 7 },
       C2: { x: -40, y: 20 },
       D: { x: 0, y: -8 },
-      G: { x: -82, y: 15 },
+      G: { x: -92, y: 15 },
       K: { x: -40, y: 15 },
       K1: { x: -40, y: -20 },
       H: { x: -10, y: -15 },
       J: { x: -2, y: -3 },
       L: { x: -0, y: -10 },
       N: { x: 10, y: 20 },
-      K2: { x: -75, y: 12 },
+      K2: { x: -90, y: 12 },
       P: { x: -45, y: 10 },
       Q: { x: -40, y: -13 },
       Q1: { x: -65, y: -8 },
@@ -971,10 +989,10 @@ export const modSpotXYData: { [key: string]: { [key: string]: SpotMod | undefine
       M: { x: -27, y: 0 },
       N: { x: -80, y: 0 },
       L: { x: -30, y: -5 },
-      T: { x: -70, y: -5 },
+      T: { x: -80, y: 5 },
       P: { x: -8, y: 0 },
       V: { x: 10, y: 10 },
-      W: { x: -30, y: -2 },
+      W: { x: -30, y: -13 },
       W2: { x: 5, y: 0 },
       Y: { x: -20, y: 0 },
       X: { x: -8, y: 0 },
@@ -982,35 +1000,105 @@ export const modSpotXYData: { [key: string]: { [key: string]: SpotMod | undefine
       X2: { x: -25, y: -15 },
     },
     '62-3': {
-      A2: { x: -90, y: 5 },
-      B1: { x: -80, y: 25 },
+      A1: { x: -9999, y: 5 },
+      A2: { x: -100, y: 5 },
+      B1: { x: -90, y: 25 },
       B2: { x: -50, y: 15 },
       C1: { x: -50, y: 15 },
-      C: { x: -30, y: -5 },
+      C: { x: -28, y: -12 },
       C2: { x: -30, y: -5 },
       D1: { x: -35, y: -2 },
-      D2: { x: -30, y: -5 },
-      E: { x: -55, y: -10 },
-      E1: { x: -35, y: -15 },
-      E2: { x: -20, y: -10 },
-      I: { x: -40, y: -2 },
+      D2: { x: -47, y: -15 },
+      E: { x: -45, y: -15 },
+      E1: { x: -35, y: -20 },
+      E2: { x: -20, y: -15 },
+      I: { x: -42, y: -4 },
       J: { x: -35, y: -0 },
-      G: { x: -45, y: -5 },
-      L: { x: -20, y: -2 },
+      G: { x: -58, y: -2 },
+      L: { x: -25, y: -2 },
+      L1: { x: -58, y: 10 },
       M: { x: -40, y: -2 },
-      N: { x: -20, y: -10 },
+      N: { x: -20, y: -0 },
       O: { x: 5, y: 15 },
       Q: { x: -25, y: -10 },
-      S: { x: -30, y: -12 },
+      S: { x: -30, y: -15 },
       T: { x: -45, y: 2 },
-      U: { x: -40, y: -0 },
-      V: { x: -35, y: -10 },
-      W: { x: -17, y: 2 },
-      X: { x: -20, y: -10 },
+      U: { x: -40, y: -14 },
+      V: { x: -9999, y: -2 },
+      W: { x: -9999, y: 0 },
+      X: { x: -30, y: -20 },
       Y: { x: -5, y: -0 },
-      Y1: { x: -30, y: -8 },
-      Y2: { x: -40, y: -2 },
-      Z: { x: -20, y: -0 },
+      Y1: { x: -35, y: -15 },
+      Y2: { x: -23, y: 1 },
+      Y3: { x: 10, y: 10 },
+      Z: { x: -18, y: -8 },
+
+      K: { x: -9999, y: -0 },
+    },
+    '62-4': {
+      A: { x: -55, y: -2 },
+      B: { x: -9999, y: 0 },
+      C: { x: -85, y: -3 },
+      D: { x: 5, y: -10 },
+      N: { x: -60, y: -25 },
+      E: { x: -30, y: -15 },
+      E1: { x: -45, y: -15 },
+      K: { x: -60, y: -5 },
+      J: { x: -50, y: -15 },
+      P1: { x: -45, y: 38 },
+      Q: { x: -18, y: 0 },
+      R: { x: -3, y: -2 },
+      S: { x: -65, y: 2 },
+      T1: { x: -9999, y: -14 },
+      T2: { x: -50, y: -5 },
+      V: { x: -5, y: -8 },
+      U: { x: -5, y: 2 },
+      W: { x: -75, y: 23 },
+      X: { x: 5, y: 0 },
+      Y: { x: -45, y: 15 },
+      Y1: { x: -9999, y: -5 },
+      Z: { x: -30, y: 37 },
+    },
+    '62-5': {
+      A: { x: -9999, y: -2 },
+      A1: { x: 5, y: 8 },
+      A2: { x: -65, y: 37 },
+      A3: { x: -25, y: 2 },
+      B: { x: -50, y: -2 },
+      B1: { x: -68, y: 15 },
+      B2: { x: -68, y: 12 },
+      D: { x: -25, y: -0 },
+      G: { x: -70, y: -13 },
+      E1: { x: -80, y: 0 },
+      E2: { x: -60, y: 0 },
+      H: { x: -45, y: -5 },
+      I: { x: -25, y: -15 },
+      J: { x: -60, y: -20 },
+      K: { x: -9999, y: 4 },
+      K1: { x: -25, y: 35 },
+      K2: { x: -9999, y: -5 },
+      J2: { x: -40, y: -20 },
+      L: { x: -9999, y: 25 },
+      L1: { x: -60, y: -25 },
+      L2: { x: -60, y: -35 },
+      N: { x: -9999, y: -23 },
+      M1: { x: -9999, y: -13 },
+      M2: { x: 3, y: 8 },
+      T: { x: -50, y: -15 },
+      P: { x: -26, y: -3 },
+      P1: { x: -37, y: -15 },
+      P3: { x: -43, y: 35 }, 
+      S: { x: -20, y: 4 },
+      V: { x: 10, y: -10 },
+      W: { x: -12, y: -15 },
+      X: { x: -5, y: 5 },
+      Y1: { x: -9999, y: 0 },
+      Y2: { x: -9999, y: 0 },
+      Z: { x: -5, y: -5 },
+      ZZ: { x: -40, y: 28 },
+
+      Z1: { x: -9999, y: 0 },
+      R: { x: -9999, y: 0},
     }
   } as const
 

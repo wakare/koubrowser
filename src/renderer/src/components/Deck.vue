@@ -35,6 +35,16 @@ import {
   getOperationSpeedText
 } from '@renderer/common/operation-view'
 
+/////////////////////////////////////////////////////////////////////////////////////
+// debug
+const DEBUG = 0;
+
+const debug = (...args: any[]) => {
+  if (DEBUG) console.info("[DeckUnit]", ...args);
+};
+
+/////////////////////////////////////////////////////////////////////////////////////
+//
 interface TKEntry {
   ship: ShipInfo
   tk: TKCutin
@@ -59,6 +69,7 @@ interface DeckShip {
   readonly stype: string
   readonly hpClassTT: object
   readonly hpClass: object
+  readonly hpIconClass: object
   readonly condClass: string
   readonly fualClass: string
   readonly bullClass: string
@@ -104,36 +115,48 @@ const tkHoverTk = ref('')
 const tktipActive = ref(false)
 
 onMounted(() => {
-  console.log('deck mounted', props.deck)
+  debug('deck mounted', props.deck)
 })
 
 const shipSps = computed<ShipInfoSp[]>(() => svdata.shipInfoSps(props.deck.api_ship))
 
 const shipsData = computed<DeckShip[]>(() => {
   const sps = shipSps.value
-  return sps.map((ship, index) => ({
-    ship,
-    slot_disps: shipSlotDips(ship),
-    stype: svdata.mstStypeFromSafe(ship.mst),
-    hpClassTT: RUtil.hpClassesTT(ship.api),
-    hpClass: RUtil.hpClasses(ship.api),
-    condClass: RUtil.condClass(ship.api),
-    fualClass: RUtil.fualClass(ship),
-    bullClass: RUtil.bullClass(ship),
-    fual_per: Math.floor((ship.api.api_fuel / ship.mst.api_fuel_max) * 100.0),
-    bull_per: Math.floor((ship.api.api_bull / ship.mst.api_bull_max) * 100.0),
-    sokuClass: RUtil.sokuClass(ship.api),
-    soku_text: getOperationSpeedText(ship.api.api_soku / 5, translateApp),
-    syateiClass: RUtil.syateiClass(ship),
-    syatei_text: getOperationRangeText(ship.api.api_leng, translateApp),
-    hitClass: RUtil.condClass(ship.api),
-    hit: MathUtil.floor(KcsUtil.shipHit(ship).hit, 0),
-    evClass: RUtil.evClass(ship),
-    ev: MathUtil.floor(KcsUtil.shipKaihi(ship).kaihi, 0),
-    boku_text: shipBouku(sps, ship),
-    sp_html: shipSpHtml(sps, ship),
-    escaped: svdata.isShipEscaped(props.deck, index)
-  }))
+  const deck = props.deck
+  return sps.map((ship, index) => {
+    const escaped = svdata.isShipEscaped(deck, index)
+    debug('escaped check result:', 
+      { 'deck_id': deck.api_id,
+        'index in deck': index,
+        'is escaped': escaped,
+        'api_ship_id': ship.api.api_id,
+      }
+    )
+     return {
+      ship,
+      slot_disps: shipSlotDips(ship),
+      stype: svdata.mstStypeFromSafe(ship.mst),
+      hpClassTT: RUtil.hpClassesTT(ship.api),
+       hpClass: RUtil.hpClasses(ship.api),
+       hpIconClass: RUtil.hpIconClasses(ship.api),
+      condClass: RUtil.condClass(ship.api),
+      fualClass: RUtil.fualClass(ship),
+      bullClass: RUtil.bullClass(ship),
+      fual_per: Math.floor((ship.api.api_fuel / ship.mst.api_fuel_max) * 100.0),
+       bull_per: Math.floor((ship.api.api_bull / ship.mst.api_bull_max) * 100.0),
+       sokuClass: RUtil.sokuClass(ship.api),
+       soku_text: getOperationSpeedText(ship.api.api_soku / 5, translateApp),
+       syateiClass: RUtil.syateiClass(ship),
+       syatei_text: getOperationRangeText(ship.api.api_leng, translateApp),
+      hitClass: RUtil.condClass(ship.api),
+      hit: MathUtil.floor(KcsUtil.shipHit(ship).hit, 0),
+      evClass: RUtil.evClass(ship),
+      ev: MathUtil.floor(KcsUtil.shipKaihi(ship).kaihi, 0),
+      boku_text: shipBouku(sps, ship),
+      sp_html: shipSpHtml(sps, ship),
+      escaped,
+     }
+  })
 })
 
 const shipsRow = computed<(DeckShip | null)[]>(() => {
@@ -319,7 +342,8 @@ const THCutinTag = (ships: ShipInfoSp[], st: THCutinState): string => {
   )
   const rate = KcsUtil.rateTH(st, ships)
   const rate_v = MathUtil.floor((rate?.rate ?? NaN) * 100.0, 1)
-  return `<span class="sp"><span class="tag ${st.enable ? 'is-danger is-tokuhou' : 'is-disable'} ">${name}</span><span class="sp-rate">${toNaNTxt(rate_v)}%</span></span>`
+  const plusfactor = rate?.plusFactor ? '+?' : ''
+  return `<span class="sp"><span class="tag ${st.enable ? 'is-danger is-tokuhou' : 'is-disable'} ">${name}</span><span class="sp-rate">${toNaNTxt(rate_v)}${plusfactor}%</span></span>`
 }
 
 const TKCutinTag = (tk: TKCutinState): string => {
@@ -641,7 +665,10 @@ const TipTKCiTag = (st: TKCutinState): string => {
 
 /////////////////////////////////////////////////////////////////////////////////////
 // row class
-function rowClass(): string {
+function rowClass(row: DeckShip | null): string {
+   if (row?.escaped) {
+    return 'ship-row is-escaped'
+   }
   return 'ship-row'
 }
 
@@ -658,15 +685,12 @@ function rowClass(): string {
         :key="index"
       >
         <!-- todo: load image error draw ship name -->
-        <ShipBanner :ship_info="ship.ship" />
+        <ShipBanner :ship_info="ship.ship" :escaped="ship.escaped" />
         <ShipHpGauge
           :now-hp="ship.ship.api.api_nowhp"
           :max-hp="ship.ship.api.api_maxhp"
           :ship-name="ship.ship.mst.api_name"
         />
-        <span v-if="ship.escaped" class="ship-state">{{
-          translateApp('operation.deck.escape')
-        }}</span>
         <span class="slots">
           <img
             v-for="(slot, index) in ship.ship.slots"
@@ -731,7 +755,11 @@ function rowClass(): string {
         </b-table-column>
         <b-table-column v-slot="props" label="hp" centered cell-class="cell-status small">
           <div v-if="props.row !== null">
-            <div class="s-icon heart-a2" :title="translateApp('operation.deck.stat.hp')"></div>
+            <div
+              class="s-icon"
+              :class="props.row.hpIconClass"
+              :title="translateApp('operation.deck.stat.hp')"
+            ></div>
             <div>
               <span :class="props.row.hpClass">{{ props.row.ship.api.api_nowhp }}</span>
             </div>

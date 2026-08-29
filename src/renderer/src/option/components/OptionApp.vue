@@ -288,6 +288,50 @@ const clearProxyFixedServersInput = (): void => {
                 </label>
               </div>
             </div>
+
+            <div class="section-title">
+              {{ translateOption('option.taihaProtection.section') }}
+            </div>
+            <div class="option-row option-row-vertical">
+              <label class="option-checkbox option-checkbox-with-description">
+                <input v-model="optionSetting.taihaSingekiBlockEnable" type="checkbox" />
+
+                <span class="option-checkbox-body">
+                  <span class="option-checkbox-title">{{
+                    translateOption('option.taihaProtection.enableTitle')
+                  }}</span>
+                  <span class="option-checkbox-description">
+                    {{ translateOption('option.taihaProtection.enableDescription') }}<br>
+                    {{ translateOption('option.taihaProtection.overrideDescription') }}
+                  </span>
+                </span>
+              </label>
+
+              <label class="option-checkbox option-checkbox-with-description option-sub-checkbox">
+                <input
+                  v-model="optionSetting.taihaSingekiBlockSkipSafeCell"
+                  type="checkbox"
+                  :disabled="!optionSetting.taihaSingekiBlockEnable"
+                />
+
+                <span class="option-checkbox-body">
+                  <span class="option-checkbox-title">{{
+                    translateOption('option.taihaProtection.skipSafeCellTitle')
+                  }}</span>
+                  <span class="option-checkbox-description">
+                    {{ translateOption('option.taihaProtection.skipSafeCellDescription') }}<br>
+                    {{ translateOption('option.taihaProtection.safeCellIntro') }}<br>
+                    <br>
+                    {{ translateOption('option.taihaProtection.safeCell.1-6') }}<br>
+                    {{ translateOption('option.taihaProtection.safeCell.2-2') }}<br>
+                    {{ translateOption('option.taihaProtection.safeCell.3-1') }}<br>
+                    {{ translateOption('option.taihaProtection.safeCell.3-2') }}<br>
+                    {{ translateOption('option.taihaProtection.safeCell.7-2') }}<br>
+                    {{ translateOption('option.taihaProtection.safeCell.5-6') }}
+                  </span>
+                </span>
+              </label>
+            </div>
           </section>
 
           <!-- 通信設定 -->

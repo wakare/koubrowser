@@ -1,5 +1,6 @@
 import { SupportCodecs } from '@common/const'
 import type { LayoutMode } from '@common/layout'
+import { type OptionSetting } from '@common/option'
 
 export class GameSetting {
   public zoom_factor: number = 1.0
@@ -17,6 +18,9 @@ export class GameSetting {
   private assist_in_game: boolean = true
   private assist_restricted: boolean = false
   private layout_mode: LayoutMode = 'classic'
+
+  private taiha_singeki_block_enable: boolean = true
+  private taiha_singeki_block_skip_safe_cell: boolean = true
 
   public get isAssistInGame(): boolean {
     return !this.assist_restricted && this.assist_in_game
@@ -44,5 +48,32 @@ export class GameSetting {
 
   public setLayoutMode(mode: LayoutMode): void {
     this.layout_mode = mode
+  }
+
+  public setTaihaSingekiBlockEnable(enable: boolean): void {
+    this.taiha_singeki_block_enable = enable
+  }
+
+  public get taihaSingekiBlockEnable(): boolean {
+    return this.taiha_singeki_block_enable
+  }
+
+  public setTaihaSingekiBlockSkipSafeCell(skip: boolean): void {
+    this.taiha_singeki_block_skip_safe_cell = skip
+  }
+
+  public get taihaSingekiBlockSkipSafeCell(): boolean {
+    return this.taiha_singeki_block_skip_safe_cell
+  }
+
+  /**
+   * 
+   * @param option 
+   */
+  public applyOptionSetting(option: OptionSetting): void {
+    // 大破進撃防止
+    this.setTaihaSingekiBlockEnable(option.taihaSingekiBlockEnable)
+    // 大破進撃防止：安全マススキップ
+    this.setTaihaSingekiBlockSkipSafeCell(option.taihaSingekiBlockSkipSafeCell)
   }
 }

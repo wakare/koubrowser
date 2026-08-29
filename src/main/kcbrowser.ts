@@ -1,29 +1,31 @@
 import {
   BrowserWindow,
   ipcMain,
-  Rectangle,
+  type Rectangle,
   powerMonitor,
-  WebContents,
+  type WebContents,
   session,
   screen,
   shell,
   dialog,
   app,
-  Event,
-  HandlerDetails,
-  DidCreateWindowDetails,
-  BrowserWindowConstructorOptions,
-  IpcMainInvokeEvent,
-  MenuItem,
+  type Event,
+  type HandlerDetails,
+  type DidCreateWindowDetails,
+  type BrowserWindowConstructorOptions,
+  type IpcMainInvokeEvent,
+  type MenuItem,
   Menu,
-  Display
+  type Display,
+  type Input,
+  type MouseInputEvent
 } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { is } from '@electron-toolkit/utils'
 import * as fs from 'fs'
 import { once } from 'events'
 import { svdata } from '@main/svdata'
-import { Const } from '@common/const'
+import { Const, type RectRate } from '@common/const'
 import {
   classicLayoutMetrics,
   findCurrentDisplayIndex,
@@ -49,7 +51,8 @@ import {
   GameChannel,
   QuestContext,
   AirbaseSpot,
-  OptionChannel
+  OptionChannel,
+  TaihaSingekiBlockState
 } from '@common/channel'
 import moment from 'moment'
 import { KcRecord } from '@main/kcrecord'
@@ -88,7 +91,13 @@ import { globalSettingStore } from '@main/store'
 import { getMainDir, getUserDataDir, PathStuff, setUserDataDir } from '@main/path'
 import iconv from 'iconv-lite'
 import * as kcapi_debug from '@main/kcapi_debug'
-import type { ApiReqMessage, ApiResMessage, QuestsMessage, RequiredMessage } from '@common/message'
+import type {
+  ApiReqMessage,
+  ApiResMessage,
+  ApiResMessageAdditional,
+  QuestsMessage,
+  RequiredMessage
+} from '@common/message'
 import { gameSetting, gameSettingProxy, gameState } from '@main/settings'
 import path from 'node:path'
 import os from 'node:os'
@@ -206,6 +215,7 @@ import type {
   AvailableAccountMergeRedo,
   AvailableAccountMergeRollback
 } from '@main/account-merge-transaction'
+import { getAfterBattleFleetHpsInfo, updateFleetHps } from '@common/kcsbattle_util'
 
 /////////////////////////////////////////////////////////////////////////////////////
 // debug
@@ -395,6 +405,8 @@ export class KcApp {
     errorMessage: '',
     downloadPercent: null
   }
+  private taihaSingekiBlockStates: TaihaSingekiBlockState[] = []
+  private ctrl_key_state: boolean = false
 
   public get mainWindow(): BrowserWindow {
     return this.main_window
@@ -717,6 +729,19 @@ export class KcApp {
         }
       })
     })
+
+    // 轟沈防止でCTRLキー押下状態を検知するため、webviewのbefore-input-eventを監視する(game webview側)
+    this.main_window.webContents.on('did-attach-webview', (_event, webContents: WebContents) => {
+      debug('did-attach-webview')
+      webContents.on('before-input-event', (_event, input) => this.onBeforeInputEvent(input))
+      webContents.on('before-mouse-event', (_event, mouse) => this.onBeforeMouseEvent(_event, mouse))
+    })
+
+
+    // 轟沈防止でCTRLキー押下状態を検知するため、webviewのbefore-input-eventを監視する(main webcontents側)
+    // フォーカスロストはmain webcontents側でのみ検知できる
+    this.main_window.webContents.on('before-input-event', (_event, input) => this.onBeforeInputEvent(input))
+    this.main_window.webContents.on('blur', () => this.onMainWindowBlur())
 
     if (Env.isDevelopment) {
       this.main_window.webContents.openDevTools()
@@ -1205,6 +1230,9 @@ export class KcApp {
     ipcMain.handle(MainChannel.restart_and_install_update, async () =>
       this.onChannelRestartAndInstallUpdate()
     )
+    ipcMain.handle(MainChannel.set_taiha_singeki_block_state, (_event, states) =>
+      this.onChannelSetTaihaSingekiBlockState(states)
+    )
     autoUpdater.on('download-progress', (progress) =>
       this.notifyUpdateDownloadProgress(progress.percent)
     )
@@ -1220,8 +1248,12 @@ export class KcApp {
 
     // api request/response hook event
     ipcMain.on(kcsapi_hook.HookedType.serverid, (_event, data) => this.onApiHookServerId(data))
-    ipcMain.on(kcsapi_hook.HookedType.loadstart, (_event, data) => this.onApiHookLoadStart(data))
-    ipcMain.on(kcsapi_hook.HookedType.loadend, (_event, data) => this.onApiHookLoadEnd(data))
+    ipcMain.on(kcsapi_hook.HookedType.loadstart, (_event, data) =>
+      this.onApiHookLoadStart(data, true)
+    )
+    ipcMain.on(kcsapi_hook.HookedType.loadend, (_event, data) =>
+      this.onApiHookLoadEnd(data, true)
+    )
     if (Env.isDevelopment) {
       ipcMain.on(kcsapi_hook.HookedType.unk_loadstart, (_event, data) =>
         this.onApiHookUnknownLoadStart(data)
@@ -1370,8 +1402,12 @@ export class KcApp {
   /**
    *
    */
-  postResToRenderer(api: kcsapi.Api, data: string, uuid?: string): void {
-    const msg: ApiResMessage = { type: 'api_res', api, data, uuid }
+  postResToRenderer(
+    api: kcsapi.Api,
+    data: string,
+    additional?: ApiResMessageAdditional
+  ): void {
+    const msg: ApiResMessage = { type: 'api_res', api, data, additional }
     streamManager.postToRenderers(msg)
   }
 
@@ -1381,7 +1417,7 @@ export class KcApp {
    * @param webContents
    */
   private onWebContentsCreated(_event: Event, webContents: WebContents): void {
-    debug('onWebContentsCreated') //, event, webContents);
+    debug('onWebContentsCreated', _event, 'url:', webContents.getURL());
 
     const didCreateWindowHandler = (window: BrowserWindow, detail: DidCreateWindowDetails) =>
       this.onDidCreateWindow(window, detail, webContents)
@@ -1410,6 +1446,157 @@ export class KcApp {
       webContents.removeListener('before-input-event', beforeInputEventHandler)
       webContents.removeListener('zoom-changed', zoomChangedHandler)
     })
+  }
+
+  /**
+   * 
+   */
+  private get isMainWindowDestroyed(): boolean {
+    const mainWindow = this.main_window
+    if (!mainWindow || mainWindow.isDestroyed()) {
+      return true
+    }
+
+    const webContents = mainWindow.webContents
+    if (!webContents || webContents.isDestroyed()) {
+      return true
+    }
+
+    return false
+  }
+
+  /**
+   * 
+   * @param state 
+   */
+  private setCtrlKeyState(state: boolean): void {
+    debug('setCtrlKeyState', state)
+    this.ctrl_key_state = state
+    this.main_window.webContents.send(GameChannel.set_ctrl_state, state)
+  }
+
+  /**
+   * キー入力イベント処理
+   * CTRLキー押下で轟沈防止画面クリックを可とするためにgame側レンダラに通知する
+   * 
+   * @param input 
+   */
+  private onBeforeInputEvent(input: Input): void {
+    if (input.key === 'Control') {
+
+      if (this.isMainWindowDestroyed) {
+        debug('main window destroyed, ignore ctrl key event')
+        return
+      }
+
+      if (input.type === 'keyDown') {
+        this.setCtrlKeyState(true)
+      }
+      
+      if (input.type === 'keyUp') {
+        this.setCtrlKeyState(false)
+      }
+    }
+  }
+
+  /**
+   * 大破進撃ブロック状態をmainプロセスに設定
+   * 
+   * ブロック状態をmainプロセスで持つ理由は以下の通り
+   *   以下の操作をブロックするため
+   *   1) 右クリック押しっぱなしのまま進撃ボタンへマウス移動
+   *   2) 進撃ボタンで右クリックを離す
+   *   3) ブロック要素がボタン上に存在しても進撃ボタンが押下されてしまう
+   *   本操作ブロックのため、mainプロセスで右クリックが離された場所がBlock UI上の場合イベントをpreventする
+   * 
+   * @param state 
+   */
+  private onChannelSetTaihaSingekiBlockState(states: TaihaSingekiBlockState[]): void {
+    debug('onChannelSetTaihaSingekiBlockState', states)
+    this.taihaSingekiBlockStates = [...states]
+  }
+
+  /**
+   * 
+   */
+  private onBeforeMouseEvent(event: Event, mouse: MouseInputEvent): void {
+    if (! this.taihaSingekiBlockStates.length) {
+      return
+    }
+    if (this.ctrl_key_state) {
+      debug('onBeforeMouseEvent mouseUp ctrl key pressed, ignore block')
+      return
+    }
+    if (mouse.type !== 'mouseUp') {
+      return
+    }
+
+    const hittest = (state: TaihaSingekiBlockState): boolean => {
+
+      let rectRate: RectRate | undefined
+      if (state === TaihaSingekiBlockState.normalBlock) {
+        rectRate = Const.TaihaSingeki.normalBlockRect
+      }
+      if (state === TaihaSingekiBlockState.repairBlock) {
+        rectRate = Const.TaihaSingeki.repairBlockRect
+      }
+      if (state === TaihaSingekiBlockState.megamiBlock) {
+        rectRate = Const.TaihaSingeki.megamiBlockRect
+      }
+      if (!rectRate) {
+        return false
+      }
+
+      const blockUIRect: Rectangle = {
+        x: Math.floor(Const.GameWidth * rectRate.left),
+        // マウスイベントでのyはゲーム内window座標によりゲーム外上部バナー分を補正する
+        y: Math.floor((Const.GameHeight + Const.GameBarHeight) * rectRate.top) - Const.GameBarHeight, 
+        width: Math.round(Const.GameWidth * rectRate.width),
+        height: Math.round((Const.GameHeight + Const.GameBarHeight) * rectRate.height)
+      }
+
+      // ゲームのみ表示の場合、表示倍率で補正
+      if (!gameSetting.isAssistInGame) {
+        const zoomFactor = gameSetting.zoom_factor
+        blockUIRect.x = Math.floor(blockUIRect.x * zoomFactor)
+        blockUIRect.y = Math.floor(blockUIRect.y * zoomFactor)
+        blockUIRect.width = Math.round(blockUIRect.width * zoomFactor)
+        blockUIRect.height = Math.round(blockUIRect.height * zoomFactor)
+      }
+
+      let ret = false
+      if ((blockUIRect.x <= mouse.x) && (mouse.x <= (blockUIRect.x + blockUIRect.width)) && 
+          (blockUIRect.y <= mouse.y) && (mouse.y <= (blockUIRect.y + blockUIRect.height))) {
+        ret = true
+      }
+
+      debug('taihaSingekiBlockUI mouseUp ishit:', ret, 
+        'state:', state, 'blockUIRect:', blockUIRect,
+        'mouseX:', mouse.x, 'mouseY:', mouse.y, 'zoomFactor:', gameSetting.zoom_factor)
+
+      return ret
+    }
+
+    const states = this.taihaSingekiBlockStates
+    const hitted = states.find((state) => hittest(state))
+    if (hitted) {
+      debug('onBeforeMouseEvent mouseUp in block area, prevent default')
+      event.preventDefault()
+      this.main_window.webContents.send(GameChannel.guard_hit_effect, hitted)
+    }
+  }
+
+  /**
+   * フォーカスロストイベント処理
+   * CTRLキー状態をgame側レンダラに通知する
+   */
+  private onMainWindowBlur(): void {
+    const isDestroyed = this.isMainWindowDestroyed
+    debug('main window blur. isDestroyed:', isDestroyed)
+    if (isDestroyed) {
+      return
+    }
+    this.setCtrlKeyState(false)
   }
 
   /**
@@ -2200,6 +2387,9 @@ export class KcApp {
 
     // キャプチャ保存先更新する
     PathStuff.setCapturePath(normalizedSetting.captureSavePath)
+
+    // オプション設定をゲーム設定に反映する
+    gameSetting.applyOptionSetting(normalizedSetting)
   }
 
   /**
@@ -4441,10 +4631,13 @@ export class KcApp {
   /**
    *
    * @param data
+   * @param logRequest
    */
-  private onApiHookLoadStart(data: kcsapi_hook.LoadStart): void {
+  public onApiHookLoadStart(data: kcsapi_hook.LoadStart, logRequest: boolean): void {
     debug('[XHR Request Started(in main)]', data.api, data.method)
-    kcapi_debug.logRequest(data)
+    if (logRequest) {
+      kcapi_debug.logRequest(data)
+    }
     if (data.body) {
       svdata.setReq(data.api, data.body)
       this.postReqToRenderer(data.api, data.body)
@@ -4454,15 +4647,34 @@ export class KcApp {
   /**
    *
    * @param data
+   * @param logResponse
    */
-  private onApiHookLoadEnd(data: kcsapi_hook.LoadEnd): void {
+  public onApiHookLoadEnd(data: kcsapi_hook.LoadEnd, logResponse: boolean): void {
     debug('[XHR Request Ended(in main)]', data.api, data.method)
-    kcapi_debug.logResponse(data)
+    if (logResponse) {
+      kcapi_debug.logResponse(data)
+    }
     if (data.response) {
       svdata.update(data.api, data.response)
-      const uuid: string | undefined =
-        data.api === kcsapi.Api.REQ_MAP_START ? svdata.prvBattleMapInfo?.uuid : undefined
-      this.postResToRenderer(data.api, data.response, uuid)
+      let additional: ApiResMessageAdditional | undefined
+      if (data.api === kcsapi.Api.REQ_MAP_START) {
+        additional = {
+          mapStartUuid: svdata.prvBattleMapInfo?.uuid
+        }
+      } else if (kcsapi.isBattleResultApi(data.api)) {
+        // 戦闘後の味方HP計算、更新
+        const afterBattleFleetHps = getAfterBattleFleetHpsInfo(svdata)
+        if (afterBattleFleetHps) {
+          additional = {
+            afterBattleFleetHps
+          }
+
+          // mainプロセス側を反映
+          // renderer側はメッセージ受信時に更新
+          updateFleetHps(svdata, afterBattleFleetHps)
+        }
+      }
+      this.postResToRenderer(data.api, data.response, additional)
     }
   }
 

@@ -45,7 +45,7 @@ describe('quest strategy real-account display acceptance packet', () => {
     const packageJson = readJson<{ scripts: Record<string, string> }>('package.json')
 
     expect(request.status).toBe('owner-decision-required')
-    expect(request.revision).toBe(3)
+    expect(request.revision).toBe(4)
     expect(request.requestedAuthorization).toEqual({
       gateId: 'quest-strategy-real-account-display-acceptance',
       executionAuthorization: 'not-authorized',

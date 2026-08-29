@@ -365,12 +365,16 @@ function onPort(): void {
 
 function onMapStart(): void {
   replaceArray(mapcell_labels, [])
-  setTaihaWarning(hasTaihaSortieShip(svdata) ? 'advanced' : 'none')
+  setTaihaWarning(
+    checkTaihaSingeki(kcs_stuff.TaihaCheckPhase.afterMapNext) ? 'advanced' : 'none'
+  )
   mapPushCell()
 }
 
 function onMapNext(): void {
-  setTaihaWarning(hasTaihaSortieShip(svdata) ? 'advanced' : 'none')
+  setTaihaWarning(
+    checkTaihaSingeki(kcs_stuff.TaihaCheckPhase.afterMapNext) ? 'advanced' : 'none'
+  )
   inBattle.value = false
   disp_seiku.value = null
   deck_formation.value = null
@@ -618,6 +622,10 @@ const onMinimize = (): void => {
 
 const onClose = (): void => {
   window.api.close()
+}
+
+const checkTaihaSingeki = (phase: kcs_stuff.TaihaCheckPhase): boolean => {
+  return kcs_stuff.checkTaihaSingeki(phase).isTaihaSingeki
 }
 
 const isStartupUpdateAvailable = computed((): boolean => {
@@ -1109,10 +1117,10 @@ if (EnvRenderer.isTestMode) {
             class="g">{{ translateApp('titlebar.status.gimmick') }}</span>{{
               translateApp('titlebar.status.clearSound')
             }}<span
-              v-if="isGimmickFlagDetected" class="tag-circle yellow">{{
+              v-if="isGimmickClear" class="tag-circle yellow">{{
                 translateApp('titlebar.status.detected')
               }}</span><span
-              v-if="isMapChangeDetected" class="tag-circle yellow">{{
+              v-if="false" class="tag-circle yellow">{{
                 translateApp('titlebar.status.detected')
               }}<span
                 class="is-map">MAP</span></span></span>

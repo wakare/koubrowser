@@ -6,7 +6,7 @@ import * as workers from '@main/stuff/wrokers'
 import { threadId } from 'worker_threads'
 import { getUserDataDir, PathStuff, setMainDir, setUserDataDir } from '@main/path'
 import { Intaker } from '@main/stuff/intaker'
-import { optionSettingStore } from './store'
+import { optionSettingStore } from '@main/store'
 import { defaultOptionSetting, OptionSetting } from '@common/option'
 import {
   finishSmokeLifecycle,
@@ -33,6 +33,7 @@ import {
   exerciseLayoutBattleResultFixture,
   exerciseLayoutCapacityBoundaryFixture
 } from '@main/layout-fixture'
+import { gameSetting } from '@main/settings'
 
 console.log('main index.ts __dirname:', __dirname)
 setMainDir(__dirname)
@@ -236,6 +237,9 @@ if (!gotTheLock) {
 
     // load unpacked extension
     await loadUnpackedExtension(optionSetting)
+
+    // オプション設定をゲーム設定に反映する
+    gameSetting.applyOptionSetting(optionSetting)
 
     // create main window
     createWindow()

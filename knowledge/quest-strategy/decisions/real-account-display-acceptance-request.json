@@ -1,19 +1,19 @@
 {
   "schema": "QuestStrategyRealAccountDisplayAcceptanceRequest/1",
   "requestId": "decision:quest-strategy-real-account-display-acceptance",
-  "revision": 3,
+  "revision": 4,
   "status": "owner-decision-required",
   "scope": "QUEST_STRATEGY_REAL_ACCOUNT_DISPLAY_ACCEPTANCE_ONLY",
   "implementationBasis": {
     "auditedImplementationCommit": "f809ffe659091def7e4e009bb77cb4bb6d846b53",
-    "packageJsonSha256": "sha256:f0427a7f97b460ae1e3da84df0b36468265a16405ab7add3e58cfb5db888c9b5",
+    "packageJsonSha256": "sha256:5610c3ab91ddcc74d650d6b62806ee45e987bd2aeae7c20bae9a59d11c67cbb1",
     "smokeHarnessSha256": "sha256:d02f92bd9883cf693ae5ac238929c05e188e68da0038248bef22d7406047dfe4",
     "questGuideSha256": "sha256:8d937c4c59c5cd4fb48cc8ee1a24c7637aabd6aa3d82a36387084b6de7f297e4",
     "questStrategyRouteSha256": "sha256:1e0679b31a1614bc75abec5b93a487f4f7824d9fc530892464d3fe13244afe5c",
     "questStrategyViewSha256": "sha256:1891d1c1c1fcdb705df03f6b3e3708ffc19d1c7e92de98ea7927da17ca27090c",
     "bundledKnowledgeSha256": "sha256:b499b6034b65ea3e305c940e2719d5f13bd61c79ed1335a042ced2866ed25eae",
     "protectedCommunicationSha256": {
-      "src/main/kcbrowser.ts": "sha256:a18725b27912dd516982a21e7146847635b3b3929a8ab1ad8b54feb53c7a0b9f",
+      "src/main/kcbrowser.ts": "sha256:64545d6b3c8d726595a66892c995baf91580b79ac392fa7afdfd142f32fe4346",
       "src/preload/xhr-hook.ts": "sha256:5e0c0391350cf325a111ed7049f4fc5407d273eae0e14d0677e27cd5ebe2c502",
       "src/common/kcsapi_hook.ts": "sha256:e68415a7b73a2b54ed33308a260900bb4eadb8dd15e2927420ab69da63200a1e"
     }
@@ -26,8 +26,8 @@
     "mode": "owner-login-readonly-redacted-no-screenshot"
   },
   "revisionNote": {
-    "supersedesRevision": 2,
-    "reason": "package-script-table-added-canonical-build-output-cleanup",
+    "supersedesRevision": 3,
+    "reason": "package-metadata-integrated-with-upstream-v1.0.8",
     "acceptanceCommandUnchanged": true,
     "acceptanceScopeUnchanged": true
   },

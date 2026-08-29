@@ -5446,7 +5446,9 @@ register(
       }
 
       const msts = toShipMsts(svdata, ship_ids)
-      const shipIds1 = [
+      const shipIds = [
+        svdata.shipMstIds(1041), // hanaduki
+        svdata.shipMstIds(1044), // kiri
         svdata.shipMstIds(994), // kaya
         svdata.shipMstIds(992), // sugi
         svdata.shipMstIds(993), // kasi
@@ -5454,16 +5456,7 @@ register(
         svdata.shipMstIds(16), // usio
         svdata.shipMstIds(35), // hibiki
       ].flat()
-      // 6月
-      const shipIdsMonth6 = [
-        svdata.shipMstIds(41), // hatusimo
-        svdata.shipMstIds(20), // yukikaze
-        svdata.shipMstIds(533), // fuyutuki
-        svdata.shipMstIds(532), // sudutuki
-      ].flat()
 
-      const shipIds = [...shipIds1]
-      shipIds.push(...shipIdsMonth6)
       return shipCount(msts, shipIds) >= 5
     }
   },
@@ -10834,7 +10827,10 @@ register(
         ApiShipCategory.richelieu,
         ApiShipCategory.commandantTeste,
         ApiShipCategory.la_galissonniere,
-        ApiShipCategory.mogador
+        ApiShipCategory.mogador,
+        ApiShipCategory.algérie,
+        ApiShipCategory.vautour,
+        ApiShipCategory.béarn,
       ]
       if (!shipCategoryCount([ships[0]], cats)) {
         return false
@@ -11193,7 +11189,9 @@ register(
       }
 
       const msts = toShipMsts(svdata, ship_ids)
-      const shipIds1 = [
+      const shipIds = [
+        svdata.shipMstIds(1041), // hanaduki
+        svdata.shipMstIds(1044), // kiri
         svdata.shipMstIds(994), // kaya
         svdata.shipMstIds(992), // sugi
         svdata.shipMstIds(993), // kasi
@@ -11201,16 +11199,6 @@ register(
         svdata.shipMstIds(16), // usio
         svdata.shipMstIds(35), // hibiki
       ].flat()
-      // 6月
-      const shipIdsMonth6 = [
-        svdata.shipMstIds(41), // hatusimo
-        svdata.shipMstIds(20), // yukikaze
-        svdata.shipMstIds(533), // fuyutuki
-        svdata.shipMstIds(532), // sudutuki
-      ].flat()
-
-      const shipIds = [...shipIds1]
-      shipIds.push(...shipIdsMonth6)
       return shipCount(msts, shipIds) >= 5
     }
   },
@@ -11246,7 +11234,10 @@ register(
         ApiShipCategory.richelieu,
         ApiShipCategory.commandantTeste,
         ApiShipCategory.la_galissonniere,
-        ApiShipCategory.mogador
+        ApiShipCategory.mogador,
+        ApiShipCategory.algérie,
+        ApiShipCategory.vautour,
+        ApiShipCategory.béarn,
       ]
       return shipCategoryCount(ships, cats) >= 3
     }
@@ -12886,7 +12877,7 @@ register(
   }
 )
 
-// 646:	「特注家具」の調達
+// 646(F42):	「特注家具」の調達
 register(
   646,
   class {
@@ -12924,18 +12915,18 @@ register(
   }
 )
 
-// 648:	「特注家具」の調達
+// 648(F44):	「特注家具」の調達
 register(
   648,
   class {
     static readonly questType = QuestType.destroyItemIdOrType
-    static max = [1]
+    static max = [2]
     static key = QuestKey.infer
     static id_or_types: ItemIdOrType[] = [
-      { id: 49 }
+      { id: 10 }
     ]
     static formatter(quest: Quest): string {
-      return detailFormat(['破棄 25mm単装機銃：'], quest)
+      return detailFormat(['破棄 12.7cm連装高角砲：'], quest)
     }
     static getCondition(_svdata: SvData) {
       return undefined
@@ -13000,7 +12991,7 @@ register(
   }
 )
 
-// 652:	「特注家具」の調達
+// 652(F48):	「特注家具」の調達
 register(
   652,
   class {
@@ -21288,7 +21279,11 @@ register(
       { id: 25 }
     ]
     static getCondition(svdata: SvData): DestroyItemCondition {
-      const ids = [svdata.shipMstIds(911), svdata.shipMstIds(488), 633].flat()
+      const ids = [
+        svdata.shipMstIds(911), // yamato kaini
+        svdata.shipMstIds(488), // yura kaini
+        svdata.shipMstIds(663), // yahagi kaini
+      ].flat()
       return {
         flagship_ids: ids,
         flagship_slotitem_ids: [238],

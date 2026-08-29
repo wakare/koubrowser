@@ -27,6 +27,7 @@ describe('transport point calculation', () => {
       [145, { api_id: 145 } as MstSlotitem]
     ])
     const data = Object.create(SvData.prototype) as SvData
+    vi.spyOn(data, 'inMap', 'get').mockReturnValue(false)
     const ship = vi
       .spyOn(data, 'ship')
       .mockImplementation((id) => (id === seventhShipId ? seventhShip : undefined))

@@ -6,6 +6,7 @@ import Areas from '@renderer/components/Areas.vue'
 import { svdata } from '@renderer/store/svdata'
 import * as mapInfoStore from '@renderer/store/mapinfo'
 import LockImage from '@renderer/assets/img/lock.svg'
+import { translateApp } from '@renderer/store/global_setting'
 
 type Props = { deck_index?: number }
 const props = withDefaults(defineProps<Props>(), { deck_index: 0 })
@@ -115,9 +116,13 @@ const classWorldEvent = computed((): object => {
   }
 })
 
-const eventName = computed<string>(
-  () => svdata.mstMapareaType(ApiMapAreaType.event)?.api_name ?? '????'
-)
+const getEventName = (): string => {
+  const name = svdata.mstMapareaType(ApiMapAreaType.event)?.api_name ?? '????'
+  const prefix = translateApp('battleEquipment.map.event.counterattackPrefix')
+  return name.replace(prefix, `${prefix}\n`)
+}
+
+const eventName = computed<string>(() => getEventName())
 
 onMounted(() => {
   debug('world mounted')
